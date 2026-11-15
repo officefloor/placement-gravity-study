@@ -1,0 +1,1729 @@
+{
+ "methods": 106,
+ "errors": 1,
+ "compared": 105,
+ "checkpoints_codetracker": 172,
+ "checkpoints_instrument": 163,
+ "agree": 162,
+ "share_of_codetracker_found_by_instrument": 0.942,
+ "share_of_instrument_confirmed_by_codetracker": 0.994,
+ "methods_identical": 97,
+ "methods_renamed_or_moved": 6,
+ "methods_renamed_or_moved_identical": 3,
+ "per_method": [
+  {
+   "identity": "OwnerIdentity#OwnerIdentity",
+   "type": "OwnerIdentity",
+   "name": "OwnerIdentity",
+   "codetracker": [
+    52
+   ],
+   "instrument": [],
+   "both": 0,
+   "codetracker_only": [
+    52
+   ],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerIdentity#sha256Hex",
+   "type": "OwnerIdentity",
+   "name": "sha256Hex",
+   "codetracker": [
+    52
+   ],
+   "instrument": [
+    52
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerIdentity#soundex",
+   "type": "OwnerIdentity",
+   "name": "soundex",
+   "codetracker": [
+    52
+   ],
+   "instrument": [
+    52
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerIdentity#soundexCode",
+   "type": "OwnerIdentity",
+   "name": "soundexCode",
+   "codetracker": [
+    52
+   ],
+   "instrument": [
+    52
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerMapper#toIdentity",
+   "type": "OwnerMapper",
+   "name": "toIdentity",
+   "codetracker": [
+    60
+   ],
+   "instrument": [
+    60
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerMapper#toApiVersion",
+   "type": "OwnerMapper",
+   "name": "toApiVersion",
+   "codetracker": [
+    60
+   ],
+   "instrument": [
+    60
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerMapper#toSelfLink",
+   "type": "OwnerMapper",
+   "name": "toSelfLink",
+   "codetracker": [
+    49
+   ],
+   "instrument": [
+    49
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerMapper#toAgeBand",
+   "type": "OwnerMapper",
+   "name": "toAgeBand",
+   "codetracker": [
+    34
+   ],
+   "instrument": [
+    34
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerMapper#toIdentityKey",
+   "type": "OwnerMapper",
+   "name": "toIdentityKey",
+   "codetracker": [
+    28,
+    52,
+    60
+   ],
+   "instrument": [
+    28,
+    52,
+    60
+   ],
+   "both": 3,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerMapper#toOwnerSegment",
+   "type": "OwnerMapper",
+   "name": "toOwnerSegment",
+   "codetracker": [
+    55
+   ],
+   "instrument": [
+    55
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerMapper#toContactPreference",
+   "type": "OwnerMapper",
+   "name": "toContactPreference",
+   "codetracker": [
+    27
+   ],
+   "instrument": [
+    27
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerMapper#toRegion",
+   "type": "OwnerMapper",
+   "name": "toRegion",
+   "codetracker": [
+    32
+   ],
+   "instrument": [
+    32
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerMapper#toLocality",
+   "type": "OwnerMapper",
+   "name": "toLocality",
+   "codetracker": [
+    17,
+    30,
+    32,
+    56,
+    60
+   ],
+   "instrument": [
+    17,
+    30,
+    32,
+    56,
+    60
+   ],
+   "both": 5,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerMapper#memberIdCore",
+   "type": "OwnerMapper",
+   "name": "memberIdCore",
+   "codetracker": [
+    56
+   ],
+   "instrument": [
+    56
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerMapper#fiscalYearFromMemberId",
+   "type": "OwnerMapper",
+   "name": "fiscalYearFromMemberId",
+   "codetracker": [
+    56
+   ],
+   "instrument": [
+    56
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerMapper#toTimezone",
+   "type": "OwnerMapper",
+   "name": "toTimezone",
+   "codetracker": [
+    42
+   ],
+   "instrument": [
+    42
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerMapper#regionForPostcode",
+   "type": "OwnerMapper",
+   "name": "regionForPostcode",
+   "codetracker": [
+    30
+   ],
+   "instrument": [
+    30
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerMapper#toDisplayName",
+   "type": "OwnerMapper",
+   "name": "toDisplayName",
+   "codetracker": [
+    5
+   ],
+   "instrument": [
+    5
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerMapper#toSalutation",
+   "type": "OwnerMapper",
+   "name": "toSalutation",
+   "codetracker": [
+    45
+   ],
+   "instrument": [
+    45
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerMapper#toTelephoneDisplay",
+   "type": "OwnerMapper",
+   "name": "toTelephoneDisplay",
+   "codetracker": [
+    37
+   ],
+   "instrument": [
+    37
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerMapper#toInitials",
+   "type": "OwnerMapper",
+   "name": "toInitials",
+   "codetracker": [
+    6
+   ],
+   "instrument": [
+    6
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerMapper#toFiscalYear",
+   "type": "OwnerMapper",
+   "name": "toFiscalYear",
+   "codetracker": [
+    48,
+    56
+   ],
+   "instrument": [
+    48,
+    56
+   ],
+   "both": 2,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerMapper#fiscalYear",
+   "type": "OwnerMapper",
+   "name": "fiscalYear",
+   "codetracker": [
+    48
+   ],
+   "instrument": [],
+   "both": 0,
+   "codetracker_only": [
+    48
+   ],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerMapper#toMembershipPoints",
+   "type": "OwnerMapper",
+   "name": "toMembershipPoints",
+   "codetracker": [
+    40
+   ],
+   "instrument": [
+    40
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerMapper#toMembershipLevel",
+   "type": "OwnerMapper",
+   "name": "toMembershipLevel",
+   "codetracker": [
+    24,
+    39,
+    40
+   ],
+   "instrument": [
+    24,
+    39,
+    40
+   ],
+   "both": 3,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerMapper#membershipPointsFor",
+   "type": "OwnerMapper",
+   "name": "membershipPointsFor",
+   "codetracker": [
+    40,
+    48
+   ],
+   "instrument": [
+    40,
+    48
+   ],
+   "both": 2,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerMapper#membershipLevelFor",
+   "type": "OwnerMapper",
+   "name": "membershipLevelFor",
+   "codetracker": [
+    40
+   ],
+   "instrument": [
+    40
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerMapper#initial",
+   "type": "OwnerMapper",
+   "name": "initial",
+   "codetracker": [
+    6
+   ],
+   "instrument": [
+    6
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "Owner#getTitle",
+   "type": "Owner",
+   "name": "getTitle",
+   "codetracker": [
+    45
+   ],
+   "instrument": [
+    45
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "Owner#setTitle",
+   "type": "Owner",
+   "name": "setTitle",
+   "codetracker": [
+    45
+   ],
+   "instrument": [
+    45
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "Owner#getAddressLine1",
+   "type": "Owner",
+   "name": "getAddressLine1",
+   "codetracker": [
+    44
+   ],
+   "instrument": [
+    44
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "Owner#setAddressLine1",
+   "type": "Owner",
+   "name": "setAddressLine1",
+   "codetracker": [
+    44
+   ],
+   "instrument": [
+    44
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "Owner#getAddressLine2",
+   "type": "Owner",
+   "name": "getAddressLine2",
+   "codetracker": [
+    44
+   ],
+   "instrument": [
+    44
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "Owner#setAddressLine2",
+   "type": "Owner",
+   "name": "setAddressLine2",
+   "codetracker": [
+    44
+   ],
+   "instrument": [
+    44
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "Owner#getEmail",
+   "type": "Owner",
+   "name": "getEmail",
+   "codetracker": [
+    4
+   ],
+   "instrument": [
+    4
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "Owner#setEmail",
+   "type": "Owner",
+   "name": "setEmail",
+   "codetracker": [
+    4
+   ],
+   "instrument": [
+    4
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "Owner#getPostcode",
+   "type": "Owner",
+   "name": "getPostcode",
+   "codetracker": [
+    29
+   ],
+   "instrument": [
+    29
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "Owner#setPostcode",
+   "type": "Owner",
+   "name": "setPostcode",
+   "codetracker": [
+    29
+   ],
+   "instrument": [
+    29
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "Owner#getRegistrationDate",
+   "type": "Owner",
+   "name": "getRegistrationDate",
+   "codetracker": [
+    7
+   ],
+   "instrument": [
+    7
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "Owner#setRegistrationDate",
+   "type": "Owner",
+   "name": "setRegistrationDate",
+   "codetracker": [
+    7
+   ],
+   "instrument": [
+    7
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "Owner#getBirthDate",
+   "type": "Owner",
+   "name": "getBirthDate",
+   "codetracker": [
+    34
+   ],
+   "instrument": [
+    34
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "Owner#setBirthDate",
+   "type": "Owner",
+   "name": "setBirthDate",
+   "codetracker": [
+    34
+   ],
+   "instrument": [
+    34
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "Owner#getHouseholdId",
+   "type": "Owner",
+   "name": "getHouseholdId",
+   "codetracker": [
+    11
+   ],
+   "instrument": [
+    11
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "Owner#setHouseholdId",
+   "type": "Owner",
+   "name": "setHouseholdId",
+   "codetracker": [
+    11
+   ],
+   "instrument": [
+    11
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "Owner#getNamesakeCount",
+   "type": "Owner",
+   "name": "getNamesakeCount",
+   "codetracker": [
+    13
+   ],
+   "instrument": [
+    13
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "Owner#setNamesakeCount",
+   "type": "Owner",
+   "name": "setNamesakeCount",
+   "codetracker": [
+    13
+   ],
+   "instrument": [
+    13
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "Owner#getPossibleDuplicate",
+   "type": "Owner",
+   "name": "getPossibleDuplicate",
+   "codetracker": [
+    35
+   ],
+   "instrument": [
+    35
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "Owner#setPossibleDuplicate",
+   "type": "Owner",
+   "name": "setPossibleDuplicate",
+   "codetracker": [
+    35
+   ],
+   "instrument": [
+    35
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "Owner#getPossibleDuplicateOf",
+   "type": "Owner",
+   "name": "getPossibleDuplicateOf",
+   "codetracker": [
+    35
+   ],
+   "instrument": [
+    35
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "Owner#setPossibleDuplicateOf",
+   "type": "Owner",
+   "name": "setPossibleDuplicateOf",
+   "codetracker": [
+    35
+   ],
+   "instrument": [
+    35
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "Owner#getDeleted",
+   "type": "Owner",
+   "name": "getDeleted",
+   "codetracker": [
+    46
+   ],
+   "instrument": [
+    46
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "Owner#setDeleted",
+   "type": "Owner",
+   "name": "setDeleted",
+   "codetracker": [
+    46
+   ],
+   "instrument": [
+    46
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "CityAtCapacityException#CityAtCapacityException",
+   "type": "CityAtCapacityException",
+   "name": "CityAtCapacityException",
+   "codetracker": [
+    18
+   ],
+   "instrument": [
+    18
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "CityAtCapacityException#getFields",
+   "type": "CityAtCapacityException",
+   "name": "getFields",
+   "codetracker": [
+    18
+   ],
+   "instrument": [
+    18
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "DailyOwnerLimitException#DailyOwnerLimitException",
+   "type": "DailyOwnerLimitException",
+   "name": "DailyOwnerLimitException",
+   "codetracker": [
+    19
+   ],
+   "instrument": [
+    19
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "DuplicateIdentityException#DuplicateIdentityException",
+   "type": "DuplicateIdentityException",
+   "name": "DuplicateIdentityException",
+   "codetracker": [
+    25,
+    28
+   ],
+   "instrument": [
+    28
+   ],
+   "both": 1,
+   "codetracker_only": [
+    25
+   ],
+   "instrument_only": [],
+   "renamed_or_moved": true
+  },
+  {
+   "identity": "DuplicateIdentityException#getFields",
+   "type": "DuplicateIdentityException",
+   "name": "getFields",
+   "codetracker": [
+    25
+   ],
+   "instrument": [],
+   "both": 0,
+   "codetracker_only": [
+    25
+   ],
+   "instrument_only": [],
+   "renamed_or_moved": true
+  },
+  {
+   "identity": "ExceptionControllerAdvice#handleMethodArgumentNotValidException",
+   "type": "ExceptionControllerAdvice",
+   "name": "handleMethodArgumentNotValidException",
+   "codetracker": [
+    1
+   ],
+   "instrument": [
+    1
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "ExceptionControllerAdvice#handleMissingRequiredFieldsException",
+   "type": "ExceptionControllerAdvice",
+   "name": "handleMissingRequiredFieldsException",
+   "codetracker": [
+    1
+   ],
+   "instrument": [
+    1
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "ExceptionControllerAdvice#handleInvalidFieldValueException",
+   "type": "ExceptionControllerAdvice",
+   "name": "handleInvalidFieldValueException",
+   "codetracker": [
+    2
+   ],
+   "instrument": [
+    2
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "ExceptionControllerAdvice#handleDuplicateEmailException",
+   "type": "ExceptionControllerAdvice",
+   "name": "handleDuplicateIdentityException",
+   "codetracker": [
+    25,
+    28
+   ],
+   "instrument": [
+    25,
+    28
+   ],
+   "both": 2,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": true
+  },
+  {
+   "identity": "ExceptionControllerAdvice#handleCityAtCapacityException",
+   "type": "ExceptionControllerAdvice",
+   "name": "handleCityAtCapacityException",
+   "codetracker": [
+    18
+   ],
+   "instrument": [
+    18
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "ExceptionControllerAdvice#handleDailyOwnerLimitException",
+   "type": "ExceptionControllerAdvice",
+   "name": "handleDailyOwnerLimitException",
+   "codetracker": [
+    19
+   ],
+   "instrument": [
+    19
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "InvalidFieldValueException#InvalidFieldValueException",
+   "type": "InvalidFieldValueException",
+   "name": "InvalidFieldValueException",
+   "codetracker": [
+    2
+   ],
+   "instrument": [
+    2
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "InvalidFieldValueException#getFields",
+   "type": "InvalidFieldValueException",
+   "name": "getFields",
+   "codetracker": [
+    2
+   ],
+   "instrument": [
+    2
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "MissingRequiredFieldsException#MissingRequiredFieldsException",
+   "type": "MissingRequiredFieldsException",
+   "name": "MissingRequiredFieldsException",
+   "codetracker": [
+    1
+   ],
+   "instrument": [
+    1
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "MissingRequiredFieldsException#getFields",
+   "type": "MissingRequiredFieldsException",
+   "name": "getFields",
+   "codetracker": [
+    1
+   ],
+   "instrument": [
+    1
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#OwnerRestControllerV1",
+   "type": "OwnerRestControllerV1",
+   "name": "OwnerRestControllerV1",
+   "codetracker": [
+    53
+   ],
+   "instrument": [
+    53
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#listOwners",
+   "type": "OwnerRestControllerV1",
+   "name": "listOwners",
+   "codetracker": [
+    22
+   ],
+   "instrument": [
+    22
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#getOwner",
+   "type": "OwnerRestControllerV1",
+   "name": "getOwner",
+   "codetracker": [
+    22
+   ],
+   "instrument": [
+    22
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#addOwner",
+   "type": "OwnerRestControllerV1",
+   "name": "addOwner",
+   "codetracker": [
+    1,
+    2,
+    3,
+    4,
+    7,
+    9,
+    10,
+    11,
+    12,
+    13,
+    16,
+    18,
+    19,
+    20,
+    21,
+    22,
+    24,
+    25,
+    28,
+    29,
+    32,
+    33,
+    35,
+    36,
+    40,
+    43,
+    44,
+    50,
+    51,
+    53,
+    56,
+    57,
+    60
+   ],
+   "instrument": [
+    1,
+    2,
+    3,
+    4,
+    7,
+    9,
+    10,
+    11,
+    12,
+    13,
+    16,
+    18,
+    19,
+    20,
+    21,
+    22,
+    24,
+    25,
+    28,
+    29,
+    32,
+    33,
+    35,
+    36,
+    40,
+    43,
+    44,
+    50,
+    51,
+    53,
+    56,
+    57,
+    60
+   ],
+   "both": 33,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#currentIdempotencyKey",
+   "type": "OwnerRestControllerV1",
+   "name": "currentIdempotencyKey",
+   "codetracker": [
+    50
+   ],
+   "instrument": [
+    50
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#updateOwner",
+   "type": "OwnerRestControllerV1",
+   "name": "updateOwner",
+   "codetracker": [
+    8
+   ],
+   "instrument": [
+    8
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#buildCustomerCode",
+   "type": "OwnerRestControllerV1",
+   "name": "buildMemberId",
+   "codetracker": [
+    32,
+    41,
+    56,
+    60
+   ],
+   "instrument": [
+    32,
+    41,
+    56,
+    60
+   ],
+   "both": 4,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": true
+  },
+  {
+   "identity": "OwnerMapper#toCheckDigit",
+   "type": "OwnerRestControllerV1",
+   "name": "luhnCheckDigit",
+   "codetracker": [
+    31,
+    56
+   ],
+   "instrument": [
+    31,
+    56
+   ],
+   "both": 2,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": true
+  },
+  {
+   "identity": "OwnerRestControllerV1#sha256Hex8",
+   "type": "OwnerRestControllerV1",
+   "name": "sha256Hex8",
+   "codetracker": [
+    32
+   ],
+   "instrument": [
+    32
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#countNamesakes",
+   "type": "OwnerRestControllerV1",
+   "name": "countNamesakes",
+   "codetracker": [
+    13
+   ],
+   "instrument": [
+    13
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#requireNonBlank",
+   "type": "OwnerRestControllerV1",
+   "name": "requireNonBlank",
+   "codetracker": [
+    1
+   ],
+   "instrument": [
+    1
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#normalizeTelephone",
+   "type": "OwnerRestControllerV1",
+   "name": "normalizeTelephone",
+   "codetracker": [
+    2,
+    8
+   ],
+   "instrument": [
+    2,
+    8
+   ],
+   "both": 2,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#toE164",
+   "type": "OwnerRestControllerV1",
+   "name": "toE164",
+   "codetracker": [
+    8,
+    26
+   ],
+   "instrument": [
+    8,
+    26
+   ],
+   "both": 2,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#hasValidNationalLength",
+   "type": "OwnerRestControllerV1",
+   "name": "hasValidNationalLength",
+   "codetracker": [
+    26
+   ],
+   "instrument": [
+    26
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#normalizeEmail",
+   "type": "OwnerRestControllerV1",
+   "name": "normalizeEmail",
+   "codetracker": [
+    4,
+    38
+   ],
+   "instrument": [
+    4,
+    38
+   ],
+   "both": 2,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#toOwnerDtoWithBulkWarning",
+   "type": "OwnerRestControllerV1",
+   "name": "toOwnerDtoWithBulkWarning",
+   "codetracker": [
+    22,
+    23,
+    24,
+    40,
+    51,
+    54,
+    58
+   ],
+   "instrument": [
+    22,
+    23,
+    24,
+    40,
+    51,
+    54,
+    58
+   ],
+   "both": 7,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#capMembershipLevel",
+   "type": "OwnerRestControllerV1",
+   "name": "capMembershipLevel",
+   "codetracker": [
+    36,
+    46,
+    51
+   ],
+   "instrument": [
+    51
+   ],
+   "both": 1,
+   "codetracker_only": [
+    36,
+    46
+   ],
+   "instrument_only": [],
+   "renamed_or_moved": true
+  },
+  {
+   "identity": "OwnerRestControllerV1#membershipLevelForOwner",
+   "type": "OwnerRestControllerV1",
+   "name": "membershipLevelForOwner",
+   "codetracker": [
+    51
+   ],
+   "instrument": [
+    51
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#householdSize",
+   "type": "OwnerRestControllerV1",
+   "name": "householdSize",
+   "codetracker": [
+    40
+   ],
+   "instrument": [
+    40
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#exceedsBulkSignupThreshold",
+   "type": "OwnerRestControllerV1",
+   "name": "exceedsBulkSignupThreshold",
+   "codetracker": [
+    22
+   ],
+   "instrument": [
+    22
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#requireDailyLimitNotReached",
+   "type": "OwnerRestControllerV1",
+   "name": "requireDailyLimitNotReached",
+   "codetracker": [
+    19,
+    20
+   ],
+   "instrument": [
+    19,
+    20
+   ],
+   "both": 2,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#toBusinessDay",
+   "type": "OwnerRestControllerV1",
+   "name": "toBusinessDay",
+   "codetracker": [
+    20,
+    47
+   ],
+   "instrument": [
+    20,
+    47
+   ],
+   "both": 2,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#isWeekend",
+   "type": "OwnerRestControllerV1",
+   "name": "isWeekend",
+   "codetracker": [
+    47
+   ],
+   "instrument": [],
+   "both": 0,
+   "codetracker_only": [
+    47
+   ],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#validatePostcode",
+   "type": "OwnerRestControllerV1",
+   "name": "validatePostcode",
+   "codetracker": [
+    29
+   ],
+   "instrument": [
+    29
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#validateRegistrationDate",
+   "type": "OwnerRestControllerV1",
+   "name": "validateRegistrationDate",
+   "codetracker": [
+    33
+   ],
+   "instrument": [
+    33
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#requireCityBelowCapacity",
+   "type": "OwnerRestControllerV1",
+   "name": "requireCityBelowCapacity",
+   "codetracker": [
+    18
+   ],
+   "instrument": [
+    18
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#approachingCityCapacity",
+   "type": "OwnerRestControllerV1",
+   "name": "approachingCityCapacity",
+   "codetracker": [
+    54
+   ],
+   "instrument": [
+    54
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#computeRiskFlag",
+   "type": "OwnerRestControllerV1",
+   "name": "computeRiskFlag",
+   "codetracker": [
+    58
+   ],
+   "instrument": [
+    58
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#isDisposableAdjacentEmail",
+   "type": "OwnerRestControllerV1",
+   "name": "isDisposableAdjacentEmail",
+   "codetracker": [
+    58
+   ],
+   "instrument": [
+    58
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#isCityOverSoftCapacity",
+   "type": "OwnerRestControllerV1",
+   "name": "isCityOverSoftCapacity",
+   "codetracker": [
+    58
+   ],
+   "instrument": [
+    58
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#requireUniqueIdentity",
+   "type": "OwnerRestControllerV1",
+   "name": "requireUniqueIdentity",
+   "codetracker": [
+    10,
+    12,
+    28,
+    46
+   ],
+   "instrument": [
+    46
+   ],
+   "both": 1,
+   "codetracker_only": [
+    10,
+    12,
+    28
+   ],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#isDeleted",
+   "type": "OwnerRestControllerV1",
+   "name": "isDeleted",
+   "codetracker": [],
+   "instrument": [
+    46
+   ],
+   "both": 0,
+   "codetracker_only": [],
+   "instrument_only": [
+    46
+   ],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#markPossibleDuplicate",
+   "type": "OwnerRestControllerV1",
+   "name": "markPossibleDuplicate",
+   "codetracker": [
+    35,
+    36,
+    52
+   ],
+   "instrument": [
+    35,
+    36,
+    52
+   ],
+   "both": 3,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#normalizeForHousehold",
+   "type": "OwnerRestControllerV1",
+   "name": "normalizeForHousehold",
+   "codetracker": [
+    10
+   ],
+   "instrument": [
+    10
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#normalizeAddress",
+   "type": "OwnerRestControllerV1",
+   "name": "normalizeAddress",
+   "codetracker": [
+    12
+   ],
+   "instrument": [
+    12
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#composeAddress",
+   "type": "OwnerRestControllerV1",
+   "name": "composeAddress",
+   "codetracker": [
+    44
+   ],
+   "instrument": [
+    44
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "OwnerRestControllerV1#householdIdFor",
+   "type": "OwnerRestControllerV1",
+   "name": "householdIdFor",
+   "codetracker": [
+    11,
+    36,
+    60
+   ],
+   "instrument": [
+    11,
+    36,
+    60
+   ],
+   "both": 3,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  },
+  {
+   "identity": "ClinicServiceImpl#deleteOwner",
+   "type": "ClinicServiceImpl",
+   "name": "deleteOwner",
+   "codetracker": [
+    46
+   ],
+   "instrument": [
+    46
+   ],
+   "both": 1,
+   "codetracker_only": [],
+   "instrument_only": [],
+   "renamed_or_moved": false
+  }
+ ]
+}

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>placement-gravity</groupId>
+  <artifactId>refactor</artifactId>
+  <version>1</version>
+  <!-- RefactoringMiner (refactoring detection, PLAN.md §4.1) at the version CodeTracker 2.6 pins, and
+       CodeTracker (method histories, §4.4) itself. -->
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.release>17</maven.compiler.release>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>io.github.jodavimehran</groupId>
+      <artifactId>code-tracker</artifactId>
+      <version>2.6</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.tsantalis</groupId>
+      <artifactId>refactoring-miner</artifactId>
+      <version>3.0.4</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.8.1</version>
+        <executions>
+          <execution>
+            <id>copy</id>
+            <phase>package</phase>
+            <goals><goal>copy-dependencies</goal></goals>
+            <configuration><outputDirectory>${project.build.directory}/lib</outputDirectory></configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

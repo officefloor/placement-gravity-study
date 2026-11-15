@@ -21,4 +21,27 @@ harnesses, where one checkpoint is one problem.
 | [`PLAN.md`](PLAN.md) | The study: questions, hypotheses H1–H3, measures, analysis. **Draft, not registered.** |
 | [`LITERATURE.md`](LITERATURE.md) | The literature: notes by theme, the systematic novelty check (§10), and the full references. |
 
-No code yet.
+| [`results/pilot/PILOT.md`](results/pilot/PILOT.md) | The pilot: the instrument on one pair of chains, what it showed, the decisions it raised. |
+
+## Running
+
+```sh
+./setup.sh    # .venv, the pinned OfficeFloorSlim 0.5.4 jar (sha256-checked), RefactoringMiner and
+              # CodeTracker (Maven), the instrument, the tests. Needs JDK 17+ and Maven.
+./pilot.sh    # the pilot: chain 9 of blind-202608100006/just-solve, both arms -> results/pilot/
+```
+
+The pilot reads the harness's local clones (`~/compare/spring`, `~/compare/officefloor`) and its
+stream (`~/spring-petclinic-rest-long-degradation-test/checkpoints.yaml`). The same branches are
+published in `officefloor/spring-petclinic-rest`.
+
+| Code | |
+|---|---|
+| `instrument/Pull.java` | The instrument: per addition, hosts, runs and their ties (method and class), birth ties, moved code; the amount. |
+| `refactor/` | RefactoringMiner 3.0.4 at each commit (`Refactorings.java`) and CodeTracker 2.6 histories (`Histories.java`), built by Maven. |
+| `placement_gravity/refactor.py` | RefactoringMiner's findings as the instrument's hints: renames, matches, moved code. |
+| `placement_gravity/crosscheck.py` | CodeTracker against the instrument's following of hosts. |
+| `placement_gravity/chain.py` | A chain's checkpoints from git, the files of each addition, the wiring. |
+| `placement_gravity/tables.py` | Hosts, runs, additions and outcomes from the instrument's output. |
+| `placement_gravity/pilot.py` | The pilot. |
+| `tests/` | Fixtures with known answers. |

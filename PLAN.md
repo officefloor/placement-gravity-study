@@ -1,7 +1,7 @@
 # Plan: where a new problem's code lands, and whether it had a choice
 
-> **Status (15 November 2026): DRAFT, not registered.** No instrument has been built and no
-> repository or run has been measured for this study. Every **[DECIDE]** is settled at
+> **Status (15 November 2026): DRAFT, not registered.** The instrument is built and piloted on one
+> pair of chains (`results/pilot/PILOT.md`); nothing else has been measured for this study. Every **[DECIDE]** is settled at
 > registration, before any confirmatory measurement. The literature behind this plan is in
 > [`LITERATURE.md`](LITERATURE.md).
 
@@ -132,11 +132,17 @@ rule are those of the width README.
 
 ### 4.1 The addition
 
-For each checkpoint (or commit) *k*: the diff from *k − 1* to *k* is mapped onto methods with
-CodeTracker (Jodavi and Tsantalis 2022). Refactorings detected by RefactoringMiner 2.x (Tsantalis
-et al. 2022) are separated out: Extract Method, Move Method, Inline and Rename are recorded as
-**re-placements**, not as additions. The **addition** is what remains: the positions added or
-changed for the new problem, as a set of runs, each run being contiguous positions of one host.
+For each checkpoint (or commit) *k*: the diff from *k − 1* to *k* in production Java. RefactoringMiner
+3.0.4 (Tsantalis et al. 2022), the version CodeTracker 2.6 pins, runs at each commit:
+
+- renames (of values, fields, methods and types) are applied to the before version first;
+- renamed, moved and re-signatured methods and types stay matched;
+- moved or restructured code (extract, inline, extract or inline variable, loop↔pipeline, invert
+  condition, split and merge) is a **re-placement**, not an addition. Identical-text matching
+  covers moves it does not report.
+
+The **addition** is what remains: the positions added or changed for the new problem, as a set of
+runs, each run being contiguous positions of one host.
 
 ### 4.2 Placement (Q1)
 
@@ -149,35 +155,46 @@ changed for the new problem, as a set of runs, each run being contiguous positio
 - **Interleaving:** the number of runs per host. An addition split across a host's statements
   is placed against the host's order.
 
-### 4.3 Pull (Q2), the measure of gravitation
+### 4.3 Ties (Q2), the measure of gravitation
 
-Pull is Feature Envy turned inwards. Tsantalis and Chatzigeorgiou (2009) score how well a method
-fits its class, given the data it uses, to find methods drawn towards *another* class's data;
-theirs is a snapshot recommendation of where a method should move. Pull measures an addition held
-by its *own* host's pre-existing data, at the commit where the addition is made, and so asks
-whether another placement was available at the time and at what seam.
+Only **logic lines** carry the value of a change: a method's body statements. Signatures,
+declarations, imports and constructor wiring are organisation. What matters is where the data each
+added or edited logic line uses comes from. If it comes from values the change itself defines, the
+code could have been placed anywhere. If it comes from values that already existed, the code has to
+be placed near them, so choice is restricted. Those are its **ties** (`instrument/Pull.java`;
+`results/pilot/PILOT.md`):
 
-For a run added to an existing host:
+- **Method ties:** the host method's pre-existing parameters and locals.
+- **Class ties:** the host class's pre-existing fields (constants included) and methods. In Spring,
+  injected dependencies are fields, so they tie code to its class. Inherited members tie too; the
+  instrument reports any reference it cannot resolve (none in the pilot).
+- Every reference on an added or edited logic line counts. A token-level reading, which counts
+  only what an edit itself introduced, is reported beside it.
 
-- **Method pull** `P_m`: the number of the host's values (parameters and locals) that **existed at
-  *k − 1*** and that the run reads or writes. This is the run's seam, inputs plus outputs, by the
-  width harness's rules, restricted to values that predate the addition. Values the addition
-  introduces itself do not count: they belong to the new problem.
-- **Class pull** `P_c`: the number of the host class's fields that existed at *k − 1* and that
-  the addition's methods (new or changed) read or write. The width study kept fields out of its
-  headline width; here fields are a main channel of gravity, so they are measured.
-- **Forced / chosen:** a run is **forced** when `P_m + P_c ≥` **[DECIDE]** (proposed: the
-  addition's own seam if it were placed as a new unit, plus 2), and **chosen** otherwise.
-  Pull is also analysed as a continuous measure, so the cut is a reading aid, not the test.
+**Not ties:**
 
-A new host has pull 0 by this definition, but a new method that takes existing state as
-parameters is also pulled. For it, `P_m` is the number of its parameters bound at the call site
-to values that existed in the caller at *k − 1*.
+- **Injected parameters.** A function placed anywhere can declare them; every parameter of a wired
+  OfficeFloor function is injected, though its locals still tie.
+- **Class utilities** (loggers), which any class can declare; they are reported apart.
+- **Birth ties**, the values a caller passes a new method; they are reported, already counted on
+  the caller's line.
+
+Ties are related to Feature Envy turned inwards (Tsantalis and Chatzigeorgiou 2009). Their metric
+finds a method drawn towards *another* class's data, as a snapshot recommendation. Ties measure an
+addition held by its *own* host's pre-existing data, at the commit where it is placed.
+
+**Forced / chosen:** a run is forced when its ties are 1 or more, and chosen otherwise. The cuts
+2, 3 and 4 are reported beside it. Because the pilot finds 93% of Spring's runs into existing
+methods forced at 1, H1 and H2 are tested on the tie count, with the cut as a reading aid. H1 is
+read at method level in both arms and at class level in Spring (class ties against the class's
+size); OfficeFloor's class level is reported.
 
 ### 4.4 Consequence (Q3)
 
-Each problem's code is tracked forward by line provenance (CodeTracker, with
-`git blame -w -M -C` as a cross-check) to the end of the chain:
+Each problem's hosts are followed forward to the end of the chain, across renames and moves:
+RefactoringMiner's renames chain identities commit by commit, and CodeTracker 2.6 (Jodavi and
+Tsantalis 2022) gives each surviving method's history (which is primary is **[DECIDE]**; the pilot
+finds them agreeing on 91–99% of checkpoints):
 
 - **Containment:** later changes that the stream declares to be *about* problem *p* (mutatives
   of *p*'s rule). The number of hosts they touch outside *p*'s placement, normalised by the
@@ -226,8 +243,13 @@ conservation result: the same amount, placed differently.
   paper's results, including that its AI-reviewed condition consolidated the OfficeFloor
   pipeline, raising concentration. That result is the reason H3 is not assumed and the wiring is
   counted.
-- **Not seen.** Pull, placement, containment or intrusion on any run or repository. The
-  petclinic runs have been read for other measures (the conservation paper), never for these.
+- **The pilot** (15–16 November 2026, `results/pilot/PILOT.md`): the instrument on chain 9 of the
+  just-solve run `blind-202608100006`, both arms. Descriptive figures for every measure were seen
+  for that one pair of chains; no hypothesis statistic was computed. Those chains are excluded
+  from the registered analysis. The pilot raised six decisions (PILOT.md, *Decisions*), which are
+  settled at registration.
+- **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
+  The petclinic runs have been read for other measures (the conservation paper), never for these.
 - **Expectation.** The author expects H1 and H3 to hold, and expects H2 to be the hardest to
   show, because the intrusion counts per chain may be small.
 - **Conflict of interest.** The author created OfficeFloor, SinewSlim, OfficeFloorSlim and both
@@ -255,9 +277,12 @@ conservation result: the same amount, placed differently.
 
 ## 8. Order of work
 
-1. Build the instrument (§4): fixtures with known pull and placement, and tests.
-2. Run a pilot on **two chains** of one petclinic run, not among those named at registration,
-   to check that the measures compute and are not degenerate. Report the pilot as such.
+1. ~~Build the instrument (§4): fixtures with known pull and placement, and tests.~~ Done:
+   `instrument/Pull.java`, `placement_gravity/`, `tests/` (RefactoringMiner and CodeTracker not yet
+   integrated; PILOT.md, decisions 4 and 5).
+2. ~~Run a pilot on **two chains** of one petclinic run, not among those named at registration,
+   to check that the measures compute and are not degenerate.~~ Done 15 November 2026:
+   `results/pilot/PILOT.md`.
 3. Settle every **[DECIDE]** and register (tag `plan-v1`).
 4. Run corpus A, then corpus B. Analyse once; record hashes.
 5. Write up, reporting every hypothesis whichever way it falls.

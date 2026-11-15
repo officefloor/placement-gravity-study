@@ -1,0 +1,369 @@
+{
+  "spring": {
+    "branch": "evolve/blind-202608100006/just-solve/spring/chain9",
+    "head": "b48eb0cc333bad39953e265f9197d32fa832211f",
+    "checkpoints": 60,
+    "noops": 1,
+    "problems": 0,
+    "refactorings": 85,
+    "hints": 147,
+    "hints_naming_a_file_not_in_the_addition": 0,
+    "positions_moved_rm": 60,
+    "positions_moved_text": 14,
+    "replacements": 19,
+    "hosts_with_addition": 174,
+    "hosts_new": 112,
+    "hosts_new_in_new_class": 18,
+    "hosts_existing": 62,
+    "hosts_injected": 0,
+    "share_positions_in_existing": {
+      "n": 59,
+      "min": 0.0,
+      "p25": 0.0,
+      "median": 0.2,
+      "p75": 0.5,
+      "p90": 1.0,
+      "max": 1.0,
+      "mean": 0.309
+    },
+    "hosts_per_addition": {
+      "n": 60,
+      "min": 0,
+      "p25": 1,
+      "median": 3,
+      "p75": 4,
+      "p90": 6,
+      "max": 7,
+      "mean": 2.9
+    },
+    "classes_per_addition": {
+      "n": 60,
+      "min": 0,
+      "p25": 1,
+      "median": 1,
+      "p75": 2,
+      "p90": 3,
+      "max": 4,
+      "mean": 1.617
+    },
+    "host_pre_positions_existing": {
+      "n": 62,
+      "min": 1,
+      "p25": 5,
+      "median": 11,
+      "p75": 33,
+      "p90": 36,
+      "max": 52,
+      "mean": 17.435
+    },
+    "runs_existing": 81,
+    "runs_existing_edits": 49,
+    "run_tie_method_existing": {
+      "0": 12,
+      "1": 47,
+      "2": 17,
+      "3": 5
+    },
+    "run_tie_class_existing": {
+      "0": 58,
+      "1": 18,
+      "2": 3,
+      "3": 1,
+      "4": 1
+    },
+    "run_tie_existing": {
+      "0": 6,
+      "1": 40,
+      "2": 24,
+      "3": 7,
+      "4": 2,
+      "5": 2
+    },
+    "run_tok_tie_existing": {
+      "0": 32,
+      "1": 33,
+      "2": 13,
+      "3": 2,
+      "4": 1
+    },
+    "run_utility_existing": {
+      "0": 75,
+      "1": 6
+    },
+    "new_hosts_utility": {
+      "0": 105,
+      "1": 7
+    },
+    "new_hosts_tie": {
+      "0": 84,
+      "1": 22,
+      "2": 5,
+      "3": 1
+    },
+    "organisation_positions": 1,
+    "runs_with_unresolved": 0,
+    "runs_total": 206,
+    "unresolved_names": [],
+    "forced_runs_existing_by_cut": {
+      "1": 75,
+      "2": 35,
+      "3": 11,
+      "4": 4
+    },
+    "forced_runs_existing_by_cut_tokens": {
+      "1": 49,
+      "2": 16,
+      "3": 3,
+      "4": 1
+    },
+    "forced_classes_existing_by_cut": {
+      "1": 39,
+      "2": 13,
+      "3": 6,
+      "4": 2
+    },
+    "classes_existing": 87,
+    "run_tie_existing_edits": {
+      "0": 2,
+      "1": 19,
+      "2": 17,
+      "3": 7,
+      "4": 2,
+      "5": 2
+    },
+    "run_tie_existing_insertions": {
+      "0": 4,
+      "1": 21,
+      "2": 7
+    },
+    "new_hosts_tie_class": {
+      "0": 84,
+      "1": 22,
+      "2": 5,
+      "3": 1
+    },
+    "new_hosts_birth_tie": {
+      "0": 103,
+      "1": 6,
+      "2": 3
+    },
+    "class_rows": 97,
+    "class_tie_per_class_addition": {
+      "0": 58,
+      "1": 26,
+      "2": 7,
+      "3": 4,
+      "4": 2
+    },
+    "amount_first_last": [
+      942,
+      1397
+    ],
+    "wiring_nodes_added": 0,
+    "wiring_edges_added": 0,
+    "outcome_rows": 174,
+    "outcomes_with_intrusion": 38,
+    "intrusion_per_100": {
+      "n": 167,
+      "min": 0.0,
+      "p25": 0.0,
+      "median": 0.0,
+      "p75": 0.0,
+      "p90": 37.5,
+      "max": 53.44827586206897,
+      "mean": 6.626
+    },
+    "declared_touches": 60,
+    "codetracker": {
+      "methods": 106,
+      "errors": 1,
+      "compared": 105,
+      "checkpoints_codetracker": 172,
+      "checkpoints_instrument": 163,
+      "agree": 162,
+      "share_of_codetracker_found_by_instrument": 0.942,
+      "share_of_instrument_confirmed_by_codetracker": 0.994,
+      "methods_identical": 97,
+      "methods_renamed_or_moved": 6,
+      "methods_renamed_or_moved_identical": 3
+    }
+  },
+  "officefloor": {
+    "branch": "evolve/blind-202608100006/just-solve/officefloor/chain9",
+    "head": "b824bf9d48e7a7efb7c542f429b8b82532cf43af",
+    "checkpoints": 60,
+    "noops": 0,
+    "problems": 0,
+    "refactorings": 104,
+    "hints": 5955,
+    "hints_naming_a_file_not_in_the_addition": 0,
+    "positions_moved_rm": 38,
+    "positions_moved_text": 25,
+    "replacements": 15,
+    "hosts_with_addition": 192,
+    "hosts_new": 140,
+    "hosts_new_in_new_class": 79,
+    "hosts_existing": 52,
+    "hosts_injected": 71,
+    "share_positions_in_existing": {
+      "n": 55,
+      "min": 0.0,
+      "p25": 0.0,
+      "median": 0.0,
+      "p75": 0.3,
+      "p90": 0.7333333333333333,
+      "max": 1.0,
+      "mean": 0.195
+    },
+    "hosts_per_addition": {
+      "n": 60,
+      "min": 0,
+      "p25": 1,
+      "median": 3,
+      "p75": 4,
+      "p90": 7,
+      "max": 9,
+      "mean": 3.2
+    },
+    "classes_per_addition": {
+      "n": 60,
+      "min": 0,
+      "p25": 1,
+      "median": 2,
+      "p75": 3,
+      "p90": 4,
+      "max": 8,
+      "mean": 2.283
+    },
+    "host_pre_positions_existing": {
+      "n": 52,
+      "min": 1,
+      "p25": 1,
+      "median": 4,
+      "p75": 8,
+      "p90": 14,
+      "max": 16,
+      "mean": 5.712
+    },
+    "runs_existing": 65,
+    "runs_existing_edits": 51,
+    "run_tie_method_existing": {
+      "0": 33,
+      "1": 21,
+      "2": 8,
+      "3": 2,
+      "4": 1
+    },
+    "run_tie_class_existing": {
+      "0": 59,
+      "1": 6
+    },
+    "run_tie_existing": {
+      "0": 33,
+      "1": 18,
+      "2": 9,
+      "3": 4,
+      "5": 1
+    },
+    "run_tok_tie_existing": {
+      "0": 44,
+      "1": 17,
+      "2": 4
+    },
+    "run_utility_existing": {
+      "0": 62,
+      "1": 3
+    },
+    "new_hosts_utility": {
+      "0": 140
+    },
+    "new_hosts_tie": {
+      "0": 136,
+      "1": 3,
+      "2": 1
+    },
+    "organisation_positions": 1,
+    "runs_with_unresolved": 0,
+    "runs_total": 212,
+    "unresolved_names": [],
+    "forced_runs_existing_by_cut": {
+      "1": 32,
+      "2": 14,
+      "3": 5,
+      "4": 1
+    },
+    "forced_runs_existing_by_cut_tokens": {
+      "1": 21,
+      "2": 4,
+      "3": 0,
+      "4": 0
+    },
+    "forced_classes_existing_by_cut": {
+      "1": 10,
+      "2": 1,
+      "3": 0,
+      "4": 0
+    },
+    "classes_existing": 78,
+    "run_tie_existing_edits": {
+      "0": 26,
+      "1": 13,
+      "2": 7,
+      "3": 4,
+      "5": 1
+    },
+    "run_tie_existing_insertions": {
+      "0": 7,
+      "1": 5,
+      "2": 2
+    },
+    "new_hosts_tie_class": {
+      "0": 136,
+      "1": 3,
+      "2": 1
+    },
+    "new_hosts_birth_tie": {
+      "0": 137,
+      "1": 2,
+      "2": 1
+    },
+    "class_rows": 137,
+    "class_tie_per_class_addition": {
+      "0": 127,
+      "1": 9,
+      "2": 1
+    },
+    "amount_first_last": [
+      745,
+      1235
+    ],
+    "wiring_nodes_added": 33,
+    "wiring_edges_added": 24,
+    "outcome_rows": 192,
+    "outcomes_with_intrusion": 30,
+    "intrusion_per_100": {
+      "n": 183,
+      "min": 0.0,
+      "p25": 0.0,
+      "median": 0.0,
+      "p75": 0.0,
+      "p90": 3.125,
+      "max": 12.5,
+      "mean": 0.656
+    },
+    "declared_touches": 44,
+    "codetracker": {
+      "methods": 138,
+      "errors": 1,
+      "compared": 137,
+      "checkpoints_codetracker": 190,
+      "checkpoints_instrument": 180,
+      "agree": 173,
+      "share_of_codetracker_found_by_instrument": 0.911,
+      "share_of_instrument_confirmed_by_codetracker": 0.961,
+      "methods_identical": 115,
+      "methods_renamed_or_moved": 7,
+      "methods_renamed_or_moved_identical": 2
+    }
+  }
+}

@@ -1,1 +1,8 @@
 literature/snowball/*.json
+.venv/
+.tmp/
+__pycache__/
+.pytest_cache/
+instrument/classes/
+lib/*.jar
+refactor/target/
