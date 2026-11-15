@@ -1,0 +1,275 @@
+score	year	title	venue	via
+8	2019	Dissemination and continuous improvement of a CTSA-based software platform, SPARCRequest©, using an open source governance model	Journal of Clinical and Translational Science	sullivan2001:fwd
+7	2025	Understanding Architectural Complexity, Maintenance Burden, and Developer Sentiment -A Large-Scale Study	International Conference on Software Engineering	sullivan2001:fwd
+7	2024	Using Third-Party Components' Metadata to Analyze Cross-cutting Concerns	Journal of Software Engineering Research and Development	eaddy2008:fwd
+7	2014	Does feature scattering follow power-law distributions?: an investigation of five pre-processor-based systems	Feature-oriented software development	eaddy2008:fwd
+7	2011	Time evolution and distribution analysis of software bugs from a complex network perspective		eaddy2008:fwd
+7	2005	Towards a catalog of aspect-oriented refactorings	Aspect-Oriented Software Development	tarr1999:fwd
+7	1986	Compilers: Principles, Techniques, and Tools		eaddy2008:back
+6	2008	Improving modularity by refactoring code clones: a feasibility study on Linux	SOEN	sullivan2001:fwd
+6	2007	Dependencies in geographically distributed software development: overcoming the limits of modularity		sullivan2001:fwd
+6	2013	Entropy of some CK Metrics to Assess Object-Oriented Software Quality	International journal of software engineering and knowledge engineering	eaddy2008:fwd
+6	2012	Evaluating design decay during software evolution		eaddy2008:fwd
+6	2009	Detecting Design Defects Caused by Design Rule Violations		eaddy2008:fwd
+6	2021	First-class concepts: reifying architectural knowledge beyond the dominant decomposition	COP@ECOOP	tarr1999:fwd
+6	2022	First-Class Concepts: Reified Architectural Knowledge Beyond Dominant Decompositions	Journal of Object Technology	tarr1999:fwd
+6	2007	Aspect-oriented workflow languages: AO4BPEL and applications		tarr1999:fwd
+6	2005	Interface-oriented programming and representation inference		tarr1999:fwd
+6	2004	Dynamically reconfigurable parameterized components		tarr1999:fwd
+6	2004	Impacts of Software Reuse and Incremental Development on the Quality of Large Systems		tarr1999:fwd
+6	2006	Does God Class Decomposition Affect Comprehensibility		vaucher2009:back
+6	2004	An empirical study of software change: origin, acceptance rate, and functionality vs. quality attributes	International Symposium on Empirical Software Engineering	steidl2015:back
+5	2024	M-score: An Empirically Derived Software Modularity Metric	International Symposium on Empirical Software Engineering and Measurement	sullivan2001:fwd
+5	2017	DCL 2.0: modular and reusable specification of architectural constraints	Journal of the Brazilian Computer Society	sullivan2001:fwd
+5	2014	Evaluating Technical Debt in Cloud-Based Architectures Using Real Options	Australian Software Engineering Conference	sullivan2001:fwd
+5	2013	Quantifying the effects of Aspectual Decompositions on Design by Contract Modularization: a Maintenance Study	International journal of software engineering and knowledge engineering	sullivan2001:fwd
+5	2012	Scaling Genetic Programming for Source Code Modification	arXiv.org	sullivan2001:fwd
+5	2012	Evolvability and Upgradability of Fractionated Space System: A Real Options Approach		sullivan2001:fwd
+5	2006	Software and Biological Evolvability: A Comparison Using Key Properties	IASTED Conference on Software Engineering	sullivan2001:fwd
+5	2023	Detecting Scattered and Tangled Quality Concerns in Source Code to Aid Maintenance and Evolution Tasks	2023 IEEE/ACM 45th International Conference on Software Engineering: Companion Proceedings (ICSE-Companion)	eaddy2008:fwd
+5	2016	Towards a Better Understanding of Variability Evolution		eaddy2008:fwd;tarr1999:fwd
+5	2014	On the use of positional proximity in IR-based feature location	2014 Software Evolution Week - IEEE Conference on Software Maintenance, Reengineering, and Reverse Engineering (CSMR-WCRE)	eaddy2008:fwd
+5	2014	NL-based query refinement and contextualized code search results: A user study	2014 Software Evolution Week - IEEE Conference on Software Maintenance, Reengineering, and Reverse Engineering (CSMR-WCRE)	eaddy2008:fwd
+5	2012	Modularization of Legacy Features by Relocation and Reconceptualization: How Much is Enough?	European Conference on Software Maintenance and Reengineering	eaddy2008:fwd
+5	2014	Establishing a Traceability Links Between The Source Code And Requirement Analysis, A Survey on Traceability		eaddy2008:fwd
+5	2010	Integrating natural language and program structure information to improve software search and exploration		eaddy2008:fwd
+5	2024	Evolution patterns of software-architecture smells: An empirical study of intra- and inter-version smells	Journal of Systems and Software	vaucher2009:fwd
+5	2015	Subjective, multidimensional modularity with korz	International Conference on Modularity	tarr1999:fwd
+5	2014	An extension interface concept for multilayered applications		tarr1999:fwd
+5	2014	Multi-Dimensional Customization Modelling Based On Metagraph For Saas Multi-Tenant Applications	arXiv.org	tarr1999:fwd
+5	2013	Generic Roles: Reducing Code Replication		tarr1999:fwd
+5	2010	Types and modularity for implicit invocation with implicit announcement	TSEM	tarr1999:fwd
+5	2006	Mining Aspects from Version History	International Conference on Automated Software Engineering	tarr1999:fwd
+5	2006	Mining eclipse for cross-cutting concerns	IEEE Working Conference on Mining Software Repositories	tarr1999:fwd
+5	2006	Phoenix-based clone detection using suffix trees	ACM Southeast Regional Conference	tarr1999:fwd
+5	2005	Pattern transformation for two-dimensional separation of concerns	Conference on Object-Oriented Programming Systems, Languages, and Applications	tarr1999:fwd
+5	2004	Sustainable architectures by combining flexibility and strictness in Object Teams	IEE Proceedings - Software	tarr1999:fwd
+5	2002	Architectural design support for composition and superimposition	Proceedings of the Annual Hawaii International Conference on System Sciences	tarr1999:fwd
+5	2014	Engineering Configuration Graphical User Interfaces from Variability Models	Human Centered Software Product Lines	tarr1999:fwd
+5	2013	Supporting Enactment of Aspect Oriented Business Process Models : an approach to separate cross-cutting concerns in action		tarr1999:fwd
+5	2013	Mining and tracking in evolving software		tarr1999:fwd
+5	2011	Analysis of the impact of aspect-oriented programming on source code quality		tarr1999:fwd
+5	2006	Fine-grained Join Point Model in Compose		tarr1999:fwd
+5	2004	Interface-Oriented Programming		tarr1999:fwd
+5	2003	Modularizing Client-Side Web Service Management Aspects		tarr1999:fwd
+5	2003	A concern-oriented approach to software architecture		tarr1999:fwd
+5	2003	Improving evolvability of operating systems with aspectc		tarr1999:fwd
+5	1999	AspectBrowser: Tool Support for Managing Dispersed Aspects		tarr1999:fwd
+5	2017	Modelo de estimación de valor para la toma de decisiones relacionadas con la evolución de productos software	UPM Digital Archive (Technical University of Madrid)	sullivan2001:fwd
+5	2024	Exploring the Software Quality Maze: Detecting Scattered and Tangled Crosscutting Quality Concerns in Source Code in Support of Maintenance Tasks	University of North Texas Digital Library (University of North Texas)	eaddy2008:fwd
+5	2019	Deep Learning Based Code Smell Detection	IEEE Transactions on Software Engineering	vaucher2009:fwd
+5	2001	Does code decay? Assessing the evidence from change management data	IEEE Transactions on Software Engineering	steidl2015:back
+5	2011	Investigating how to effectively combine static concern location techniques	International Workshop on Search-Driven Development: Users, Infrastructure, Tools, and Evaluation (SUITE)	tarr1999:fwd
+4	2021	FARUL3S: a New Framework for Agile Regulated Ultra-Large-Scale Software Systems		sullivan2001:fwd
+4	2018	A Case Study of the Effects of Architecture Debt on Software Evolution Effort	EUROMICRO Conference on Software Engineering and Advanced Applications	sullivan2001:fwd
+4	2017	Context-aware system synthesis, task assignment, and routing	Autonomous Robots	sullivan2001:fwd
+4	2016	Unveiling and reasoning about co-change dependencies	International Conference on Modularity	sullivan2001:fwd
+4	2012	Do crosscutting concerns cause modularity problems?	SIGSOFT FSE	eaddy2008:fwd;sullivan2001:fwd;tarr1999:fwd
+4	2012	A formal model for automated software modularity and evolvability analysis	TSEM	sullivan2001:fwd
+4	2010	Using Architecturally Significant Requirements for Guiding System Evolution	European Conference on Software Maintenance and Reengineering	sullivan2001:fwd
+4	2007	Program comprehension as fact finding	ESEC-FSE '07	sullivan2001:fwd
+4	2007	An Evolution Model for Software Modularity Assessment	Fifth International Workshop on Software Quality (WoSQ'07: ICSE Workshops 2007)	sullivan2001:fwd
+4	2006	Modularity Analysis of Logical Design Models	International Conference on Automated Software Engineering	sullivan2001:fwd
+4	2005	Information hiding interfaces for aspect-oriented design	ESEC/FSE-13	sullivan2001:fwd;tarr1999:fwd
+4	2005	A value-oriented theory of modularity in design	ACM SIGSOFT Softw. Eng. Notes	sullivan2001:fwd
+4	2003	Strategic architectural flexibility	International Conference on Software Maintenance, 2003. ICSM 2003. Proceedings.	sullivan2001:fwd
+4	2016	Software Development and Platform Adoption as Successive Games of Real Options Investment and Valuation		sullivan2001:fwd
+4	2012	Patterns of Change: Can modifiable software have high coupling?		sullivan2001:fwd
+4	2006	Modularity in design: formal modeling and automated analysis		sullivan2001:fwd;tarr1999:fwd
+4	2003	Essential software structure through implicit context		sullivan2001:fwd;tarr1999:fwd
+4	2018	The State of Empirical Evaluation in Static Feature Location	ACM Transactions on Software Engineering and Methodology	eaddy2008:fwd
+4	2017	Software Quality and Community Structure in Java Software Networks	International journal of software engineering and knowledge engineering	eaddy2008:fwd
+4	2014	Variability Anomalies in Software Product Lines		eaddy2008:fwd
+4	2014	Modularization compass navigating the white waters of feature-oriented modularity	2014 9th International Conference on Software Engineering and Applications (ICSOFT-EA)	eaddy2008:fwd;tarr1999:fwd
+4	2014	An Empirical Study of RefactoringChallenges and Benefits at Microsoft	IEEE Transactions on Software Engineering	eaddy2008:fwd;tarr1999:fwd
+4	2013	The Case for Explicit Coupling Constraints	arXiv.org	eaddy2008:fwd
+4	2010	Concern-Based Assessment of Architectural Stability: A Comparative Study	2010 Fourth Brazilian Symposium on Software Components, Architectures and Reuse	eaddy2008:fwd
+4	2021	An Evolutionary Analysis of Software-Architecture Smells	IEEE International Conference on Software Maintenance and Evolution	vaucher2009:fwd
+4	2019	Deep Learning Anti-Patterns from Code Metrics History	IEEE International Conference on Software Maintenance and Evolution	vaucher2009:fwd
+4	2014	Anti-pattern Mutations and Fault-proneness	International Conference on Quality Software	vaucher2009:fwd
+4	2011	An Empirical Study of the Impact of Two Antipatterns, Blob and Spaghetti Code, on Program Comprehension	European Conference on Software Maintenance and Reengineering	vaucher2009:fwd
+4	2014	Assessing code decay by detecting software architecture violations		vaucher2009:fwd
+4	2025	Large Language Models for Constructing and Optimizing Machine Learning Workflows: A Survey	ACM Transactions on Software Engineering and Methodology	tarr1999:fwd
+4	2020	On decomposing a deep neural network into modules	ESEC/SIGSOFT FSE	tarr1999:fwd
+4	2016	Managing big clones to ease evolution: Linux kernel example	Conference on Computer Science and Information Systems	tarr1999:fwd
+4	2014	Korz: Simple, Symmetric, Subjective, Context-Oriented Programming	SIGPLAN symposium on New ideas, new paradigms, and reflections on programming and software	tarr1999:fwd
+4	2013	ASPECT-ORIENTED PRODUCT FAMILY MODELING		tarr1999:fwd
+4	2012	A variability-aware module system	Conference on Object-Oriented Programming Systems, Languages, and Applications	tarr1999:fwd
+4	2011	Program Transformation based Views for Modular Maintenance		tarr1999:fwd
+4	2010	Using AOP to ensure component interactions in component-based software	International Conference on Computer and Automation Engineering	tarr1999:fwd
+4	2009	Joining Forces: A RIPPL Effect? A Constraint-Oriented Perspective on a Pervasive Pattern Language	2009 Computation World: Future Computing, Service Computation, Cognitive, Adaptive, Content, Patterns	tarr1999:fwd
+4	2009	Modeling PLA variation of privacy-enhancing personalized systems	Software Product Lines Conference	tarr1999:fwd
+4	2009	Pointcut-based architectural interface for bridging a gap between design and implementation	RAM-SE@ECOOP	tarr1999:fwd
+4	2007	Representing concerns in source code	TSEM	eaddy2008:back;tarr1999:fwd
+4	2006	Control-Flow Analysis and Representation for Aspect-Oriented Programs	International Conference on Quality Software	tarr1999:fwd
+4	2006	Mining Control Flow Graphs for Crosscutting Concerns	Working Conference on Reverse Engineering	tarr1999:fwd
+4	2006	Towards a Subject-Oriented Model-Driven Framework	ABMB	tarr1999:fwd
+4	2006	Weaving Deployment Aspects into Domain-specific Models	International journal of software engineering and knowledge engineering	tarr1999:fwd
+4	2004	A technique for constructing aspect weavers using a program transformation engine	Aspect-Oriented Software Development	tarr1999:fwd
+4	2003	Modules for hierarchical and crosscutting models		tarr1999:fwd
+4	2003	Modularity in the new millenium: a panel summary	International Conference on Software Engineering	tarr1999:fwd
+4	2003	Supporting Evolution in Software using Frame Technology and Aspect-Orientation		tarr1999:fwd
+4	2002	AspectC#: An AOSD implementation for C#		tarr1999:fwd
+4	2002	Maintaining software through intentional source-code views	International Conference on Software Engineering and Knowledge Engineering	tarr1999:fwd
+4	2002	Supporting software evolution with intentional software views	International Workshop on Principles of Software Evolution	tarr1999:fwd
+4	2002	Modeling of software concerns in Cosmos	Aspect-Oriented Software Development	tarr1999:fwd
+4	2000	Composing Software from Multiple Concerns: A Model and Composition Anomalies		tarr1999:fwd
+4	2015	A Theoretical Framework for the Maintainability Model of Aspect Oriented Systems	International Conference on Soft Computing and Software Engineering	tarr1999:fwd
+4	2013	Safe and practical decoupling of aspects with join point interfaces		tarr1999:fwd
+4	2013	Predicting Change Propagation Using Domain-Based Coupling		tarr1999:fwd
+4	2011	Impact of Aspect Orientation on Object Oriented Software Metrics		tarr1999:fwd
+4	2007	Composing and validating orthogonal concerns and heterogeneous models		tarr1999:fwd
+4	2005	Towards Reusable Heterogeneous Data-Centric Disentangled Parts	RAM-SE	tarr1999:fwd
+4	2004	Formal Models for Aspect-Oriented Software Development		tarr1999:fwd
+4	2002	Software evolution through intentional classifications		tarr1999:fwd
+4	2000	Design Rules: The Power of Modularity	The MIT Press eBooks	sullivan2001:back
+4	1981	The design structure system: A method for managing the design of complex systems	IEEE Transactions on Engineering Management	sullivan2001:back
+4	1999	Design Rules: The Power of Modularity Volume 1	The MIT Press eBooks	sullivan2001:back
+4	2013	Uma avaliação quantitativa de módulos de características aspectuais para evolução de linhas de produtos de software		eaddy2008:fwd
+4	2004	Aspect-Oriented Software Development	CERN Document Server (European Organization for Nuclear Research)	eaddy2008:back
+4	2002	Detection of software modules with high debug code churn in a very large legacy system	Proceedings/Proceedings - International Symposium on Software Reliability Engineering	eaddy2008:back
+4	2004	CVS release history data for detecting logical couplings	International Workshop on Principles of Software Evolution	vaucher2009:back
+4	2005	"Product Metrics for Automatic Identification of ""Bad Smell"" Design Problems in Java Source-Code"	IEEE International Software Metrics Symposium (METRICS)	vaucher2009:back
+4	1997	Software evolution observations based on product release history	International Conference on Software Maintenance	vaucher2009:back
+4	2011	Aspect-Oriented Mobility-Aware Recommender System	World Congress on Information and Communication Technologies	tarr1999:fwd
+4	2005	Model checking for aspect-oriented software evolution		tarr1999:fwd
+4	2019	An annotated repository for MATLAB code (S)	Proceedings/Proceedings of the ... International Conference on Software Engineering and Knowledge Engineering	tarr1999:fwd
+4	2001	Objects, components, and frameworks with UML the catalysis approach		tarr1999:back
+3	2024	Software Architecture Recovery from Multiple Dependency Models	ACM Symposium on Applied Computing	sullivan2001:fwd
+3	2024	When Large Language Models Confront Repository-Level Automatic Program Repair: How Well They Done?	2024 IEEE/ACM 46th International Conference on Software Engineering: Companion Proceedings (ICSE-Companion)	sullivan2001:fwd
+3	2023	A Large-Scale Empirical Study of Real-Life Performance Issues in Open Source Projects	IEEE Transactions on Software Engineering	sullivan2001:fwd
+3	2021	Cognitive Load Analyzer: A Support Tool for Cognitive-Driven Development	Brazilian Symposium on Software Engineering	sullivan2001:fwd
+3	2018	A Design Structure Matrix Approach for Measuring Co-change-Modularity of Software Products	IEEE Working Conference on Mining Software Repositories	sullivan2001:fwd
+3	2014	Designing information hiding modularity for model transformation languages	International Conference on Modularity	sullivan2001:fwd
+3	2013	Design Capital and Design Moves: The Logic of Digital Business Strategy	MIS Q.	sullivan2001:fwd
+3	2012	Modularity, Dependence and Change	Advances in Complex Systems	sullivan2001:fwd
+3	2012	Characterizing Modular Ontologies	International Workshop on Modular Ontologies	sullivan2001:fwd
+3	2011	Detecting software modularity violations	International Conference on Software Engineering	sullivan2001:fwd
+3	2010	Software (re)modularization: Fight against the structure erosion and migration preparation		sullivan2001:fwd
+3	2008	Using dependency model to support software architecture evolution	2008 23rd IEEE/ACM International Conference on Automated Software Engineering - Workshops	sullivan2001:fwd
+3	2007	Matrix Based Problem Detection in the Application of Software Process Patterns	International Conference on Enterprise Information Systems	sullivan2001:fwd
+3	2007	Adaptation Hiding Modularity for Self-Adaptive Systems	International Conference on Software Engineering	sullivan2001:fwd
+3	2005	Using real options to select stable middleware-induced software architectures	IEE Proceedings - Software	sullivan2001:fwd
+3	2005	An analysis of modularity in aspect oriented design	Aspect-Oriented Software Development	sullivan2001:fwd
+3	2017	Introducing an Architectural Conformance Process in Continuous Integration	Journal of universal computer science (Online)	sullivan2001:fwd
+3	2015	Design of Dependable Systems on Android		sullivan2001:fwd
+3	2006	Dynamic Updates of Existing Java Applications Ph.D. Dissertation		sullivan2001:fwd
+3	2006	Software quality analysis: a value-based approach		sullivan2001:fwd
+3	2005	Connecting software design principles to source code for improved ease of change		sullivan2001:fwd
+3	2003	Evaluating software architectures for stability: a real options approach	International Conference on Software Engineering	sullivan2001:fwd
+3	2026	Security Is More Than a Library Call: How Security Features Live in Code		eaddy2008:fwd
+3	2025	A Comprehensive Study of Bug-Fix Patterns in Autonomous Driving Systems	Proc. ACM Softw. Eng.	eaddy2008:fwd
+3	2019	A User Feedback Centric Approach for Detecting and Mitigating God Class Code Smell Using Frequent Usage Patterns	Journal of Communications Software and Systems	eaddy2008:fwd
+3	2015	Assessing Idioms for a Flexible Feature Binding Time	Computer/law journal	eaddy2008:fwd
+3	2013	A systematic review on mining techniques for crosscutting concerns	ACM Symposium on Applied Computing	eaddy2008:fwd
+3	2012	Improving Maintainability of COTS Based System Using Aspect Oriented Programming: An Empirical Evaluation	2012 African Conference for Sofware Engineering and Applied Computing	eaddy2008:fwd
+3	2011	Concern-based cohesion as change proneness indicator: an initial empirical study	Workshop on Emerging Trends in Software Metrics	eaddy2008:fwd
+3	2011	A case study of post-deployment user feedback triage	IEEE/ACM International Conference on Connected Health: Applications, Systems and Engineering Technologies	eaddy2008:fwd
+3	2010	Using Data Fusion and Web Mining to Support Feature Location in Software	IEEE International Conference on Program Comprehension	eaddy2008:fwd
+3	2010	An exploratory study of fault-proneness in evolving aspect-oriented programs	2010 ACM/IEEE 32nd International Conference on Software Engineering	eaddy2008:fwd
+3	2010	Model‐based code generation for HLA federates	Software, Practice & Experience	eaddy2008:fwd
+3	2009	On the Relationship Between Change Coupling and Software Defects	Working Conference on Reverse Engineering	eaddy2008:fwd
+3	2009	Automatically capturing source code context of NL-queries for software maintenance and reuse	2009 IEEE 31st International Conference on Software Engineering	eaddy2008:fwd
+3	2011	Aspect-Oriented Requirements Engineering for Advanced Separation of Concerns: A Review		eaddy2008:fwd
+3	2008	An empirical assessment of the crosscutting concern problem		eaddy2008:fwd;tarr1999:fwd
+3	2019	Investigating Instability Architectural Smells Evolution: An Exploratory Case Study	IEEE International Conference on Software Maintenance and Evolution	vaucher2009:fwd
+3	2018	Using Code Evolution Information to Improve the Quality of Labels in Code Smell Datasets	Annual International Computer Software and Applications Conference	vaucher2009:fwd
+3	2010	Are all code smells harmful? A study of God Classes and Brain Classes in the evolution of three open source systems	2010 IEEE International Conference on Software Maintenance	vaucher2009:fwd
+3	2024	The Good, the Bad, and the Monstrous: Predicting Highly Change-Prone Source Code Methods at Their Inception	ACM Transactions on Software Engineering and Methodology	steidl2015:fwd
+3	2021	Decomposing Convolutional Neural Networks into Reusable and Replaceable Modules	International Conference on Software Engineering	tarr1999:fwd
+3	2015	Visualising software as a particle system	IEEE Working Conference on Software Visualization	tarr1999:fwd
+3	2015	Developers' perception of co-change patterns: An empirical study	IEEE International Conference on Software Maintenance and Evolution	tarr1999:fwd
+3	2014	Non-intrusive Instance Level Software Composition		tarr1999:fwd
+3	2013	Web-GIS models: accomplishing modularity with aspects	Innovations in Systems and Software Engineering	tarr1999:fwd
+3	2012	Software Architecture Decision-making in Organizational Settings		tarr1999:fwd
+3	2012	A Systematic Review and Assessment of Aspect-oriented Methods Applied to Business Process Adaptation	Journal of Software	tarr1999:fwd
+3	2011	Impact of Aspect-Oriented Programming on Software Modularity	European Conference on Software Maintenance and Reengineering	tarr1999:fwd
+3	2010	Separation of concerns for dependable software design	FoSER '10	tarr1999:fwd
+3	2010	Extractive Product Line Requirements Engineering		tarr1999:fwd
+3	2010	Model-driven development for early aspects	Information and Software Technology	tarr1999:fwd
+3	2010	Type-Safe Feature-Oriented Product Lines	arXiv.org	tarr1999:fwd
+3	2009	The mythical matched modules: overcoming the tyranny of inflexible software construction	OOPSLA Companion	tarr1999:fwd
+3	2009	Remodularizing Java programs for comprehension of features	Feature-oriented software development	tarr1999:fwd
+3	2008	Study on Weaving Process at Software Architectural level	IEEE Asia-Pacific Services Computing Conference	tarr1999:fwd
+3	2008	Aspect-Based Properties		tarr1999:fwd
+3	2008	Mining execution relations for crosscutting concerns	IET Software	tarr1999:fwd
+3	2008	An Integrated System to Manage Crosscutting Concerns in Source Code		tarr1999:fwd
+3	2007	An aspect-oriented weaving mechanism based on component and connector architecture	International Conference on Automated Software Engineering	tarr1999:fwd
+3	2007	Using natural language program analysis to locate and understand action-oriented concerns	Aspect-Oriented Software Development	tarr1999:fwd
+3	2007	POSAML: A Visual Modeling Framework for Middleware Provisioning	Hawaii International Conference on System Sciences	tarr1999:fwd
+3	2006	Keeping track of crosscutting requirements in UML models via context-based constraints	Conference on Object-Oriented Programming Systems, Languages, and Applications	tarr1999:fwd
+3	2006	Eliminating distinctions of class: using prototypes to model virtual classes	Conference on Object-Oriented Programming Systems, Languages, and Applications	tarr1999:fwd
+3	2006	A regression tests selection technique for aspect-oriented programs	WTAOP '06	tarr1999:fwd
+3	2006	Formalizing typical crosscutting concerns	arXiv.org	tarr1999:fwd
+3	2006	Towards supporting on-demand virtual remodularization using program graphs	Aspect-Oriented Software Development	tarr1999:fwd
+3	2005	Tracing crosscutting requirements for component based systems via context based constraints		tarr1999:fwd
+3	2005	Refactoring the aspectizable interfaces: an empirical assessment	IEEE Transactions on Software Engineering	tarr1999:fwd
+3	2005	Multi-dimensional separation of concerns in requirements engineering	IEEE International Requirements Engineering Conference	tarr1999:fwd
+3	2005	Concern management for constructing model compilers	ACM SIGSOFT Softw. Eng. Notes	tarr1999:fwd
+3	2005	Supporting aspect-oriented software development with the Concern Manipulation Environment	IBM Systems Journal	tarr1999:fwd
+3	2005	Delta Changes for OO Software Adaptation: Pervasive or Invasive?	Proceedings of the Annual Hawaii International Conference on System Sciences	tarr1999:fwd
+3	2004	Aspect mining using event traces	Proceedings. 19th International Conference on Automated Software Engineering, 2004.	tarr1999:fwd
+3	2004	Design and Evaluation of an Automated Aspect Mining Tool	Software Engineering Research and Practice	tarr1999:fwd
+3	2004	Feature-oriented programming and the AHEAD tool suite	Proceedings. 26th International Conference on Software Engineering	tarr1999:fwd
+3	2004	Pattern language for the design of aspect languages and aspect composition frameworks	IEE Proceedings - Software	tarr1999:fwd
+3	2004	Crosscutting requirements	Aspect-Oriented Software Development	tarr1999:fwd
+3	2003	The Future of Software Development		tarr1999:fwd
+3	2003	Using intentional source-code views to aid software maintenance	International Conference on Software Maintenance, 2003. ICSM 2003. Proceedings.	tarr1999:fwd
+3	2003	Refinements and multi-dimensional separation of concerns	ESEC/FSE-11	tarr1999:fwd
+3	2003	Time weaver: a software-through-models framework for embedded real-time systems	ACM SIGPLAN Conference on Languages, Compilers, and Tools for Embedded Systems	tarr1999:fwd
+3	2003	Scaling step-wise refinement	IEEE Transactions on Software Engineering	tarr1999:fwd
+3	2003	Modularisation and composition of aspectual requirements	Aspect-Oriented Software Development	tarr1999:fwd
+3	2002	Theme-based literate programming	Ninth Asia-Pacific Software Engineering Conference, 2002.	tarr1999:fwd
+3	2002	An enhanced role model for alleviating the role‐binding anomaly	Software, Practice & Experience	tarr1999:fwd
+3	2002	Constraining software evolution	International Conference on Software Maintenance, 2002. Proceedings.	tarr1999:fwd
+3	2002	Early aspects: a model for aspect-oriented requirements engineering	Proceedings IEEE Joint International Conference on Requirements Engineering	tarr1999:fwd
+3	2002	Evaluation of Aspect-Oriented Software Development For Distributed Systems		tarr1999:fwd
+3	2002	ADONIS -- A Case Study of a Legal Advisory System Using Adaptive Programming		tarr1999:fwd
+3	2002	Dynamic weaving for aspect-oriented programming	Aspect-Oriented Software Development	tarr1999:fwd
+3	2002	Managing crosscutting concerns during software evolution tasks: an inquisitive study	Aspect-Oriented Software Development	tarr1999:fwd
+3	2001	Tool Integration in Software Engineering: The State of the Art in 2004		tarr1999:fwd
+3	2001	Dynamic and selective combination of extensions in component-based applications	Proceedings of the 23rd International Conference on Software Engineering. ICSE 2001	tarr1999:fwd
+3	2016	On interplay between separation of concerns and genericity principles: Beyond code weaving	Computer Science and Information Systems	tarr1999:fwd
+3	2014	Estrategia Guiada por Modelos para incluir Aspectos de Seguridad en Sistemas Empotrados Basados en Servicios Web		tarr1999:fwd
+3	2014	DETECTION CLASSIFICATION AND LOCATION OF FAULTS ON 220 KV TRANSMISSION LINE WITH STATCOM USING WAVELET TRANSFORM AND NEURAL NETWORK		tarr1999:fwd
+3	2011	Modularizing Crosscutting Concerns in Software		tarr1999:fwd
+3	2010	Semantics Preservation in Model-based Composition		tarr1999:fwd
+3	2010	Concern Separation for Adaptive QoS Modeling in Distrbuted Real-Time Embedded Systems		tarr1999:fwd
+3	2009	Structural abstraction: a mechanism for modular program construction		tarr1999:fwd
+3	2007	SOFTWARE EXTENSION AND COMPOSITION		tarr1999:fwd
+3	2006	Building reusable XML pipelines with APP		tarr1999:fwd
+3	2006	Analysis and redesign of the compose*language		tarr1999:fwd
+3	2006	An ontology-based approach to concern-specific dynamic software structure monitoring		tarr1999:fwd
+3	2006	Discovering Early Aspects	IEEE Software	tarr1999:fwd
+3	2005	Engineering Aspect-Oriented Systems		tarr1999:fwd
+3	2004	Weaving in Role-Based Aspect-Oriented Design Models		tarr1999:fwd
+3	2004	Variation Mechanisms and Multi-view Architecting in Platform-based Product Family Development		tarr1999:fwd
+3	2004	Control-Flow-Graph-Based Aspect Mining		tarr1999:fwd
+3	2003	Supporting Software Maintenance and Evolution with Intentional source-code Views 1		tarr1999:fwd
+3	2003	A Comparative Analysis of Meta-programming and Aspect-Orientation		tarr1999:fwd
+3	2003	Use Cases and Aspects-Working Seamlessly Together	Journal of Object Technology	tarr1999:fwd
+3	2003	Predicting source code changes by mining revision history		tarr1999:fwd;vaucher2009:back
+3	2003	Revisiting Requirements in Web Modelling Languages	International Conference WWW/Internet	tarr1999:fwd
+3	2002	Supporting traceability and inconsistency management between software artifacts	International Conference on Software Engineering	tarr1999:fwd
+3	2002	Building Customizable Middleware using Aspect-Oriented Programming - Master's Thesis, May 2002		tarr1999:fwd
+3	2013	Design Capital and Design Moves: The Logic of Digital Business Strategy1	MIS Quarterly	sullivan2001:fwd
+3	2021	Fundamentals for the Design of Products for a Circular Economy: Examples from Software Engineering To Motivate Efficient and Ethical Design of Physical Products	Hawaii International Conference on System Sciences (HICSS)	sullivan2001:fwd
+3	2021	Conceptual Design of an Attachment Based Reconfigurable Machine Tool Using Design Structure Matrix		sullivan2001:fwd
+3	2022	Decomposing deep learning models into modules		sullivan2001:fwd
+3	2000	Extreme Programming Explained: Embrace Change		sullivan2001:back
+3	2026	Multi-Location Software Model Completion	ACM/IEEE International Conference on Software Engineering: Companion Proceedings (ICSE-Companion)	eaddy2008:fwd
+3	2006	SNIAFL: Towards a static noninteractive approach to feature location	ACM Transactions on Software Engineering and Methodology	eaddy2008:back
+3	2005	ConcernMapper: simple view-based separation of scattered concerns	Eclipse Technology eXchange	eaddy2008:back
+3	2007	Identifying, Assigning, and Quantifying Crosscutting Concerns		eaddy2008:back
+3	2006	On the Use of Line Co-change for Identifying Crosscutting Concern Code	IEEE International Conference on Software Maintenance (ICSM)	eaddy2008:back
+3	2024	On the Relative Value of Feature Selection Techniques for Code Smell Detection	Asia-Pacific Software Engineering Conference (APSEC)	vaucher2009:fwd
+3	2009	DECOR: A Method for the Specification and Detection of Code and Design Smells	IEEE Transactions on Software Engineering	vaucher2009:back
+3	2000	Finding refactorings via change metrics	Conference on Object-Oriented Programming Systems, Languages, and Applications	vaucher2009:back
+3	2008	The evolution of Eclipse	IEEE International Conference on Software Maintenance (ICSM)	vaucher2009:back
+3	2006	Visualization of CVS Repository Information	Working Conference on Reverse Engineering (WCRE)	vaucher2009:back
+3	2000	Evolution in open source software: a case study	International Conference on Software Maintenance	steidl2015:back
+3	2012	Modification and developer metrics at the function level: Metrics for the study of the evolution of a software project	Workshop on Emerging Trends in Software Metrics	steidl2015:back
+3	2002	Growth, evolution, and structural change in open source software	International Workshop on Principles of Software Evolution	steidl2015:back
+3	2004	An evaluation of clone detection techniques for identifying crosscutting concerns	IEEE International Conference on Software Maintenance (ICSM)	tarr1999:fwd
+3	2010	Archface	ACM/IEEE International Conference on Software Engineering: Companion Proceedings (ICSE-Companion)	tarr1999:fwd
+3	2015	Legacy Systems towards Aspect-Oriented Systems	Advances in systems analysis, software engineering, and high performance computing book series	tarr1999:fwd
