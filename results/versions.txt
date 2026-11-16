@@ -1,0 +1,8 @@
+date: 2026-11-16T07:35:46Z
+java: openjdk version "17.0.20.1" 2026-08-18
+python: Python 3.14.4
+R: R version 4.5.2 (2025-10-31) 
+glmmTMB: 1.1.14
+TMB: 1.9.19
+jsonlite: 2.0.0
+officefloorslim: 34df911cc689e002008eb2046d1e78fd97c1544c25557d20bdad5b6c62e434bf

@@ -528,7 +528,16 @@ binomial mixed model). These details are fixed with the code before any run is r
   on that chain no method was stuck (S2), and the junction share of cognitive complexity rose in
   the OfficeFloor arm and not in Spring (0.33 → 0.31), against the absorbed flow-injection draft's
   P1 direction: 0.30 → 0.42 under the injection-aware reading first built, 0.22 → 0.36 under the
-  conventional reading that replaced it. That reading is descriptive, of development data. The pilot raised six decisions (PILOT.md, *Decisions*), which are
+  conventional reading that replaced it. That reading is descriptive, of development data.
+- **The models on the development chain** (16 November 2026, after every decision rule and the
+  analysis code were committed, `1f1f962` and `7c3c013`). Running steps 2 to 5 end to end on the
+  pilot's chain 9, to test them, computed the hypothesis statistics on it, one chain per arm and so
+  descriptive only (`results/analysis/pilot/REPORT.md`). Seen: H2a's rate ratio per tie 0.90
+  [0.63, 1.30]; with the problem and ties held fixed, the junction 1.11 [0.52, 2.35], cognitive
+  complexity 0.54 [0.35, 0.85] and the class Gini 0.44 [0.25, 0.76] (90% intervals); the junction
+  without them 5.34 [2.38, 12.0]; junction × arm 0.20 [0.04, 1.01]; H1's slopes 0.025 on host size
+  and 0.006 on the checkpoint; H3's arm term −0.64 and interaction 0.13. That chain is excluded
+  from every registered analysis, and nothing in the plan was changed after these were seen. The pilot raised six decisions (PILOT.md, *Decisions*), which are
   settled at registration.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.

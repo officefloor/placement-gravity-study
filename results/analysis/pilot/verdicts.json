@@ -1,0 +1,179 @@
+{
+ "alpha": 0.05,
+ "descriptive_only": true,
+ "hypotheses": {
+  "H1": {
+   "p": 0.000999000999000999,
+   "reversed": false,
+   "conditions_met": true,
+   "detail": {
+    "n_runs": 74,
+    "n_chains": 1,
+    "log_host": {
+     "estimate": 0.0251399156427382,
+     "lower": 0.0251399156427382,
+     "upper": 0.0251399156427382,
+     "p_greater": 0.000999000999000999,
+     "p_less": 1,
+     "refits": 1000,
+     "failed": 0
+    },
+    "cp": {
+     "estimate": 0.00592549134711649,
+     "lower": 0.00592549134711649,
+     "upper": 0.00592549134711649,
+     "p_greater": 0.000999000999000999,
+     "p_less": 1,
+     "refits": 1000,
+     "failed": 0
+    }
+   },
+   "p_holm": 0.002997002997002997,
+   "verdict": "descriptive only"
+  },
+  "H2": {
+   "p": 0.964327655989821,
+   "h2a_supported": false,
+   "h2a_reversed": false,
+   "h2b": "against",
+   "h2b_dropped": [
+    "s1_long",
+    "s2_stuck"
+   ],
+   "conditions_met": false,
+   "partial": false,
+   "detail": {
+    "H2a": {
+     "n": 350,
+     "estimate": -0.101358579749361,
+     "se": 0.186569616117929,
+     "lower": -0.467028307949966,
+     "upper": 0.264311148451244,
+     "level": 0.95,
+     "p_greater": 0.706529710263698,
+     "p_less": 0.293470289736302,
+     "irr": 0.903608958912147,
+     "irr_lower": 0.626862344973313,
+     "irr_upper": 1.30253341451073
+    },
+    "H2b": {
+     "n": 103,
+     "kept": [
+      "s3_junction",
+      "s4_cognitive",
+      "s5_class_gini"
+     ],
+     "testable": true,
+     "bound": [
+      0.8,
+      1.25
+     ],
+     "measures": {
+      "s3_junction": {
+       "estimate": 0.103915124992296,
+       "se": 0.457433753785294,
+       "lower": -0.648496444011471,
+       "upper": 0.856326693996063,
+       "level": 0.9,
+       "p_greater": 0.41014586292597,
+       "p_less": 0.58985413707403,
+       "irr": 1.10950628156496,
+       "irr_lower": 0.522831292200189,
+       "irr_upper": 2.3544960051105,
+       "p_tost": 0.397182631405096,
+       "outside": false
+      },
+      "s4_cognitive": {
+       "estimate": -0.60981704145155,
+       "se": 0.268122332832635,
+       "lower": -1.050839033078,
+       "upper": -0.168795049825101,
+       "level": 0.9,
+       "p_greater": 0.988528982322365,
+       "p_less": 0.0114710176776347,
+       "irr": 0.543450288855377,
+       "irr_lower": 0.349644262903946,
+       "irr_upper": 0.844682003371317,
+       "p_tost": 0.925370425287464,
+       "outside": false
+      },
+      "s5_class_gini": {
+       "estimate": -0.830284128699824,
+       "se": 0.336687321235912,
+       "lower": -1.38408549018329,
+       "upper": -0.276482767216359,
+       "level": 0.9,
+       "p_greater": 0.993169180682862,
+       "p_less": 0.00683081931713755,
+       "irr": 0.435925409804024,
+       "irr_lower": 0.250552828072305,
+       "irr_upper": 0.758446689166751,
+       "p_tost": 0.964327655989821,
+       "outside": true
+      }
+     }
+    }
+   },
+   "p_holm": 1.0,
+   "verdict": "descriptive only"
+  },
+  "H3": {
+   "p": 1,
+   "reversed": false,
+   "amount_in_band": true,
+   "wiring_against": false,
+   "conditions_met": false,
+   "detail": {
+    "model": {
+     "n_runs": 135,
+     "n_chains": 2,
+     "arm": {
+      "estimate": -0.636000465674722,
+      "lower": -0.6360004656756,
+      "upper": -0.6360004656756,
+      "p_greater": 1,
+      "p_less": 0.000999000999000999,
+      "refits": 1000,
+      "failed": 0
+     },
+     "slope": {
+      "estimate": 0.128625062328447,
+      "lower": 0.12862506232834,
+      "upper": 0.12862506232834,
+      "p_greater": 0.000999000999000999,
+      "p_less": 1,
+      "refits": 1000,
+      "failed": 0
+     }
+    },
+    "amount": {
+     "ratio": 0.8840372226198998,
+     "interval": [
+      0.8840372226198998,
+      0.8840372226198998
+     ],
+     "in_band": true,
+     "band": [
+      0.8,
+      1.25
+     ],
+     "per_arm": {
+      "officefloor": 1235.0,
+      "spring": 1397.0
+     }
+    },
+    "wiring": {
+     "chains": 1,
+     "growth_slope": -0.011947763267574326,
+     "growth_interval": null,
+     "growth_against": null,
+     "largest_share": 0.1602112676056338,
+     "largest_share_interval": null,
+     "concentration_against": false
+    }
+   },
+   "p_holm": 1.0,
+   "verdict": "descriptive only"
+  }
+ }
+}
