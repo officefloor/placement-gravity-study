@@ -212,8 +212,18 @@ and its capture under `evolve-results/`; the registered analysis reads the branc
 the stack repositories by the harness's `push.sh`. On 16 November 2026 chains 1 to 3 of each run
 had been pushed; their branch names were listed, and nothing of them was fetched or read here.
 
+**Run B had not started on 16 November 2026.** Its run ids (the `angular-officefloor` and
+`tanstack-spring` stacks) are to be recorded here from the study machine when it starts, as Run A's
+were. Until then the square of the table above has only its Run A diagonal.
+
 **[DECIDE]** before registration: the run ids of Run B, and the commit of each chain's branch
-that is read (each chain's head once its run has finished and been pushed).
+that is read (each chain's head once its run has finished and been pushed). If registration comes
+before Run B starts, its ids are added by a dated amendment before any of its backend Java is read.
+
+**To check before the ui runs are read:** the instrument reads production Java under
+`src/main/java/` and wiring under `src/main/resources/officefloor/`, the petclinic layout. The ui
+stacks' backend paths are declared by each stack (`stack.yaml`) and may differ; the paths are to be
+set from the stack declarations, not from a run.
 
 **This plan registers before any ui run's backend Java is read**, by anyone, for any measure. It
 replaces the flow-injection draft and the SinewSlim analysis plan for these runs (§1.1), so no
@@ -328,6 +338,15 @@ Two conditions of H3 are read on the wiring, as the SinewSlim analysis plan set 
   interval above 0 means the wiring grows faster than the problems, and counts against H3.
 - **Concentration:** at the final checkpoint, the share of the configuration's non-blank lines
   held by its largest file. Over 50% counts against H3.
+
+**As built** (`placement_gravity/wiring.py`, 16 November 2026). The configuration is the YAML under
+`src/main/resources/officefloor/`. An edge is a `next:` or an entry of an `outputs:` map; a line is
+one that is neither blank nor only a comment. Growth is each chain's least-squares slope of the
+edges added at each checkpoint over the checkpoint index; over chains, the mean slope with a
+percentile bootstrap interval (chains resampled, 10,000 resamples, seed 20261116). Concentration is
+each chain's share at its final checkpoint; over chains, the mean share against the 50% limit,
+with its interval reported. New injected dependencies are not yet counted as edges; whether they
+should be is open.
 
 ### 4.6 Amount (conservation check)
 
@@ -486,7 +505,7 @@ trajectories can be set beside the per-problem ones.
    to check that the measures compute and are not degenerate.~~ Done 15 November 2026:
    `results/pilot/PILOT.md`.
 3. Build the shape measures of §4.7 (done 16 November 2026: `tests/test_shape.py`, and the pilot
-   chain), the wiring conditions of §4.5, and the reader for the ui stream's declared crossings,
+   chain), the wiring conditions of §4.5 (done 16 November 2026: `tests/test_wiring.py`, and the pilot chain), and the reader for the ui stream's declared crossings,
    each tested on fixtures and on the pilot chain only.
 4. Settle every **[DECIDE]** and register (tag `plan-v1`), before any ui run's backend Java is read.
 5. Run corpus A (petclinic, then the ui runs), then corpus B. Analyse once; record hashes.

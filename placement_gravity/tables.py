@@ -164,6 +164,10 @@ def addition_rows(arm: str, chain: str, measured: dict, hosts: list[dict],
             "amount_methods": measured["amount"][unit]["methods"],
             "wiring_nodes_added": w["after"]["nodes"] - w["before"]["nodes"],
             "wiring_edges_added": w["after"]["edges"] - w["before"]["edges"],
+            "wiring_files": w["after"]["files"], "wiring_edges": w["after"]["edges"],
+            "wiring_lines": w["after"]["lines"],
+            "wiring_largest_share": (w["after"]["largest_lines"] / w["after"]["lines"])
+            if w["after"]["lines"] else None,
             "problems": problems.get(unit, 0),
         })
     return rows

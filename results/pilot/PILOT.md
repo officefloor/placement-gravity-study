@@ -198,6 +198,15 @@ draft's P1 direction and is recorded because it was seen before registration (PL
 Whether OfficeFloor's junctions stay contained to their injection point, as the author expects,
 is what intrusion measures (§4.4); it was not computed by shape here.
 
+## The wiring conditions of H3 (§4.5), added 16 November 2026
+
+On OfficeFloor's chain 9, the configuration grew from 465 to 568 lines over 51 files at cp60, with
+24 edges added in all. Most checkpoints add none, and the rest add 1 or 2; two remove 1. Growth: the
+slope of edges added over the checkpoint index is −0.012, flat. Concentration: the largest file
+(`rest/api/owners.POST.yml`, 91 lines) holds 16% at cp60, up from 5% at cp1, well under the 50%
+limit. With one chain there is no interval, so growth is not read. Spring has no wiring files;
+its configuration is Java, inside the Java measures.
+
 ## Verdict per measure
 
 - **Method and class ties** compute in both arms and vary: per run 0–5 in Spring and 0–5 in
@@ -205,6 +214,7 @@ is what intrusion measures (§4.4); it was not computed by shape here.
 - **Utility, organisation, birth ties and unresolved references** are all rare here. Each is
   reported, so a change of this in other chains will show.
 - **Placement, dispersion, amount, wiring and outcomes** compute and vary.
+- **Wiring conditions** compute; on this chain neither comes near counting against H3.
 - **Shape (S1–S5)** computes on every existing host. S2 does not vary, S1 hardly varies in
   OfficeFloor, and S4's flag is broad (decisions 8 and 9). S3 (conventional) and S5 vary.
 

@@ -99,17 +99,26 @@ def wired_types(repo: Path, rev: str) -> set[str]:
 
 
 def wiring(repo: Path, rev: str) -> dict:
-    """Nodes and edges of the OfficeFloor wiring at rev: a node is a ``class:`` entry; an edge is a
-    ``next:`` or an entry of an ``outputs:`` map. Zero for an arm without wiring files."""
+    """The OfficeFloor wiring at rev (``parse_wiring``). Zero for an arm without wiring files."""
     files = [f for f in git(repo, "ls-tree", "-r", "--name-only", rev, "--", WIRING).splitlines()
              if f.endswith((".yml", ".yaml"))]
-    nodes = edges = 0
-    for f in files:
+    return parse_wiring({f: git(repo, "show", f"{rev}:{f}") for f in files})
+
+
+def parse_wiring(texts: dict[str, str]) -> dict:
+    """Nodes, edges and lines of wiring files (path -> text). A node is a ``class:`` entry; an edge
+    is a ``next:`` or an entry of an ``outputs:`` map; a line is a line that is neither blank nor only
+    a comment. ``largest_lines`` is the line count of the file with the most (PLAN.md §4.5)."""
+    nodes = edges = lines = 0
+    largest, largest_lines = None, 0
+    for f in sorted(texts):
         in_outputs = None
-        for raw in git(repo, "show", f"{rev}:{f}").splitlines():
+        own = 0
+        for raw in texts[f].splitlines():
             line = raw.split("#", 1)[0].rstrip()
             if not line.strip():
                 continue
+            own += 1
             indent = len(line) - len(line.lstrip())
             key = line.strip()
             if in_outputs is not None and indent <= in_outputs:
@@ -122,7 +131,11 @@ def wiring(repo: Path, rev: str) -> dict:
                 in_outputs = indent
             elif in_outputs is not None and ":" in key:
                 edges += 1
-    return {"files": len(files), "nodes": nodes, "edges": edges}
+        lines += own
+        if own > largest_lines:
+            largest, largest_lines = f, own
+    return {"files": len(texts), "nodes": nodes, "edges": edges, "lines": lines,
+            "largest_file": largest, "largest_lines": largest_lines}
 
 
 def measure(repo: Path, branch: str, base_ref: str, work: Path) -> dict:

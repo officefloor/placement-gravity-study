@@ -249,7 +249,27 @@
         "outliers": 21,
         "errors": 0
       }
-    ]
+    ],
+    "wiring_checks": {
+      "arm": "spring",
+      "chain": "chain9",
+      "checkpoints": 60,
+      "edges_added": 0,
+      "growth_slope": 0.0,
+      "final_cp": 60,
+      "final_files": 0,
+      "final_lines": 0,
+      "final_largest_share": null
+    },
+    "wiring_verdict_one_chain": {
+      "chains": 1,
+      "growth_slope": 0.0,
+      "growth_interval": null,
+      "growth_against": null,
+      "largest_share": null,
+      "largest_share_interval": null,
+      "concentration_against": null
+    }
   },
   "officefloor": {
     "branch": "evolve/blind-202608100006/just-solve/officefloor/chain9",
@@ -489,6 +509,26 @@
         "outliers": 25,
         "errors": 0
       }
-    ]
+    ],
+    "wiring_checks": {
+      "arm": "officefloor",
+      "chain": "chain9",
+      "checkpoints": 60,
+      "edges_added": 24,
+      "growth_slope": -0.011947763267574326,
+      "final_cp": 60,
+      "final_files": 51,
+      "final_lines": 568,
+      "final_largest_share": 0.1602112676056338
+    },
+    "wiring_verdict_one_chain": {
+      "chains": 1,
+      "growth_slope": -0.011947763267574326,
+      "growth_interval": null,
+      "growth_against": null,
+      "largest_share": 0.1602112676056338,
+      "largest_share_interval": null,
+      "concentration_against": false
+    }
   }
 }

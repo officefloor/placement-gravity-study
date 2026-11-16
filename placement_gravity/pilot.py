@@ -12,7 +12,7 @@ import json
 import statistics
 from pathlib import Path
 
-from . import chain, crosscheck, shape, tables
+from . import chain, crosscheck, shape, tables, wiring
 
 HOME = Path.home()
 HARNESS = HOME / "spring-petclinic-rest-long-degradation-test"
@@ -144,6 +144,9 @@ def main() -> None:
             "existing_hosts_s5_class_gini": quantiles([x["s5_class_gini"] for x in real
                                                       if not x["host_new"] and x["shape_found"]]),
             "series_first_last": [se[0], se[-1]] if se else None,
+            # §4.5: H3's wiring conditions on this one chain (no interval with one chain)
+            "wiring_checks": wiring.chain_checks(ad),
+            "wiring_verdict_one_chain": wiring.verdict([wiring.chain_checks(ad)]),
         }
     write(a.out / "hosts.csv", hosts)
     write(a.out / "runs.csv", runs)
