@@ -234,18 +234,15 @@ Settled 16 November 2026 (by the author, after this pilot's figures):
    for methods that survive to the chain's end; the instrument's chaining for methods removed
    earlier. Applied in this pilot.
 
-Open:
-
-6. **The ceiling at ≥ 1 in Spring.** Register H1 and H2 on the tie count (continuous), with the cut
+6. **The ceiling at ≥ 1 in Spring** (settled 16 November 2026, as proposed). Register H1 and H2 on the tie count (continuous), with the cut
    at 1 as the reading aid, so that the ceiling does not remove the test.
-7. **Run and chains.** Chain 9 of `blind-202608100006/just-solve` stays development data, excluded
-   in both arms. The ui-long-degradation Run A is proposed as primary data (PLAN.md §3.1a), on two
-   conditions that protect the flow-injection-containment plan.
-8. **A shape measure with no variation.** Proposal: a shape measure that does not vary in a corpus
+7. **Run and chains** (settled 16 November 2026). Chain 9 of `blind-202608100006/just-solve` stays
+   development data, excluded in both arms. The analysed runs are named in PLAN.md §3.1 and §3.1a.
+8. **A shape measure with no variation** (settled 16 November 2026, as proposed). a shape measure that does not vary in a corpus
    (for example, fewer than 10 hosts flagged over all chains of an arm) leaves the H2b block for
    that corpus and is reported as such. H2b is then read on the measures that remain, and the
    equivalence bound is not taken as met for the measure that left.
-9. **S4 as a flag or a level.** Proposal: enter cognitive complexity as log(1 + cognitive), a
+9. **S4 as a flag or a level** (settled 16 November 2026, as proposed). enter cognitive complexity as log(1 + cognitive), a
    continuous measure, with the outlier flag reported beside it. On zero-heavy data the flag
    measures whether there is control flow, not whether the method is an outlier.
 

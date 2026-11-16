@@ -1,8 +1,10 @@
 # Plan: where a new problem's code lands, and whether it had a choice
 
 > **Status (16 November 2026): DRAFT, not registered.** The instrument is built and piloted on one
-> pair of chains (`results/pilot/PILOT.md`); nothing else has been measured for this study. Every **[DECIDE]** is settled at
-> registration, before any confirmatory measurement. The literature behind this plan is in
+> pair of chains (`results/pilot/PILOT.md`); nothing else has been measured for this study. Every
+> design decision was settled on 16 November 2026. What remains open is only what needs the data
+> to exist (§3.1a): Run B's ids, Run C's ids when its stack is built, each chain's head when its
+> run is pushed, and the ui stacks' backend paths from their stack declarations. The literature behind this plan is in
 > [`LITERATURE.md`](LITERATURE.md). Since 16 November 2026 this plan absorbs three drafts that read
 > the same runs (§1.1).
 
@@ -100,7 +102,7 @@ gate.
 - **Q4 (form).** For the same stream of problems, is pull lower and flatter under function
   injection than under methods, while the amount stays about the same?
 
-Hypotheses. Directions are fixed now; thresholds are **[DECIDE]**.
+Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 November 2026).
 
 - **H1, gravity compounds.** In the methods arm, an addition's pull rises with its host's size
   before the change and with the checkpoint index (positive slope, 95% interval above 0).
@@ -161,7 +163,18 @@ Why this corpus comes first:
   gives a ground truth of which problems were *meant* to change together, which history mining
   in the wild lacks.
 
-**[DECIDE]**: which runs, strategies and chains are read; named by run id at registration.
+**Runs read** (decided 16 November 2026):
+
+- **Primary:** `blind-202608100006/just-solve`, both arms, chains 1 to 8 and 10. Chain 9 is the
+  pilot's development data and is excluded.
+- **Secondary, each read on its own as a replication, never pooled with the primary or with each
+  other:** the other strategies, `blind-202609010045/impact_gated`,
+  `blind-202609031757/impact_gated`, `blind-202609160027/cohesion-prompt` and
+  `blind-202609290948/reviewed`, and the earlier just-solve runs, `202608011310`,
+  `full-202608102319` and `202608081920`. A different instruction to the agent is a different
+  condition. A run with fewer than 6 chains in an arm is reported descriptively.
+- The commit read on each chain is its branch head in `officefloor/spring-petclinic-rest`,
+  recorded with its hash when the analysis runs.
 
 **Corpora are replications, never pooled.** The petclinic and ui streams are different problems.
 Each is analysed on its own and the two are compared by direction and interval, so that no
@@ -187,7 +200,13 @@ end's production Java of the four stacks of its Runs A and B, a front end × bac
 - **Not separable:** an influence of the front end on the back end, and a difference between
   Run A and Run B, are confounded in this square. The study does not depend on either being
   absent; it reports the per-front-end pairs so that a disagreement between them shows.
-- **Run C** (the no-injection control) is not read.
+- **Run C** (the no-injection control: a Java server with neither dependency injection nor
+  function injection, so every datum is passed or becomes a shared static) is read as a **third
+  arm** once it exists (decided 16 November 2026). Its stack had not been built on 16 November 2026. It is added by a
+  dated amendment, naming its run ids, before any of its backend Java is read. Its predicted
+  direction is fixed now: the most ties of the three arms, as nothing is lifted off the flow
+  (dependency injection weakens ties, function injection removes them). Spring against
+  OfficeFloor stays the primary contrast; the control is read against each.
 - Every new rule in the stream declares the earlier rules it crosses (at least two from cp17),
   which gives the declared crossings of §4.4. They are read from the stream's
   `acceptance/DENSITY.md` at the tag `run-a` (§4.4, *As built*).
@@ -233,18 +252,23 @@ this analysis.
 
 ### 3.2 Corpus B: open-source histories (secondary, external validity)
 
-Pre-AI Java repositories drawn by `open-source-repository-sampler`, seed and as-of date
-**[DECIDE]**. Additions are commits linked to an issue labelled as a feature or enhancement,
-under **[DECIDE]** changed lines, with refactorings removed by RefactoringMiner. Commits linked
-to issues are known to be a biased subset (Bird et al. 2009), and tangling remains at the
-reported 7–20% (Herzig et al. 2016). Corpus B is therefore read as a check on the direction of
-H1 and H2, not as their test.
+Pre-AI Java repositories drawn by `open-source-repository-sampler` with **seed 2** (decided 16 November 2026), the
+population the complexity-concentration and sinew-identification studies drew, so the ties can be
+set beside their shape findings on the same code (their shape results have been seen; ties on this
+code have not). History is read up to **29 June 2021**, the day GitHub Copilot's preview opened.
+Additions are commits linked to an issue labelled as a feature or enhancement, of **at most 200
+changed lines** of production Java, with refactorings removed by RefactoringMiner. Commits linked
+to issues are known to be a biased subset (Bird et al. 2009), and tangling remains at the reported
+7–20% (Herzig et al. 2016). In corpus B a commit is not reliably one problem and the problem is not
+held fixed. Corpus B is therefore read only as a check on the **direction of H1 and H2a**; H2b,
+H3 and the junction × arm reading are not read there.
 
 ## 4. Measures
 
 The instrument extends the width harness (`long-method-slim-study/width/harness/WidthProfile.java`)
-on SinewSlim's fact producer and seam, at a pinned OfficeFloorSlim version **[DECIDE]**
-(≥ 0.5.4, which carries the loop correction). Positions, values, the literal rule and the loop
+on SinewSlim's fact producer and seam, at OfficeFloorSlim **0.5.4** (SinewSlim 0.2.4), pinned
+by its sha256 in `setup.sh` (decided 16 November 2026): the version of the long-method-slim study's Amendment 4, which
+carries the loop correction. A later version needs a dated amendment. Positions, values, the literal rule and the loop
 rule are those of the width README.
 
 ### 4.1 The addition
@@ -430,9 +454,14 @@ trajectories can be set beside the per-problem ones.
     supported when the incidence rate ratio per tie has a 95% interval above 1.
   - **H2b:** the shape block S1 to S5 added to the base model with pull. It is supported when every
     shape measure's incidence rate ratio has a 90% interval inside an equivalence bound of 0.8 to
-    1.25, per standard deviation for continuous measures and present against absent for flags
-    (**[DECIDE]**: the bound; this is a proposal). A null is not taken from a non-significant
-    test.
+    1.25 (decided 16 November 2026), per standard deviation for continuous measures and present against absent for
+    flags. A null is not taken from a non-significant test.
+  - **How the shape block enters** (decided 16 November 2026). S4 enters as a level, log(1 + cognitive complexity),
+    because cognitive complexity is zero-heavy and the outlier flag then marks any control flow
+    (the pilot: 45% of Spring's existing hosts); the flag is reported beside it. A shape measure
+    that does not vary in a corpus, with fewer than 10 hosts flagged over all chains of an arm,
+    leaves the block for that corpus. It is reported as not testable there, never as meeting the
+    bound, and H2b is read on the measures that remain.
   - **Reported beside it:** the shape block in a model *without* the problem terms and pull. This
     shows how much of shape's apparent association comes from leaving the problem out. Each shape
     measure alone, and the change in fit for every block, are also reported.
@@ -499,8 +528,9 @@ trajectories can be set beside the per-problem ones.
   AI agents' pull requests touch fewer files and spread less than human ones of similar size
   (Ogenrwot and Businge 2026), so agents may concentrate by default. The arms of corpus A are
   therefore read only against each other, never as absolute rates of concentration.
-- **Lexical names.** No symbol solver, as in the width harness, so fields shadowed by locals may
-  be miscounted. **[DECIDE]**: whether to add JavaParser's symbol solver for `P_c`.
+- **Lexical names.** No symbol solver, as in the width harness (decided 16 November 2026). A local that shadows a field
+  is already told apart by the method's own variables, and the pilot found no unresolved name in
+  418 runs. Names that resolve to nothing are reported per run.
 - **Provenance.** Line tracking across moves is imperfect. CodeTracker reports about 99.9%
   method-level precision and recall, but statement-level provenance is weaker. Disagreements
   with `git blame` are reported.
