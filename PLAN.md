@@ -64,8 +64,11 @@ used predict later intrusion once the problem and the ties are held fixed (§2, 
 
 ### 1.1 What this plan absorbs (16 November 2026)
 
-Three drafts read the same runs with measures of the solution's shape. None was registered and none
-has read a run. Their measures enter this plan as the shape competitors of H2, or as checks, so one
+Three plans read the same runs with measures of the solution's shape. None has read a run. Two are
+unregistered drafts. The SinewSlim analysis plan's file says it is a draft, but its rule makes
+registration the commit of the file, and that commit was pushed on 31 October 2026 with a message
+calling it registered; it is therefore withdrawn by a dated amendment on its own branch, not
+simply closed. Their measures enter this plan as the shape competitors of H2, or as checks, so one
 registration covers them:
 
 - **The flow-injection-containment draft** (`flow-injection-containment-experiment`, 20 October
