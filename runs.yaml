@@ -1,0 +1,133 @@
+# The runs this study reads (PLAN.md §3.1, §3.1a). The tag plan-v1 freezes this file with the plan.
+# A run added later (Run B, Run C) comes by dated amendment, before any of its backend Java is read.
+# step2_runs.sh fetches only what is named here, and refuses every analysis but the development
+# one until plan-v1 exists.
+
+registration_tag: plan-v1
+
+# The stream each run was made on, pinned: the problems, their mutations and declared crossings.
+streams:
+  petclinic-20:      # the 20-checkpoint stream run 202608011310 was made on (no mutatives)
+    repo: ~/spring-petclinic-rest-long-degradation-test
+    ref: 643aa1f48ef08798c6adb7dc177d9302a8ef87ec
+    checkpoints: checkpoints.yaml
+    act_size: null   # petclinic has no acts: one endpoint, one rule per checkpoint
+  petclinic:         # the 60-checkpoint stream every later petclinic run was made on
+    repo: ~/spring-petclinic-rest-long-degradation-test
+    ref: 3a3e16fd30901509c26da1c91f4c861f61eee729
+    checkpoints: checkpoints.yaml
+    act_size: null
+  ui:                # the ui stream at the harness tag run-a (8b39da3)
+    repo: ~/ui-long-degradation-test
+    ref: run-a
+    checkpoints: checkpoints.yaml
+    density: acceptance/DENSITY.md
+    act_size: 50     # five acts of fifty (docs/PLAN.md §4)
+
+# Where each stack's chains live. `branch` names a chain; `layout: stack` reads the backend root and
+# the OfficeFloor wiring from the stack's own stack.yaml at base_ref (the empty base, not a run).
+repos:
+  petclinic-spring:
+    path: ~/compare/spring
+    remote: https://github.com/officefloor/spring-petclinic-rest.git
+    base_ref: spring-compare-no-tests
+    branch: "evolve/{run}/{strategy}/{arm}/chain{chain}"
+  petclinic-officefloor:
+    path: ~/compare/officefloor
+    remote: https://github.com/officefloor/spring-petclinic-rest.git
+    base_ref: officefloor-compare-no-tests
+    branch: "evolve/{run}/{strategy}/{arm}/chain{chain}"
+  officehq-angular-spring:
+    path: ~/placement-gravity-data/officehq-angular-spring
+    remote: git@github.com:officefloor/officehq-angular-spring.git
+    base_ref: base-empty
+    branch: "evolve/{run}/{strategy}/chain{chain}"
+    layout: stack
+  officehq-tanstack-officefloor:
+    path: ~/placement-gravity-data/officehq-tanstack-officefloor
+    remote: git@github.com:officefloor/officehq-tanstack-officefloor.git
+    base_ref: base-empty
+    branch: "evolve/{run}/{strategy}/chain{chain}"
+    layout: stack
+
+# Each analysis is read on its own; analyses are never pooled. role: primary | secondary |
+# development (the pilot's chain, readable before registration and never analysed for a verdict).
+analyses:
+  - name: petclinic-primary
+    corpus: petclinic
+    role: primary
+    stream: petclinic
+    exclude_chains: [9]          # the pilot's development chain
+    sources:
+      - {arm: spring, repo: petclinic-spring, run: blind-202608100006, strategy: just-solve}
+      - {arm: officefloor, repo: petclinic-officefloor, run: blind-202608100006, strategy: just-solve}
+
+  - name: petclinic-impact_gated-202609010045
+    corpus: petclinic
+    role: secondary
+    stream: petclinic
+    sources:
+      - {arm: spring, repo: petclinic-spring, run: blind-202609010045, strategy: impact_gated}
+      - {arm: officefloor, repo: petclinic-officefloor, run: blind-202609010045, strategy: impact_gated}
+  - name: petclinic-impact_gated-202609031757
+    corpus: petclinic
+    role: secondary
+    stream: petclinic
+    sources:
+      - {arm: spring, repo: petclinic-spring, run: blind-202609031757, strategy: impact_gated}
+      - {arm: officefloor, repo: petclinic-officefloor, run: blind-202609031757, strategy: impact_gated}
+  - name: petclinic-cohesion-prompt-202609160027
+    corpus: petclinic
+    role: secondary
+    stream: petclinic
+    sources:
+      - {arm: spring, repo: petclinic-spring, run: blind-202609160027, strategy: cohesion-prompt}
+      - {arm: officefloor, repo: petclinic-officefloor, run: blind-202609160027, strategy: cohesion-prompt}
+  - name: petclinic-reviewed-202609290948
+    corpus: petclinic
+    role: secondary
+    stream: petclinic
+    sources:
+      - {arm: spring, repo: petclinic-spring, run: blind-202609290948, strategy: reviewed}
+      - {arm: officefloor, repo: petclinic-officefloor, run: blind-202609290948, strategy: reviewed}
+  - name: petclinic-just-solve-202608011310
+    corpus: petclinic
+    role: secondary
+    stream: petclinic-20
+    sources:
+      - {arm: spring, repo: petclinic-spring, run: "202608011310", strategy: just-solve}
+      - {arm: officefloor, repo: petclinic-officefloor, run: "202608011310", strategy: just-solve}
+  - name: petclinic-just-solve-full-202608102319
+    corpus: petclinic
+    role: secondary
+    stream: petclinic
+    sources:
+      - {arm: spring, repo: petclinic-spring, run: full-202608102319, strategy: just-solve}
+      - {arm: officefloor, repo: petclinic-officefloor, run: full-202608102319, strategy: just-solve}
+  - name: petclinic-just-solve-202608081920
+    corpus: petclinic
+    role: secondary
+    stream: petclinic
+    sources:
+      - {arm: spring, repo: petclinic-spring, run: "202608081920", strategy: just-solve}
+      - {arm: officefloor, repo: petclinic-officefloor, run: "202608081920", strategy: just-solve}
+  # Not read: blind-202610141224/just-solve has a Spring arm only, so it has no pair.
+
+  - name: ui-primary
+    corpus: ui
+    role: primary
+    stream: ui
+    sources:
+      - {arm: spring, frontend: angular, repo: officehq-angular-spring, run: 202610271-as, strategy: just-solve}
+      - {arm: officefloor, frontend: tanstack, repo: officehq-tanstack-officefloor, run: 202610271-to, strategy: just-solve}
+      # Run B (angular-officefloor, tanstack-spring): not started on 16 November 2026; added by amendment.
+      # Run C (the no-injection control, a third arm): its stack not built on 16 November 2026.
+
+  - name: pilot
+    corpus: petclinic
+    role: development
+    stream: petclinic
+    chains: [9]
+    sources:
+      - {arm: spring, repo: petclinic-spring, run: blind-202608100006, strategy: just-solve}
+      - {arm: officefloor, repo: petclinic-officefloor, run: blind-202608100006, strategy: just-solve}

@@ -94,7 +94,7 @@ import net.officefloor.sinewslim.javaparser.ParsedFile;
 public final class Pull {
 
 	/** Bump whenever a field's meaning changes. */
-	static final int VERSION = 3;
+	static final int VERSION = 4;
 
 	/** A removed position's text must be at least this long to mark an added one as moved. */
 	static final int MOVED_MIN_CHARS = 12;
@@ -544,6 +544,9 @@ public final class Pull {
 				s.append(",\"inputs\":").append(seam.inputs().size());
 				s.append(",\"outputs\":").append(seam.outputs().size());
 				s.append(",\"tie_method\":").append(strs(tm));
+				Set<String> tp = new TreeSet<>(tm);
+				tp.retainAll(params(m));
+				s.append(",\"tie_param\":").append(strs(tp));
 				s.append(",\"tie_field\":").append(strs(tf));
 				s.append(",\"tie_class_method\":").append(strs(tc));
 				s.append(",\"utility\":").append(strs(tu));

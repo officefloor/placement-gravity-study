@@ -6,3 +6,6 @@ __pycache__/
 instrument/classes/
 lib/*.jar
 refactor/target/
+# derived and large: regenerated from the pinned heads (results/heads.tsv) by steps 3 and 4
+results/measure/
+data/

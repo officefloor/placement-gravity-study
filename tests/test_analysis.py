@@ -1,0 +1,224 @@
+"""Steps 2, 4 and 5 without R: the registry and its registration guard, the analysis datasets, every
+verdict rule with the Holm correction, and the report."""
+
+import csv
+import json
+import subprocess
+from pathlib import Path
+
+import pytest
+
+from placement_gravity import prepare, report, runs, verdict
+
+
+# ---------------------------------------------------------------- step 2
+
+def test_the_registry_names_every_analysis_with_its_stream():
+    reg = runs.load()
+    names = {a["name"] for a in reg["analyses"]}
+    assert {"petclinic-primary", "ui-primary", "pilot"} <= names
+    primary = next(a for a in reg["analyses"] if a["name"] == "petclinic-primary")
+    assert primary["exclude_chains"] == [9] and primary["stream"] == "petclinic"
+    old = next(a for a in reg["analyses"] if a["name"] == "petclinic-just-solve-202608011310")
+    assert old["stream"] == "petclinic-20"   # the run made on the 20-checkpoint stream
+
+
+def test_an_analysis_with_one_arm_is_refused():
+    reg = runs.load()
+    reg["analyses"].append({"name": "x", "role": "primary", "stream": "petclinic",
+                            "sources": [{"arm": "spring", "repo": "petclinic-spring"}]})
+    with pytest.raises(ValueError, match="at least two arms"):
+        runs.validate(reg)
+
+
+def git(d, *a):
+    subprocess.run(["git", "-C", str(d), *a], check=True, capture_output=True)
+
+
+def test_no_run_is_read_before_the_registration_tag(tmp_path):
+    git(tmp_path, "init", "-q")
+    git(tmp_path, "-c", "user.email=a@b", "-c", "user.name=a", "commit", "-q", "--allow-empty", "-m", "x")
+    reg = {"registration_tag": "plan-v1"}
+    with pytest.raises(SystemExit, match="not registered"):
+        runs.guard(reg, {"name": "petclinic-primary", "role": "primary"}, tmp_path)
+    runs.guard(reg, {"name": "pilot", "role": "development"}, tmp_path)   # the pilot may be read
+    git(tmp_path, "tag", "plan-v1")
+    runs.guard(reg, {"name": "petclinic-primary", "role": "primary"}, tmp_path)
+
+
+def test_a_stack_declares_its_backend_and_wiring_roots():
+    doc = {"layers": {"frontend": {"root": "web", "ext": ["ts"]},
+                      "backend": {"root": "server/src/main/java/", "ext": ["java"],
+                                  "config_globs": ["server/src/main/resources/officefloor/**/*.yml"]}}}
+    r = runs.roots_from_stack(doc)
+    assert r["java_src"] == "server/src/main/java/"
+    assert r["wiring_root"] == "server/src/main/resources/officefloor/"
+    assert runs.roots_from_stack({"layers": {"backend": {"root": "src/main/java"}}})["wiring_root"] \
+        == "src/main/resources/officefloor/"
+    with pytest.raises(ValueError):
+        runs.roots_from_stack({"layers": {}})
+
+
+# ---------------------------------------------------------------- step 4: datasets
+
+def write(path: Path, rows: list[dict]):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(rows[0]), lineterminator="\n")
+        w.writeheader()
+        w.writerows(rows)
+
+
+def chain_tables(root: Path, arm: str, n: int, amount: int, junction_hosts: int = 12):
+    cid = f"{arm}/r/chain{n}"
+    d = root / "a" / f"{arm}-r-chain{n}"
+    common = {"chain_id": cid, "analysis": "a", "frontend": "", "run": "r", "strategy": "s", "arm": arm}
+    hosts, runs_, outs = [], [], []
+    for i in range(20):
+        hosts.append({**common, "cp": 2 + i, "type": "T", "signature": f"m{i}()", "name": f"m{i}",
+                      "s5_class_positions": 50, "tie_no_param": 1, "shape_found": "True",
+                      "s1_long": str(i < 15), "s2_stuck": "False", "s3_junction": str(i < junction_hosts),
+                      "s3_junction_injection_aware": "True", "s4_cognitive": i % 4, "s5_class_gini": 0.3})
+        runs_.append({**common, "cp": 2 + i, "type": "T", "signature": f"m{i}()", "host_new": "False",
+                      "replacement": "False", "tie": i % 3, "tie_no_param": i % 2, "tie_class": 1,
+                      "pre_positions": 5 + i})
+        outs.append({**common, "cp": 2 + i, "type": "T", "signature": f"m{i}()", "name": f"m{i}",
+                     "intrusion": i % 2, "later_checkpoints": 30 - i, "tie": i % 3, "net_added": 3,
+                     "pre_positions": 5 + i, "host_new": "False"})
+    runs_.append({**runs_[0], "host_new": "True"})                 # a new host: not in H1
+    runs_.append({**runs_[1], "replacement": "True"})              # moved code: not in H1
+    adds = [{**common, "cp": c, "positions_added": 4, "amount_positions": amount + c,
+             "wiring_edges_added": 1 if arm == "officefloor" else 0,
+             "wiring_files": 3 if arm == "officefloor" else 0, "wiring_lines": 30 if arm == "officefloor" else 0,
+             "wiring_largest_share": 0.4 if arm == "officefloor" else ""} for c in range(1, 23)]
+    for name, rows in (("hosts", hosts), ("runs", runs_), ("outcomes", outs), ("additions", adds)):
+        write(d / f"{name}.csv", rows)
+
+
+def test_prepare_builds_the_datasets_and_applies_the_rules(tmp_path):
+    for n in range(1, 7):
+        chain_tables(tmp_path / "m", "spring", n, 1000)
+        chain_tables(tmp_path / "m", "officefloor", n, 900, junction_hosts=5)
+    streamed = {c: {"mutates": [1] if c == 4 else [], "crosses": [2, 3] if c == 4 else [], "act": None}
+                for c in range(1, 23)}
+    out = prepare.prepare({"name": "a", "role": "primary"}, streamed, tmp_path / "m", tmp_path / "d")
+    h1 = list(csv.DictReader((out / "h1.csv").open()))
+    assert len(h1) == 12 * 20                         # new hosts and replacements left out
+    h2 = list(csv.DictReader((out / "h2.csv").open()))
+    assert {r["declared_crossings"] for r in h2 if r["cp"] == "4"} == {"3"}
+    spec = json.loads((out / "spec.json").read_text())
+    # s2 never flagged; s3 flagged on 5 hosts per OfficeFloor chain x 6 = 30, kept; s1 kept
+    assert "s2_stuck" not in spec["shape_kept"] and {"s1_long", "s3_junction"} <= set(spec["shape_kept"])
+    assert spec["shape_counts"]["s2_stuck"] == {"officefloor": 0, "spring": 0}
+    cond = json.loads((out / "conditions.json").read_text())
+    assert cond["chains"] == {"spring": 6, "officefloor": 6} and not cond["descriptive_only"]
+    assert abs(cond["amount"]["ratio"] - (922 / 1022)) < 1e-9 and cond["amount"]["in_band"]
+    assert cond["wiring"]["verdict"]["concentration_against"] is False
+
+
+def test_fewer_than_six_chains_is_descriptive(tmp_path):
+    for n in range(1, 4):
+        chain_tables(tmp_path / "m", "spring", n, 1000)
+        chain_tables(tmp_path / "m", "officefloor", n, 900)
+    out = prepare.prepare({"name": "a", "role": "secondary"}, {}, tmp_path / "m", tmp_path / "d")
+    assert json.loads((out / "conditions.json").read_text())["descriptive_only"]
+
+
+# ---------------------------------------------------------------- step 4: verdicts
+
+def test_holm():
+    adj = verdict.holm({"H1": 0.01, "H2": 0.04, "H3": 0.03, "H4": None})
+    assert adj["H1"] == pytest.approx(0.03) and adj["H3"] == pytest.approx(0.06)
+    assert adj["H2"] == pytest.approx(0.06) and adj["H4"] is None   # monotone: max(0.06, 0.04)
+
+
+def boot(est, lo, hi, p_g, p_l):
+    return {"estimate": est, "lower": lo, "upper": hi, "p_greater": p_g, "p_less": p_l}
+
+
+def measure(irr, lo, hi, p, outside=False):
+    return {"irr": irr, "irr_lower": lo, "irr_upper": hi, "p_tost": p, "outside": outside,
+            "estimate": 0, "se": 0.1, "lower": 0, "upper": 0}
+
+
+def estimates(**over):
+    e = {"H1": {"log_host": boot(0.3, 0.1, 0.5, 0.001, 0.999), "cp": boot(0.01, 0.002, 0.02, 0.004, 0.99)},
+         "H2a": {"irr": 1.3, "irr_lower": 1.1, "irr_upper": 1.5, "p_greater": 0.001, "n": 100},
+         "H2b": {"testable": True, "bound": [0.8, 1.25], "kept": ["s1_long", "s3_junction"],
+                 "measures": {"s1_long": measure(1.0, 0.9, 1.1, 0.002),
+                              "s3_junction": measure(1.05, 0.95, 1.15, 0.01)}},
+         "H3": {"arm": boot(-0.5, -0.8, -0.2, 0.999, 0.001), "slope": boot(-0.2, -0.3, -0.1, 0.99, 0.002)}}
+    e.update(over)
+    return e
+
+
+COND = {"descriptive_only": False, "amount": {"in_band": True, "ratio": 0.95},
+        "wiring": {"verdict": {"growth_against": False, "concentration_against": False}}}
+
+
+def test_all_supported():
+    v = verdict.decide(estimates(), COND)["hypotheses"]
+    assert [v[k]["verdict"] for k in ("H1", "H2", "H3")] == ["supported"] * 3
+
+
+def test_h2b_interval_reaching_outside_the_bound_is_unresolved():
+    e = estimates()
+    e["H2b"]["measures"]["s1_long"] = measure(1.1, 0.7, 1.5, 0.3)
+    assert verdict.decide(e, COND)["hypotheses"]["H2"]["verdict"] == "unresolved"
+
+
+def test_h2b_shape_carrying_information_is_not_supported():
+    e = estimates()
+    e["H2b"]["measures"]["s1_long"] = measure(1.6, 1.3, 1.9, 0.99, outside=True)
+    v = verdict.decide(e, COND)["hypotheses"]["H2"]
+    assert v["h2b"] == "against" and v["verdict"] == "not supported"
+
+
+def test_h2_without_a_testable_shape_measure_is_read_on_h2a_and_says_so():
+    e = estimates(H2b={"testable": False, "bound": [0.8, 1.25], "kept": []})
+    v = verdict.decide(e, COND)["hypotheses"]["H2"]
+    assert v["h2b"] == "not testable" and v["verdict"] == "not supported"   # H2 needs H2b within
+    assert v["partial"] and set(v["h2b_dropped"]) == {"s1_long", "s2_stuck", "s3_junction",
+                                                      "s4_cognitive", "s5_class_gini"}
+
+
+def test_h3_fails_on_the_amount_or_the_wiring():
+    c = json.loads(json.dumps(COND))
+    c["amount"]["in_band"] = False
+    assert verdict.decide(estimates(), c)["hypotheses"]["H3"]["verdict"] == "not supported"
+    c = json.loads(json.dumps(COND))
+    c["wiring"]["verdict"]["growth_against"] = True
+    assert verdict.decide(estimates(), c)["hypotheses"]["H3"]["verdict"] == "not supported"
+
+
+def test_reversed_and_holm_failures():
+    e = estimates(H1={"log_host": boot(-0.3, -0.5, -0.1, 0.999, 0.001), "cp": boot(0.01, 0.002, 0.02, 0.004, 0.99)})
+    assert verdict.decide(e, COND)["hypotheses"]["H1"]["verdict"] == "reversed"
+    # each interval clears 0, but p = 0.03 for all three: Holm makes them 0.09
+    e = estimates(H1={"log_host": boot(0.3, 0.01, 0.5, 0.03, 0.97), "cp": boot(0.01, 0.001, 0.02, 0.03, 0.97)},
+                  H3={"arm": boot(-0.5, -0.8, -0.01, 0.97, 0.03), "slope": boot(-0.2, -0.3, -0.01, 0.97, 0.03)})
+    e["H2a"]["p_greater"] = 0.03
+    v = verdict.decide(e, COND)["hypotheses"]
+    assert v["H1"]["p_holm"] == pytest.approx(0.09) and v["H1"]["verdict"] == "not supported"
+
+
+def test_descriptive_only_decides_nothing():
+    c = {**COND, "descriptive_only": True}
+    assert {v["verdict"] for v in verdict.decide(estimates(), c)["hypotheses"].values()} == {"descriptive only"}
+
+
+def test_an_error_in_a_model_is_not_estimable():
+    v = verdict.decide(estimates(H1={"log_host": {"error": "no fit"}, "cp": {"error": "no fit"}}), COND)
+    assert v["hypotheses"]["H1"]["verdict"] == "not estimable"
+
+
+# ---------------------------------------------------------------- step 5
+
+def test_the_report_names_every_hypothesis_and_commit():
+    est = {**estimates(), "boot": 1000, "seed": 1, "versions": {"R": "x"}, "reported": {}}
+    ver = verdict.decide(est, COND)
+    cond = {**COND, "chains": {"spring": 9, "officefloor": 9}}
+    heads = [{"arm": "spring", "run": "r", "chain": 1, "excluded": False, "sha": "a" * 40}]
+    md = report.render("petclinic-primary", "primary", est, ver, cond, {"shape_counts": {}}, heads)
+    for k in ("H1", "H2", "H3", "supported", "`aaaaaaaaaaaa`", "s3_junction"):
+        assert k in md

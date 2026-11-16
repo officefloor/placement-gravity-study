@@ -1,0 +1,3 @@
+analysis	role	corpus	arm	frontend	run	strategy	chain	repo	branch	sha	excluded
+pilot	development	petclinic	officefloor		blind-202608100006	just-solve	9	petclinic-officefloor	origin/evolve/blind-202608100006/just-solve/officefloor/chain9	b824bf9d48e7a7efb7c542f429b8b82532cf43af	False
+pilot	development	petclinic	spring		blind-202608100006	just-solve	9	petclinic-spring	origin/evolve/blind-202608100006/just-solve/spring/chain9	b48eb0cc333bad39953e265f9197d32fa832211f	False

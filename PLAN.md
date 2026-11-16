@@ -485,6 +485,34 @@ trajectories can be set beside the per-problem ones.
 - **Multiplicity:** H1–H3 are three confirmatory tests at α = 0.05 each, Holm-corrected. All
   else is descriptive.
 
+**As built** (`analysis/analyse.R` with glmmTMB, `placement_gravity/prepare.py` and
+`placement_gravity/verdict.py`, 16 November 2026; R chosen by the author for glmmTMB's negative
+binomial mixed model). These details are fixed with the code before any run is read:
+
+- **Each analysis is read on its own** (`runs.yaml`): the petclinic primary, each petclinic
+  secondary, and the ui primary. An analysis with fewer than 6 chains in an arm is descriptive only.
+- **H1 and H3** are fitted on runs of added logic into **existing** methods: a new method has no
+  prior size, so including new methods would make "more ties in bigger hosts" true by
+  construction. Gaussian mixed models of log(1 + ties) on log(host positions) and the checkpoint
+  index, a random intercept per chain; H3 adds the arm and its interaction with host size (and the
+  front end, where the analysis has more than one). Intervals: a cluster bootstrap, chains resampled
+  with replacement within arm and the model refitted, **1,000 refits, seed 20261116**. One-sided
+  p-values are the bootstrap share on the wrong side of 0, (k + 1) / (n + 1).
+- **H2** is a negative binomial (nbinom2) mixed model of later intrusion per problem and host,
+  offset by log(later checkpoints), a random intercept per chain. Its base terms are
+  log(1 + the problem's positions added), the problem's declared crossings (the checkpoints it
+  mutates or crosses), log(1 + host positions), the act (the ui stream only; petclinic has no
+  acts), the arm and, where present, the front end. **H2a** is read on every problem and host,
+  with a one-sided Wald test; **H2b** on existing hosts with their shape at k − 1, by two one-sided
+  Wald tests per shape measure (90% intervals). S4 enters as log(1 + cognitive complexity) and S5
+  as the class Gini, both standardised; S1 to S3 as 0/1.
+- **The p-value of each hypothesis** for Holm is the larger of its parts: H1, of its two slopes;
+  H2, of H2a and every H2b measure's TOST; H3, of the arm term and the interaction. A hypothesis is
+  supported when its Holm-adjusted p is at most 0.05 **and** its conditions hold (H3: the amount in
+  its band and neither wiring condition against). The verdicts are supported, not supported,
+  reversed (an interval wholly on the wrong side), unresolved (H2b: an interval reaching outside
+  the bound) or descriptive only.
+
 ## 6. What was known when this was written
 
 - **Seen.** The conversation that produced this plan. Step 7 of `long-method-slim-study`
@@ -558,6 +586,11 @@ trajectories can be set beside the per-problem ones.
    chain), the wiring conditions of §4.5 (done 16 November 2026: `tests/test_wiring.py`, and the pilot chain), and the reader for the ui
    stream's declared crossings (done 16 November 2026: `tests/test_stream.py`, and the stream at
    `run-a`), each tested on fixtures and on the pilot chain or the stream only.
-4. Settle every **[DECIDE]** and register (tag `plan-v1`), before any ui run's backend Java is read.
-5. Run corpus A (petclinic, then the ui runs), then corpus B. Analyse once; record hashes.
-6. Write up, reporting every hypothesis whichever way it falls.
+4. ~~Settle every design decision~~ (16 November 2026). ~~Build steps 2 to 5~~ (16 November 2026:
+   `step2_runs.sh` to `step5_report.sh`, `tests/test_analysis.py`, `analysis/selftest.R`).
+5. Register: tag `plan-v1` and push it, before any ui run's backend Java is read.
+6. `./step1_setup.sh`, then for corpus A (petclinic, then the ui runs as they finish):
+   `./step2_runs.sh`, `./step3_measure.sh`, `./step4_analyse.sh`, `./step5_report.sh`. Analyse
+   once; the heads read are recorded in `results/heads.tsv`. Then corpus B (its steps are not yet
+   built).
+7. Write up, reporting every hypothesis whichever way it falls.

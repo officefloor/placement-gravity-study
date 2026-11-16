@@ -101,6 +101,7 @@ def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
         moved = r["moved_rm"] + r["moved_text"]
         runs = r["runs"]
         tm = sorted({v for x in runs for v in x["tie_method"]})
+        tp = sorted({v for x in runs for v in x.get("tie_param", [])})
         tf = sorted({v for x in runs for v in x["tie_field"]})
         tc = sorted({v for x in runs for v in x["tie_class_method"]})
         tu = sorted({v for x in runs for v in x["utility"]})
@@ -118,6 +119,7 @@ def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
             "runs": len(runs), "edits": sum(1 for x in runs if x["replaces"] > 0),
             "tie_method": len(tm), "tie_field": len(tf), "tie_class_method": len(tc),
             "tie_class": len(tf) + len(tc), "tie": len(tm) + len(tf) + len(tc),
+            "tie_param": len(tp), "tie_no_param": len(tm) - len(tp) + len(tf) + len(tc),
             "utility": len(tu), "unresolved": len(un), "unresolved_values": " ".join(un),
             "organisation": r["organisation"],
             "birth_tie": len(r.get("birth_tie", [])),
@@ -133,10 +135,13 @@ def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
 def run_rows(arm: str, chain: str, measured: dict) -> list[dict]:
     rows = []
     for r in _hosts(measured):
+        moved = r["moved_rm"] + r["moved_text"]
         for x in r["runs"]:
             rows.append({
                 "arm": arm, "chain": chain, "cp": int(r["unit"][2:]), "type": r["type"],
-                "name": r["name"], "host_new": r["host_new"], "injected": r["injected"],
+                "name": r["name"], "signature": r["signature"], "host_new": r["host_new"],
+                "injected": r["injected"],
+                "replacement": r["added"] > 0 and moved / r["added"] >= REPLACEMENT_SHARE,
                 "pre_positions": r["pre_positions"], "positions": x["positions"],
                 "replaces": x["replaces"], "edit": x["replaces"] > 0,
                 "added_tokens": x["added_tokens"], "inputs": x["inputs"], "outputs": x["outputs"],
@@ -148,6 +153,9 @@ def run_rows(arm: str, chain: str, measured: dict) -> list[dict]:
                 "tok_tie": x["tok_tie_method"] + x["tok_tie_class"],
                 "unresolved": len(x["unresolved"]), "unresolved_values": " ".join(x["unresolved"]),
                 "tie": len(x["tie_method"]) + len(x["tie_field"]) + len(x["tie_class_method"]),
+                "tie_param": len(x.get("tie_param", [])),
+                "tie_no_param": len(x["tie_method"]) - len(x.get("tie_param", []))
+                + len(x["tie_field"]) + len(x["tie_class_method"]),
                 "tie_method_values": " ".join(x["tie_method"]),
                 "tie_class_values": " ".join(x["tie_field"] + [m + "()" for m in x["tie_class_method"]]),
                 "utility_values": " ".join(x["utility"]),
@@ -283,7 +291,7 @@ def outcome_rows(arm: str, chain: str, hosts: list[dict], streamed: dict[int, di
         rows.append({
             "arm": arm, "chain": chain, "cp": k, "identity": i,
             "identity_source": "codetracker" if i.startswith("ct:") else "instrument",
-            "type": h["type"], "name": h["name"],
+            "type": h["type"], "name": h["name"], "signature": h.get("signature"),
             "host_new": h["host_new"], "pre_positions": h["pre_positions"],
             "net_added": h["net_added"], "tie_method": h["tie_method"], "tie_class": h["tie_class"],
             "tie": h["tie"], "later_checkpoints": last - k,

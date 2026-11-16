@@ -31,14 +31,24 @@ SinewSlim analysis plan, and sinew identification (`PLAN.md` §1.1).
 ## Running
 
 ```sh
-./setup.sh    # .venv, the pinned OfficeFloorSlim 0.5.4 jar (sha256-checked), RefactoringMiner and
-              # CodeTracker (Maven), the instrument, the tests. Needs JDK 17+ and Maven.
-./pilot.sh    # the pilot: chain 9 of blind-202608100006/just-solve, both arms -> results/pilot/
+./step1_setup.sh    # .venv, the pinned OfficeFloorSlim 0.5.4 jar (sha256-checked), RefactoringMiner and
+                    # CodeTracker (Maven), the instrument and tests; then checks R and glmmTMB, records
+                    # every version in results/versions.txt and runs analysis/selftest.R.
+                    # Needs JDK 17+, Maven, and R with glmmTMB (Ubuntu: r-base r-cran-glmmtmb r-cran-jsonlite).
+./step2_runs.sh     # each stack's declared roots, then the chains runs.yaml names, pinned in results/heads.tsv
+./step3_measure.sh  # the instrument over every pinned chain -> results/measure/<analysis>/
+./step4_analyse.sh  # datasets (data/analysis/), models in R (estimates.json), verdicts with Holm (verdicts.json)
+./step5_report.sh   # results/analysis/<analysis>/REPORT.md and results/analysis/REPORT.md
 ```
 
-The pilot reads the harness's local clones (`~/compare/spring`, `~/compare/officefloor`) and its
-stream (`~/spring-petclinic-rest-long-degradation-test/checkpoints.yaml`). The same branches are
-published in `officefloor/spring-petclinic-rest`.
+Each step takes `--analysis NAME ...` to run only some analyses of `runs.yaml`. **Until the tag
+`plan-v1` exists, only the development analysis (`pilot`, chain 9) can be read**: steps 2 to 4
+refuse every other. `./pilot.sh` regenerates the pilot report in `results/pilot/`.
+
+The petclinic chains are read from the harness's local clones (`~/compare/spring`,
+`~/compare/officefloor`) and published in `officefloor/spring-petclinic-rest`; the ui stacks are
+cloned into `~/placement-gravity-data/`. The streams are read at the commits `runs.yaml` pins.
+`results/measure/` and `data/` are regenerated from the pinned heads and are not committed.
 
 | Code | |
 |---|---|
@@ -49,5 +59,12 @@ published in `officefloor/spring-petclinic-rest`.
 | `placement_gravity/chain.py` | A chain's checkpoints from git, the files of each addition, the wiring. |
 | `placement_gravity/tables.py` | Hosts, runs, additions and outcomes from the instrument's output. |
 | `placement_gravity/shape.py` | The shape competitors S1–S5 (PLAN.md §4.7) on each existing host at k − 1, with the complexity-concentration study's cognitive extractor and outlier rule (pinned in `requirements.txt`). |
+| `runs.yaml` | The runs read: streams pinned per run, repositories, and each analysis with its role. |
+| `placement_gravity/runs.py` | Step 2: the registry, the registration guard, the stacks' roots, fetching and pinning chains. |
+| `placement_gravity/measure.py` | Step 3: the instrument and tables over every pinned chain. |
+| `placement_gravity/prepare.py` | Step 4: the analysis datasets, the shape variation rule, the amount band and the wiring checks. |
+| `analysis/analyse.R` | Step 4: the models of PLAN.md §5 with glmmTMB (`analysis/selftest.R` checks them on simulated data). |
+| `placement_gravity/verdict.py` | Step 4: every decision rule and the Holm correction. |
+| `placement_gravity/report.py` | Step 5: the reports. |
 | `placement_gravity/pilot.py` | The pilot. |
 | `tests/` | Fixtures with known answers. |

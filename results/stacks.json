@@ -1,0 +1,26 @@
+{
+ "petclinic-spring": {
+  "java_src": "src/main/java/",
+  "wiring_root": "src/main/resources/officefloor/",
+  "source": "petclinic layout",
+  "base_ref": "spring-compare-no-tests"
+ },
+ "petclinic-officefloor": {
+  "java_src": "src/main/java/",
+  "wiring_root": "src/main/resources/officefloor/",
+  "source": "petclinic layout",
+  "base_ref": "officefloor-compare-no-tests"
+ },
+ "officehq-angular-spring": {
+  "java_src": "src/main/java/",
+  "wiring_root": "src/main/resources/officefloor/",
+  "source": "stack.yaml",
+  "base_ref": "base-empty"
+ },
+ "officehq-tanstack-officefloor": {
+  "java_src": "src/main/java/",
+  "wiring_root": "src/main/resources/officefloor/",
+  "source": "stack.yaml",
+  "base_ref": "base-empty"
+ }
+}

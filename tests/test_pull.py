@@ -101,6 +101,13 @@ def test_injected_parameters_do_not_tie_but_locals_do(records):
 def test_injected_parameters_tie_when_not_wired(tmp_path):
     r = measure(tmp_path, ["injected"], [])[("injected", "service")]
     assert not r["injected"] and run(r)["tie_method"] == ["a", "repo", "request"]
+    assert run(r)["tie_param"] == ["repo", "request"]   # a is a local
+
+
+def test_parameter_ties_are_split_out(records):
+    # code(String last, int seq): the edited line uses prefix (a local) and seq (a parameter)
+    assert run(records[("modify", "code")])["tie_param"] == ["seq"]
+    assert run(records[("accrete", "create")])["tie_param"] == []   # digits is a local
 
 
 def test_rename_hint_keeps_the_value_pre_existing(records):

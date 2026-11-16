@@ -58,10 +58,11 @@ def checkpoints(repo: Path, branch: str, base_ref: str) -> list[Checkpoint]:
     return [agents[k] for k in sorted(agents)]
 
 
-def changed_java(repo: Path, a: str, b: str) -> list[tuple[str | None, str | None]]:
+def changed_java(repo: Path, a: str, b: str, java_src: str = JAVA_SRC
+                 ) -> list[tuple[str | None, str | None]]:
     """(before path, after path) for every production .java file the diff a..b touches."""
     pairs = []
-    for line in git(repo, "diff", "--name-status", "-M", a, b, "--", JAVA_SRC).splitlines():
+    for line in git(repo, "diff", "--name-status", "-M", a, b, "--", java_src).splitlines():
         parts = line.split("\t")
         status = parts[0]
         if status.startswith("R"):
@@ -85,11 +86,11 @@ def materialise(repo: Path, rev: str, path: str, dest: Path) -> Path:
     return dest
 
 
-def wired_types(repo: Path, rev: str) -> set[str]:
+def wired_types(repo: Path, rev: str, root: str = WIRING) -> set[str]:
     """The simple names of the classes the OfficeFloor wiring at rev declares (``class:`` entries):
     their public methods are functions whose parameters the framework injects."""
     out = set()
-    for f in git(repo, "ls-tree", "-r", "--name-only", rev, "--", WIRING).splitlines():
+    for f in git(repo, "ls-tree", "-r", "--name-only", rev, "--", root).splitlines():
         if f.endswith((".yml", ".yaml")):
             for line in git(repo, "show", f"{rev}:{f}").splitlines():
                 m = re.match(r"\s*class:\s*([\w.$]+)", line.split("#", 1)[0])
@@ -98,9 +99,9 @@ def wired_types(repo: Path, rev: str) -> set[str]:
     return out
 
 
-def wiring(repo: Path, rev: str) -> dict:
+def wiring(repo: Path, rev: str, root: str = WIRING) -> dict:
     """The OfficeFloor wiring at rev (``parse_wiring``). Zero for an arm without wiring files."""
-    files = [f for f in git(repo, "ls-tree", "-r", "--name-only", rev, "--", WIRING).splitlines()
+    files = [f for f in git(repo, "ls-tree", "-r", "--name-only", rev, "--", root).splitlines()
              if f.endswith((".yml", ".yaml"))]
     return parse_wiring({f: git(repo, "show", f"{rev}:{f}") for f in files})
 
@@ -138,8 +139,11 @@ def parse_wiring(texts: dict[str, str]) -> dict:
             "largest_file": largest, "largest_lines": largest_lines}
 
 
-def measure(repo: Path, branch: str, base_ref: str, work: Path) -> dict:
-    """Run the instrument over every checkpoint of the chain; returns the parsed records."""
+def measure(repo: Path, branch: str, base_ref: str, work: Path, java_src: str = JAVA_SRC,
+            wiring_root: str = WIRING) -> dict:
+    """Run the instrument over every checkpoint of the chain; returns the parsed records.
+    ``java_src`` and ``wiring_root`` are the stack's production Java and OfficeFloor wiring roots
+    (the petclinic layout by default; a ui stack declares its own in ``stack.yaml``)."""
     if work.exists():
         shutil.rmtree(work)
     work.mkdir(parents=True)
@@ -147,7 +151,7 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path) -> dict:
     manifest, amounts, wires, shapes = [], [], {}, []
     for c in cps:
         unit = f"cp{c.cp:02d}"
-        for old, new in changed_java(repo, c.parent, c.commit):
+        for old, new in changed_java(repo, c.parent, c.commit, java_src):
             path = new or old
             before = (str(materialise(repo, c.parent, old, work / unit / "before" / old))
                       if old else "-")
@@ -156,18 +160,19 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path) -> dict:
             manifest.append(f"{unit}\t{path}\t{before}\t{after}")
         tree = work / unit / "tree"
         tree.mkdir(parents=True, exist_ok=True)
-        archive = subprocess.run(["git", "-C", str(repo), "archive", c.commit, JAVA_SRC],
+        archive = subprocess.run(["git", "-C", str(repo), "archive", c.commit, java_src],
                                  check=True, capture_output=True).stdout
         subprocess.run(["tar", "-x", "-C", str(tree)], input=archive, check=True)
         amounts.append(f"{unit}\t{tree}")
         # the tree at k - 1 (the agent commit's parent), for the hosts' shape before the addition
         prior = work / unit / "prior"
         prior.mkdir(parents=True, exist_ok=True)
-        archive = subprocess.run(["git", "-C", str(repo), "archive", c.parent, JAVA_SRC],
+        archive = subprocess.run(["git", "-C", str(repo), "archive", c.parent, java_src],
                                  check=True, capture_output=True).stdout
         subprocess.run(["tar", "-x", "-C", str(prior)], input=archive, check=True)
-        shapes.append(f"{unit}\t{prior}\t{','.join(sorted(wired_types(repo, c.parent))) or '-'}")
-        wires[unit] = {"before": wiring(repo, c.parent), "after": wiring(repo, c.commit)}
+        shapes.append(f"{unit}\t{prior}\t{','.join(sorted(wired_types(repo, c.parent, wiring_root))) or '-'}")
+        wires[unit] = {"before": wiring(repo, c.parent, wiring_root),
+                       "after": wiring(repo, c.commit, wiring_root)}
     (work / "manifest.tsv").write_text("\n".join(manifest) + "\n")
     # RefactoringMiner at each agent commit, and the injected (wired) types, as hints
     real = [(f"cp{c.cp:02d}", c.commit) for c in cps if not c.noop]
@@ -176,7 +181,7 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path) -> dict:
     for f in found:
         hint_lines += refactor.hints(f)
     for c in cps:
-        for t in sorted(wired_types(repo, c.commit)):
+        for t in sorted(wired_types(repo, c.commit, wiring_root)):
             hint_lines.append(f"cp{c.cp:02d}\tinjected\t{t}")
     (work / "hints.tsv").write_text("\n".join(hint_lines) + "\n")
     # a guard: every path a hint names must be a path of the manifest (or the hint can never apply)
