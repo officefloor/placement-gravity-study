@@ -1,0 +1,14 @@
+checkpoints:
+  - id: cp01_a
+    type: additive
+  - id: cp02_b
+    type: additive
+  - id: cp03_c
+    type: additive
+  - id: cp04_d
+    type: mutative
+    mutates: [3]
+  - id: cp05_e
+    type: additive
+  - id: cp06_f
+    type: additive

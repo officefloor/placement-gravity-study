@@ -128,6 +128,7 @@ def main() -> None:
             "intrusion_per_100": quantiles([x["intrusion_per_100"] for x in o
                                             if x["intrusion_per_100"] is not None]),
             "declared_touches": sum(x["declared"] for x in o),
+            "crossed_touches": sum(x["crossed"] for x in o),
             "codetracker": {k: v for k, v in cc.items()
                             if k not in ("per_method", "ct_identity", "ct_touched")},
             "outcomes_followed_by_codetracker": sum(1 for x in o if x["identity_source"] == "codetracker"),

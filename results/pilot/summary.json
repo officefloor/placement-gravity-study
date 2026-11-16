@@ -174,6 +174,7 @@
       "mean": 6.706
     },
     "declared_touches": 62,
+    "crossed_touches": 0,
     "codetracker": {
       "methods": 106,
       "errors": 1,
@@ -435,6 +436,7 @@
       "mean": 0.716
     },
     "declared_touches": 48,
+    "crossed_touches": 0,
     "codetracker": {
       "methods": 138,
       "errors": 1,
