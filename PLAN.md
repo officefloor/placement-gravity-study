@@ -333,6 +333,22 @@ addition lands in, at *k − 1*, before the addition. A new host has none of the
 S1 to S4 are read conventionally on both arms, so OfficeFloor's functions are priced as if they
 were ordinary methods; that is conservative towards OfficeFloor.
 
+**As built** (`Pull --shape`, `placement_gravity/shape.py`, 16 November 2026):
+
+- *k − 1* is the tree of the agent commit's parent, every production method of it, so S4's z-score
+  and S5's Gini see the whole checkpoint. An existing host is joined to its version there by its
+  before path, type and signature, as matched for the addition (§4.1); a host not found is
+  reported.
+- S2 counts SinewSlim's `not_slimmable` and `slimmable_with_record` together, the long-method-slim
+  study's *stuck*; strict `not_slimmable` and the obstacle are kept beside it. The assessor is
+  SinewSlim's defaults, which OfficeFloorSlim's conventional pricing also uses.
+- S3's calls are matched to the application's methods by name and arity, lexically, as the ties
+  are (§7, *Lexical names*). A call on an object of another type with a matching name counts.
+- S4 is the complexity-concentration study's own `cognitive.analyze` and `modified_z_scale`
+  (pinned at its commit `0f8e654`), over the method's original source lines. When more than half
+  the methods tie at the median, that study's mean-absolute-deviation scale applies, and the scale
+  used is recorded.
+
 **Reported, not tested:** the drafts' system-level series per arm and checkpoint, the
 not-slimmable methods per passing test and the share of complexity held by junctions. They are
 solution-only readings, kept so that the absorbed drafts' questions get an answer, and so that their
@@ -379,7 +395,10 @@ trajectories can be set beside the per-problem ones.
 - **The pilot** (15–16 November 2026, `results/pilot/PILOT.md`): the instrument on chain 9 of the
   just-solve run `blind-202608100006`, both arms. Descriptive figures for every measure were seen
   for that one pair of chains; no hypothesis statistic was computed. Those chains are excluded
-  from the registered analysis. The pilot raised six decisions (PILOT.md, *Decisions*), which are
+  from the registered analysis. The shape measures (§4.7) were added to it on 16 November 2026:
+  on that chain no method was stuck (S2), and the junction share of cognitive complexity rose in
+  the OfficeFloor arm (0.30 → 0.42) and not in Spring (0.33 → 0.31), against the absorbed
+  flow-injection draft's P1 direction. That reading is descriptive, of development data. The pilot raised six decisions (PILOT.md, *Decisions*), which are
   settled at registration.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
@@ -429,8 +448,9 @@ trajectories can be set beside the per-problem ones.
 2. ~~Run a pilot on **two chains** of one petclinic run, not among those named at registration,
    to check that the measures compute and are not degenerate.~~ Done 15 November 2026:
    `results/pilot/PILOT.md`.
-3. Build the shape measures of §4.7, the wiring conditions of §4.5, and the reader for the ui
-   stream's declared crossings, each tested on fixtures and on the pilot chain only.
+3. Build the shape measures of §4.7 (done 16 November 2026: `tests/test_shape.py`, and the pilot
+   chain), the wiring conditions of §4.5, and the reader for the ui stream's declared crossings,
+   each tested on fixtures and on the pilot chain only.
 4. Settle every **[DECIDE]** and register (tag `plan-v1`), before any ui run's backend Java is read.
 5. Run corpus A (petclinic, then the ui runs), then corpus B. Analyse once; record hashes.
 6. Write up, reporting every hypothesis whichever way it falls.

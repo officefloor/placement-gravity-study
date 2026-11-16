@@ -16,7 +16,7 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
-from . import refactor
+from . import refactor, shape
 
 ROOT = Path(__file__).resolve().parent.parent
 CLASSPATH = f"{ROOT / 'lib' / 'officefloorslim.jar'}:{ROOT / 'instrument' / 'classes'}"
@@ -131,7 +131,7 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path) -> dict:
         shutil.rmtree(work)
     work.mkdir(parents=True)
     cps = checkpoints(repo, branch, base_ref)
-    manifest, amounts, wires = [], [], {}
+    manifest, amounts, wires, shapes = [], [], {}, []
     for c in cps:
         unit = f"cp{c.cp:02d}"
         for old, new in changed_java(repo, c.parent, c.commit):
@@ -147,6 +147,13 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path) -> dict:
                                  check=True, capture_output=True).stdout
         subprocess.run(["tar", "-x", "-C", str(tree)], input=archive, check=True)
         amounts.append(f"{unit}\t{tree}")
+        # the tree at k - 1 (the agent commit's parent), for the hosts' shape before the addition
+        prior = work / unit / "prior"
+        prior.mkdir(parents=True, exist_ok=True)
+        archive = subprocess.run(["git", "-C", str(repo), "archive", c.parent, JAVA_SRC],
+                                 check=True, capture_output=True).stdout
+        subprocess.run(["tar", "-x", "-C", str(prior)], input=archive, check=True)
+        shapes.append(f"{unit}\t{prior}\t{','.join(sorted(wired_types(repo, c.parent))) or '-'}")
         wires[unit] = {"before": wiring(repo, c.parent), "after": wiring(repo, c.commit)}
     (work / "manifest.tsv").write_text("\n".join(manifest) + "\n")
     # RefactoringMiner at each agent commit, and the injected (wired) types, as hints
@@ -178,9 +185,14 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path) -> dict:
                     str(work / "hints.tsv"), str(work / "pull.jsonl")], check=True)
     subprocess.run(["java", "-cp", CLASSPATH, "Pull", "--amount", str(work / "amount.tsv"),
                     str(work / "amount.jsonl")], check=True)
+    (work / "shape.tsv").write_text("\n".join(shapes) + "\n")
+    shaped = shape.run(work / "shape.tsv", work / "shape.jsonl")
+    trees = {line.split("\t")[0]: Path(line.split("\t")[1]) for line in shapes}
+    methods = shape.complete(shaped, trees)
     records = [json.loads(l) for l in (work / "pull.jsonl").read_text().splitlines() if l]
     amount = {r["unit"]: r for r in
               (json.loads(l) for l in (work / "amount.jsonl").read_text().splitlines() if l)}
     return {"checkpoints": [c.__dict__ for c in cps], "records": records, "amount": amount,
             "wiring": wires, "refactorings": found, "hints": len(hint_lines),
+            "shape": methods, "shape_problems": [r for r in shaped if r["kind"] == "problem"],
             "hints_unmatched": unmatched}

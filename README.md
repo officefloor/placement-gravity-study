@@ -42,11 +42,12 @@ published in `officefloor/spring-petclinic-rest`.
 
 | Code | |
 |---|---|
-| `instrument/Pull.java` | The instrument: per addition, hosts, runs and their ties (method and class), birth ties, moved code; the amount. |
+| `instrument/Pull.java` | The instrument: per addition, hosts, runs and their ties (method and class), birth ties, moved code; the amount; with `--shape`, every method of a tree as the earlier studies read it (SinewSlim's length and assessment, junction counts). |
 | `refactor/` | RefactoringMiner 3.0.4 at each commit (`Refactorings.java`) and CodeTracker 2.6 histories (`Histories.java`), built by Maven. |
 | `placement_gravity/refactor.py` | RefactoringMiner's findings as the instrument's hints: renames, matches, moved code. |
 | `placement_gravity/crosscheck.py` | CodeTracker against the instrument's following of hosts. |
 | `placement_gravity/chain.py` | A chain's checkpoints from git, the files of each addition, the wiring. |
 | `placement_gravity/tables.py` | Hosts, runs, additions and outcomes from the instrument's output. |
+| `placement_gravity/shape.py` | The shape competitors S1–S5 (PLAN.md §4.7) on each existing host at k − 1, with the complexity-concentration study's cognitive extractor and outlier rule (pinned in `requirements.txt`). |
 | `placement_gravity/pilot.py` | The pilot. |
 | `tests/` | Fixtures with known answers. |

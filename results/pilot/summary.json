@@ -187,7 +187,65 @@
       "methods_renamed_or_moved": 6,
       "methods_renamed_or_moved_identical": 3
     },
-    "outcomes_followed_by_codetracker": 153
+    "outcomes_followed_by_codetracker": 153,
+    "shape_problems": 0,
+    "shape_errors": 0,
+    "existing_hosts_shape_found": 62,
+    "existing_hosts_shape_missing": 0,
+    "existing_hosts_by_shape": {
+      "s1_long": 23,
+      "s2_stuck": 0,
+      "s2_not_slimmable": 0,
+      "s3_junction": 35,
+      "s4_outlier": 28
+    },
+    "existing_hosts_s2_status": {
+      "slimmable": 15,
+      "slimmable_but_locked": 8,
+      "under_cap": 39
+    },
+    "existing_hosts_s5_class_gini": {
+      "n": 62,
+      "min": 0.0,
+      "p25": 0.3373,
+      "median": 0.4258,
+      "p75": 0.4359,
+      "p90": 0.4483,
+      "max": 0.4511,
+      "mean": 0.385
+    },
+    "series_first_last": [
+      {
+        "arm": "spring",
+        "chain": "chain9",
+        "cp": 1,
+        "methods": 278,
+        "positions": 922,
+        "long": 3,
+        "stuck": 0,
+        "not_slimmable": 0,
+        "junctions": 48,
+        "cognitive": 158,
+        "junction_share": 0.3291,
+        "outliers": 16,
+        "errors": 0
+      },
+      {
+        "arm": "spring",
+        "chain": "chain9",
+        "cp": 60,
+        "methods": 378,
+        "positions": 1395,
+        "long": 5,
+        "stuck": 0,
+        "not_slimmable": 0,
+        "junctions": 69,
+        "cognitive": 329,
+        "junction_share": 0.31,
+        "outliers": 21,
+        "errors": 0
+      }
+    ]
   },
   "officefloor": {
     "branch": "evolve/blind-202608100006/just-solve/officefloor/chain9",
@@ -366,6 +424,63 @@
       "methods_renamed_or_moved": 7,
       "methods_renamed_or_moved_identical": 2
     },
-    "outcomes_followed_by_codetracker": 169
+    "outcomes_followed_by_codetracker": 169,
+    "shape_problems": 0,
+    "shape_errors": 0,
+    "existing_hosts_shape_found": 52,
+    "existing_hosts_shape_missing": 0,
+    "existing_hosts_by_shape": {
+      "s1_long": 1,
+      "s2_stuck": 0,
+      "s2_not_slimmable": 0,
+      "s3_junction": 35,
+      "s4_outlier": 17
+    },
+    "existing_hosts_s2_status": {
+      "slimmable": 1,
+      "under_cap": 51
+    },
+    "existing_hosts_s5_class_gini": {
+      "n": 52,
+      "min": 0.0,
+      "p25": 0.0,
+      "median": 0.0,
+      "p75": 0.3333,
+      "p90": 0.3515,
+      "max": 0.5556,
+      "mean": 0.156
+    },
+    "series_first_last": [
+      {
+        "arm": "officefloor",
+        "chain": "chain9",
+        "cp": 1,
+        "methods": 256,
+        "positions": 724,
+        "long": 2,
+        "stuck": 0,
+        "not_slimmable": 0,
+        "junctions": 54,
+        "cognitive": 124,
+        "junction_share": 0.2984,
+        "outliers": 13,
+        "errors": 0
+      },
+      {
+        "arm": "officefloor",
+        "chain": "chain9",
+        "cp": 60,
+        "methods": 391,
+        "positions": 1225,
+        "long": 4,
+        "stuck": 0,
+        "not_slimmable": 0,
+        "junctions": 92,
+        "cognitive": 339,
+        "junction_share": 0.4248,
+        "outliers": 25,
+        "errors": 0
+      }
+    ]
   }
 }

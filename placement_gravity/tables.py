@@ -45,6 +45,10 @@ def _hosts(measured: dict):
 
 
 def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
+    """One row per host and addition. With ``measured["shape"]`` (chain.measure), an existing
+    host also carries S1 to S5 of its version at k − 1 (PLAN.md §4.7, ``shape.host_shape``)."""
+    from . import shape
+    shaped = shape.index(measured.get("shape", []))
     rows = []
     for r in _hosts(measured):
         moved = r["moved_rm"] + r["moved_text"]
@@ -58,6 +62,7 @@ def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
             "arm": arm, "chain": chain, "cp": int(r["unit"][2:]), "path": r["path"],
             "type": r["type"], "name": r["name"], "signature": r["signature"],
             "before_type": r["before_type"], "before_name": r["before_name"],
+            "before_path": r.get("before_path"), "before_signature": r.get("before_signature"),
             "host_new": r["host_new"], "class_new": r["class_new"], "injected": r["injected"],
             "pre_positions": r["pre_positions"], "post_positions": r["post_positions"],
             "added": r["added"], "moved_rm": r["moved_rm"], "moved_text": r["moved_text"],
@@ -73,6 +78,8 @@ def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
             "tie_class_values": " ".join(tf + [m + "()" for m in tc]),
             "params": r["params"],
         })
+        if shaped:
+            rows[-1].update(shape.host_shape(rows[-1], shaped))
     return rows
 
 

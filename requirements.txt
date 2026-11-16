@@ -1,2 +1,3 @@
 pyyaml==6.0.3
 pytest==8.4.2
+complexity-concentration-study @ git+https://github.com/officefloor/complexity-concentration-study@0f8e654bddae7bc0d4536f87a043375b8edcc271

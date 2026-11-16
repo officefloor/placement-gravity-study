@@ -147,6 +147,45 @@ to see forcing grow with host size (H1) or to compare forced with chosen (H2) wi
 spread is widest at ≥ 2. The higher cuts thin quickly: at ≥ 4 there are 5 runs over both arms in
 one chain each, or roughly 50 over ten chains per arm.
 
+## The shape competitors (§4.7), added 16 November 2026
+
+Read on each existing host at its version before the addition, over every production method of
+the tree at k − 1 (`shape_series.csv`, and the `s*` columns of `hosts.csv`). Every existing host
+was found there (Spring 62, OfficeFloor 52); no file failed to parse and no assessment failed.
+
+| Existing hosts | Spring (62) | OfficeFloor (52) |
+|---|---|---|
+| S1 long (26+ code lines) | 23 | 1 |
+| S2 stuck (not slimmable, or only with a record) | 0 | 0 |
+| S2 status | 39 under the cap, 15 slimmable, 8 slimmable but locked | 51 under the cap, 1 slimmable |
+| S3 junction (*d* > 0) | 35 | 35 |
+| S4 complexity outlier (modified z ≥ 3.5) | 28 | 17 |
+| S5 class Gini, median | 0.43 | 0.00 |
+
+Over the whole tree, cp1 → cp60:
+
+| | Spring | OfficeFloor |
+|---|---|---|
+| Methods | 278 → 378 | 256 → 391 |
+| Long / stuck | 3 / 0 → 5 / 0 | 2 / 0 → 4 / 0 |
+| Junction share of cognitive complexity | 0.33 → 0.31 | 0.30 → 0.42 |
+| Complexity outliers | 16 → 21 | 13 → 25 |
+
+Three things follow for H2b:
+
+- **S2 is degenerate on this stream.** No method in either arm, at any checkpoint, is stuck. A
+  measure with no variation cannot enter the model. The 60-checkpoint petclinic stream may simply
+  not grow methods that far; the ui stream has 250. **Open (decision 8).**
+- **S1 is nearly degenerate in OfficeFloor** (1 of 52 hosts), as its functions stay short.
+- **S4's flag is broad.** Cognitive complexity is zero-heavy, so the median absolute deviation is
+  zero and the complexity-concentration study's fallback scale applies. Hosts from cognitive 3
+  (Spring) or 4 (OfficeFloor) upwards are flagged: 45% of Spring's existing hosts. The flag then
+  reads as "has some control flow" rather than as an outlier. **Open (decision 9).**
+
+The rise in OfficeFloor's junction share is a descriptive reading of one development chain, which is
+excluded from the analysis. It runs against the absorbed flow-injection draft's P1 direction and
+is recorded here because it was seen before registration (PLAN.md §6).
+
 ## Verdict per measure
 
 - **Method and class ties** compute in both arms and vary: per run 0–5 in Spring and 0–5 in
@@ -154,6 +193,8 @@ one chain each, or roughly 50 over ten chains per arm.
 - **Utility, organisation, birth ties and unresolved references** are all rare here. Each is
   reported, so a change of this in other chains will show.
 - **Placement, dispersion, amount, wiring and outcomes** compute and vary.
+- **Shape (S1–S5)** computes on every existing host. S2 does not vary, S1 hardly varies in
+  OfficeFloor, and S4's flag is broad (decisions 8 and 9). S3 and S5 vary.
 
 ## Decisions
 
@@ -178,9 +219,18 @@ Open:
 7. **Run and chains.** Chain 9 of `blind-202608100006/just-solve` stays development data, excluded
    in both arms. The ui-long-degradation Run A is proposed as primary data (PLAN.md §3.1a), on two
    conditions that protect the flow-injection-containment plan.
+8. **A shape measure with no variation.** Proposal: a shape measure that does not vary in a corpus
+   (for example, fewer than 10 hosts flagged over all chains of an arm) leaves the H2b block for
+   that corpus and is reported as such. H2b is then read on the measures that remain, and the
+   equivalence bound is not taken as met for the measure that left.
+9. **S4 as a flag or a level.** Proposal: enter cognitive complexity as log(1 + cognitive), a
+   continuous measure, with the outlier flag reported beside it. On zero-heavy data the flag
+   measures whether there is control flow, not whether the method is an outlier.
 
 ## Limits
 
 One chain per arm, written by one agent. Names are matched lexically, with no symbol solver.
 Outcomes follow surviving methods by CodeTracker and removed ones by name and RefactoringMiner's
 renames; class-level identity is not followed by CodeTracker's class tracker yet. Positions are those of the pretty-printed source.
+S3's calls are matched by name and arity, so a call on another type's method of the same name
+and arity counts.

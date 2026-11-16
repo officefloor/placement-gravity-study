@@ -12,7 +12,7 @@ import json
 import statistics
 from pathlib import Path
 
-from . import chain, crosscheck, tables
+from . import chain, crosscheck, shape, tables
 
 HOME = Path.home()
 HARNESS = HOME / "spring-petclinic-rest-long-degradation-test"
@@ -51,7 +51,7 @@ def main() -> None:
     ap.add_argument("--work", type=Path, default=chain.ROOT / ".tmp" / "pilot")
     a = ap.parse_args()
     streamed = tables.stream(HARNESS / "checkpoints.yaml")
-    hosts, runs, classes, adds, outs, summary = [], [], [], [], [], {}
+    hosts, runs, classes, adds, outs, series, summary = [], [], [], [], [], [], {}
     for arm, (repo, base) in ARMS.items():
         branch = f"evolve/{RUN}/{STRATEGY}/{arm}/{CHAIN}"
         measured = chain.measure(repo, branch, base, a.work / arm)
@@ -61,7 +61,8 @@ def main() -> None:
         ad = tables.addition_rows(arm, CHAIN, measured, h, streamed)
         cc = crosscheck.crosscheck(repo, measured, h, a.work / arm)
         o = tables.outcome_rows(arm, CHAIN, h, streamed, cc)
-        hosts += h; runs += r; classes += cl; adds += ad; outs += o
+        se = shape.series_rows(arm, CHAIN, measured["shape"])
+        hosts += h; runs += r; classes += cl; adds += ad; outs += o; series += se
         (a.out / f"codetracker-{arm}.json").parent.mkdir(parents=True, exist_ok=True)
         (a.out / f"codetracker-{arm}.json").write_text(json.dumps(
             {k: v for k, v in cc.items() if k not in ("ct_identity", "ct_touched")}, indent=1) + "\n")
@@ -130,12 +131,26 @@ def main() -> None:
             "codetracker": {k: v for k, v in cc.items()
                             if k not in ("per_method", "ct_identity", "ct_touched")},
             "outcomes_followed_by_codetracker": sum(1 for x in o if x["identity_source"] == "codetracker"),
+            # §4.7: the shape competitors on existing hosts at k - 1 (descriptive; no H2 statistic)
+            "shape_problems": len(measured["shape_problems"]),
+            "shape_errors": sum(x["errors"] for x in se),
+            "existing_hosts_shape_found": sum(1 for x in real if not x["host_new"] and x["shape_found"]),
+            "existing_hosts_shape_missing": sum(1 for x in real if not x["host_new"] and not x["shape_found"]),
+            "existing_hosts_by_shape": {
+                c: sum(1 for x in real if not x["host_new"] and x.get(c))
+                for c in ("s1_long", "s2_stuck", "s2_not_slimmable", "s3_junction", "s4_outlier")},
+            "existing_hosts_s2_status": dist([x["s2_status"] for x in real
+                                             if not x["host_new"] and x["shape_found"]]),
+            "existing_hosts_s5_class_gini": quantiles([x["s5_class_gini"] for x in real
+                                                      if not x["host_new"] and x["shape_found"]]),
+            "series_first_last": [se[0], se[-1]] if se else None,
         }
     write(a.out / "hosts.csv", hosts)
     write(a.out / "runs.csv", runs)
     write(a.out / "classes.csv", classes)
     write(a.out / "additions.csv", adds)
     write(a.out / "outcomes.csv", outs)
+    write(a.out / "shape_series.csv", series)
     (a.out / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
     print(json.dumps(summary, indent=2))
 

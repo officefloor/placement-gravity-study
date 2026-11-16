@@ -41,6 +41,8 @@ import com.github.javaparser.printer.configuration.DefaultConfigurationOption;
 import com.github.javaparser.printer.configuration.DefaultPrinterConfiguration;
 import com.github.javaparser.printer.configuration.DefaultPrinterConfiguration.ConfigOption;
 
+import net.officefloor.sinewslim.core.Assessment;
+import net.officefloor.sinewslim.core.Assessor;
 import net.officefloor.sinewslim.facts.MethodIndex;
 import net.officefloor.sinewslim.facts.Seam;
 import net.officefloor.sinewslim.facts.Var;
@@ -70,6 +72,7 @@ import net.officefloor.sinewslim.javaparser.ParsedFile;
  * <pre>
  * java -cp lib/officefloorslim.jar:instrument/classes Pull MANIFEST.tsv HINTS.tsv OUT.jsonl
  * java -cp lib/officefloorslim.jar:instrument/classes Pull --amount LISTING.tsv OUT.jsonl
+ * java -cp lib/officefloorslim.jar:instrument/classes Pull --shape LISTING.tsv OUT.jsonl
  * </pre>
  *
  * MANIFEST.tsv: {@code unit<TAB>path<TAB>before<TAB>after} per changed file ("-" for none).
@@ -91,7 +94,7 @@ import net.officefloor.sinewslim.javaparser.ParsedFile;
 public final class Pull {
 
 	/** Bump whenever a field's meaning changes. */
-	static final int VERSION = 2;
+	static final int VERSION = 3;
 
 	/** A removed position's text must be at least this long to mark an added one as moved. */
 	static final int MOVED_MIN_CHARS = 12;
@@ -101,6 +104,10 @@ public final class Pull {
 	public static void main(String[] args) throws Exception {
 		if (args[0].equals("--amount")) {
 			amount(Path.of(args[1]), Path.of(args[2]));
+			return;
+		}
+		if (args[0].equals("--shape")) {
+			shape(Path.of(args[1]), Path.of(args[2]));
 			return;
 		}
 		if (args[0].equals("--methods")) {
@@ -470,6 +477,8 @@ public final class Pull {
 			s.append(",\"signature\":").append(q(m.signature));
 			s.append(",\"before_type\":").append(isNew ? "null" : q(b.type));
 			s.append(",\"before_name\":").append(isNew ? "null" : q(b.name));
+			s.append(",\"before_path\":").append(isNew ? "null" : q(b.file));
+			s.append(",\"before_signature\":").append(isNew ? "null" : q(b.signature));
 			s.append(",\"host_new\":").append(isNew);
 			s.append(",\"class_new\":").append(bt == null);
 			s.append(",\"injected\":").append(isInjected(m));
@@ -904,6 +913,116 @@ public final class Pull {
 				}
 			}
 		}
+	}
+
+	// ----------------------------------------------------------------------------------------
+	// shape (PLAN.md §4.7): every method of a tree, as the earlier studies read it
+	// ----------------------------------------------------------------------------------------
+
+	/**
+	 * For each line {@code unit<TAB>dir<TAB>injected} (injected: comma-separated simple names of the
+	 * wired types, or "-"), one record per method of every .java file under dir: its positions, SinewSlim's
+	 * code lines and conventional assessment ({@link Assessor#DEFAULTS}, as OfficeFloorSlim's conventional
+	 * pricing), and the junction counts. {@code in}: the parameters that are not injected. {@code out}: the
+	 * arguments the method passes on calls to the application's own methods (a call whose name and arity
+	 * match a method declared in the tree, matched lexically). The original line range is given so that
+	 * complexity can be read from the source text.
+	 */
+	static void shape(Path listing, Path out) throws IOException {
+		try (BufferedWriter w = Files.newBufferedWriter(out, StandardCharsets.UTF_8)) {
+			for (String[] r : rows(listing)) {
+				for (String line : shapeOf(r[0], Path.of(r[1]),
+						r.length > 2 && !r[2].equals("-") ? Set.of(r[2].split(",")) : Set.of())) {
+					w.write(line);
+					w.write('\n');
+				}
+			}
+		}
+	}
+
+	record Shaped(String rel, F f, List<MethodUnit> om, List<Node> oc) {
+	}
+
+	static List<String> shapeOf(String unit, Path root, Set<String> injectedTypes) throws IOException {
+		List<String> out = new ArrayList<>();
+		List<Path> files;
+		try (var s = Files.walk(root)) {
+			files = s.filter(p -> p.toString().endsWith(".java")).sorted().toList();
+		}
+		List<Shaped> parsed = new ArrayList<>();
+		Set<String> appMethods = new HashSet<>();
+		for (Path p : files) {
+			String rel = root.relativize(p).toString();
+			List<String> probs = new ArrayList<>();
+			F f = file(rel, p, probs, unit);
+			out.addAll(probs);
+			if (!probs.isEmpty()) {
+				continue;
+			}
+			String source;
+			try {
+				source = Files.readString(p, StandardCharsets.UTF_8);
+			} catch (java.nio.charset.MalformedInputException e) {
+				source = Files.readString(p, StandardCharsets.ISO_8859_1);
+			}
+			ParsedFile o = JavaFacts.parse(rel, source);
+			CompilationUnit cu = parse(source);
+			List<Node> oc = cu == null ? List.of() : callables(cu);
+			if (o.problem() != null || o.methods().size() != f.methods().size() || oc.size() != f.methods().size()) {
+				out.add(problem(unit, rel, "shape: original and printed callables differ"));
+				continue;
+			}
+			for (MethodUnit u : o.methods()) {
+				appMethods.add(u.name() + "/" + paramCount(u.signature()));
+			}
+			parsed.add(new Shaped(rel, f, o.methods(), oc));
+		}
+		int trigger = Assessor.DEFAULTS.params().trigger();
+		for (Shaped sh : parsed) {
+			for (int i = 0; i < sh.f.methods().size(); i++) {
+				M m = sh.f.methods().get(i);
+				MethodUnit u = sh.om.get(i);
+				Node c = sh.oc.get(i);
+				String status, obstacle = null;
+				try {
+					Assessment a = Assessor.DEFAULTS.assess(u.facts());
+					status = a.status().name().toLowerCase();
+					obstacle = a.obstacle() == null ? null : a.obstacle().name().toLowerCase();
+				} catch (RuntimeException | StackOverflowError e) {
+					status = "error";
+				}
+				String simple = m.type.substring(m.type.lastIndexOf('.') + 1);
+				boolean injected = injectedTypes.contains(simple) && c instanceof MethodDeclaration md && md.isPublic();
+				int in = injected ? 0 : paramCount(m.signature);
+				int passed = 0, calls = 0;
+				for (MethodCallExpr mc : c.findAll(MethodCallExpr.class)) {
+					if (enclosingCallable(mc) != c || !appMethods.contains(mc.getNameAsString() + "/" + mc.getArguments().size())) {
+						continue;
+					}
+					calls++;
+					passed += mc.getArguments().size();
+				}
+				int length = u.facts().length();
+				out.add("{\"v\":" + VERSION + ",\"kind\":\"shape\",\"unit\":" + q(unit) + ",\"path\":" + q(sh.rel)
+						+ ",\"type\":" + q(m.type) + ",\"name\":" + q(m.name) + ",\"signature\":" + q(m.signature)
+						+ ",\"decl_line\":" + u.declLine() + ",\"end_line\":" + u.endLine()
+						+ ",\"positions\":" + m.lines.length + ",\"length\":" + length
+						+ ",\"long\":" + (length >= trigger) + ",\"status\":" + q(status)
+						+ ",\"obstacle\":" + (obstacle == null ? "null" : q(obstacle))
+						+ ",\"injected\":" + injected + ",\"in\":" + in + ",\"out\":" + passed + ",\"calls\":" + calls
+						+ "}");
+			}
+		}
+		return out;
+	}
+
+	/** The nearest callable enclosing n: a call in an anonymous class's method belongs to that method. */
+	static Node enclosingCallable(Node n) {
+		Node p = n.getParentNode().orElse(null);
+		while (p != null && !(p instanceof CallableDeclaration || p instanceof CompactConstructorDeclaration)) {
+			p = p.getParentNode().orElse(null);
+		}
+		return p;
 	}
 
 	// ----------------------------------------------------------------------------------------
