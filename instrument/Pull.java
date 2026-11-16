@@ -75,7 +75,8 @@ import net.officefloor.sinewslim.javaparser.ParsedFile;
  * java -cp lib/officefloorslim.jar:instrument/classes Pull --shape LISTING.tsv OUT.jsonl
  * </pre>
  *
- * MANIFEST.tsv: {@code unit<TAB>path<TAB>before<TAB>after} per changed file ("-" for none).
+ * MANIFEST.tsv: {@code unit<TAB>path<TAB>before<TAB>after[<TAB>beforePath]} per changed file ("-" for
+ * none; beforePath is the before version's own path where the file was renamed, else path).
  * HINTS.tsv ("-" for none), per line {@code unit<TAB>kind<TAB>...}:
  * <ul>
  * <li>{@code method bPath bLine aPath aLine}: the before method containing bLine is the after method
@@ -94,7 +95,7 @@ import net.officefloor.sinewslim.javaparser.ParsedFile;
 public final class Pull {
 
 	/** Bump whenever a field's meaning changes. */
-	static final int VERSION = 5;
+	static final int VERSION = 6;
 
 	/** A removed position's text must be at least this long to mark an added one as moved. */
 	static final int MOVED_MIN_CHARS = 12;
@@ -200,7 +201,7 @@ public final class Pull {
 			for (String[] r : files) {
 				try {
 					if (!r[2].equals("-")) {
-						F f = file(r[1], Path.of(r[2]), out, unit);
+						F f = file(r.length > 4 && !r[4].equals("-") ? r[4] : r[1], Path.of(r[2]), out, unit);
 						before.addAll(f.methods);
 						typesBefore.addAll(f.types);
 					}
@@ -238,6 +239,8 @@ public final class Pull {
 				String h = host(m);
 				if (h != null) {
 					out.add(h);
+				} else if (match.get(m) != null && !sameKey(m, match.get(m))) {
+					out.add(carried(unit, match.get(m), m));
 				}
 			}
 			return out;
@@ -501,6 +504,20 @@ public final class Pull {
 				}
 			}
 			s.append(",\"organisation\":").append(nOrganisation);
+			// the line facts for following a problem's own lines (PLAN.md 4.4): per after position, the
+			// before position it is kept from (-1: not kept) and its kind (-1 kept, 0 added logic, 1 moved
+			// by RefactoringMiner, 2 moved by text, 3 organisation); the text hash of every position
+			int[] pair = isNew ? null : pairOf.get(m);
+			s.append(",\"pair\":[");
+			for (int i = 0; i < a.length; i++) {
+				s.append(i > 0 ? "," : "").append(pair == null ? -1 : pair[i]);
+			}
+			s.append("],\"kinds\":[");
+			for (int i = 0; i < a.length; i++) {
+				s.append(i > 0 ? "," : "").append(a[i] ? mk[i] : -1);
+			}
+			s.append("],\"hash\":").append(hashes(m.texts));
+			s.append(",\"before_hash\":").append(isNew ? "[]" : hashes(b.texts));
 			List<int[]> runs = new ArrayList<>();
 			for (int i = 0; i < a.length;) {
 				if (a[i] && mk[i] == 0) {
@@ -841,7 +858,27 @@ public final class Pull {
 	static String removedHost(String unit, M b) {
 		return "{\"v\":" + VERSION + ",\"kind\":\"removed\",\"unit\":" + q(unit) + ",\"path\":" + q(b.file)
 				+ ",\"type\":" + q(b.type) + ",\"name\":" + q(b.name) + ",\"signature\":" + q(b.signature)
-				+ ",\"pre_positions\":" + b.lines.length + "}";
+				+ ",\"pre_positions\":" + b.lines.length + ",\"before_hash\":" + hashes(b.texts) + "}";
+	}
+
+	static boolean sameKey(M a, M b) {
+		return a.file.equals(b.file) && a.type.equals(b.type) && a.signature.equals(b.signature);
+	}
+
+	/** An unchanged method whose path, type or signature changed: its lines are carried to the new key. */
+	static String carried(String unit, M b, M m) {
+		return "{\"v\":" + VERSION + ",\"kind\":\"carried\",\"unit\":" + q(unit) + ",\"path\":" + q(m.file)
+				+ ",\"type\":" + q(m.type) + ",\"name\":" + q(m.name) + ",\"signature\":" + q(m.signature)
+				+ ",\"before_path\":" + q(b.file) + ",\"before_type\":" + q(b.type) + ",\"before_signature\":"
+				+ q(b.signature) + ",\"positions\":" + m.lines.length + "}";
+	}
+
+	static String hashes(String[] texts) {
+		StringBuilder b = new StringBuilder("[");
+		for (int i = 0; i < texts.length; i++) {
+			b.append(i > 0 ? "," : "").append(texts[i].hashCode());
+		}
+		return b.append(']').toString();
 	}
 
 	/**
@@ -888,17 +925,19 @@ public final class Pull {
 				try (var s = Files.walk(root)) {
 					files = s.filter(p -> p.toString().endsWith(".java")).sorted().toList();
 				}
-				int methods = 0, positions = 0, problems = 0;
+				int methods = 0, positions = 0, problems = 0, largest = 0;
 				for (Path p : files) {
 					List<String> probs = new ArrayList<>();
 					for (M m : file(root.relativize(p).toString(), p, probs, r[0]).methods) {
 						methods++;
 						positions += m.lines.length;
+						largest = Math.max(largest, m.lines.length);
 					}
 					problems += probs.size();
 				}
 				w.write("{\"v\":" + VERSION + ",\"kind\":\"amount\",\"unit\":" + q(r[0]) + ",\"files\":" + files.size()
-						+ ",\"methods\":" + methods + ",\"positions\":" + positions + ",\"problems\":" + problems
+						+ ",\"methods\":" + methods + ",\"positions\":" + positions + ",\"largest\":" + largest
+							+ ",\"problems\":" + problems
 						+ "}\n");
 			}
 		}

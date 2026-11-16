@@ -25,7 +25,7 @@ import random
 import statistics
 from pathlib import Path
 
-from . import chain, runs, wiring
+from . import chain, readings, runs, wiring
 
 DATA = chain.ROOT / "data" / "analysis"
 SEED = 20261116
@@ -66,6 +66,7 @@ def gather(analysis: str, table: str, root: Path | None = None) -> list[dict]:
 
 
 def h1_rows(run_rows: list[dict], host_rows: list[dict], streamed: dict) -> list[dict]:
+    prior = readings.prior_tie_mean(run_rows)
     cls = {(h["chain_id"], h["cp"], h["type"], h["signature"]): h.get("s5_class_positions")
            for h in host_rows}
     out = []
@@ -81,6 +82,8 @@ def h1_rows(run_rows: list[dict], host_rows: list[dict], streamed: dict) -> list
             "tie_class_no_injected": int(r["tie_class_no_injected"]),
             "pre_positions": int(r["pre_positions"]),
             "class_positions": num(cls.get((r["chain_id"], r["cp"], r["type"], r["signature"]))),
+            # the chain's mean ties per run over its earlier checkpoints (formation, PLAN.md 5)
+            "prior_tie_mean": prior.get((r["chain_id"], cp)),
         })
     return out
 
@@ -97,7 +100,11 @@ def h2_rows(outcomes: list[dict], host_rows: list[dict], additions: list[dict],
         row = {
             "chain_id": o["chain_id"], "arm": o["arm"], "frontend": o.get("frontend", ""),
             "cp": cp, "act": s.get("act"),
-            "intrusion": int(o["intrusion"]), "later_checkpoints": int(o["later_checkpoints"]),
+            # intrusion on the problem's own lines (PLAN.md 4.4); the host-level count beside it
+            "intrusion": int(o["intrusion"]),
+            "intrusion_host": int(o.get("intrusion_host", o["intrusion"])),
+            "own_lines": num(o.get("own_lines")), "own_lost": num(o.get("own_lost")),
+            "later_checkpoints": int(o["later_checkpoints"]),
             "tie": int(o["tie"]), "tie_no_param": int(h.get("tie_no_param", o["tie"])),
             "tie_no_injected": int(h.get("tie_no_injected", o["tie"])),
             "net_added": int(o["net_added"]),
@@ -129,16 +136,22 @@ def shape_kept(h2: list[dict]) -> tuple[list[str], dict]:
 
 
 def amount(additions: list[dict], seed: int = SEED, resamples: int = 10_000) -> dict:
-    """H3's amount band: each chain's positions at its final checkpoint; the ratio of the function
-    arm's mean to the methods arm's, with a bootstrap interval (chains resampled within arm)."""
-    final: dict[str, tuple[int, str, float]] = {}
+    """H3's amount band, read on the **amount added**: each chain's positions at its final
+    checkpoint less those of its base (PLAN.md §4.6); the ratio of the function arm's mean to the
+    methods arm's, with a bootstrap interval (chains resampled within arm). The ratio of the totals
+    is reported beside it (``ratio_total``)."""
+    final: dict[str, tuple[int, str, float, float]] = {}
     for a in additions:
         cp = int(a["cp"])
         if a["chain_id"] not in final or cp > final[a["chain_id"]][0]:
-            final[a["chain_id"]] = (cp, a["arm"], float(a["amount_positions"]))
+            total = float(a["amount_positions"])
+            added = float(a["amount_added"]) if a.get("amount_added") not in (None, "") else total
+            final[a["chain_id"]] = (cp, a["arm"], added, total)
     by_arm: dict[str, list[float]] = {}
-    for _, arm, v in final.values():
+    totals: dict[str, list[float]] = {}
+    for _, arm, v, t in final.values():
         by_arm.setdefault(arm, []).append(v)
+        totals.setdefault(arm, []).append(t)
     m, f = by_arm.get(METHODS_ARM, []), by_arm.get(FUNCTION_ARM, [])
     if not m or not f:
         return {"ratio": None, "interval": None, "in_band": None, "per_arm": by_arm}
@@ -149,7 +162,9 @@ def amount(additions: list[dict], seed: int = SEED, resamples: int = 10_000) -> 
     interval = [draws[int(0.025 * (resamples - 1))], draws[int(0.975 * (resamples - 1))]]
     return {"ratio": ratio, "interval": interval,
             "in_band": AMOUNT_BAND[0] <= ratio <= AMOUNT_BAND[1], "band": AMOUNT_BAND,
-            "per_arm": {k: statistics.fmean(v) for k, v in by_arm.items()}}
+            "per_arm": {k: statistics.fmean(v) for k, v in by_arm.items()},
+            "ratio_total": statistics.fmean(totals[FUNCTION_ARM]) / statistics.fmean(totals[METHODS_ARM]),
+            "per_arm_total": {k: statistics.fmean(v) for k, v in totals.items()}}
 
 
 def wiring_checks(additions: list[dict]) -> dict:
@@ -178,7 +193,8 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
             out_root: Path = DATA) -> Path:
     name = analysis["name"]
     hosts = gather(name, "hosts", measured_root)
-    h1 = h1_rows(gather(name, "runs", measured_root), hosts, streamed)
+    run_rows = gather(name, "runs", measured_root)
+    h1 = h1_rows(run_rows, hosts, streamed)
     additions = gather(name, "additions", measured_root)
     h2 = h2_rows(gather(name, "outcomes", measured_root), hosts, additions, streamed)
     kept, counts = shape_kept(h2)
@@ -197,6 +213,17 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
                   "descriptive_only": analysis["role"] == "development"
                   or any(len(v) < MIN_CHAINS for v in chains.values()) or len(chains) < 2,
                   "amount": amount(additions), "wiring": wiring_checks(additions)}
+    # the readings reported beside the hypotheses (PLAN.md 5): choice at a checkpoint, formation
+    full = all(k in (additions[0] if additions else {}) for k in ("hosts", "hosts_existing", "tie_method"))
+    chosen = readings.choice(additions, hosts) if full else []
+    write_csv(out / "choice.csv", chosen)
+    lost = {arm: {"lines": sum(r["own_lines"] or 0 for r in h2 if r["arm"] == arm),
+                  "lost": sum(r["own_lost"] or 0 for r in h2 if r["arm"] == arm)}
+            for arm in sorted({r["arm"] for r in h2})}
+    (out / "readings.json").write_text(json.dumps({
+        "choice": readings.choice_summary(chosen),
+        "formation_end": readings.formation_end(run_rows, additions, len(streamed)) if streamed else {},
+        "own_lines": lost}, indent=1) + "\n")
     (out / "spec.json").write_text(json.dumps(spec, indent=1) + "\n")
     (out / "conditions.json").write_text(json.dumps(conditions, indent=1) + "\n")
     return out

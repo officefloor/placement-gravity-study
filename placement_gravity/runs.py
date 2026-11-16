@@ -67,11 +67,34 @@ def registered(tag: str, root: Path = ROOT) -> bool:
                           capture_output=True).returncode == 0
 
 
+#: What the registration freezes: the plan, the runs read, the instrument and the analysis code.
+REGISTERED = ["PLAN.md", "runs.yaml", "requirements.txt", "setup.sh", "instrument", "refactor",
+              "placement_gravity", "analysis"]
+
+
+def drift(tag: str, root: Path = ROOT) -> dict:
+    """The registered files that differ from the registration tag (``changed``, committed or not)
+    and those with uncommitted changes (``uncommitted``). Changes after the tag are amendments
+    (PLAN.md §9); every report lists them."""
+    changed = chain.git(root, "diff", "--name-only", tag, "--", *REGISTERED).split()
+    dirty = [line[3:] for line in
+             chain.git(root, "status", "--porcelain", "--", *REGISTERED).splitlines()]
+    return {"tag": tag, "changed": sorted(changed), "uncommitted": sorted(dirty)}
+
+
 def guard(reg: dict, analysis: dict, root: Path = ROOT) -> None:
-    """Refuse to read a run before registration, except the development chain."""
-    if analysis["role"] != "development" and not registered(reg["registration_tag"], root):
+    """Refuse to read a run before registration, or while a registered file has uncommitted
+    changes, except the development chain."""
+    if analysis["role"] == "development":
+        return
+    tag = reg["registration_tag"]
+    if not registered(tag, root):
         raise SystemExit(f"{analysis['name']}: not registered. No run is read before the tag "
-                         f"{reg['registration_tag']} (PLAN.md §8); only the development analysis is.")
+                         f"{tag} (PLAN.md §8); only the development analysis is.")
+    dirty = drift(tag, root)["uncommitted"]
+    if dirty:
+        raise SystemExit(f"{analysis['name']}: uncommitted changes to registered files ("
+                         + ", ".join(dirty) + "). Commit them as a dated amendment (PLAN.md §9).")
 
 
 def stream(reg: dict, name: str) -> dict[int, dict]:

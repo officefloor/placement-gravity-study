@@ -16,12 +16,12 @@ import json
 import shutil
 from pathlib import Path
 
-from . import chain, crosscheck, runs, shape, tables
+from . import chain, crosscheck, lines, runs, shape, tables
 
 OUT = runs.RESULTS / "measure"
 WORK = chain.ROOT / ".tmp" / "measure"
 #: Bump when a table's meaning changes, so measured chains are redone.
-MEASURE_VERSION = 2
+MEASURE_VERSION = 3
 
 
 def write(path: Path, rows: list[dict]) -> None:
@@ -45,6 +45,16 @@ def label(rows: list[dict], head: dict) -> list[dict]:
     return [{**ident, **r} for r in rows]
 
 
+def final_keys(work: Path) -> set[tuple[str, str, str]] | None:
+    """The methods of the chain's last tree (crosscheck's listing), to tell a problem's lines that
+    are still there from those lost track of."""
+    listing = work / "head-methods.jsonl"
+    if not listing.exists():
+        return None
+    return {(m["path"], m["type"], m["signature"])
+            for m in (json.loads(l) for l in listing.read_text().splitlines() if l)}
+
+
 def measure_chain(reg: dict, analysis: dict, head: dict, streamed: dict, stacks: dict,
                   force: bool = False) -> Path:
     out = chain_dir(head)
@@ -65,7 +75,8 @@ def measure_chain(reg: dict, analysis: dict, head: dict, streamed: dict, stacks:
     write(out / "runs.csv", label(tables.run_rows(arm, name, measured), head))
     write(out / "classes.csv", label(tables.class_rows(arm, name, h, measured), head))
     write(out / "additions.csv", label(tables.addition_rows(arm, name, measured, h, streamed), head))
-    write(out / "outcomes.csv", label(tables.outcome_rows(arm, name, h, streamed, cc), head))
+    followed = lines.follow(measured["records"], final_keys(work))
+    write(out / "outcomes.csv", label(tables.outcome_rows(arm, name, h, streamed, cc, followed), head))
     write(out / "shape_series.csv", label(shape.series_rows(arm, name, measured["shape"]), head))
     (out / "codetracker.json").write_text(json.dumps(
         {k: v for k, v in cc.items() if k not in ("ct_identity", "ct_touched")}, indent=1) + "\n")

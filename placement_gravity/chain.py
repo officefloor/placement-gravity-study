@@ -86,6 +86,16 @@ def materialise(repo: Path, rev: str, path: str, dest: Path) -> Path:
     return dest
 
 
+def extract(repo: Path, rev: str, java_src: str, dest: Path) -> Path:
+    """The production Java tree at rev, under dest. Empty where rev has none (a stack's empty base)."""
+    dest.mkdir(parents=True, exist_ok=True)
+    if git(repo, "ls-tree", "-r", "--name-only", rev, "--", java_src).strip():
+        archive = subprocess.run(["git", "-C", str(repo), "archive", rev, java_src],
+                                 check=True, capture_output=True).stdout
+        subprocess.run(["tar", "-x", "-C", str(dest)], input=archive, check=True)
+    return dest
+
+
 def wired_types(repo: Path, rev: str, root: str = WIRING) -> set[str]:
     """The simple names of the classes the OfficeFloor wiring at rev declares (``class:`` entries):
     their public methods are functions whose parameters the framework injects."""
@@ -157,19 +167,11 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path, java_src: str = 
                       if old else "-")
             after = (str(materialise(repo, c.commit, new, work / unit / "after" / new))
                      if new else "-")
-            manifest.append(f"{unit}\t{path}\t{before}\t{after}")
-        tree = work / unit / "tree"
-        tree.mkdir(parents=True, exist_ok=True)
-        archive = subprocess.run(["git", "-C", str(repo), "archive", c.commit, java_src],
-                                 check=True, capture_output=True).stdout
-        subprocess.run(["tar", "-x", "-C", str(tree)], input=archive, check=True)
+            manifest.append(f"{unit}\t{path}\t{before}\t{after}\t{old or '-'}")
+        tree = extract(repo, c.commit, java_src, work / unit / "tree")
         amounts.append(f"{unit}\t{tree}")
         # the tree at k - 1 (the agent commit's parent), for the hosts' shape before the addition
-        prior = work / unit / "prior"
-        prior.mkdir(parents=True, exist_ok=True)
-        archive = subprocess.run(["git", "-C", str(repo), "archive", c.parent, java_src],
-                                 check=True, capture_output=True).stdout
-        subprocess.run(["tar", "-x", "-C", str(prior)], input=archive, check=True)
+        prior = extract(repo, c.parent, java_src, work / unit / "prior")
         shapes.append(f"{unit}\t{prior}\t{','.join(sorted(wired_types(repo, c.parent, wiring_root))) or '-'}")
         wires[unit] = {"before": wiring(repo, c.parent, wiring_root),
                        "after": wiring(repo, c.commit, wiring_root)}
@@ -185,7 +187,7 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path, java_src: str = 
             hint_lines.append(f"cp{c.cp:02d}\tinjected\t{t}")
     (work / "hints.tsv").write_text("\n".join(hint_lines) + "\n")
     # a guard: every path a hint names must be a path of the manifest (or the hint can never apply)
-    paths = {line.split("\t")[1] for line in manifest}
+    paths = {p for line in manifest for p in (line.split("\t")[1], line.split("\t")[4])}
     unmatched = 0
     for h in hint_lines:
         f = h.split("\t")
@@ -198,6 +200,9 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path, java_src: str = 
         else:
             named = []
         unmatched += any(p not in paths for p in named)
+    # the chain's base (where it leaves base_ref): the amount added is read from it (PLAN.md 4.6)
+    base = git(repo, "merge-base", branch, base_ref).strip()
+    amounts.append(f"base\t{extract(repo, base, java_src, work / 'base' / 'tree')}")
     (work / "amount.tsv").write_text("\n".join(amounts) + "\n")
     subprocess.run(["java", "-cp", CLASSPATH, "Pull", str(work / "manifest.tsv"),
                     str(work / "hints.tsv"), str(work / "pull.jsonl")], check=True)

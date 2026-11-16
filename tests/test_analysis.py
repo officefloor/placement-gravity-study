@@ -44,6 +44,15 @@ def test_no_run_is_read_before_the_registration_tag(tmp_path):
     runs.guard(reg, {"name": "pilot", "role": "development"}, tmp_path)   # the pilot may be read
     git(tmp_path, "tag", "plan-v1")
     runs.guard(reg, {"name": "petclinic-primary", "role": "primary"}, tmp_path)
+    # a registered file changed and not committed: refused until it is committed as an amendment
+    (tmp_path / "PLAN.md").write_text("changed\n")
+    with pytest.raises(SystemExit, match="uncommitted changes"):
+        runs.guard(reg, {"name": "petclinic-primary", "role": "primary"}, tmp_path)
+    git(tmp_path, "add", "PLAN.md")
+    git(tmp_path, "-c", "user.email=a@b", "-c", "user.name=a", "commit", "-q", "-m", "amendment")
+    runs.guard(reg, {"name": "petclinic-primary", "role": "primary"}, tmp_path)
+    assert runs.drift("plan-v1", tmp_path) == {"tag": "plan-v1", "changed": ["PLAN.md"],
+                                               "uncommitted": []}
 
 
 def test_a_stack_declares_its_backend_and_wiring_roots():
@@ -114,6 +123,8 @@ def test_prepare_builds_the_datasets_and_applies_the_rules(tmp_path):
     cond = json.loads((out / "conditions.json").read_text())
     assert cond["chains"] == {"spring": 6, "officefloor": 6} and not cond["descriptive_only"]
     assert abs(cond["amount"]["ratio"] - (922 / 1022)) < 1e-9 and cond["amount"]["in_band"]
+    assert {"prior_tie_mean", "tie"} <= set(h1[0]) and {"intrusion", "intrusion_host", "own_lines"} <= set(h2[0])
+    assert (out / "readings.json").exists()
     assert cond["wiring"]["verdict"]["concentration_against"] is False
 
 
@@ -222,4 +233,13 @@ def test_the_report_names_every_hypothesis_and_commit():
     heads = [{"arm": "spring", "run": "r", "chain": 1, "excluded": False, "sha": "a" * 40}]
     md = report.render("petclinic-primary", "primary", est, ver, cond, {"shape_counts": {}}, heads)
     for k in ("H1", "H2", "H3", "supported", "`aaaaaaaaaaaa`", "s3_junction"):
+        assert k in md
+    rd = {"choice": {"spring": {"checkpoints": 59, "no_choice": 12, "median_tie_sd": 0.5,
+                                "median_distinct_hosts": 2}},
+          "review": {"against": "petclinic-primary",
+                     "spring": {"rho": -0.4, "interval": [-0.6, -0.1], "checkpoints": 59, "against": False}}}
+    md = report.render("x", "secondary", est, ver, cond, {"shape_counts": {}}, heads,
+                       {"tag": "plan-v1", "changed": ["PLAN.md"]}, rd)
+    for k in ("12 of 59 checkpoints left no choice", "Review against petclinic-primary", "`PLAN.md`",
+              "own lines"):
         assert k in md

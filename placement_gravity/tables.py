@@ -200,6 +200,7 @@ def addition_rows(arm: str, chain: str, measured: dict, hosts: list[dict],
         if r["kind"] == "problem":
             problems[r["unit"]] = problems.get(r["unit"], 0) + 1
     refs = {f["unit"]: len(f["refactorings"]) for f in measured.get("refactorings", [])}
+    base = (measured["amount"].get("base") or {}).get("positions", 0)
     rows = []
     for c in measured["checkpoints"]:
         cp, unit = c["cp"], f"cp{c['cp']:02d}"
@@ -225,6 +226,10 @@ def addition_rows(arm: str, chain: str, measured: dict, hosts: list[dict],
             "refactorings": refs.get(unit, 0),
             "amount_positions": measured["amount"][unit]["positions"],
             "amount_methods": measured["amount"][unit]["methods"],
+            # the amount added since the chain's base, and the largest method (PLAN.md 4.6, 5)
+            "amount_base": base,
+            "amount_added": measured["amount"][unit]["positions"] - base,
+            "amount_largest": measured["amount"][unit].get("largest"),
             "wiring_nodes_added": w["after"]["nodes"] - w["before"]["nodes"],
             "wiring_edges_added": w["after"]["edges"] - w["before"]["edges"],
             "wiring_files": w["after"]["files"], "wiring_edges": w["after"]["edges"],
@@ -254,13 +259,19 @@ def identities(hosts: list[dict]) -> dict[tuple[int, str, str], str]:
 
 
 def outcome_rows(arm: str, chain: str, hosts: list[dict], streamed: dict[int, dict],
-                 ct: dict | None = None) -> list[dict]:
+                 ct: dict | None = None, followed: dict | None = None) -> list[dict]:
     """§4.4 at method level: for each problem k and each host its code went into, the later
     checkpoints touching the same host, split three ways: those the stream declares to change k's
     rule (``declared``: k in their ``mutates``), those whose new rules it declares to cross k's
     (``crossed``: k in their ``crosses``, ui stream only), and the rest (``intrusion``). A host that survives to the chain's end is followed by CodeTracker (``ct``,
     from ``crosscheck``): its identity and its body-changing checkpoints. A host removed before the
-    end is followed by the instrument's own chaining across RefactoringMiner's renames and moves."""
+    end is followed by the instrument's own chaining across RefactoringMiner's renames and moves.
+
+    That is the **host-level** reading (``intrusion_host``, as first built): any later change to
+    the host. With ``followed`` (``lines.follow``), the outcome of H2 is read on the problem's **own
+    lines** (PLAN.md §4.4): ``intrusion`` counts the later checkpoints, neither declared nor
+    crossing, that edit or remove one of the lines k placed in the host or insert between them.
+    Without ``followed`` the host-level count stands in."""
     own = identities(hosts)
     ct_identity = (ct or {}).get("ct_identity", {})
     ct_touched = (ct or {}).get("ct_touched", {})
@@ -296,6 +307,17 @@ def outcome_rows(arm: str, chain: str, hosts: list[dict], streamed: dict[int, di
         declared = [j for j in later if k in streamed.get(j, {}).get("mutates", [])]
         crossed = [j for j in later if j not in declared
                    and k in streamed.get(j, {}).get("crosses", [])]
+        lines_ = None
+        if followed is not None:
+            f = followed.get((k, h["type"], h.get("signature")),
+                             {"placed": 0, "touched": set(), "present": 0, "lost": 0})
+            ot = sorted(j for j in f["touched"] if j > k)
+            od = [j for j in ot if k in streamed.get(j, {}).get("mutates", [])]
+            oc = [j for j in ot if j not in od and k in streamed.get(j, {}).get("crosses", [])]
+            lines_ = {"own_lines": f["placed"], "own_present": f["present"], "own_lost": f["lost"],
+                   "own_touches": len(ot), "own_declared": len(od), "own_crossed": len(oc),
+                   "intrusion": len(ot) - len(od) - len(oc)}
+        host_intrusion = len(later) - len(declared) - len(crossed)
         rows.append({
             "arm": arm, "chain": chain, "cp": k, "identity": i,
             "identity_source": "codetracker" if i.startswith("ct:") else "instrument",
@@ -304,8 +326,10 @@ def outcome_rows(arm: str, chain: str, hosts: list[dict], streamed: dict[int, di
             "net_added": h["net_added"], "tie_method": h["tie_method"], "tie_class": h["tie_class"],
             "tie": h["tie"], "later_checkpoints": last - k,
             "later_touches": len(later), "declared": len(declared), "crossed": len(crossed),
-            "intrusion": len(later) - len(declared) - len(crossed),
-            "intrusion_per_100": (100 * (len(later) - len(declared) - len(crossed)) / (last - k))
-            if last > k else None,
+            "intrusion_host": host_intrusion,
+            **(lines_ or {"own_lines": None, "own_present": None, "own_lost": None,
+                       "own_touches": None, "own_declared": None, "own_crossed": None,
+                       "intrusion": host_intrusion}),
         })
+        rows[-1]["intrusion_per_100"] = (100 * rows[-1]["intrusion"] / (last - k)) if last > k else None
     return rows

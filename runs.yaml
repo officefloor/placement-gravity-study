@@ -87,6 +87,7 @@ analyses:
     corpus: petclinic
     role: secondary
     stream: petclinic
+    review_against: petclinic-primary   # the review reading (PLAN.md 5): set against just-solve
     sources:
       - {arm: spring, repo: petclinic-spring, run: blind-202609290948, strategy: reviewed}
       - {arm: officefloor, repo: petclinic-officefloor, run: blind-202609290948, strategy: reviewed}

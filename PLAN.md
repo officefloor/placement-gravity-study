@@ -1,6 +1,6 @@
 # Plan: where a new problem's code lands, and whether it had a choice
 
-> **Status: REGISTERED on 16 November 2026, tag `plan-v1`.** The tag was first pushed on commit
+> **Status: REGISTERED on 16 November 2026, tag `plan-v1`; revised the same day before the start (§9).** The tag was first pushed on commit
 > `4bb8973` and moved the same day, before any run named for analysis was read, to this revision,
 > which adds ties to injected dependencies reported apart (§4.3, §5). The instrument is piloted on
 > one pair of chains
@@ -128,6 +128,13 @@ Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 Novem
 - **Q1 is descriptive.** Its expected baseline (Steidl and Deissenboeck 2015) is that most
   growth is new methods. So the share of additions that land in an existing host is reported as
   found, with no direction predicted.
+- **Two readings with a stated direction, reported and not among the confirmatory tests** (added
+  16 November 2026, §9):
+  - **Formation.** Within an arm, for the same problem, a chain that has been forced more so far is
+    tied more now, and ends more concentrated (§5, *Formation*). This is the black hole forming,
+    read directly and not from a slope.
+  - **Review.** Where a placement was chosen, a reviewing agent re-places it; where it was forced,
+    it cannot (§5, *Review*).
 
 **What would count against.**
 
@@ -238,14 +245,14 @@ had been pushed; their branch names were listed, and nothing of them was fetched
 `tanstack-spring` stacks) are to be recorded here from the study machine when it starts, as Run A's
 were. Until then the square of the table above has only its Run A diagonal.
 
-**[DECIDE]** before registration: the run ids of Run B, and the commit of each chain's branch
-that is read (each chain's head once its run has finished and been pushed). If registration comes
-before Run B starts, its ids are added by a dated amendment before any of its backend Java is read.
+**Open after registration:** the run ids of Run B, and the commit of each chain's branch that is
+read (each chain's head once its run has finished and been pushed). Registration came before Run B
+started, so its ids are added by a dated amendment (§9) before any of its backend Java is read.
 
-**To check before the ui runs are read:** the instrument reads production Java under
-`src/main/java/` and wiring under `src/main/resources/officefloor/`, the petclinic layout. The ui
-stacks' backend paths are declared by each stack (`stack.yaml`) and may differ; the paths are to be
-set from the stack declarations, not from a run.
+**Backend paths.** The petclinic layout is production Java under `src/main/java/` and wiring under
+`src/main/resources/officefloor/`. The ui stacks declare their own backend paths (`stack.yaml`);
+they were read from the stack declarations at each stack's empty base, not from a run, and are
+recorded in `results/stacks.json`.
 
 **This plan registers before any ui run's backend Java is read**, by anyone, for any measure. It
 replaces the flow-injection draft and the SinewSlim analysis plan for these runs (§1.1), so no
@@ -338,6 +345,27 @@ a class the container does not manage is data, and a constant (`static final`) s
 - **Reported beside it** (§5): H1, at method level and at class level, H3 and H2a, each with the
   ties to injected dependencies left out (`tie_no_injected`, `tie_class_no_injected`).
 
+**Pull is graded by where the value comes from** (stated 16 November 2026, §9). The expected
+order, from the least pull to the most:
+
+1. an **injected parameter** of a wired function: no pull, as any function placed anywhere can
+   declare it (not a tie);
+2. an **injected dependency** held in a field: a pull by convenience, as another class could declare
+   it too, but the code is easiest to place where it already is (a tie, reported apart);
+3. a **value bound to the control flow**: the request object, a parameter or a local of the host
+   method. It exists only there, so code that uses it has to be placed there or be handed it (a
+   tie).
+
+Spring's handler receives the request object on its control flow, so its additions start with the
+strongest pull; OfficeFloor's functions receive theirs by injection. The primary measure counts 2
+and 3 alike. The readings without injected dependencies (above) and without parameters (§5) show
+how much of each result rests on each grade.
+
+**A tie shows pull, not the absence of an alternative.** It is evidence that the placement was
+held, not proof that no other placement existed. Two readings check it: the spread of placements
+over the chains at one checkpoint (§5, *Choice at a checkpoint*), and whether a reviewing agent
+moves the code (§5, *Review*).
+
 Ties are related to Feature Envy turned inwards (Tsantalis and Chatzigeorgiou 2009). Their metric
 finds a method drawn towards *another* class's data, as a snapshot recommendation. Ties measure an
 addition held by its *own* host's pre-existing data, at the commit where it is placed.
@@ -381,6 +409,39 @@ one; they count as declared. A checkpoint that introduces no rule can be mutated
 The petclinic stream has `mutates` and no crossings, so there every later touch is declared or
 intrusion.
 
+**Revised before the start** (16 November 2026, §9): **intrusion is read on the problem's own
+lines.** As first built, a later checkpoint counted as touching *p* when it changed the host method
+anywhere. That makes intrusion a property of the host: every problem placed in a busy method gets
+that method's later traffic, whatever its own code is (on the development chain one Spring method
+received 26 problems, and all of Spring's intrusions were in methods holding several problems). The
+petclinic stream puts every rule on one endpoint, so there the traffic of the handler is set by
+the stream. The text above always said *p*'s positions; the build now follows it:
+
+- ***p*'s lines** in a host are the logic lines its addition placed there. They are followed from
+  checkpoint to checkpoint by the instrument's diff: an unchanged line keeps its owner, moved code
+  carries its owner with it, and an edited line keeps its owner and gains the editor's, since both
+  problems' code is then on it.
+- **A later checkpoint *j* touches *p*** in that host when its change edits or removes one of *p*'s
+  lines, or inserts a logic line between the first and the last of *p*'s lines still present.
+- The three-way split is unchanged: declared, crossed, or intrusion. **Intrusion on *p*'s own
+  lines is the outcome of H2.**
+- **Reported beside it:** the host-level count as first built (any later change to the host), so the
+  difference the definition makes can be seen.
+- Following lines is weaker than following methods (§7, *Provenance*). The share of *p*'s lines
+  lost track of (neither present, nor seen removed or moved) is reported per arm.
+
+**As built** (`placement_gravity/lines.py`, `tests/test_lines.py`, 16 November 2026). The
+instrument gives, for every changed method, each position's kept-from position, its kind (kept,
+added logic, moved, organisation) and its text hash. An owner is the checkpoint and the host it
+placed the line in, so a line moved to another method still belongs to the problem and host that
+placed it. Within a changed stretch, the removed lines are paired in order with the added logic
+lines: a pair is an edit; a removed line left over is a removal; an added line left over is an
+insertion. A removed line whose text is a moved line's elsewhere in the checkpoint is a move, not a
+removal, and is not a touch. A method renamed, moved or re-signatured without other change carries
+its lines to its new name. A line is lost when its method's stored length no longer matches, when
+moved code's destination is not found, or when its method is not in the last tree and was not seen
+removed.
+
 ### 4.5 Wiring (H3)
 
 In the OfficeFloor arm, coupling that leaves a scope becomes configuration: flows, the objects
@@ -415,6 +476,13 @@ with its interval reported. New injected dependencies are not counted as edges (
 Total positions and tokens per arm at each checkpoint, so that H3 is read against the
 conservation result: the same amount, placed differently. H3's band is read at the final
 checkpoint, averaged within a chain and then over chains, with a percentile bootstrap over chains.
+
+**Revised before the start** (16 November 2026, §9): **the band is read on the amount added**, the
+positions at the final checkpoint less those of the chain's base (`base_ref`), not on the total.
+The petclinic arms start from two conversions of one application that differ in size (942 and 745
+positions at cp1 of the development chain), so a ratio of totals reports the starting code as much
+as the agent's. The ui stacks start empty, so there the two are the same. The ratio of totals is
+reported beside it.
 
 ### 4.7 Shape (the competitors of H2b)
 
@@ -464,10 +532,21 @@ trajectories can be set beside the per-problem ones.
 
 - **Unit:** an addition run (Q2, H1) or an addition (Q1, Q3, H2), nested in checkpoints nested in
   chains.
-- **H1:** a mixed model of log(1 + P) on log(host positions) and checkpoint index, with a random
-  intercept for the chain. The slopes are reported with 95% bootstrap intervals over chains.
+- **The problem is held fixed by its identity** (revised before the start, 16 November 2026, §9).
+  Every checkpoint is one problem, solved once by every chain of both arms. The H1, H2 and H3
+  models therefore carry a **random intercept for the checkpoint**, crossed with the chain's. A
+  comparison is then between placements of the same problem, and the size and the declared
+  crossings are no longer the only stand-ins for it. A model that does not converge with the
+  checkpoint intercept is refitted without it, and the report says so.
+- **H1:** a mixed model of log(1 + P) on log(host positions) and checkpoint index, with random
+  intercepts for the chain and the checkpoint. The slopes are reported with 95% bootstrap intervals
+  over chains.
 - **H2:** a negative binomial model of intrusion with a random intercept for the chain. The base
-  model holds the problem fixed: the addition's size, its declared crossings, host size and act.
+  model holds the problem fixed: the checkpoint's intercept, the addition's size, its declared
+  crossings, host size, whether the host is new, and act. Intrusion is read on the problem's own
+  lines (§4.4). A new host has almost no ties and a different later life from an existing one (on
+  the development chain, Spring's new hosts averaged 0.31 ties and existing ones 1.81), so without
+  the new-host term that contrast alone could carry H2a.
   - **H2a:** pull added to the base model (continuous, and forced/chosen as a reading aid). It is
     supported when the incidence rate ratio per tie has a 95% interval above 1.
   - **H2b:** the shape block S1 to S5 added to the base model with pull. It is supported when every
@@ -494,12 +573,46 @@ trajectories can be set beside the per-problem ones.
 - **H3:** the arm term and its interaction with host size in the H1 model, on the paired chains,
   with the amount band (§4.6) and the two wiring conditions (§4.5). The arm's interaction with the
   checkpoint index is reported as the trajectory reading.
+  - **Host size is centred** (revised before the start, 16 November 2026, §9): log(host positions)
+    less its mean over the rows of the model, both arms together. With an interaction in the model,
+    the arm term is the difference between the arms where the centred host size is 0. Uncentred,
+    that is a host of one position, which no host is. Centred, it is the difference at a typical
+    host. The difference is also reported at hosts of 10, 25 and 50 positions.
 - **H3 without the injection rule:** a wired OfficeFloor function's parameters cannot be ties by
   definition, so part of H3 could follow from the rule rather than the code. H3's model is repeated
   with ties counted from locals, fields and methods only, leaving out parameters in both arms. This
   is reported beside H3 and named as the reading that does not depend on the rule.
 - **Without injected dependencies** (reported, §4.3): H1 at method and class level, H3 and H2a,
   each with ties to injected dependencies left out. These do not change any verdict.
+- **Choice at a checkpoint** (reported; added 16 November 2026, §9). Per checkpoint and arm, over
+  the chains: the share of chains that placed any of the addition in an existing host, the number
+  of distinct hosts the chains used between them, and the standard deviation of the ties per
+  addition. A checkpoint where every chain made the same placement with the same ties left no
+  choice; one where the chains differ did.
+- **Formation** (reported with a stated direction, not confirmatory; added 16 November 2026, §9).
+  Read within each arm, never across arms.
+  - **Lagged:** the H1 model, with its checkpoint intercept, and one more term: the chain's mean
+    ties per run over all its checkpoints before *k*. Predicted: positive in the methods arm. For
+    the same problem, a chain that has been forced more so far is tied more now.
+  - **Where it ends:** over the chains of an arm, Spearman's correlation between the mean ties per
+    run in the first third of the stream and the share of the tree's positions held by its largest
+    method at the final checkpoint. Predicted: positive in the methods arm. With about nine chains
+    this is a direction with a wide interval (bootstrap over chains), and is reported as that.
+  - The function arm is reported the same way. The expectation is that there is little to form:
+    a weaker or absent relation.
+  - Both are observational: a chain is not assigned its early placements. They show whether the
+    path exists, not that the early placement caused the later one.
+- **Review** (reported with a stated direction, not confirmatory; added 16 November 2026, §9). The
+  `reviewed` run (`blind-202609290948`) is set against the primary just-solve run, per arm. This is
+  the one reading that sets two conditions side by side; neither run's hypothesis tests are pooled.
+  - Per checkpoint *k*: *T* is the mean ties per run of the just-solve chains; *D* is the absolute
+    difference between the two conditions in the share of the addition's positions that land in
+    existing hosts, each averaged over its chains.
+  - Predicted: Spearman's correlation of *T* and *D* over the checkpoints is negative. The review
+    changes the placement where the ties are few, and leaves it where they are many. No direction is
+    predicted for *which way* the review moves a placement: the conservation paper found it
+    consolidating OfficeFloor's pipeline (§6).
+  - A correlation of zero or above counts against reading ties as the absence of choice.
 - **Corpus B:** the H1 and H2 models with a random intercept for the repository. Direction and
   interval only.
 - **Multiplicity:** H1–H3 are three confirmatory tests at α = 0.05 each, Holm-corrected. All
@@ -514,14 +627,15 @@ binomial mixed model). These details are fixed with the code before any run is r
 - **H1 and H3** are fitted on runs of added logic into **existing** methods: a new method has no
   prior size, so including new methods would make "more ties in bigger hosts" true by
   construction. Gaussian mixed models of log(1 + ties) on log(host positions) and the checkpoint
-  index, a random intercept per chain; H3 adds the arm and its interaction with host size (and the
-  front end, where the analysis has more than one). Intervals: a cluster bootstrap, chains resampled
+  index, random intercepts per chain and per checkpoint; H3 adds the arm and its interaction with host
+  size, centred (and the front end, where the analysis has more than one). Intervals: a cluster bootstrap, chains resampled
   with replacement within arm and the model refitted, **1,000 refits, seed 20261116**. One-sided
   p-values are the bootstrap share on the wrong side of 0, (k + 1) / (n + 1).
 - **H2** is a negative binomial (nbinom2) mixed model of later intrusion per problem and host,
-  offset by log(later checkpoints), a random intercept per chain. Its base terms are
-  log(1 + the problem's positions added), the problem's declared crossings (the checkpoints it
-  mutates or crosses), log(1 + host positions), the act (the ui stream only; petclinic has no
+  on its own lines (§4.4), offset by log(later checkpoints), random intercepts per chain and per
+  checkpoint. Its base terms are log(1 + the problem's positions added), the problem's declared
+  crossings (the checkpoints it mutates or crosses), log(1 + host positions), whether the host is
+  new, the act (the ui stream only; petclinic has no
   acts), the arm and, where present, the front end. **H2a** is read on every problem and host,
   with a one-sided Wald test; **H2b** on existing hosts with their shape at k − 1, by two one-sided
   Wald tests per shape measure (90% intervals). S4 enters as log(1 + cognitive complexity) and S5
@@ -532,6 +646,20 @@ binomial mixed model). These details are fixed with the code before any run is r
   its band and neither wiring condition against). The verdicts are supported, not supported,
   reversed (an interval wholly on the wrong side), unresolved (H2b: an interval reaching outside
   the bound) or descriptive only.
+- **The revisions of 16 November 2026** (§9) are built: the checkpoint intercept, the centred host
+  size, the new-host term and the lagged formation term in `analysis/analyse.R` (its self-test
+  simulates a level per checkpoint and recovers each effect); intrusion on a problem's own lines in
+  `placement_gravity/lines.py`; the amount added in `prepare.amount`; the choice, formation and
+  review readings in `placement_gravity/readings.py`. Each has fixtures with known answers.
+  - *The checkpoint intercept's fallback:* a model is refitted without it when the fit does not
+    converge or its Hessian is not positive definite; each report lists which models carry it.
+  - *The lagged term* counts every run of added logic (new and existing hosts, moved code left
+    out) at the chain's earlier checkpoints.
+  - *Choice:* a checkpoint "left no choice" when every chain has the same ties and all are on the
+    same side of new or existing host.
+  - *Review:* its interval resamples the chains of each condition (2,000 resamples, seed 20261116);
+    the formation correlation's interval resamples chains (10,000). Either is given only with four
+    or more chains.
 
 ## 6. What was known when this was written
 
@@ -566,6 +694,28 @@ binomial mixed model). These details are fixed with the code before any run is r
   and `ownerMapper`, the controller's constructor-injected dependencies, is counted as injected.
   OfficeFloor's runs into existing methods used none. The pilot raised six decisions (PILOT.md, *Decisions*), which are
   settled at registration.
+- **The review before the start** (16 November 2026, on the development chain only, after
+  `plan-v1` and before any run named for analysis was read). Seen, and the reason for the revisions
+  of §9: Spring's 396 host-level intrusions all fall in methods holding several problems, one method
+  holding 26; Spring's new hosts average 0.31 ties and 0.005 intrusions per later checkpoint, its
+  existing hosts 1.81 and 0.24; H2a's model refitted with an intercept per host gave a host standard
+  deviation of 2.7 and took the host-size coefficient from 1.27 to −0.07 (its standard errors did
+  not compute); a simulation of the H2a test under no effect, with that dependence between rows,
+  did not reject too often (the standard deviation of z was 0.82); with only Run A, the ui model
+  drops the front end and the arm term carries it. Nothing was computed with the checkpoint
+  intercept, on a problem's own lines, with the centred host size, or for the formation and review
+  readings.
+- **The revised steps on the development chain** (16 November 2026, after the revisions of §9 were
+  written into this plan and built; one chain per arm, descriptive only,
+  `results/analysis/pilot/REPORT.md`). Seen: on a problem's own lines Spring has 23 intrusions and
+  OfficeFloor 26, where the host-level count had 396 and 44; no line was lost track of (569 and 616
+  placed); H2a's rate ratio per tie 1.17 [0.76, 1.81]; the junction 0.52 [0.17, 1.63], cognitive
+  complexity 1.59 [0.77, 3.27] and the class Gini 0.32 [0.13, 0.82] (90% intervals); H1's slopes
+  0.030 and 0.006; H3's arm term −0.40 at the centre (a host of 7.3 positions) and interaction
+  0.046, the arm difference −0.39, −0.35 and −0.32 at 10, 25 and 50 positions; without parameter
+  ties −0.20 [−0.37, −0.04]; the amount added 1.08 (totals 0.88); the lagged formation term −0.36
+  [−2.16, 1.44] in Spring. With one chain per arm H2a's model fell back to no checkpoint
+  intercept. Nothing in the plan was changed after these were seen.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
@@ -598,6 +748,15 @@ binomial mixed model). These details are fixed with the code before any run is r
 - **Provenance.** Line tracking across moves is imperfect. CodeTracker reports about 99.9%
   method-level precision and recall, but statement-level provenance is weaker. Disagreements
   with `git blame` are reported.
+- **Lines, not methods, for intrusion.** Since the revision of §4.4 the outcome of H2 rests on
+  following a problem's own lines, which is the weaker provenance. The host-level count is reported
+  beside it, and the share of lines lost track of per arm.
+- **Pull is not proof of force.** A tie shows that the code used something that was already there.
+  It does not show that no other placement existed (§4.3). The choice-at-a-checkpoint and review
+  readings are the checks, and both are indirect.
+- **One stream per corpus.** The intervals are over chains: they say what this agent does on this
+  stream again, not what happens on other problems. The petclinic stream puts every rule on one
+  endpoint. The ui stream is the second set of problems; corpus B the third.
 - **Smells born, not grown.** Tufano et al. (2015) find most smells present from a unit's
   creation. So H1's gravity may act mostly at creation (a new method pulled by its parameters,
   §4.3) rather than through accretion. Both are measured, so the data can say which.
@@ -613,8 +772,8 @@ binomial mixed model). These details are fixed with the code before any run is r
 ## 8. Order of work
 
 1. ~~Build the instrument (§4): fixtures with known pull and placement, and tests.~~ Done:
-   `instrument/Pull.java`, `placement_gravity/`, `tests/` (RefactoringMiner and CodeTracker not yet
-   integrated; PILOT.md, decisions 4 and 5).
+   `instrument/Pull.java`, `placement_gravity/`, `tests/`, with RefactoringMiner and CodeTracker
+   integrated (`refactor/`; PILOT.md, decisions 4 and 5).
 2. ~~Run a pilot on **two chains** of one petclinic run, not among those named at registration,
    to check that the measures compute and are not degenerate.~~ Done 15 November 2026:
    `results/pilot/PILOT.md`.
@@ -624,9 +783,57 @@ binomial mixed model). These details are fixed with the code before any run is r
    `run-a`), each tested on fixtures and on the pilot chain or the stream only.
 4. ~~Settle every design decision~~ (16 November 2026). ~~Build steps 2 to 5~~ (16 November 2026:
    `step2_runs.sh` to `step5_report.sh`, `tests/test_analysis.py`, `analysis/selftest.R`).
-5. Register: tag `plan-v1` and push it, before any ui run's backend Java is read.
+5. Register: tag `plan-v1` and push it, before any ui run's backend Java is read. Done 16 November
+   2026. The revisions of §9 were then built (16 November 2026) and run on the development chain.
+   **Before the start**, they are committed and the tag `plan-v1` is set on them.
 6. `./step1_setup.sh`, then for corpus A (petclinic, then the ui runs as they finish):
    `./step2_runs.sh`, `./step3_measure.sh`, `./step4_analyse.sh`, `./step5_report.sh`. Analyse
    once; the heads read are recorded in `results/heads.tsv`. Then corpus B (its steps are not yet
    built).
 7. Write up, reporting every hypothesis whichever way it falls.
+
+## 9. Revisions and amendments
+
+**Before the start.** The experiment starts when the first run named for analysis is read
+(`results/heads.tsv` holds a row that is not the development chain). Until then a change is a
+**revision of `plan-v1`**: it is dated and listed below with what had been seen when it was made,
+and the tag `plan-v1` is set on the revised plan and code before the start.
+
+**After the start.** The tag `plan-v1` is not moved. A change to this plan, to `runs.yaml`, to the
+instrument or to the analysis code is a **dated amendment**: listed here with its date, what
+changed and why, and what had been read, and tagged `plan-v1.1`, `plan-v1.2` and so on. An
+amendment that touches a measure, a model or a decision rule is made before the runs it applies to
+are read.
+
+**Always.** Steps 2 to 4 refuse to read a run while a registered file has uncommitted changes, and
+every report lists the registered files that differ from `plan-v1` (`runs.drift`).
+
+**If a fault is found after a run is read.** The fault, the fix and the date are recorded here as
+an amendment. The affected analyses are run again, and the report gives the results before and
+after the fix side by side. A verdict that changes is reported as changed, with both.
+
+### Revisions before the start
+
+**16 November 2026, first.** Ties to injected dependencies reported apart (§4.3, §5); the tag moved
+from `4bb8973` to `4ec41dd`.
+
+**16 November 2026, second: after a review of the plan.** Nothing but the development chain had
+been read; what the review computed on it is in §6. The tag moved from `4ec41dd` to the commit that
+holds this revision. The changes:
+
+| | Change | Where | Why |
+|---|---|---|---|
+| 1 | A random intercept for the checkpoint in the H1, H2 and H3 models | §5 | The problem was held fixed only by its size and declared crossings; its identity is known and replicated over the chains |
+| 2 | Intrusion read on the problem's own lines; the host-level count reported beside it | §4.4, §5 | As built it counted any later change to the host method, a property of the host and, in petclinic, of the stream |
+| 3 | Whether the host is new, in H2's base model | §5 | New hosts have almost no ties and a different later life, so that contrast alone could carry H2a |
+| 4 | Host size centred in H3's model; the arm difference also reported at 10, 25 and 50 positions | §5 | Uncentred, the arm term was the difference at a host of one position |
+| 5 | H3's amount band read on the amount added since the base | §4.6 | The petclinic arms start from conversions of different size; no change for the ui stacks, which start empty |
+| 6 | Pull stated as graded: injected parameter, injected dependency, value bound to the control flow; a tie stated as evidence of pull, not proof of force | §4.3, §7 | To say what the measure claims |
+| 7 | Three reported readings: choice at a checkpoint, formation, review | §2, §5 | The same problem at every checkpoint lets the choice, and what follows from it, be read directly |
+| 8 | Editorial: §3.1a's "[DECIDE] before registration", §8 step 1, `README.md` | | Stale text |
+| 9 | The guard refuses uncommitted changes to registered files; reports list the files changed since the tag | `runs.py`, `report.py` | So a change after registration cannot pass unseen |
+| 10 | A renamed file's before version is read under its own path | `Pull.java`, `chain.py` | It was read under the new path, so RefactoringMiner's hints and the shape at *k* − 1 could miss it |
+| 11 | A tree with no production Java (a ui stack's empty base) is read as empty | `chain.extract` | Reading it failed |
+
+The hypotheses H1 to H3, their directions, their thresholds, the equivalence bound, the runs read
+and the Holm correction are unchanged.

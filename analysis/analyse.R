@@ -9,10 +9,15 @@
 # placement_gravity/verdict.py, so every decision rule sits in one place.
 #
 # H1 and H3: a Gaussian mixed model of log(1 + ties) per run of added logic into an existing
-# method, with a random intercept for the chain. Their intervals are a cluster bootstrap: chains
-# resampled with replacement within arm, the model refitted (spec$boot refits, spec$seed).
-# H2: a negative binomial (nbinom2) mixed model of later intrusion per problem and host, offset by
-# the log of the later checkpoints, with a random intercept for the chain; Wald intervals.
+# method. Their intervals are a cluster bootstrap: chains resampled with replacement within arm,
+# the model refitted (spec$boot refits, spec$seed). In H3 the host size is centred, so the arm term
+# is the difference between the arms at a typical host.
+# H2: a negative binomial (nbinom2) mixed model of later intrusion on the problem's own lines, per
+# problem and host, offset by the log of the later checkpoints; Wald intervals.
+# Every model carries random intercepts for the chain and for the checkpoint: a checkpoint is one
+# problem, solved by every chain, so the problem is held fixed by its identity. A model that does
+# not converge with the checkpoint intercept is refitted without it, and that is recorded
+# (res$checkpoint_intercept).
 
 suppressPackageStartupMessages({
   library(glmmTMB)
@@ -108,77 +113,117 @@ boot_summary <- function(fit, draws, term) {
        refits = n, failed = nrow(draws) - n)
 }
 
+# The model with random intercepts for the chain and the checkpoint; without the checkpoint's when
+# that does not converge. `fixed` is the formula without its random part, as text.
+fit_cp <- function(fixed, d, family) {
+  d$cp_f <- factor(d$cp)
+  f1 <- as.formula(paste(fixed, "+ (1 | chain_id) + (1 | cp_f)"))
+  f0 <- as.formula(paste(fixed, "+ (1 | chain_id)"))
+  fit <- if (length(unique(d$cp)) > 1) fit_or_error(glmmTMB(f1, data = d, family = family)) else
+    structure(list(msg = "one checkpoint"), class = "fit_error")
+  ok <- !inherits(fit, "fit_error") && isTRUE(fit$sdr$pdHess) && isTRUE(fit$fit$convergence == 0)
+  if (ok) return(list(fit = fit, formula = f1, cp = TRUE, data = d))
+  list(fit = fit_or_error(glmmTMB(f0, data = d, family = family)), formula = f0, cp = FALSE, data = d)
+}
+
+# A linear combination of fixed effects with its Wald interval.
+combo <- function(fit, weights, level = 0.95) {
+  if (inherits(fit, "fit_error")) return(list(error = fit$msg))
+  b <- fixef(fit)$cond
+  V <- vcov(fit)$cond
+  if (!all(names(weights) %in% names(b))) return(list(error = "term not estimated"))
+  w <- setNames(rep(0, length(b)), names(b))
+  w[names(weights)] <- weights
+  est <- sum(w * b)
+  se <- sqrt(as.numeric(t(w) %*% V %*% w))
+  z <- qnorm(1 - (1 - level) / 2)
+  list(estimate = est, se = se, lower = est - z * se, upper = est + z * se, level = level)
+}
+
 # ---------------------------------------------------------------- H1 and H3
 
 res <- list(analysis = spec$analysis,
             versions = list(R = R.version.string,
                             glmmTMB = as.character(packageVersion("glmmTMB")),
                             TMB = as.character(packageVersion("TMB"))),
-            seed = spec$seed, boot = spec$boot)
+            seed = spec$seed, boot = spec$boot, checkpoint_intercept = list())
+note <- function(name, m) res$checkpoint_intercept[[name]] <<- m$cp
 
 if (!is.null(h1)) {
   h1$log_host <- log(pmax(h1$pre_positions, 1))
   h1$y <- log1p(h1$tie)
   h1$y_no_param <- log1p(h1$tie_no_param)
+  h1$y_no_injected <- log1p(h1$tie_no_injected)
   h1$arm <- as_arm(h1$arm)
   fe_terms <- if (multi(h1$frontend)) " + frontend" else ""
 
   # H1: the methods arm
   d1 <- h1[h1$arm == spec$methods_arm, ]
-  f1 <- y ~ log_host + cp + (1 | chain_id)
-  fit1 <- fit_or_error(glmmTMB(f1, data = d1, family = gaussian()))
+  m1 <- fit_cp("y ~ log_host + cp", d1, gaussian())
+  note("H1", m1)
+  fit1 <- m1$fit
   b1 <- if (inherits(fit1, "fit_error")) NULL else
-    cluster_boot(d1, f1, gaussian(), c("log_host", "cp"), spec$boot)
+    cluster_boot(m1$data, m1$formula, gaussian(), c("log_host", "cp"), spec$boot)
   res$H1 <- list(n_runs = nrow(d1), n_chains = length(unique(d1$chain_id)),
                  log_host = if (is.null(b1)) list(error = fit1$msg) else boot_summary(fit1, b1, "log_host"),
                  cp = if (is.null(b1)) list(error = fit1$msg) else boot_summary(fit1, b1, "cp"))
 
   # H1 read in the function arm, and at class level in the methods arm (reported)
   dF <- h1[h1$arm == spec$function_arm, ]
-  fitF <- fit_or_error(glmmTMB(f1, data = dF, family = gaussian()))
+  fitF <- fit_cp("y ~ log_host + cp", dF, gaussian())$fit
   dc <- d1[!is.na(d1$class_positions) & d1$class_positions > 0, ]
   dc$log_class <- log(dc$class_positions)
   dc$y_class <- log1p(dc$tie_class)
-  fitC <- fit_or_error(glmmTMB(y_class ~ log_class + cp + (1 | chain_id), data = dc,
-                               family = gaussian()))
+  dc$y_class_no_injected <- log1p(dc$tie_class_no_injected)
+  fitC <- fit_cp("y_class ~ log_class + cp", dc, gaussian())$fit
   res$reported$H1_function_arm <- list(log_host = wald(fitF, "log_host"), cp = wald(fitF, "cp"))
   res$reported$H1_class_level <- list(log_class = wald(fitC, "log_class"), cp = wald(fitC, "cp"))
 
   # without injected dependencies (PLAN.md 4.3): a field holding an injected dependency can be
   # declared by any class, so it may not pin code to this one
-  d1$y_no_injected <- log1p(d1$tie_no_injected)
-  fitNI <- fit_or_error(glmmTMB(y_no_injected ~ log_host + cp + (1 | chain_id), data = d1,
-                                family = gaussian()))
-  dc$y_class_no_injected <- log1p(dc$tie_class_no_injected)
-  fitCNI <- fit_or_error(glmmTMB(y_class_no_injected ~ log_class + cp + (1 | chain_id), data = dc,
-                                 family = gaussian()))
+  fitNI <- fit_cp("y_no_injected ~ log_host + cp", d1, gaussian())$fit
+  fitCNI <- fit_cp("y_class_no_injected ~ log_class + cp", dc, gaussian())$fit
   res$reported$H1_without_injected <- list(log_host = wald(fitNI, "log_host"), cp = wald(fitNI, "cp"))
   res$reported$H1_class_level_without_injected <- list(log_class = wald(fitCNI, "log_class"),
                                                        cp = wald(fitCNI, "cp"))
 
-  # H3: the arms against each other in the H1 model
+  # Formation, lagged (reported, PLAN.md 5): for the same problem, is a chain that has been forced
+  # more so far tied more now? The chain's mean ties per run over its earlier checkpoints, per arm.
+  for (a in c(spec$methods_arm, spec$function_arm)) {
+    dl <- h1[h1$arm == a & !is.na(h1$prior_tie_mean), ]
+    ml <- if (nrow(dl) > 0) fit_cp("y ~ log_host + cp + prior_tie_mean", dl, gaussian()) else
+      list(fit = structure(list(msg = "no rows"), class = "fit_error"), cp = FALSE)
+    res$reported[[paste0("formation_lagged_", a)]] <-
+      c(wald(ml$fit, "prior_tie_mean"), list(n = nrow(dl), checkpoint_intercept = ml$cp))
+  }
+
+  # H3: the arms against each other in the H1 model, the host size centred so that the arm term is
+  # the difference at a typical host (uncentred it is the difference at a host of one position)
   d3 <- h1[h1$arm %in% c(spec$methods_arm, spec$function_arm), ]
   d3$arm <- droplevels(d3$arm)
-  f3 <- as.formula(paste0("y ~ log_host * arm + cp", fe_terms, " + (1 | chain_id)"))
-  inter <- paste0("log_host:", FARM)
-  fit3 <- fit_or_error(glmmTMB(f3, data = d3, family = gaussian()))
+  centre <- mean(d3$log_host)
+  d3$log_host_c <- d3$log_host - centre
+  inter <- paste0("log_host_c:", FARM)
+  m3 <- fit_cp(paste0("y ~ log_host_c * arm + cp", fe_terms), d3, gaussian())
+  note("H3", m3)
+  fit3 <- m3$fit
   b3 <- if (inherits(fit3, "fit_error")) NULL else
-    cluster_boot(d3, f3, gaussian(), c(FARM, inter), spec$boot)
+    cluster_boot(m3$data, m3$formula, gaussian(), c(FARM, inter), spec$boot)
   res$H3 <- list(n_runs = nrow(d3), n_chains = length(unique(d3$chain_id)),
+                 centre_log_host = centre, centre_positions = exp(centre),
                  arm = if (is.null(b3)) list(error = fit3$msg) else boot_summary(fit3, b3, FARM),
                  slope = if (is.null(b3)) list(error = fit3$msg) else boot_summary(fit3, b3, inter))
+  # the arm difference at hosts of 10, 25 and 50 positions (reported)
+  res$reported$H3_arm_at <- setNames(lapply(c(10, 25, 50), function(x)
+    combo(fit3, setNames(c(1, log(x) - centre), c(FARM, inter)))), c("10", "25", "50"))
 
   # H3 without the injection rule: ties counted without parameters, in both arms (reported)
-  f3n <- as.formula(paste0("y_no_param ~ log_host * arm + cp", fe_terms, " + (1 | chain_id)"))
-  fit3n <- fit_or_error(glmmTMB(f3n, data = d3, family = gaussian()))
+  fit3n <- fit_cp(paste0("y_no_param ~ log_host_c * arm + cp", fe_terms), d3, gaussian())$fit
   res$reported$H3_without_parameters <- list(arm = wald(fit3n, FARM), slope = wald(fit3n, inter))
-  d3$y_no_injected <- log1p(d3$tie_no_injected)
-  f3i <- as.formula(paste0("y_no_injected ~ log_host * arm + cp", fe_terms, " + (1 | chain_id)"))
-  fit3i <- fit_or_error(glmmTMB(f3i, data = d3, family = gaussian()))
+  fit3i <- fit_cp(paste0("y_no_injected ~ log_host_c * arm + cp", fe_terms), d3, gaussian())$fit
   res$reported$H3_without_injected <- list(arm = wald(fit3i, FARM), slope = wald(fit3i, inter))
   # the trajectory: the arm's interaction with the checkpoint index
-  f3t <- as.formula(paste0("y ~ log_host * arm + cp * arm", fe_terms, " + (1 | chain_id)"))
-  fit3t <- fit_or_error(glmmTMB(f3t, data = d3, family = gaussian()))
+  fit3t <- fit_cp(paste0("y ~ log_host_c * arm + cp * arm", fe_terms), d3, gaussian())$fit
   res$reported$H3_trajectory <- wald(fit3t, paste0(FARM, ":cp"))
 }
 
@@ -190,24 +235,32 @@ if (!is.null(h2)) {
   h2$log_size <- log1p(h2$addition_positions)
   h2$log_host <- log1p(h2$pre_positions)
   h2$log_later <- log(h2$later_checkpoints)
+  h2$host_new <- as.numeric(as.logical(h2$host_new))
   if (isTRUE(spec$acts)) h2$act <- factor(h2$act)
-  base <- paste0("intrusion ~ log_size + declared_crossings + log_host",
-                 if (isTRUE(spec$acts)) " + act" else "",
-                 if (multi(as.character(h2$arm))) " + arm" else "",
-                 if (multi(h2$frontend)) " + frontend" else "",
-                 " + offset(log_later) + (1 | chain_id)")
+  # the base model: the problem held fixed (its size, its declared crossings, the checkpoint's
+  # intercept), the host's size and whether it is new
+  base <- function(d, response = "intrusion", lead = "") {
+    paste0(response, " ~ ", lead, "log_size + declared_crossings + log_host",
+           if (length(unique(d$host_new)) > 1) " + host_new" else "",
+           if (isTRUE(spec$acts) && length(unique(d$act)) > 1) " + act" else "",
+           if (multi(as.character(d$arm))) " + arm" else "",
+           if (multi(d$frontend)) " + frontend" else "",
+           " + offset(log_later)")
+  }
   nb <- nbinom2()
 
-  # H2a: every problem and host
-  fit2a <- fit_or_error(glmmTMB(as.formula(sub("~", "~ tie +", base, fixed = TRUE)),
-                                data = h2, family = nb))
-  res$H2a <- c(list(n = nrow(h2)), irr(wald(fit2a, "tie")))
-  fit2ai <- fit_or_error(glmmTMB(as.formula(sub("~", "~ tie_no_injected +", base, fixed = TRUE)),
-                                 data = h2, family = nb))
-  res$reported$H2a_without_injected <- irr(wald(fit2ai, "tie_no_injected"))
+  # H2a: every problem and host, intrusion on the problem's own lines
+  m2a <- fit_cp(base(h2, lead = "tie + "), h2, nb)
+  note("H2a", m2a)
+  res$H2a <- c(list(n = nrow(h2)), irr(wald(m2a$fit, "tie")))
+  res$reported$H2a_without_injected <-
+    irr(wald(fit_cp(base(h2, lead = "tie_no_injected + "), h2, nb)$fit, "tie_no_injected"))
+  # the host-level count as first built: any later change to the host (reported)
+  res$reported$H2a_host_level <-
+    irr(wald(fit_cp(base(h2, "intrusion_host", "tie + "), h2, nb)$fit, "tie"))
 
   # H2b: existing hosts with their shape at k - 1
-  ex <- h2[!as.logical(h2$host_new) & as.logical(h2$shape_found) %in% TRUE, ]
+  ex <- h2[h2$host_new == 0 & as.logical(h2$shape_found) %in% TRUE, ]
   for (c in c("s1_long", "s2_stuck", "s3_junction", "s3_junction_injection_aware")) {
     ex[[c]] <- as.numeric(as.logical(ex[[c]]))
   }
@@ -215,15 +268,13 @@ if (!is.null(h2)) {
   if ("s5_class_gini" %in% spec$shape_kept) ex$s5_class_gini <- as.numeric(scale(ex$s5_class_gini))
   kept <- spec$shape_kept
   res$H2b <- list(n = nrow(ex), kept = kept, testable = length(kept) > 0, bound = spec$bound)
-  fit2a_ex <- fit_or_error(glmmTMB(as.formula(sub("~", "~ tie +", base, fixed = TRUE)),
-                                   data = ex, family = nb))
-  res$reported$H2a_existing_hosts <- irr(wald(fit2a_ex, "tie"))
+  res$reported$H2a_existing_hosts <- irr(wald(fit_cp(base(ex, lead = "tie + "), ex, nb)$fit, "tie"))
   if (length(kept) > 0) {
-    f2b <- as.formula(sub("~", paste0("~ tie + ", paste(kept, collapse = " + "), " +"), base,
-                          fixed = TRUE))
-    fit2b <- fit_or_error(glmmTMB(f2b, data = ex, family = nb))
-    res$H2b$measures <- setNames(lapply(kept, function(k) tost(fit2b, k, spec$bound)), kept)
-    # shape without the problem terms and the ties: how much association leaving the problem out makes
+    m2b <- fit_cp(base(ex, lead = paste0("tie + ", paste(kept, collapse = " + "), " + ")), ex, nb)
+    note("H2b", m2b)
+    res$H2b$measures <- setNames(lapply(kept, function(k) tost(m2b$fit, k, spec$bound)), kept)
+    # shape without the problem terms (the checkpoint's intercept among them) and the ties: how
+    # much association leaving the problem out makes
     fsh <- as.formula(paste0("intrusion ~ ", paste(kept, collapse = " + "),
                              if (multi(as.character(ex$arm))) " + arm" else "",
                              " + offset(log_later) + (1 | chain_id)"))
@@ -238,9 +289,8 @@ if (!is.null(h2)) {
       res$reported[[paste0("junction_x_arm_", j)]] <- list(error = "junction does not vary in every arm")
       next
     }
-    fj <- as.formula(sub("~", paste0("~ tie + ", j, " * arm +"), base, fixed = TRUE))
-    fitj <- fit_or_error(glmmTMB(fj, data = ex, family = nb))
-    res$reported[[paste0("junction_x_arm_", j)]] <- irr(wald(fitj, paste0(j, ":", FARM)))
+    fj <- sub(" + arm", "", base(ex, lead = paste0("tie + ", j, " * arm + ")), fixed = TRUE)
+    res$reported[[paste0("junction_x_arm_", j)]] <- irr(wald(fit_cp(fj, ex, nb)$fit, paste0(j, ":", FARM)))
   }
 }
 
