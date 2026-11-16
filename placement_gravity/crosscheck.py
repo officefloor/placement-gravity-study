@@ -1,9 +1,15 @@
-"""CodeTracker against the instrument's own following of hosts (PLAN.md §4.4).
+"""CodeTracker for the methods that survive to the chain's end (PLAN.md §4.4), and its agreement
+with the instrument's own following of hosts.
 
 For every method the instrument saw an addition in and that still exists at the chain's last
 checkpoint, CodeTracker 2.6 tracks the method back from that commit (through renames and moves of
 the method and its class). The checkpoints it reports as changing the method's body are compared
 with the checkpoints the instrument attributes to the same host identity.
+
+``crosscheck`` also returns CodeTracker's identities for the outcomes: ``ct_identity`` maps a
+host (checkpoint, simple class name, method name) to the surviving method it is a version of, and
+``ct_touched`` gives each surviving method's body-changing checkpoints. Methods removed before the
+end have no CodeTracker history; the instrument's own chaining covers them.
 """
 
 from __future__ import annotations
@@ -60,6 +66,8 @@ def crosscheck(repo: Path, measured: dict, hosts: list[dict], work: Path) -> dic
 
     per = []
     errors = 0
+    ct_identity: dict[tuple[int, str, str], str] = {}
+    ct_touched: dict[str, set[int]] = {}
     for res in results:
         i, m = rows[int(res["id"])]
         if "error" in res:
@@ -67,6 +75,11 @@ def crosscheck(repo: Path, measured: dict, hosts: list[dict], work: Path) -> dic
             continue
         ct = {cp_of[c["commit"]] for c in res["changes"]
               if c["commit"] in cp_of and BODY & set(c["types"])}
+        cid = f"ct:{m['type']}#{m['name']}"
+        ct_touched[cid] = ct
+        for c in res["changes"]:
+            if c["commit"] in cp_of and c.get("name"):
+                ct_identity[(cp_of[c["commit"]], simple(c["class"]), c["name"])] = cid
         renamed = any(c["commit"] in cp_of and RENAMES & set(c["types"]) for c in res["changes"])
         mine = ours.get(i, set())
         per.append({"identity": i, "type": m["type"], "name": m["name"], "codetracker": sorted(ct),
@@ -87,4 +100,11 @@ def crosscheck(repo: Path, measured: dict, hosts: list[dict], work: Path) -> dic
                                                   and not p["codetracker_only"]
                                                   and not p["instrument_only"]),
         "per_method": per,
+        "ct_identity": ct_identity,
+        "ct_touched": ct_touched,
     }
+
+
+def simple(type_name: str) -> str:
+    """The last segment of a type name, so CodeTracker's and the instrument's names compare."""
+    return type_name.replace("$", ".").split(".")[-1]

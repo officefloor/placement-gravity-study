@@ -59,11 +59,12 @@ def main() -> None:
         r = tables.run_rows(arm, CHAIN, measured)
         cl = tables.class_rows(arm, CHAIN, h, measured)
         ad = tables.addition_rows(arm, CHAIN, measured, h, streamed)
-        o = tables.outcome_rows(arm, CHAIN, h, streamed)
-        hosts += h; runs += r; classes += cl; adds += ad; outs += o
         cc = crosscheck.crosscheck(repo, measured, h, a.work / arm)
+        o = tables.outcome_rows(arm, CHAIN, h, streamed, cc)
+        hosts += h; runs += r; classes += cl; adds += ad; outs += o
         (a.out / f"codetracker-{arm}.json").parent.mkdir(parents=True, exist_ok=True)
-        (a.out / f"codetracker-{arm}.json").write_text(json.dumps(cc, indent=1) + "\n")
+        (a.out / f"codetracker-{arm}.json").write_text(json.dumps(
+            {k: v for k, v in cc.items() if k not in ("ct_identity", "ct_touched")}, indent=1) + "\n")
         real = [x for x in h if x["net_added"] > 0 and not x["replacement"]]
         ex = [x for x in r if not x["host_new"]]
         new = [x for x in real if x["host_new"]]
@@ -126,7 +127,9 @@ def main() -> None:
             "intrusion_per_100": quantiles([x["intrusion_per_100"] for x in o
                                             if x["intrusion_per_100"] is not None]),
             "declared_touches": sum(x["declared"] for x in o),
-            "codetracker": {k: v for k, v in cc.items() if k != "per_method"},
+            "codetracker": {k: v for k, v in cc.items()
+                            if k not in ("per_method", "ct_identity", "ct_touched")},
+            "outcomes_followed_by_codetracker": sum(1 for x in o if x["identity_source"] == "codetracker"),
         }
     write(a.out / "hosts.csv", hosts)
     write(a.out / "runs.csv", runs)

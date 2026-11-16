@@ -180,3 +180,28 @@ def test_identity_follows_renames():
              {"cp": 3, "type": "B", "name": "g", "before_type": "A", "before_name": "g"}]
     ids = tables.identities(hosts)
     assert ids[(1, "A", "f")] == ids[(2, "A", "g")] == ids[(3, "B", "g")]
+
+
+def test_codetracker_is_the_identity_of_surviving_methods():
+    hosts = [
+        {"cp": 1, "type": "A", "name": "f", "before_type": None, "before_name": None, "net_added": 2,
+         "removed": 0, "replacement": False, "host_new": True, "pre_positions": 0, "tie_method": 0,
+         "tie_class": 0, "tie": 0},
+        {"cp": 3, "type": "A", "name": "g", "before_type": None, "before_name": None, "net_added": 1,
+         "removed": 0, "replacement": False, "host_new": False, "pre_positions": 2, "tie_method": 1,
+         "tie_class": 0, "tie": 1},
+        {"cp": 2, "type": "B", "name": "h", "before_type": None, "before_name": None, "net_added": 1,
+         "removed": 0, "replacement": False, "host_new": True, "pre_positions": 0, "tie_method": 0,
+         "tie_class": 0, "tie": 0},
+        {"cp": 4, "type": "B", "name": "h", "before_type": None, "before_name": None, "net_added": 0,
+         "removed": 1, "replacement": False, "host_new": False, "pre_positions": 1, "tie_method": 0,
+         "tie_class": 0, "tie": 0},
+    ]
+    # CodeTracker: A.f was renamed to A.g at cp3 (the instrument missed the rename) and changed at cp5
+    ct = {"ct_identity": {(1, "A", "f"): "ct:A#g", (3, "A", "g"): "ct:A#g", (5, "A", "g"): "ct:A#g"},
+          "ct_touched": {"ct:A#g": {1, 3, 5}}}
+    rows = {(r["cp"], r["name"]): r for r in tables.outcome_rows("x", "c", hosts, {}, ct)}
+    assert rows[(1, "f")]["identity"] == rows[(3, "g")]["identity"] == "ct:A#g"
+    assert rows[(1, "f")]["later_touches"] == 2                 # cp3 and cp5, from CodeTracker
+    assert rows[(2, "h")]["identity_source"] == "instrument"    # B.h is removed: own chaining
+    assert rows[(2, "h")]["later_touches"] == 1

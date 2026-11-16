@@ -162,7 +162,7 @@
     "wiring_nodes_added": 0,
     "wiring_edges_added": 0,
     "outcome_rows": 174,
-    "outcomes_with_intrusion": 38,
+    "outcomes_with_intrusion": 40,
     "intrusion_per_100": {
       "n": 167,
       "min": 0.0,
@@ -171,9 +171,9 @@
       "p75": 0.0,
       "p90": 37.5,
       "max": 53.44827586206897,
-      "mean": 6.626
+      "mean": 6.706
     },
-    "declared_touches": 60,
+    "declared_touches": 62,
     "codetracker": {
       "methods": 106,
       "errors": 1,
@@ -186,7 +186,8 @@
       "methods_identical": 97,
       "methods_renamed_or_moved": 6,
       "methods_renamed_or_moved_identical": 3
-    }
+    },
+    "outcomes_followed_by_codetracker": 153
   },
   "officefloor": {
     "branch": "evolve/blind-202608100006/just-solve/officefloor/chain9",
@@ -347,11 +348,11 @@
       "p25": 0.0,
       "median": 0.0,
       "p75": 0.0,
-      "p90": 3.125,
+      "p90": 3.225806451612903,
       "max": 12.5,
-      "mean": 0.656
+      "mean": 0.716
     },
-    "declared_touches": 44,
+    "declared_touches": 48,
     "codetracker": {
       "methods": 138,
       "errors": 1,
@@ -364,6 +365,7 @@
       "methods_identical": 115,
       "methods_renamed_or_moved": 7,
       "methods_renamed_or_moved_identical": 2
-    }
+    },
+    "outcomes_followed_by_codetracker": 169
   }
 }

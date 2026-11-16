@@ -22,7 +22,8 @@ import org.refactoringminer.util.GitServiceImpl;
  * </pre>
  *
  * LISTING.tsv: {@code id<TAB>startCommit<TAB>filePath<TAB>methodName<TAB>declarationLine} per line.
- * Output: one JSON line per method, {"id", "changes": [{"commit", "types": [...]}]} or an "error".
+ * Output: one JSON line per method, {"id", "changes": [{"commit", "class", "name", "types": [...]}]}
+ * (the method's class and name after the change) or an "error".
  */
 public final class Histories {
 
@@ -47,7 +48,12 @@ public final class Histories {
 						for (Change c : i.getChangeList()) {
 							types.add(c.getType().name());
 						}
-						b.append(first ? "" : ",").append("{\"commit\":").append(q(i.getCommitId())).append(",\"types\":[");
+						Method after = i.getElementAfter() != null ? i.getElementAfter() : i.getElementBefore();
+						String cls = after == null ? "" : after.getUmlOperation().getClassName();
+						String name = after == null ? "" : after.getUmlOperation().getName();
+						b.append(first ? "" : ",").append("{\"commit\":").append(q(i.getCommitId()))
+								.append(",\"class\":").append(q(cls)).append(",\"name\":").append(q(name))
+								.append(",\"types\":[");
 						boolean f2 = true;
 						for (String ty : types) {
 							b.append(f2 ? "" : ",").append(q(ty));

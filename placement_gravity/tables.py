@@ -179,28 +179,53 @@ def identities(hosts: list[dict]) -> dict[tuple[int, str, str], str]:
     return out
 
 
-def outcome_rows(arm: str, chain: str, hosts: list[dict], streamed: dict[int, dict]) -> list[dict]:
+def outcome_rows(arm: str, chain: str, hosts: list[dict], streamed: dict[int, dict],
+                 ct: dict | None = None) -> list[dict]:
     """§4.4 at method level: for each problem k and each host its code went into, the later
-    checkpoints touching the same host (followed across renames and moves), split into those the
-    stream declares to change k and the rest (intrusion)."""
-    ident = identities(hosts)
+    checkpoints touching the same host, split into those the stream declares to change k and the
+    rest (intrusion). A host that survives to the chain's end is followed by CodeTracker (``ct``,
+    from ``crosscheck``): its identity and its body-changing checkpoints. A host removed before the
+    end is followed by the instrument's own chaining across RefactoringMiner's renames and moves."""
+    own = identities(hosts)
+    ct_identity = (ct or {}).get("ct_identity", {})
+    ct_touched = (ct or {}).get("ct_touched", {})
+
+    def short(t: str) -> str:
+        return t.replace("$", ".").split(".")[-1]
+
+    # an own identity any of whose versions CodeTracker recognises becomes that surviving method
+    alias: dict[str, str] = {}
+    for h in hosts:
+        c = ct_identity.get((h["cp"], short(h["type"]), h["name"]))
+        if c:
+            alias.setdefault(own[(h["cp"], h["type"], h["name"])], c)
+
+    def ident(h: dict) -> str:
+        c = ct_identity.get((h["cp"], short(h["type"]), h["name"]))
+        o = own[(h["cp"], h["type"], h["name"])]
+        return c or alias.get(o) or o
+
     touched: dict[str, set[int]] = {}
     for h in hosts:
         if h["net_added"] > 0 or h["removed"] > 0:
-            touched.setdefault(ident[(h["cp"], h["type"], h["name"])], set()).add(h["cp"])
+            touched.setdefault(ident(h), set()).add(h["cp"])
+    for c, cps in ct_touched.items():
+        touched[c] = set(cps)  # CodeTracker's history is the source for a surviving method
     last = max((h["cp"] for h in hosts), default=0)
     rows = []
     for h in hosts:
         if h["net_added"] <= 0 or h["replacement"]:
             continue
-        k, i = h["cp"], ident[(h["cp"], h["type"], h["name"])]
+        k, i = h["cp"], ident(h)
         later = sorted(j for j in touched.get(i, set()) if j > k)
         declared = [j for j in later if k in streamed.get(j, {}).get("mutates", [])]
         rows.append({
-            "arm": arm, "chain": chain, "cp": k, "identity": i, "type": h["type"], "name": h["name"],
+            "arm": arm, "chain": chain, "cp": k, "identity": i,
+            "identity_source": "codetracker" if i.startswith("ct:") else "instrument",
+            "type": h["type"], "name": h["name"],
             "host_new": h["host_new"], "pre_positions": h["pre_positions"],
             "net_added": h["net_added"], "tie_method": h["tie_method"], "tie_class": h["tie_class"],
-            "birth_tie": h["birth_tie"], "later_checkpoints": last - k,
+            "tie": h["tie"], "later_checkpoints": last - k,
             "later_touches": len(later), "declared": len(declared),
             "intrusion": len(later) - len(declared),
             "intrusion_per_100": (100 * (len(later) - len(declared)) / (last - k)) if last > k else None,

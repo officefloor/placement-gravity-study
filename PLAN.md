@@ -114,6 +114,48 @@ Why this corpus comes first:
 
 **[DECIDE]**: which runs, strategies and chains are read; named by run id at registration.
 
+### 3.1a Corpus A2: the ui-long-degradation runs (after the petclinic corpus)
+
+The ui-long-degradation harness grows OfficeHQ through 250 checkpoints, ten chains per stack, on
+one stream, agent and harness commit across its runs. Its plan freezes these at a tagged commit so
+that analyses registered against its runs can name what they read. This study reads the back
+end's production Java of the four stacks of its Runs A and B, a front end × back end square:
+
+| | Spring | OfficeFloor |
+|---|---|---|
+| **Angular** | Run A (`angular-spring`) | Run B (`angular-officefloor`) |
+| **TanStack** | Run B (`tanstack-spring`) | Run A (`tanstack-officefloor`) |
+
+- **Primary contrast:** Spring against OfficeFloor, averaged over the two front ends. Each run
+  gives one Spring and one OfficeFloor stack, so differences between the runs (date, machine)
+  cancel out of this contrast.
+- **Secondary:** the two pairs that share a front end (Angular, TanStack), each read as a
+  replication.
+- **Not separable:** an influence of the front end on the back end, and a difference between
+  Run A and Run B, are confounded in this square. The study does not depend on either being
+  absent; it reports the per-front-end pairs so that a disagreement between them shows.
+- **Run C** (the no-injection control) is not read.
+- Every new rule in the stream declares the earlier rules it crosses (at least two), which gives
+  the declared crossings of §4.4. A reader for that format is to be added and tested on fixtures,
+  not on a run that will be analysed.
+
+**Order.** The petclinic corpus (§3.1) is analysed first; the ui runs follow once Run B is complete.
+
+**Before any ui run's backend Java is read for this study,** three plans that read the same runs
+must be registered:
+
+1. **This plan.**
+2. **The flow-injection-containment plan**, which reads the TanStack stacks. Its draft excludes a
+   run whose Java-layer results were seen before its registration. A proposed Amendment 1
+   (16 November 2026) lets it register now and read its gates later.
+3. **The ui harness's SinewSlim analysis plan** (branch `sinewslim-analysis-plan`, draft of
+   31 October 2026), which reads the same-front-end pairs including all four stacks above. It must
+   register before any of its runs is read with SinewSlim, and this study's instrument is built
+   on SinewSlim's facts and seam.
+
+After all three are registered, the order in which they read does not matter. Each lists the
+others' results it saw before its analysis.
+
 ### 3.2 Corpus B: open-source histories (secondary, external validity)
 
 Pre-AI Java repositories drawn by `open-source-repository-sampler`, seed and as-of date
@@ -191,10 +233,11 @@ size); OfficeFloor's class level is reported.
 
 ### 4.4 Consequence (Q3)
 
-Each problem's hosts are followed forward to the end of the chain, across renames and moves:
-RefactoringMiner's renames chain identities commit by commit, and CodeTracker 2.6 (Jodavi and
-Tsantalis 2022) gives each surviving method's history (which is primary is **[DECIDE]**; the pilot
-finds them agreeing on 91–99% of checkpoints):
+Each problem's hosts are followed forward to the end of the chain, across renames and moves. A
+method that survives to the end is followed by CodeTracker 2.6 (Jodavi and Tsantalis 2022): its
+identity, and the checkpoints that change its body. A method removed before the end has no
+CodeTracker history and is followed by the instrument's own chaining of RefactoringMiner's renames
+and moves (decided 16 November 2026; the pilot finds the two agreeing on 91–99% of checkpoints):
 
 - **Containment:** later changes that the stream declares to be *about* problem *p* (mutatives
   of *p*'s rule). The number of hosts they touch outside *p*'s placement, normalised by the

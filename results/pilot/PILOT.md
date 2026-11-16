@@ -126,7 +126,8 @@ The differences fall into three groups:
 | Runs with an unresolved reference (inherited?) | 0 / 206 | 0 / 212 |
 | Amount, positions at cp1 → cp60 | 942 → 1,397 | 745 → 1,235 |
 | Wiring added: nodes / edges | 0 / 0 | 33 / 24 |
-| Problem–host pairs followed forward (with intrusion) | 174 (38) | 192 (30) |
+| Problem–host pairs followed forward (with intrusion) | 174 (40) | 192 (30) |
+| …followed by CodeTracker (surviving methods) / by the instrument (removed) | 153 / 21 | 169 / 23 |
 
 ### Forced at each cut (decision 3)
 
@@ -166,17 +167,20 @@ Settled 16 November 2026 (by the author, after this pilot's figures):
    418 runs, so superclass resolution is not built. The registered analysis reports the share of
    runs with an unresolved reference.
 
+5. **Host identity for outcomes:** CodeTracker's history (identity and body-changing checkpoints)
+   for methods that survive to the chain's end; the instrument's chaining for methods removed
+   earlier. Applied in this pilot.
+
 Open:
 
-5. **Host identity for outcomes.** Proposal: CodeTracker's history for methods that exist at the
-   chain's end; the instrument's chaining for methods removed earlier.
 6. **The ceiling at ≥ 1 in Spring.** Register H1 and H2 on the tie count (continuous), with the cut
    at 1 as the reading aid, so that the ceiling does not remove the test.
 7. **Run and chains.** Chain 9 of `blind-202608100006/just-solve` stays development data, excluded
-   in both arms. Name the analysed runs at registration.
+   in both arms. The ui-long-degradation Run A is proposed as primary data (PLAN.md §3.1a), on two
+   conditions that protect the flow-injection-containment plan.
 
 ## Limits
 
 One chain per arm, written by one agent. Names are matched lexically, with no symbol solver.
-Outcomes are followed by name and RefactoringMiner's renames; CodeTracker is a cross-check, not yet
-the source. Positions are those of the pretty-printed source.
+Outcomes follow surviving methods by CodeTracker and removed ones by name and RefactoringMiner's
+renames; class-level identity is not followed by CodeTracker's class tracker yet. Positions are those of the pretty-printed source.
