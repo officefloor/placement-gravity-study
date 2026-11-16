@@ -46,10 +46,18 @@ def test_s3_a_call_in_an_anonymous_class_belongs_to_its_own_method(methods):
     assert (run["in"], run["out"], run["calls"]) == (0, 2, 1)
 
 
-def test_s3_injected_parameters_are_not_in(methods):
+def test_s3_reads_a_wired_function_conventionally(methods):
     service, helper = methods[("Wired", "service")], methods[("Wired", "helper")]
-    assert service["injected"] and service["in"] == 0 and service["out"] == 1
-    assert not helper["injected"] and helper["in"] == 1   # private: not a wired function
+    # every parameter is in, as for an ordinary method: receives two, hands on one
+    assert service["injected"] and service["in"] == 2 and service["out"] == 1
+    assert service["s3_d"] == -1 and not service["s3_junction"]
+    assert not helper["injected"] and helper["in"] == helper["in_injection_aware"] == 1
+
+
+def test_s3_injection_aware_reading_makes_any_call_of_a_wired_function_a_junction(methods):
+    service = methods[("Wired", "service")]
+    assert service["in_injection_aware"] == 0
+    assert service["s3_d_injection_aware"] == 1 and service["s3_junction_injection_aware"]
 
 
 def test_s4_cognitive_by_the_complexity_concentration_extractor(methods):
@@ -85,5 +93,6 @@ def test_host_is_read_at_its_version_before_the_addition(methods):
 
 def test_series_counts_and_junction_share(methods):
     [row] = shape.series_rows("a", "c", list(methods.values()))
-    assert (row["methods"], row["long"], row["stuck"], row["junctions"], row["outliers"]) == (8, 2, 1, 3, 1)
+    assert (row["methods"], row["long"], row["stuck"], row["junctions"], row["outliers"]) == (8, 2, 1, 2, 1)
+    assert row["junctions_injection_aware"] == 3
     assert row["cognitive"] == 21 and row["junction_share"] == 0.0

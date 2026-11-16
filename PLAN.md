@@ -344,7 +344,7 @@ addition lands in, at *k − 1*, before the addition. A new host has none of the
 |---|---|---|
 | S1 | **Long:** 26 or more code lines (SinewSlim's lines) | the divergence study's length constant |
 | S2 | **Not slimmable:** SinewSlim's conventional reading at the pinned version and its defaults, on both arms | the long-method-slim study; the SinewSlim analysis plan's M1 |
-| S3 | **Junction:** the host hands on more data than it receives, *d = out − in > 0*. *in* counts the parameters that are not injected (§4.3's rule); *out* counts the arguments it passes on calls to the application's own methods | the flow-injection draft's junction |
+| S3 | **Junction:** the host hands on more data than it receives, *d = out − in > 0*. *in* counts every parameter, as for an ordinary method; *out* counts the arguments it passes on calls to the application's own methods. The injection-aware reading (*in* without injected parameters) is reported beside it | the flow-injection draft's junction |
 | S4 | **Complexity outlier:** the host's cognitive complexity, and whether its modified z-score within the checkpoint exceeds 3.5 | the complexity-concentration study |
 | S5 | **Concentration:** the host's size and the Gini coefficient of the class's positions over its methods | §4.2 |
 
@@ -362,6 +362,13 @@ were ordinary methods; that is conservative towards OfficeFloor.
   SinewSlim's defaults, which OfficeFloorSlim's conventional pricing also uses.
 - S3's calls are matched to the application's methods by name and arity, lexically, as the ties
   are (§7, *Lexical names*). A call on an object of another type with a matching name counts.
+- S3 is conventional, not injection-aware. A wired OfficeFloor function receives only injected
+  values: every function is a starting point. Leaving them out of *in* made any call such a function
+  made with an argument a junction, so S3 measured whether a function calls anything (corrected
+  16 November 2026, after the pilot: 65 of 92 OfficeFloor junctions at cp60 were wired functions).
+  This differs from the ties on purpose. Ties ask what pins new code to its place, and an injected
+  value pins nothing (§4.3). S3 is the earlier studies' shape measure, read the same way on both
+  arms.
 - S4 is the complexity-concentration study's own `cognitive.analyze` and `modified_z_scale`
   (pinned at its commit `0f8e654`), over the method's original source lines. When more than half
   the methods tie at the median, that study's mean-absolute-deviation scale applies, and the scale
@@ -415,8 +422,9 @@ trajectories can be set beside the per-problem ones.
   for that one pair of chains; no hypothesis statistic was computed. Those chains are excluded
   from the registered analysis. The shape measures (§4.7) were added to it on 16 November 2026:
   on that chain no method was stuck (S2), and the junction share of cognitive complexity rose in
-  the OfficeFloor arm (0.30 → 0.42) and not in Spring (0.33 → 0.31), against the absorbed
-  flow-injection draft's P1 direction. That reading is descriptive, of development data. The pilot raised six decisions (PILOT.md, *Decisions*), which are
+  the OfficeFloor arm and not in Spring (0.33 → 0.31), against the absorbed flow-injection draft's
+  P1 direction: 0.30 → 0.42 under the injection-aware reading first built, 0.22 → 0.36 under the
+  conventional reading that replaced it. That reading is descriptive, of development data. The pilot raised six decisions (PILOT.md, *Decisions*), which are
   settled at registration.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.

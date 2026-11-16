@@ -923,9 +923,10 @@ public final class Pull {
 	 * For each line {@code unit<TAB>dir<TAB>injected} (injected: comma-separated simple names of the
 	 * wired types, or "-"), one record per method of every .java file under dir: its positions, SinewSlim's
 	 * code lines and conventional assessment ({@link Assessor#DEFAULTS}, as OfficeFloorSlim's conventional
-	 * pricing), and the junction counts. {@code in}: the parameters that are not injected. {@code out}: the
-	 * arguments the method passes on calls to the application's own methods (a call whose name and arity
-	 * match a method declared in the tree, matched lexically). The original line range is given so that
+	 * pricing), and the junction counts. {@code in}: the method's parameters, read conventionally (every
+	 * parameter, injected or not, as for an ordinary method); {@code in_injection_aware}: the parameters
+	 * that are not injected. {@code out}: the arguments the method passes on calls to the application's own
+	 * methods (a call whose name and arity match a method declared in the tree, matched lexically). The original line range is given so that
 	 * complexity can be read from the source text.
 	 */
 	static void shape(Path listing, Path out) throws IOException {
@@ -993,7 +994,7 @@ public final class Pull {
 				}
 				String simple = m.type.substring(m.type.lastIndexOf('.') + 1);
 				boolean injected = injectedTypes.contains(simple) && c instanceof MethodDeclaration md && md.isPublic();
-				int in = injected ? 0 : paramCount(m.signature);
+				int in = paramCount(m.signature), inAware = injected ? 0 : in;
 				int passed = 0, calls = 0;
 				for (MethodCallExpr mc : c.findAll(MethodCallExpr.class)) {
 					if (enclosingCallable(mc) != c || !appMethods.contains(mc.getNameAsString() + "/" + mc.getArguments().size())) {
@@ -1009,7 +1010,8 @@ public final class Pull {
 						+ ",\"positions\":" + m.lines.length + ",\"length\":" + length
 						+ ",\"long\":" + (length >= trigger) + ",\"status\":" + q(status)
 						+ ",\"obstacle\":" + (obstacle == null ? "null" : q(obstacle))
-						+ ",\"injected\":" + injected + ",\"in\":" + in + ",\"out\":" + passed + ",\"calls\":" + calls
+						+ ",\"injected\":" + injected + ",\"in\":" + in + ",\"in_injection_aware\":" + inAware
+						+ ",\"out\":" + passed + ",\"calls\":" + calls
 						+ "}");
 			}
 		}

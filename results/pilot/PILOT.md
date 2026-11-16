@@ -158,7 +158,8 @@ was found there (Spring 62, OfficeFloor 52); no file failed to parse and no asse
 | S1 long (26+ code lines) | 23 | 1 |
 | S2 stuck (not slimmable, or only with a record) | 0 | 0 |
 | S2 status | 39 under the cap, 15 slimmable, 8 slimmable but locked | 51 under the cap, 1 slimmable |
-| S3 junction (*d* > 0) | 35 | 35 |
+| S3 junction (*d* > 0), conventional | 35 | 22 |
+| S3 junction, injection-aware | 35 | 35 |
 | S4 complexity outlier (modified z ≥ 3.5) | 28 | 17 |
 | S5 class Gini, median | 0.43 | 0.00 |
 
@@ -168,7 +169,8 @@ Over the whole tree, cp1 → cp60:
 |---|---|---|
 | Methods | 278 → 378 | 256 → 391 |
 | Long / stuck | 3 / 0 → 5 / 0 | 2 / 0 → 4 / 0 |
-| Junction share of cognitive complexity | 0.33 → 0.31 | 0.30 → 0.42 |
+| Junction share of cognitive complexity, conventional | 0.33 → 0.31 | 0.22 → 0.36 |
+| Junction share, injection-aware | 0.33 → 0.31 | 0.30 → 0.42 |
 | Complexity outliers | 16 → 21 | 13 → 25 |
 
 Three things follow for H2b:
@@ -182,9 +184,19 @@ Three things follow for H2b:
   (Spring) or 4 (OfficeFloor) upwards are flagged: 45% of Spring's existing hosts. The flag then
   reads as "has some control flow" rather than as an outlier. **Open (decision 9).**
 
-The rise in OfficeFloor's junction share is a descriptive reading of one development chain, which is
-excluded from the analysis. It runs against the absorbed flow-injection draft's P1 direction and
-is recorded here because it was seen before registration (PLAN.md §6).
+**S3 was first built injection-aware, and that was wrong for OfficeFloor** (corrected the same day,
+after the author pointed it out). A wired function receives only injected values, so with `in`
+leaving them out, any call it makes with an argument made it a junction: every function is a
+starting point. At cp60, 65 of OfficeFloor's 92 junctions were wired functions. It also went
+against §4.7, which reads S1 to S4 conventionally on both arms. S3 now counts every parameter as
+`in`, the same rule for both arms; the injection-aware reading is kept beside it as a secondary.
+
+Under the conventional reading OfficeFloor's junction share still rises (0.22 → 0.36) and ends
+above Spring's (0.31). Injection explained the level, not the rise. This is a descriptive reading
+of one development chain, excluded from the analysis. It runs against the absorbed flow-injection
+draft's P1 direction and is recorded because it was seen before registration (PLAN.md §6).
+Whether OfficeFloor's junctions stay contained to their injection point, as the author expects,
+is what intrusion measures (§4.4); it was not computed by shape here.
 
 ## Verdict per measure
 
@@ -194,7 +206,7 @@ is recorded here because it was seen before registration (PLAN.md §6).
   reported, so a change of this in other chains will show.
 - **Placement, dispersion, amount, wiring and outcomes** compute and vary.
 - **Shape (S1–S5)** computes on every existing host. S2 does not vary, S1 hardly varies in
-  OfficeFloor, and S4's flag is broad (decisions 8 and 9). S3 and S5 vary.
+  OfficeFloor, and S4's flag is broad (decisions 8 and 9). S3 (conventional) and S5 vary.
 
 ## Decisions
 

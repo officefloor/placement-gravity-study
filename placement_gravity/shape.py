@@ -9,8 +9,12 @@ study, pinned in requirements.txt):
 - **S2 not slimmable:** SinewSlim's conventional reading is ``not_slimmable`` or
   ``slimmable_with_record``, the long-method-slim study's *stuck* (its ``analyse.STUCK``). The
   strict ``not_slimmable`` is kept beside it, with the obstacle.
-- **S3 junction:** ``d = out − in > 0``. ``in``: the parameters that are not injected; ``out``: the
-  arguments passed on calls to the application's own methods.
+- **S3 junction:** ``d = out − in > 0``, read conventionally as S1, S2 and S4 are: ``in`` counts
+  every parameter, injected or not; ``out`` the arguments passed on calls to the application's own
+  methods. The injection-aware reading (``in`` without injected parameters, the absorbed
+  flow-injection draft's definition) is kept beside it. It is not primary: a wired OfficeFloor
+  function receives only injected values, so under it any call it makes with an argument makes it a
+  junction, and S3 would measure whether a function calls anything.
 - **S4 complexity outlier:** cognitive complexity by the complexity-concentration study's
   ``cognitive.analyze`` over the method's source text, and its modified z-score over every method
   of the checkpoint's tree (``extract.modified_z_scale``), an outlier at ``extract.OUTLIER_Z`` (3.5).
@@ -60,6 +64,8 @@ def complete(records: list[dict], trees: dict[str, Path]) -> list[dict]:
         r["s2_not_slimmable"] = r["status"] == "not_slimmable"
         r["s3_d"] = r["out"] - r["in"]
         r["s3_junction"] = r["s3_d"] > 0
+        r["s3_d_injection_aware"] = r["out"] - r["in_injection_aware"]
+        r["s3_junction_injection_aware"] = r["s3_d_injection_aware"] > 0
     by_unit: dict[str, list[dict]] = {}
     for r in methods:
         by_unit.setdefault(r["unit"], []).append(r)
@@ -84,7 +90,7 @@ def index(methods: list[dict]) -> dict[tuple[str, str, str, str], dict]:
 
 #: The host columns S1 to S5 add (None for a new host, or an existing one not found at k − 1).
 HOST_COLUMNS = ("s1_long", "s2_stuck", "s2_not_slimmable", "s2_status", "s2_obstacle", "s3_in",
-                "s3_out", "s3_d", "s3_junction", "s4_cognitive", "s4_z", "s4_outlier",
+                "s3_out", "s3_d", "s3_junction", "s3_junction_injection_aware", "s4_cognitive", "s4_z", "s4_outlier",
                 "s5_class_gini", "s5_class_positions")
 
 
@@ -100,7 +106,8 @@ def host_shape(host: dict, shaped: dict[tuple[str, str, str, str], dict]) -> dic
     return {"s1_long": r["s1_long"], "s2_stuck": r["s2_stuck"],
             "s2_not_slimmable": r["s2_not_slimmable"], "s2_status": r["status"],
             "s2_obstacle": r["obstacle"], "s3_in": r["in"], "s3_out": r["out"], "s3_d": r["s3_d"],
-            "s3_junction": r["s3_junction"], "s4_cognitive": r["cognitive"], "s4_z": r["s4_z"],
+            "s3_junction": r["s3_junction"],
+            "s3_junction_injection_aware": r["s3_junction_injection_aware"], "s4_cognitive": r["cognitive"], "s4_z": r["s4_z"],
             "s4_outlier": r["s4_outlier"], "s5_class_gini": r["s5_class_gini"],
             "s5_class_positions": r["s5_class_positions"], "shape_found": True}
 
@@ -123,8 +130,12 @@ def series_rows(arm: str, chain_name: str, methods: list[dict]) -> list[dict]:
             "long": sum(r["s1_long"] for r in rs), "stuck": sum(r["s2_stuck"] for r in rs),
             "not_slimmable": sum(r["s2_not_slimmable"] for r in rs),
             "junctions": sum(r["s3_junction"] for r in rs),
+            "junctions_injection_aware": sum(r["s3_junction_injection_aware"] for r in rs),
             "cognitive": total,
             "junction_share": round(sum(r["cognitive"] for r in rs if r["s3_junction"]) / total, 4)
+            if total else None,
+            "junction_share_injection_aware": round(
+                sum(r["cognitive"] for r in rs if r["s3_junction_injection_aware"]) / total, 4)
             if total else None,
             "outliers": sum(r["s4_outlier"] for r in rs),
             "errors": sum(1 for r in rs if r["status"] == "error"),

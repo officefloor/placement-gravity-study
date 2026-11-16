@@ -225,8 +225,10 @@
         "stuck": 0,
         "not_slimmable": 0,
         "junctions": 48,
+        "junctions_injection_aware": 48,
         "cognitive": 158,
         "junction_share": 0.3291,
+        "junction_share_injection_aware": 0.3291,
         "outliers": 16,
         "errors": 0
       },
@@ -240,8 +242,10 @@
         "stuck": 0,
         "not_slimmable": 0,
         "junctions": 69,
+        "junctions_injection_aware": 69,
         "cognitive": 329,
         "junction_share": 0.31,
+        "junction_share_injection_aware": 0.31,
         "outliers": 21,
         "errors": 0
       }
@@ -433,7 +437,7 @@
       "s1_long": 1,
       "s2_stuck": 0,
       "s2_not_slimmable": 0,
-      "s3_junction": 35,
+      "s3_junction": 22,
       "s4_outlier": 17
     },
     "existing_hosts_s2_status": {
@@ -460,9 +464,11 @@
         "long": 2,
         "stuck": 0,
         "not_slimmable": 0,
-        "junctions": 54,
+        "junctions": 24,
+        "junctions_injection_aware": 54,
         "cognitive": 124,
-        "junction_share": 0.2984,
+        "junction_share": 0.2177,
+        "junction_share_injection_aware": 0.2984,
         "outliers": 13,
         "errors": 0
       },
@@ -475,9 +481,11 @@
         "long": 4,
         "stuck": 0,
         "not_slimmable": 0,
-        "junctions": 92,
+        "junctions": 52,
+        "junctions_injection_aware": 92,
         "cognitive": 339,
-        "junction_share": 0.4248,
+        "junction_share": 0.3599,
+        "junction_share_injection_aware": 0.4248,
         "outliers": 25,
         "errors": 0
       }
