@@ -53,13 +53,16 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           f"- On log(host positions): {interval(h1.get('log_host'))}",
           f"- On the checkpoint index: {interval(h1.get('cp'))}",
           f"- Reported, the function arm: on host size {interval((rep.get('H1_function_arm') or {}).get('log_host'))}",
-          f"- Reported, class level (methods arm): on class size {interval((rep.get('H1_class_level') or {}).get('log_class'))}"]
+          f"- Reported, class level (methods arm): on class size {interval((rep.get('H1_class_level') or {}).get('log_class'))}",
+          f"- Reported, without injected dependencies: on host size {interval((rep.get('H1_without_injected') or {}).get('log_host'))}; "
+          f"class level on class size {interval((rep.get('H1_class_level_without_injected') or {}).get('log_class'))}"]
     h2 = hyp["H2"]
     a = (h2.get("detail") or {}).get("H2a") or {}
     b = (h2.get("detail") or {}).get("H2b") or {}
     L += ["", "## H2, forcing does the harm, not shape", "",
           f"- **H2a**, rate ratio of intrusion per tie: {ratio(a)} (n = {f(a.get('n'))})",
           f"- Reported, existing hosts only: {ratio(rep.get('H2a_existing_hosts'))}",
+          f"- Reported, ties without injected dependencies: {ratio(rep.get('H2a_without_injected'))}",
           f"- **H2b**: {h2.get('h2b')}; bound {f((b.get('bound') or [None])[0])} to "
           f"{f((b.get('bound') or [None, None])[1])}, 90% intervals (n = {f(b.get('n'))})"]
     for k, m in (b.get("measures") or {}).items():
@@ -90,6 +93,8 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           f"{f(w.get('concentration_against'))}",
           f"- Reported, without parameter ties: arm {interval((rep.get('H3_without_parameters') or {}).get('arm'))}, "
           f"slope {interval((rep.get('H3_without_parameters') or {}).get('slope'))}",
+          f"- Reported, without injected dependencies: arm {interval((rep.get('H3_without_injected') or {}).get('arm'))}, "
+          f"slope {interval((rep.get('H3_without_injected') or {}).get('slope'))}",
           f"- Reported, trajectory (arm × checkpoint): {interval(rep.get('H3_trajectory'))}",
           "", "## Provenance", "",
           f"Versions: {json.dumps(est.get('versions'))}. Seed {est.get('seed')}.", "",

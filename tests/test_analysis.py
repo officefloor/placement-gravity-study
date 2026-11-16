@@ -81,6 +81,7 @@ def chain_tables(root: Path, arm: str, n: int, amount: int, junction_hosts: int 
                       "s3_junction_injection_aware": "True", "s4_cognitive": i % 4, "s5_class_gini": 0.3})
         runs_.append({**common, "cp": 2 + i, "type": "T", "signature": f"m{i}()", "host_new": "False",
                       "replacement": "False", "tie": i % 3, "tie_no_param": i % 2, "tie_class": 1,
+                      "tie_no_injected": i % 2, "tie_class_no_injected": 0,
                       "pre_positions": 5 + i})
         outs.append({**common, "cp": 2 + i, "type": "T", "signature": f"m{i}()", "name": f"m{i}",
                      "intrusion": i % 2, "later_checkpoints": 30 - i, "tie": i % 3, "net_added": 3,

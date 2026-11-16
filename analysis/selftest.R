@@ -17,6 +17,7 @@ h1 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
   tie <- rpois(n, exp(a + b * log(pre) + 0.006 * cp + rnorm(1, 0, 0.1)))
   data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = cp, act = NA,
              tie = tie, tie_no_param = pmax(0, tie - rbinom(n, 1, 0.3)), tie_class = rpois(n, 1),
+             tie_no_injected = pmax(0, tie - rbinom(n, 1, 0.3)), tie_class_no_injected = rpois(n, 0.5),
              pre_positions = pre, class_positions = pre * 3)
 }))))
 h2 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
@@ -27,7 +28,7 @@ h2 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
   data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "",
              cp = sample(1:60, n, replace = TRUE), act = NA,
              intrusion = rnbinom(n, size = 2, mu = mu), later_checkpoints = later,
-             tie = tie, tie_no_param = tie, net_added = rpois(n, 4) + 1,
+             tie = tie, tie_no_param = tie, tie_no_injected = tie, net_added = rpois(n, 4) + 1,
              addition_positions = rpois(n, 8) + 1, declared_crossings = rpois(n, 1),
              pre_positions = rpois(n, 20), host_new = FALSE, shape_found = TRUE,
              s1_long = rbinom(n, 1, 0.3) == 1, s2_stuck = rbinom(n, 1, 0.2) == 1,
@@ -65,4 +66,9 @@ for (k in names(e$H2b$measures)) {
   check(m$irr_lower > 0.5 && m$irr_upper < 2, paste("H2b estimates", k, "near no effect"))
 }
 check(!is.null(e$reported$junction_x_arm_s3_junction$irr), "junction x arm is estimated")
+check(e$reported$H1_without_injected$log_host$lower > 0, "H1 without injected dependencies is estimated")
+check(!is.null(e$reported$H1_class_level_without_injected$log_class$estimate),
+      "class-level H1 without injected dependencies is estimated")
+check(!is.null(e$reported$H3_without_injected$slope$estimate), "H3 without injected dependencies is estimated")
+check(!is.null(e$reported$H2a_without_injected$irr), "H2a without injected dependencies is estimated")
 cat("analysis/analyse.R self-test passed\n")

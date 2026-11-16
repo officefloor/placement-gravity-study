@@ -77,7 +77,9 @@ def h1_rows(run_rows: list[dict], host_rows: list[dict], streamed: dict) -> list
             "chain_id": r["chain_id"], "arm": r["arm"], "frontend": r.get("frontend", ""),
             "cp": cp, "act": streamed.get(cp, {}).get("act"),
             "tie": int(r["tie"]), "tie_no_param": int(r["tie_no_param"]),
-            "tie_class": int(r["tie_class"]), "pre_positions": int(r["pre_positions"]),
+            "tie_class": int(r["tie_class"]), "tie_no_injected": int(r["tie_no_injected"]),
+            "tie_class_no_injected": int(r["tie_class_no_injected"]),
+            "pre_positions": int(r["pre_positions"]),
             "class_positions": num(cls.get((r["chain_id"], r["cp"], r["type"], r["signature"]))),
         })
     return out
@@ -97,6 +99,7 @@ def h2_rows(outcomes: list[dict], host_rows: list[dict], additions: list[dict],
             "cp": cp, "act": s.get("act"),
             "intrusion": int(o["intrusion"]), "later_checkpoints": int(o["later_checkpoints"]),
             "tie": int(o["tie"]), "tie_no_param": int(h.get("tie_no_param", o["tie"])),
+            "tie_no_injected": int(h.get("tie_no_injected", o["tie"])),
             "net_added": int(o["net_added"]),
             "addition_positions": size.get((o["chain_id"], o["cp"]), int(o["net_added"])),
             "declared_crossings": len(set(s.get("crosses", [])) | set(s.get("mutates", []))),

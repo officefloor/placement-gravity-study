@@ -144,6 +144,18 @@ if (!is.null(h1)) {
   res$reported$H1_function_arm <- list(log_host = wald(fitF, "log_host"), cp = wald(fitF, "cp"))
   res$reported$H1_class_level <- list(log_class = wald(fitC, "log_class"), cp = wald(fitC, "cp"))
 
+  # without injected dependencies (PLAN.md 4.3): a field holding an injected dependency can be
+  # declared by any class, so it may not pin code to this one
+  d1$y_no_injected <- log1p(d1$tie_no_injected)
+  fitNI <- fit_or_error(glmmTMB(y_no_injected ~ log_host + cp + (1 | chain_id), data = d1,
+                                family = gaussian()))
+  dc$y_class_no_injected <- log1p(dc$tie_class_no_injected)
+  fitCNI <- fit_or_error(glmmTMB(y_class_no_injected ~ log_class + cp + (1 | chain_id), data = dc,
+                                 family = gaussian()))
+  res$reported$H1_without_injected <- list(log_host = wald(fitNI, "log_host"), cp = wald(fitNI, "cp"))
+  res$reported$H1_class_level_without_injected <- list(log_class = wald(fitCNI, "log_class"),
+                                                       cp = wald(fitCNI, "cp"))
+
   # H3: the arms against each other in the H1 model
   d3 <- h1[h1$arm %in% c(spec$methods_arm, spec$function_arm), ]
   d3$arm <- droplevels(d3$arm)
@@ -160,6 +172,10 @@ if (!is.null(h1)) {
   f3n <- as.formula(paste0("y_no_param ~ log_host * arm + cp", fe_terms, " + (1 | chain_id)"))
   fit3n <- fit_or_error(glmmTMB(f3n, data = d3, family = gaussian()))
   res$reported$H3_without_parameters <- list(arm = wald(fit3n, FARM), slope = wald(fit3n, inter))
+  d3$y_no_injected <- log1p(d3$tie_no_injected)
+  f3i <- as.formula(paste0("y_no_injected ~ log_host * arm + cp", fe_terms, " + (1 | chain_id)"))
+  fit3i <- fit_or_error(glmmTMB(f3i, data = d3, family = gaussian()))
+  res$reported$H3_without_injected <- list(arm = wald(fit3i, FARM), slope = wald(fit3i, inter))
   # the trajectory: the arm's interaction with the checkpoint index
   f3t <- as.formula(paste0("y ~ log_host * arm + cp * arm", fe_terms, " + (1 | chain_id)"))
   fit3t <- fit_or_error(glmmTMB(f3t, data = d3, family = gaussian()))
@@ -186,6 +202,9 @@ if (!is.null(h2)) {
   fit2a <- fit_or_error(glmmTMB(as.formula(sub("~", "~ tie +", base, fixed = TRUE)),
                                 data = h2, family = nb))
   res$H2a <- c(list(n = nrow(h2)), irr(wald(fit2a, "tie")))
+  fit2ai <- fit_or_error(glmmTMB(as.formula(sub("~", "~ tie_no_injected +", base, fixed = TRUE)),
+                                 data = h2, family = nb))
+  res$reported$H2a_without_injected <- irr(wald(fit2ai, "tie_no_injected"))
 
   # H2b: existing hosts with their shape at k - 1
   ex <- h2[!as.logical(h2$host_new) & as.logical(h2$shape_found) %in% TRUE, ]

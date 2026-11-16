@@ -11,7 +11,7 @@ from placement_gravity import chain, refactor, tables
 
 FX = Path(__file__).parent / "fixtures"
 CASES = ["accrete", "helper", "extract", "writeback", "lambda", "modify", "newclass",
-         "injected", "rename", "classmethod", "organisation", "inherited", "constant"]
+         "injected", "rename", "classmethod", "organisation", "inherited", "constant", "injection"]
 #: hints as RefactoringMiner and the wiring would give them
 HINTS = [
     "injected\tinjected\tCheckX",
@@ -169,6 +169,18 @@ def test_inherited_members_are_reported_unresolved(records):
     x = run(records[("inherited", "display")])
     assert x["unresolved"] == ["getFirstName()", "lastName"]
     assert x["tie_method"] == [] and x["tie_field"] == []
+
+
+@pytest.mark.parametrize("method, fields, injected", [
+    ("fieldInjected", ["cache", "limit", "repo"], ["limit", "repo"]),   # @Autowired, @Value; cache is state
+    ("ctorInjected", ["MAX", "repo"], ["repo"]),                         # constructor of a @Service; a constant
+    ("lombok", ["counter", "repo"], ["repo"]),                           # @RequiredArgsConstructor: final fields
+    ("setterInjected", ["repo"], ["repo"]),                              # an @Autowired setter
+    ("dto", ["name"], []),                                               # a constructor of an unmanaged class: data
+])
+def test_injected_dependencies_are_reported_apart_from_other_field_ties(records, method, fields, injected):
+    x = run(records[("injection", method)])
+    assert x["tie_field"] == fields and x["tie_field_injected"] == injected
 
 
 def test_a_constant_is_a_field_tie(records):

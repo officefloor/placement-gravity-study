@@ -94,7 +94,7 @@ import net.officefloor.sinewslim.javaparser.ParsedFile;
 public final class Pull {
 
 	/** Bump whenever a field's meaning changes. */
-	static final int VERSION = 4;
+	static final int VERSION = 5;
 
 	/** A removed position's text must be at least this long to mark an added one as moved. */
 	static final int MOVED_MIN_CHARS = 12;
@@ -152,8 +152,9 @@ public final class Pull {
 	record Tok(int line, int col, String text, boolean ident) {
 	}
 
-	/** A type: its fields and the names of its methods. */
-	record T(String file, String name, int origLine, Set<String> fields, Set<String> utilities, Set<String> methods) {
+	/** A type: its fields, the names of its methods, and which of its fields hold injected dependencies. */
+	record T(String file, String name, int origLine, Set<String> fields, Set<String> utilities, Set<String> methods,
+			Set<String> injected) {
 	}
 
 	/** A method as measured, on the printed source. */
@@ -448,6 +449,7 @@ public final class Pull {
 			Map<String, String> ren = renamesFor(m);
 			Set<String> preFields = renamed(bt == null ? Set.of() : bt.fields, ren);
 			Set<String> preUtilities = renamed(bt == null ? Set.of() : bt.utilities, ren);
+			Set<String> preInjected = renamed(bt == null ? Set.of() : bt.injected, ren);
 			Set<String> preMethods = renamed(bt == null ? Set.of() : bt.methods, ren);
 			preMethods.remove(m.name);
 			Set<String> knownNames = new HashSet<>(preFields);
@@ -548,6 +550,9 @@ public final class Pull {
 				tp.retainAll(params(m));
 				s.append(",\"tie_param\":").append(strs(tp));
 				s.append(",\"tie_field\":").append(strs(tf));
+				Set<String> ti = new TreeSet<>(tf);
+				ti.retainAll(preInjected);
+				s.append(",\"tie_field_injected\":").append(strs(ti));
 				s.append(",\"tie_class_method\":").append(strs(tc));
 				s.append(",\"utility\":").append(strs(tu));
 				s.append(",\"tok_tie_method\":").append(km.size());
@@ -1086,7 +1091,7 @@ public final class Pull {
 				methods.add(md.getNameAsString());
 			}
 			int oline = i < otypes.size() ? ((Node) otypes.get(i)).getBegin().map(p -> p.line).orElse(0) : 0;
-			T tt = new T(rel, qualifiedName(t), oline, fields, utilities, methods);
+			T tt = new T(rel, qualifiedName(t), oline, fields, utilities, methods, injectedFields(t));
 			typeOf.put(t, tt);
 			types.add(tt);
 		}
@@ -1118,6 +1123,82 @@ public final class Pull {
 					o.endLine(), owner));
 		}
 		return new F(ms, types);
+	}
+
+	/** Annotations that inject a field, a setter's parameter or a configuration value. */
+	static final Set<String> INJECT = Set.of("Autowired", "Inject", "Resource", "Value", "Dependency");
+
+	/** Annotations that make a class container-managed, so its constructor parameters are injected. */
+	static final Set<String> MANAGED = Set.of("Component", "Service", "Repository", "Controller", "RestController",
+			"Configuration", "ControllerAdvice", "RestControllerAdvice");
+
+	static boolean annotated(com.github.javaparser.ast.nodeTypes.NodeWithAnnotations<?> n, Set<String> names) {
+		for (com.github.javaparser.ast.expr.AnnotationExpr a : n.getAnnotations()) {
+			String s = a.getNameAsString();
+			if (names.contains(s.substring(s.lastIndexOf('.') + 1))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * The fields of t that hold injected dependencies: a field annotated for injection; in a
+	 * container-managed class, a field assigned from a constructor parameter, or filled by Lombok's
+	 * {@code @RequiredArgsConstructor} (final fields) or {@code @AllArgsConstructor}; and a field assigned
+	 * from the parameter of a method annotated for injection (setter injection). A constructor parameter of
+	 * a class the container does not manage is data, not a dependency.
+	 */
+	static Set<String> injectedFields(TypeDeclaration<?> t) {
+		Set<String> fields = new HashSet<>(), out = new HashSet<>();
+		for (FieldDeclaration fd : t.getFields()) {
+			fd.getVariables().forEach(v -> fields.add(v.getNameAsString()));
+			if (annotated(fd, INJECT)) {
+				fd.getVariables().forEach(v -> out.add(v.getNameAsString()));
+			}
+		}
+		if (annotated(t, MANAGED)) {
+			for (com.github.javaparser.ast.body.ConstructorDeclaration cd : t.getConstructors()) {
+				out.addAll(assignedFromParameters(cd));
+			}
+			boolean required = annotated(t, Set.of("RequiredArgsConstructor"));
+			boolean all = annotated(t, Set.of("AllArgsConstructor"));
+			for (FieldDeclaration fd : t.getFields()) {
+				if (fd.isStatic() || !(all || (required && (fd.isFinal() || annotated(fd, Set.of("NonNull")))))) {
+					continue;
+				}
+				fd.getVariables().forEach(v -> {
+					if (v.getInitializer().isEmpty()) {
+						out.add(v.getNameAsString());
+					}
+				});
+			}
+		}
+		for (MethodDeclaration md : t.getMethods()) {
+			if (annotated(md, Set.of("Autowired", "Inject", "Resource"))) {
+				out.addAll(assignedFromParameters(md));
+			}
+		}
+		out.retainAll(fields);
+		return out;
+	}
+
+	/** The fields a callable assigns one of its parameters to ({@code this.f = p;} or {@code f = p;}). */
+	static Set<String> assignedFromParameters(CallableDeclaration<?> cd) {
+		Set<String> params = new HashSet<>(), out = new HashSet<>();
+		cd.getParameters().forEach(p -> params.add(p.getNameAsString()));
+		for (com.github.javaparser.ast.expr.AssignExpr ae : cd.findAll(com.github.javaparser.ast.expr.AssignExpr.class)) {
+			if (ae.getOperator() != com.github.javaparser.ast.expr.AssignExpr.Operator.ASSIGN
+					|| !(ae.getValue() instanceof NameExpr v) || !params.contains(v.getNameAsString())) {
+				continue;
+			}
+			if (ae.getTarget() instanceof FieldAccessExpr fa && fa.getScope() instanceof ThisExpr) {
+				out.add(fa.getNameAsString());
+			} else if (ae.getTarget() instanceof NameExpr n && !params.contains(n.getNameAsString())) {
+				out.add(n.getNameAsString());
+			}
+		}
+		return out;
 	}
 
 	/** The class utilities: so far, loggers (by declared type, or by a logger factory initialiser). */

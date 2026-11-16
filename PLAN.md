@@ -1,10 +1,13 @@
 # Plan: where a new problem's code lands, and whether it had a choice
 
-> **Status (16 November 2026): DRAFT, not registered.** The instrument is built and piloted on one
-> pair of chains (`results/pilot/PILOT.md`); nothing else has been measured for this study. Every
-> design decision was settled on 16 November 2026. What remains open is only what needs the data
-> to exist (§3.1a): Run B's ids, Run C's ids when its stack is built, each chain's head when its
-> run is pushed, and the ui stacks' backend paths from their stack declarations. The literature behind this plan is in
+> **Status: REGISTERED on 16 November 2026, tag `plan-v1`.** The tag was first pushed on commit
+> `4bb8973` and moved the same day, before any run named for analysis was read, to this revision,
+> which adds ties to injected dependencies reported apart (§4.3, §5). The instrument is piloted on
+> one pair of chains
+> (`results/pilot/PILOT.md`); no run named for analysis has been read. What remains open is only
+> what needs the data to exist (§3.1a): Run B's ids, Run C's ids when its stack is built, and each
+> chain's head when its run is pushed. The ui stacks' backend paths were read from their stack
+> declarations (`results/stacks.json`). The literature behind this plan is in
 > [`LITERATURE.md`](LITERATURE.md). Since 16 November 2026 this plan absorbs three drafts that read
 > the same runs (§1.1).
 
@@ -320,6 +323,21 @@ be placed near them, so choice is restricted. Those are its **ties** (`instrumen
 - **Birth ties**, the values a caller passes a new method; they are reported, already counted on
   the caller's line.
 
+**Ties to injected dependencies, reported apart.** A field holding an injected dependency can be
+declared by any other class too, so using it may not pin code to this class: the same reasoning
+that makes an injected parameter not a tie. A field counts as injected when it is annotated for injection (`@Autowired`,
+`@Inject`, `@Resource`, `@Value`, OfficeFloor's `@Dependency`); when, in a container-managed class
+(`@Component`, `@Service`, `@Repository`, `@Controller`, `@RestController`, `@Configuration`,
+`@ControllerAdvice`, `@RestControllerAdvice`), it is assigned from a constructor parameter or filled
+by Lombok's `@RequiredArgsConstructor` (final fields) or `@AllArgsConstructor`; or when it is assigned
+from the parameter of a method annotated for injection (setter injection). A constructor parameter of
+a class the container does not manage is data, and a constant (`static final`) still ties.
+
+- **The primary measure keeps them:** an injected field is a class tie, and H1 to H3 are read on
+  all ties.
+- **Reported beside it** (§5): H1, at method level and at class level, H3 and H2a, each with the
+  ties to injected dependencies left out (`tie_no_injected`, `tie_class_no_injected`).
+
 Ties are related to Feature Envy turned inwards (Tsantalis and Chatzigeorgiou 2009). Their metric
 finds a method drawn towards *another* class's data, as a snapshot recommendation. Ties measure an
 addition held by its *own* host's pre-existing data, at the commit where it is placed.
@@ -480,6 +498,8 @@ trajectories can be set beside the per-problem ones.
   definition, so part of H3 could follow from the rule rather than the code. H3's model is repeated
   with ties counted from locals, fields and methods only, leaving out parameters in both arms. This
   is reported beside H3 and named as the reading that does not depend on the rule.
+- **Without injected dependencies** (reported, §4.3): H1 at method and class level, H3 and H2a,
+  each with ties to injected dependencies left out. These do not change any verdict.
 - **Corpus B:** the H1 and H2 models with a random intercept for the repository. Direction and
   interval only.
 - **Multiplicity:** H1–H3 are three confirmatory tests at α = 0.05 each, Holm-corrected. All
@@ -537,7 +557,14 @@ binomial mixed model). These details are fixed with the code before any run is r
   complexity 0.54 [0.35, 0.85] and the class Gini 0.44 [0.25, 0.76] (90% intervals); the junction
   without them 5.34 [2.38, 12.0]; junction × arm 0.20 [0.04, 1.01]; H1's slopes 0.025 on host size
   and 0.006 on the checkpoint; H3's arm term −0.64 and interaction 0.13. That chain is excluded
-  from every registered analysis, and nothing in the plan was changed after these were seen. The pilot raised six decisions (PILOT.md, *Decisions*), which are
+  from every registered analysis, and nothing in the plan was changed after these were seen.
+- **Ties to injected dependencies** (§4.3, added 16 November 2026 after `plan-v1` was first tagged,
+  and before any run named for analysis was read; the tag was moved to include it), on the
+  development chain only: of Spring's 74 runs
+  into existing methods, 12 used an injected dependency; leaving those ties out, the runs with a
+  class tie fall from 20 to 10 and the forced runs from 71 to 67. Every class tie to `clinicService`
+  and `ownerMapper`, the controller's constructor-injected dependencies, is counted as injected.
+  OfficeFloor's runs into existing methods used none. The pilot raised six decisions (PILOT.md, *Decisions*), which are
   settled at registration.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.

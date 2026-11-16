@@ -102,6 +102,7 @@ def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
         runs = r["runs"]
         tm = sorted({v for x in runs for v in x["tie_method"]})
         tp = sorted({v for x in runs for v in x.get("tie_param", [])})
+        ti = sorted({v for x in runs for v in x.get("tie_field_injected", [])})
         tf = sorted({v for x in runs for v in x["tie_field"]})
         tc = sorted({v for x in runs for v in x["tie_class_method"]})
         tu = sorted({v for x in runs for v in x["utility"]})
@@ -120,6 +121,8 @@ def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
             "tie_method": len(tm), "tie_field": len(tf), "tie_class_method": len(tc),
             "tie_class": len(tf) + len(tc), "tie": len(tm) + len(tf) + len(tc),
             "tie_param": len(tp), "tie_no_param": len(tm) - len(tp) + len(tf) + len(tc),
+            "tie_injected": len(ti), "tie_class_no_injected": len(tf) - len(ti) + len(tc),
+            "tie_no_injected": len(tm) + len(tf) - len(ti) + len(tc),
             "utility": len(tu), "unresolved": len(un), "unresolved_values": " ".join(un),
             "organisation": r["organisation"],
             "birth_tie": len(r.get("birth_tie", [])),
@@ -156,6 +159,11 @@ def run_rows(arm: str, chain: str, measured: dict) -> list[dict]:
                 "tie_param": len(x.get("tie_param", [])),
                 "tie_no_param": len(x["tie_method"]) - len(x.get("tie_param", []))
                 + len(x["tie_field"]) + len(x["tie_class_method"]),
+                "tie_injected": len(x.get("tie_field_injected", [])),
+                "tie_class_no_injected": len(x["tie_field"]) - len(x.get("tie_field_injected", []))
+                + len(x["tie_class_method"]),
+                "tie_no_injected": len(x["tie_method"]) + len(x["tie_field"])
+                - len(x.get("tie_field_injected", [])) + len(x["tie_class_method"]),
                 "tie_method_values": " ".join(x["tie_method"]),
                 "tie_class_values": " ".join(x["tie_field"] + [m + "()" for m in x["tie_class_method"]]),
                 "utility_values": " ".join(x["utility"]),
