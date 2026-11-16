@@ -1,9 +1,10 @@
 # Plan: where a new problem's code lands, and whether it had a choice
 
-> **Status (15 November 2026): DRAFT, not registered.** The instrument is built and piloted on one
+> **Status (16 November 2026): DRAFT, not registered.** The instrument is built and piloted on one
 > pair of chains (`results/pilot/PILOT.md`); nothing else has been measured for this study. Every **[DECIDE]** is settled at
 > registration, before any confirmatory measurement. The literature behind this plan is in
-> [`LITERATURE.md`](LITERATURE.md).
+> [`LITERATURE.md`](LITERATURE.md). Since 16 November 2026 this plan absorbs three drafts that read
+> the same runs (§1.1).
 
 ## 1. Why this study, and what it replaces
 
@@ -50,6 +51,41 @@ together, and that is only known afterwards. What can be measured at the time of
 whether the placement was **chosen** or **forced**. The claim under test is that forced
 placement, not concentration as such, is what does the harm.
 
+**The problem has to be held fixed.** The earlier studies, like most of the code-smell literature,
+judge the shape of a solution without the problem it solves: a long method, a high complexity or a
+junction is read as bad whatever it is for. If the problem dictates the size, a shape measured
+across different problems reports the problems as much as the code. At best it finds a consistency
+in the problems that happened to be sampled; at worst it is noise. The concern grows with AI
+assistants, which may be given larger and harder problems, so a change in the shape of their code
+need not mean a change in how well it is written. This study therefore reads shape only where the
+problem is fixed: one checkpoint is one problem, and both arms solve the same stream. It also
+**tests** the claim rather than assuming it. H2 asks whether the shape measures the earlier studies
+used predict later intrusion once the problem and the ties are held fixed (§2, §4.7).
+
+### 1.1 What this plan absorbs (16 November 2026)
+
+Three drafts read the same runs with measures of the solution's shape. None was registered and none
+has read a run. Their measures enter this plan as the shape competitors of H2, or as checks, so one
+registration covers them:
+
+- **The flow-injection-containment draft** (`flow-injection-containment-experiment`, 20 October
+  2026; closed by its own commit). Its junction share (P1) becomes the host-level junction measure
+  of §4.7. Its conservation check (P2) is §4.6, with its band. Its trajectory (P5) is H1's checkpoint
+  slope, read per arm. Its god-unit count (P3) and its gated-condition lever (P4) are dropped.
+- **The ui harness's SinewSlim analysis plan** (branch `sinewslim-analysis-plan`, 31 October 2026).
+  Its not-slimmable methods (H1) become a shape competitor of §4.7. Its mechanism (H2, behaviour
+  added inside existing methods) is what Q1 and the ties measure. Its wiring test (H4) becomes H3's
+  wiring condition. Its go/no-go bar for OfficeFloorSlim is a product decision and stays in the
+  harness, outside this study.
+- **The sinew-identification study** (on hold since 19 October 2026; closed by its own commit). Its
+  restated sinew, data coupled to the control flow, is what the ties measure at the commit where
+  code is placed.
+
+The injected-coupling measurement study existed to validate the flow-injection draft's coupling
+instrument. This plan uses the simpler rule of §4.3 (a wired OfficeFloor function's parameters are
+injected). That study is shelved; if it is ever completed, it is a sensitivity reading here, not a
+gate.
+
 ## 2. Questions and hypotheses
 
 - **Q1 (description).** For each new problem: does its code go into new units or into existing
@@ -65,15 +101,22 @@ Hypotheses. Directions are fixed now; thresholds are **[DECIDE]**.
 
 - **H1, gravity compounds.** In the methods arm, an addition's pull rises with its host's size
   before the change and with the checkpoint index (positive slope, 95% interval above 0).
-- **H2, forcing does the harm, not concentration.** Controlling for the addition's size and its
-  host's size, forced placements are followed by more cross-problem intrusion than chosen
-  placements. Concentration on its own, with pull held fixed, shows no consistent association.
-  This makes confirmatory the result of Olbrich, Cruzes and Sjøberg (2010): god and brain
-  classes change more and hold more defects, but less per line once size is controlled.
+- **H2, forcing does the harm, not shape.** Holding the problem fixed (the addition's size and
+  the earlier rules it declares it crosses) and the host's size:
+  - **H2a:** the more ties an addition has, the more cross-problem intrusion follows it (forced
+    placements more than chosen ones);
+  - **H2b:** with the ties in the model, the shape of the host the addition landed in adds nothing.
+    The shape measures are those of §4.7: long, not slimmable, junction, complexity outlier and
+    concentration. Each one's effect lies within the equivalence bound of §5.
+
+  H2 is supported only if both hold. This makes confirmatory the result of Olbrich, Cruzes and
+  Sjøberg (2010): god and brain classes change more and hold more defects, but less per line once
+  size is controlled.
 - **H3, function injection keeps the space open.** On the same stream, the function arm's pull
   is lower, and its slope on host size is flatter, than the methods arm's. The total amount
-  (positions, tokens) differs by less than **[DECIDE]**%. The coupling that leaves the scopes
-  appears as wiring edges (§4.5) and is reported, not hidden.
+  (positions, tokens) of the function arm lies within 0.8 to 1.25 times the methods arm's, the
+  band the flow-injection draft took from the conservation study's spread. The coupling that
+  leaves the scopes appears as wiring (§4.5) and is reported, not hidden.
 - **Q1 is descriptive.** Its expected baseline (Steidl and Deissenboeck 2015) is that most
   growth is new methods. So the share of additions that land in an existing host is reported as
   found, with no direction predicted.
@@ -81,10 +124,13 @@ Hypotheses. Directions are fixed now; thresholds are **[DECIDE]**.
 **What would count against.**
 
 - H1: no slope, or a negative one. Pull would then be a constant cost of placement, not gravity.
-- H2: chosen and forced placements equally intruded on, or concentration alone predicting
-  intrusion better than pull.
-- H3: no difference between the arms, or a function arm that hides its coupling in wiring
-  edges that grow as fast as the methods arm's pull.
+- H2: chosen and forced placements equally intruded on (against H2a), or any shape measure that
+  still predicts intrusion with the problem and the ties held fixed (against H2b). The second
+  would mean that shape carries information the problem does not, and it is reported as such.
+- H3: no difference between the arms, or an amount outside the band (the difference is then a
+  difference of amount, not placement), or a function arm that moves its coupling into the wiring:
+  wiring per problem that rises over the run, or one configuration file that holds most of it
+  (§4.5).
 
 Every one of these outcomes is reported whichever way it points.
 
@@ -114,6 +160,10 @@ Why this corpus comes first:
 
 **[DECIDE]**: which runs, strategies and chains are read; named by run id at registration.
 
+**Corpora are replications, never pooled.** The petclinic and ui streams are different problems.
+Each is analysed on its own and the two are compared by direction and interval, so that no
+estimate mixes solutions to different problems.
+
 ### 3.1a Corpus A2: the ui-long-degradation runs (after the petclinic corpus)
 
 The ui-long-degradation harness grows OfficeHQ through 250 checkpoints, ten chains per stack, on
@@ -141,20 +191,14 @@ end's production Java of the four stacks of its Runs A and B, a front end × bac
 
 **Order.** The petclinic corpus (§3.1) is analysed first; the ui runs follow once Run B is complete.
 
-**Before any ui run's backend Java is read for this study,** three plans that read the same runs
-must be registered:
+**Condition.** `just-solve` only. **[DECIDE]**, from the harness's tag: the stream commit, the
+model identifier and the run ids of Runs A and B.
 
-1. **This plan.**
-2. **The flow-injection-containment plan**, which reads the TanStack stacks. Its draft excludes a
-   run whose Java-layer results were seen before its registration. A proposed Amendment 1
-   (16 November 2026) lets it register now and read its gates later.
-3. **The ui harness's SinewSlim analysis plan** (branch `sinewslim-analysis-plan`, draft of
-   31 October 2026), which reads the same-front-end pairs including all four stacks above. It must
-   register before any of its runs is read with SinewSlim, and this study's instrument is built
-   on SinewSlim's facts and seam.
-
-After all three are registered, the order in which they read does not matter. Each lists the
-others' results it saw before its analysis.
+**This plan registers before any ui run's backend Java is read**, by anyone, for any measure. It
+replaces the flow-injection draft and the SinewSlim analysis plan for these runs (§1.1), so no
+other registration has to come first. A ui-harness analysis that reads the backend Java for
+another purpose after this registration is listed in the report, with its date, as seen before
+this analysis.
 
 ### 3.2 Corpus B: open-source histories (secondary, external validity)
 
@@ -257,10 +301,39 @@ injected into a procedure, governance. For each addition, the **wiring edges add
 in the application's configuration and new injected dependencies) are counted, and reported
 beside pull. This keeps the coupling the form moves out of the code from going unreported.
 
+Two conditions of H3 are read on the wiring, as the SinewSlim analysis plan set them (its H4):
+
+- **Growth:** the slope, over the checkpoint index, of the wiring edges added per addition. An
+  interval above 0 means the wiring grows faster than the problems, and counts against H3.
+- **Concentration:** at the final checkpoint, the share of the configuration's non-blank lines
+  held by its largest file. Over 50% counts against H3.
+
 ### 4.6 Amount (conservation check)
 
 Total positions and tokens per arm at each checkpoint, so that H3 is read against the
-conservation result: the same amount, placed differently.
+conservation result: the same amount, placed differently. H3's band is read at the final
+checkpoint, averaged within a chain and then over chains, with a percentile bootstrap over chains.
+
+### 4.7 Shape (the competitors of H2b)
+
+The measures the earlier studies and the absorbed drafts used, each read on the **host** an
+addition lands in, at *k − 1*, before the addition. A new host has none of them.
+
+| Code | Measure | From |
+|---|---|---|
+| S1 | **Long:** 26 or more code lines (SinewSlim's lines) | the divergence study's length constant |
+| S2 | **Not slimmable:** SinewSlim's conventional reading at the pinned version and its defaults, on both arms | the long-method-slim study; the SinewSlim analysis plan's M1 |
+| S3 | **Junction:** the host hands on more data than it receives, *d = out − in > 0*. *in* counts the parameters that are not injected (§4.3's rule); *out* counts the arguments it passes on calls to the application's own methods | the flow-injection draft's junction |
+| S4 | **Complexity outlier:** the host's cognitive complexity, and whether its modified z-score within the checkpoint exceeds 3.5 | the complexity-concentration study |
+| S5 | **Concentration:** the host's size and the Gini coefficient of the class's positions over its methods | §4.2 |
+
+S1 to S4 are read conventionally on both arms, so OfficeFloor's functions are priced as if they
+were ordinary methods; that is conservative towards OfficeFloor.
+
+**Reported, not tested:** the drafts' system-level series per arm and checkpoint, the
+not-slimmable methods per passing test and the share of complexity held by junctions. They are
+solution-only readings, kept so that the absorbed drafts' questions get an answer, and so that their
+trajectories can be set beside the per-problem ones.
 
 ## 5. Analysis
 
@@ -268,11 +341,25 @@ conservation result: the same amount, placed differently.
   chains.
 - **H1:** a mixed model of log(1 + P) on log(host positions) and checkpoint index, with a random
   intercept for the chain. The slopes are reported with 95% bootstrap intervals over chains.
-- **H2:** a negative binomial model of intrusion on pull (continuous, and forced/chosen),
-  addition size, host size and act, with a random intercept for the chain. Concentration (host
-  size, Gini) is entered alone and with pull, and the change in fit is reported.
-- **H3:** the arm term and its interaction with host size in the H1 model, on the paired chains.
-  The amount is compared per checkpoint.
+- **H2:** a negative binomial model of intrusion with a random intercept for the chain. The base
+  model holds the problem fixed: the addition's size, its declared crossings, host size and act.
+  - **H2a:** pull added to the base model (continuous, and forced/chosen as a reading aid). It is
+    supported when the incidence rate ratio per tie has a 95% interval above 1.
+  - **H2b:** the shape block S1 to S5 added to the base model with pull. It is supported when every
+    shape measure's incidence rate ratio has a 90% interval inside an equivalence bound of 0.8 to
+    1.25, per standard deviation for continuous measures and present against absent for flags
+    (**[DECIDE]**: the bound; this is a proposal). A null is not taken from a non-significant
+    test.
+  - **Reported beside it:** the shape block in a model *without* the problem terms and pull. This
+    shows how much of shape's apparent association comes from leaving the problem out. Each shape
+    measure alone, and the change in fit for every block, are also reported.
+- **H3:** the arm term and its interaction with host size in the H1 model, on the paired chains,
+  with the amount band (§4.6) and the two wiring conditions (§4.5). The arm's interaction with the
+  checkpoint index is reported as the trajectory reading.
+- **H3 without the injection rule:** a wired OfficeFloor function's parameters cannot be ties by
+  definition, so part of H3 could follow from the rule rather than the code. H3's model is repeated
+  with ties counted from locals, fields and methods only, leaving out parameters in both arms. This
+  is reported beside H3 and named as the reading that does not depend on the rule.
 - **Corpus B:** the H1 and H2 models with a random intercept for the repository. Direction and
   interval only.
 - **Multiplicity:** H1–H3 are three confirmatory tests at α = 0.05 each, Holm-corrected. All
@@ -293,8 +380,15 @@ conservation result: the same amount, placed differently.
   settled at registration.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
+  None of the ui runs' backend Java has been read for any measure.
+- **The absorbed drafts** (§1.1): their hypotheses were laid side by side on 16 November 2026.
+  All three predicted the OfficeFloor arm better and none contradicted another; the review found
+  that they read OfficeFloor's parameters differently, which is why the reading without the
+  injection rule (§5) is added. None of their measures was computed on any run.
 - **Expectation.** The author expects H1 and H3 to hold, and expects H2 to be the hardest to
-  show, because the intrusion counts per chain may be small.
+  show, because the intrusion counts per chain may be small. The author also expects H2b to hold:
+  that shape outside the problem carries no information beyond it. H2b is the hypothesis this
+  expectation could most bias, which is why its criterion is an equivalence bound fixed here.
 - **Conflict of interest.** The author created OfficeFloor, SinewSlim, OfficeFloorSlim and both
   harnesses. Mitigations, as in the earlier studies: the arms run on the same fixed stream and
   agent; the instrument's rules are fixed here; every case where the function arm does worse is
@@ -317,6 +411,12 @@ conservation result: the same amount, placed differently.
   §4.3) rather than through accretion. Both are measured, so the data can say which.
 - **The cohesion assumption.** It holds by construction only in corpus A, and only if refactoring
   is separated out correctly (§4.1).
+- **The problem is fixed, not measured.** The study holds the problem fixed by design (one
+  checkpoint, one problem; one stream for both arms). It does not measure how hard a problem is,
+  beyond the addition's size and its declared crossings. In corpus B a commit is not one problem,
+  so H2b is not read there.
+- **Power for H2b.** An equivalence test needs more data than a difference test. If the intervals
+  are too wide to fall inside the bound, H2b is reported as unresolved, not as supported.
 
 ## 8. Order of work
 
@@ -326,6 +426,8 @@ conservation result: the same amount, placed differently.
 2. ~~Run a pilot on **two chains** of one petclinic run, not among those named at registration,
    to check that the measures compute and are not degenerate.~~ Done 15 November 2026:
    `results/pilot/PILOT.md`.
-3. Settle every **[DECIDE]** and register (tag `plan-v1`).
-4. Run corpus A, then corpus B. Analyse once; record hashes.
-5. Write up, reporting every hypothesis whichever way it falls.
+3. Build the shape measures of §4.7, the wiring conditions of §4.5, and the reader for the ui
+   stream's declared crossings, each tested on fixtures and on the pilot chain only.
+4. Settle every **[DECIDE]** and register (tag `plan-v1`), before any ui run's backend Java is read.
+5. Run corpus A (petclinic, then the ui runs), then corpus B. Analyse once; record hashes.
+6. Write up, reporting every hypothesis whichever way it falls.

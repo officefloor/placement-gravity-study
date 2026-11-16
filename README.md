@@ -16,11 +16,16 @@ It then follows each problem forward to see whether forced placements are what t
 changes. The primary data is the paired Spring and OfficeFloor change streams of the degradation
 harnesses, where one checkpoint is one problem.
 
+Shape is read only where the problem is fixed. The measures of solution shape used by the earlier
+studies (long, not slimmable, junction, complexity outlier, concentration) enter as competitors:
+H2 tests whether they predict anything once the problem and the ties are held fixed. The plan
+absorbs three drafts that read the same runs: flow-injection containment, the ui harness's
+SinewSlim analysis plan, and sinew identification (`PLAN.md` §1.1).
+
 | Read | For |
 |---|---|
 | [`PLAN.md`](PLAN.md) | The study: questions, hypotheses H1–H3, measures, analysis. **Draft, not registered.** |
 | [`LITERATURE.md`](LITERATURE.md) | The literature: notes by theme, the systematic novelty check (§10), and the full references. |
-
 | [`results/pilot/PILOT.md`](results/pilot/PILOT.md) | The pilot: the instrument on one pair of chains, what it showed, the decisions it raised. |
 
 ## Running
