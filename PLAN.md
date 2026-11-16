@@ -194,8 +194,26 @@ end's production Java of the four stacks of its Runs A and B, a front end × bac
 
 **Order.** The petclinic corpus (§3.1) is analysed first; the ui runs follow once Run B is complete.
 
-**Condition.** `just-solve` only. **[DECIDE]**, from the harness's tag: the stream commit, the
-model identifier and the run ids of Runs A and B.
+**Condition.** `just-solve` only.
+
+**Run A** (recorded 16 November 2026 from the study machine; still running then, and nothing of it
+read here):
+
+| Run id | Stack | Repository | Branches |
+|---|---|---|---|
+| `202610271-as` | Angular / Spring | `officefloor/officehq-angular-spring` | `evolve/202610271-as/just-solve/chain1` … `chain10` |
+| `202610271-to` | TanStack / OfficeFloor | `officefloor/officehq-tanstack-officefloor` | `evolve/202610271-to/just-solve/chain1` … `chain10` |
+
+The shared prefix `202610271` names the pairing. Both runs were started at harness commit
+`8b39da3c7afa3e0f848a31d0db987618db86a6b6` of `ui-long-degradation-test`, tagged **`run-a`** on
+GitHub: this names the stream (`checkpoints.yaml`) and the harness. The agent is the one that
+commit's `config.yaml` fixes: **`claude-opus-5-5`**. Each chain's branch carries the evolved code
+and its capture under `evolve-results/`; the registered analysis reads the branches as pushed to
+the stack repositories by the harness's `push.sh`. On 16 November 2026 chains 1 to 3 of each run
+had been pushed; their branch names were listed, and nothing of them was fetched or read here.
+
+**[DECIDE]** before registration: the run ids of Run B, and the commit of each chain's branch
+that is read (each chain's head once its run has finished and been pushed).
 
 **This plan registers before any ui run's backend Java is read**, by anyone, for any measure. It
 replaces the flow-injection draft and the SinewSlim analysis plan for these runs (§1.1), so no
