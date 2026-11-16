@@ -397,6 +397,14 @@ trajectories can be set beside the per-problem ones.
   - **Reported beside it:** the shape block in a model *without* the problem terms and pull. This
     shows how much of shape's apparent association comes from leaving the problem out. Each shape
     measure alone, and the change in fit for every block, are also reported.
+  - **Junction × arm (secondary, corpus A):** the S3 junction flag, the arm and their interaction,
+    added to the model with pull. It asks whether a junction is followed by the same intrusion in
+    both arms. In OfficeFloor a function is a starting point: a junction there hands its values on
+    from an injection point, and is expected to stay contained to it. The reading is the
+    interaction's incidence rate ratio with its 95% interval. An interval below 1 means that
+    OfficeFloor's junctions are followed by less intrusion than Spring's; an interval above 1 means
+    more. It is repeated with the injection-aware junction. It is not among the confirmatory tests
+    and does not change H2's verdict.
 - **H3:** the arm term and its interaction with host size in the H1 model, on the paired chains,
   with the amount band (§4.6) and the two wiring conditions (§4.5). The arm's interaction with the
   checkpoint index is reported as the trajectory reading.
@@ -436,7 +444,10 @@ trajectories can be set beside the per-problem ones.
 - **Expectation.** The author expects H1 and H3 to hold, and expects H2 to be the hardest to
   show, because the intrusion counts per chain may be small. The author also expects H2b to hold:
   that shape outside the problem carries no information beyond it. H2b is the hypothesis this
-  expectation could most bias, which is why its criterion is an equivalence bound fixed here.
+  expectation could most bias, which is why its criterion is an equivalence bound fixed here. The
+  author expects OfficeFloor's junctions to stay contained to their injection point (the junction ×
+  arm reading of §5); that reading's direction is stated here, before any intrusion is computed by
+  junction.
 - **Conflict of interest.** The author created OfficeFloor, SinewSlim, OfficeFloorSlim and both
   harnesses. Mitigations, as in the earlier studies: the arms run on the same fixed stream and
   agent; the instrument's rules are fixed here; every case where the function arm does worse is
