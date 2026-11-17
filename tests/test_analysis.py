@@ -85,18 +85,18 @@ def chain_tables(root: Path, arm: str, n: int, amount: int, junction_hosts: int 
     hosts, runs_, outs = [], [], []
     for i in range(20):
         hosts.append({**common, "cp": 2 + i, "type": "T", "signature": f"m{i}()", "name": f"m{i}",
-                      "s5_class_positions": 50, "tie_no_param": 1, "shape_found": "True",
+                      "s5_class_positions": 50, "binding_no_param": 1, "shape_found": "True",
                       "s1_long": str(i < 15), "s2_stuck": "False", "s3_junction": str(i < junction_hosts),
                       "s3_junction_injection_aware": "True", "s4_cognitive": i % 4, "s5_class_gini": 0.3})
         runs_.append({**common, "cp": 2 + i, "type": "T", "signature": f"m{i}()", "host_new": "False",
-                      "replacement": "False", "tie": i % 3, "tie_no_param": i % 2, "tie_class": 1,
-                      "tie_no_injected": i % 2, "tie_class_no_injected": 0,
+                      "replacement": "False", "binding": i % 3, "binding_no_param": i % 2, "binding_class": 1,
+                      "binding_no_injected": i % 2, "binding_class_no_injected": 0,
                       "pre_positions": 5 + i})
         outs.append({**common, "cp": 2 + i, "type": "T", "signature": f"m{i}()", "name": f"m{i}",
                      "intrusion_class": i % 3, "intrusion_method": i % 2, "intrusion_lines": 0,
                      "class_identity": "T", "identity": f"T#m{i}", "bystanders_class": 4,
                      "bystanders_method": i % 2, "drawn_class": i % 2, "drawn_method": 0,
-                     "tied": str(i % 5 != 0), "later_checkpoints": 30 - i, "tie": i % 3, "net_added": 3,
+                     "bound": str(i % 5 != 0), "later_checkpoints": 30 - i, "binding": i % 3, "net_added": 3,
                      "pre_positions": 5 + i, "host_new": "False"})
     runs_.append({**runs_[0], "host_new": "True"})                 # a new host: not in H1
     runs_.append({**runs_[1], "replacement": "True"})              # moved code: not in H1
@@ -128,16 +128,16 @@ def test_prepare_builds_the_datasets_and_applies_the_rules(tmp_path):
     cond = json.loads((out / "conditions.json").read_text())
     assert cond["chains"] == {"spring": 6, "officefloor": 6} and not cond["descriptive_only"]
     assert abs(cond["amount"]["ratio"] - (922 / 1022)) < 1e-9 and cond["amount"]["in_band"]
-    assert {"prior_tie_mean", "tie"} <= set(h1[0]) and {"intrusion_class", "intrusion_method", "intrusion_lines", "own_lines"} <= set(h2[0])
+    assert {"prior_binding_mean", "binding"} <= set(h1[0]) and {"intrusion_class", "intrusion_method", "intrusion_lines", "own_lines"} <= set(h2[0])
     assert (out / "readings.json").exists()
     assert (out / "by.csv").exists() and (out / "capture.csv").exists()
     assert {"bystanders_class", "bystanders_method", "drawn_class", "drawn_method"} <= set(h2[0])
     assert h2[0]["class_positions"] == "50.0"
     drawn = json.loads((out / "readings.json").read_text())["drawn"]["spring"]
-    # per chain 16 tied rows (i % 5 != 0): class intrusions sum(i % 3), of them drawn sum(i % 2)
-    tied = [i for i in range(20) if i % 5 != 0]
-    assert drawn["rows"] == 6 * 16 and drawn["class"]["later"] == 6 * sum(i % 3 for i in tied)
-    assert drawn["class"]["drawn"] == 6 * sum(i % 2 for i in tied) and drawn["method"]["share"] == 0
+    # per chain 16 bound rows (i % 5 != 0): class intrusions sum(i % 3), of them drawn sum(i % 2)
+    bound = [i for i in range(20) if i % 5 != 0]
+    assert drawn["rows"] == 6 * 16 and drawn["class"]["later"] == 6 * sum(i % 3 for i in bound)
+    assert drawn["class"]["drawn"] == 6 * sum(i % 2 for i in bound) and drawn["method"]["share"] == 0
     again = list(csv.DictReader((out / "reopen.csv").open()))
     assert len(again) == 12 * 22 and {r["reopened"] for r in again if r["arm"] == "spring"} == {"2"}
     assert cond["wiring"]["verdict"]["concentration_against"] is False
@@ -174,7 +174,7 @@ def estimates(**over):
                 "within_method": boot(0.01, 0.001, 0.02, 0.004, 0.99)},
          "H2": {"n": 100, "class": {"irr": 1.3, "irr_lower": 1.1, "irr_upper": 1.5, "p_greater": 0.001},
                 "method": {"irr": 1.2, "irr_lower": 1.05, "irr_upper": 1.4, "p_greater": 0.004}},
-         "H3": {"testable": True, "bound": [0.8, 1.25], "kept": ["s1_long", "s3_junction"],
+         "H3": {"testable": True, "margin": [0.8, 1.25], "kept": ["s1_long", "s3_junction"],
                 "measures": {"s1_long": measure(1.0, 0.9, 1.1, 0.002),
                              "s3_junction": measure(1.05, 0.95, 1.15, 0.01)}},
          "H4": {"arm": boot(-0.5, -0.8, -0.2, 0.999, 0.001), "slope": boot(-0.2, -0.3, -0.1, 0.99, 0.002),
@@ -225,7 +225,7 @@ def test_h3_shape_carrying_information_is_not_supported():
 
 
 def test_h3_without_a_testable_shape_measure_says_so():
-    e = estimates(H3={"testable": False, "bound": [0.8, 1.25], "kept": []})
+    e = estimates(H3={"testable": False, "margin": [0.8, 1.25], "kept": []})
     v = verdict.decide(e, COND)["hypotheses"]
     assert v["H3"]["verdict"] == "not testable" and set(v["H3"]["dropped"]) == set(verdict.SHAPES)
     assert v["H2"]["verdict"] == "supported"          # H2 no longer waits on the shape
@@ -269,7 +269,7 @@ def test_an_error_in_a_model_is_not_estimable():
     v = verdict.decide(e, COND)
     assert v["hypotheses"]["H1"]["verdict"] == "not estimable"
     e = estimates()
-    e["H2"]["method"] = {"error": "standard error not computed: tie"}
+    e["H2"]["method"] = {"error": "standard error not computed: binding"}
     v = verdict.decide(e, COND)["hypotheses"]
     assert v["H2"]["verdict"] == "not estimable" and v["H1"]["verdict"] == "supported"
 
@@ -283,9 +283,9 @@ def test_the_report_names_every_hypothesis_and_commit():
     heads = [{"arm": "spring", "run": "r", "chain": 1, "excluded": False, "sha": "a" * 40}]
     md = report.render("petclinic-primary", "primary", est, ver, cond, {"shape_counts": {}}, heads)
     for k in ("H1", "H2", "H3", "H4", "supported", "`aaaaaaaaaaaa`", "s3_junction", "At the class (its fields)", "Within a class",
-              "Later intrusion where tied code was placed"):
+              "Later intrusion where bound code was placed"):
         assert k in md
-    rd = {"choice": {"spring": {"checkpoints": 59, "no_choice": 12, "median_tie_sd": 0.5,
+    rd = {"choice": {"spring": {"checkpoints": 59, "no_choice": 12, "median_binding_sd": 0.5,
                                 "median_distinct_hosts": 2}},
           "drawn": {"spring": {"rows": 80, "class": {"bystanders": 7.5, "later": 900, "drawn": 400, "share": 0.444},
                                "method": {"bystanders": 1.5, "later": 300, "drawn": 50, "share": 0.167}}},
@@ -294,5 +294,5 @@ def test_the_report_names_every_hypothesis_and_commit():
     md = report.render("x", "secondary", est, ver, cond, {"shape_counts": {}}, heads,
                        {"tag": "plan-v1", "changed": ["PLAN.md"]}, rd)
     for k in ("12 of 59 checkpoints left no choice", "Review against petclinic-primary", "`PLAN.md`",
-              "own lines", "400 of 900 later intrusions tied to one of them"):
+              "own lines", "400 of 900 later intrusions bound to one of them"):
         assert k in md

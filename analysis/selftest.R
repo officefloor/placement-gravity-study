@@ -1,15 +1,15 @@
 #!/usr/bin/env Rscript
 # A self-test of analysis/analyse.R on simulated data with known effects (run by step1_setup.sh):
-# ties rise with host size in the methods arm and less so in the function arm; intrusion rises with
-# ties; later intrusions tied to what stood by rise with how much stood by; the shape measures are unrelated to intrusion; every checkpoint (problem) has its own level
-# of ties and of intrusion, shared by all chains. The models must recover each direction.
+# bindings rise with host size in the methods arm and less so in the function arm; intrusion rises with
+# bindings; later intrusions bound to what stood by rise with how much stood by; the shape measures are unrelated to intrusion; every checkpoint (problem) has its own level
+# of bindings and of intrusion, shared by all chains. The models must recover each direction.
 
 set.seed(20261116)
 dir <- file.path(tempdir(), "pg-selftest")
 dir.create(dir, showWarnings = FALSE, recursive = TRUE)
 
 arms <- c("spring", "officefloor")
-cp_tie <- rnorm(60, 0, 0.3)   # the problem's own level, the same for every chain
+cp_binding <- rnorm(60, 0, 0.3)   # the problem's own level, the same for every chain
 cp_int <- rnorm(60, 0, 0.5)
 h1 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
   n <- 150
@@ -18,21 +18,21 @@ h1 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
   b <- if (arm == "spring") 0.45 else 0.10
   a <- if (arm == "spring") -0.6 else -1.4
   prior <- runif(n, 0.5, 2.5)
-  tie <- rpois(n, exp(a + b * log(pre) + 0.006 * cp + cp_tie[cp] + 0.25 * prior + rnorm(1, 0, 0.1)))
+  binding <- rpois(n, exp(a + b * log(pre) + 0.006 * cp + cp_binding[cp] + 0.25 * prior + rnorm(1, 0, 0.1)))
   data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = cp, act = NA,
-             tie = tie, tie_no_param = pmax(0, tie - rbinom(n, 1, 0.3)), tie_class = rpois(n, 1),
-             tie_no_injected = pmax(0, tie - rbinom(n, 1, 0.3)), tie_class_no_injected = rpois(n, 0.5),
-             pre_positions = pre, class_positions = pre * 3, prior_tie_mean = prior)
+             binding = binding, binding_no_param = pmax(0, binding - rbinom(n, 1, 0.3)), binding_class = rpois(n, 1),
+             binding_no_injected = pmax(0, binding - rbinom(n, 1, 0.3)), binding_class_no_injected = rpois(n, 0.5),
+             pre_positions = pre, class_positions = pre * 3, prior_binding_mean = prior)
 }))))
 h2 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
   n <- 400
-  tie <- rpois(n, if (arm == "spring") 2 else 0.8)
+  binding <- rpois(n, if (arm == "spring") 2 else 0.8)
   later <- sample(5:55, n, replace = TRUE)
   cp <- 60 - later
   new <- rbinom(n, 1, 0.4)
-  tie <- ifelse(new == 1, rbinom(n, 1, 0.2), tie)      # new hosts have few ties and are left alone
-  mu <- exp(-3.2 + 0.25 * tie - 0.8 * new + cp_int[cp] + (if (arm == "spring") 0 else -0.9)) * later
-  # what stood by where the code was placed, and the later intrusions tied to it: 15% more per
+  binding <- ifelse(new == 1, rbinom(n, 1, 0.2), binding)      # new hosts have few bindings and are left alone
+  mu <- exp(-3.2 + 0.25 * binding - 0.8 * new + cp_int[cp] + (if (arm == "spring") 0 else -0.9)) * later
+  # what stood by where the code was placed, and the later intrusions bound to it: 15% more per
   # field of the class, 10% more per value of the method
   byc <- rpois(n, if (arm == "spring") 6 else 1)
   bym <- rpois(n, if (arm == "spring") 3 else 1)
@@ -43,11 +43,11 @@ h2 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
              intrusion_method = rnbinom(n, size = 2, mu = 2 * mu),
              intrusion_lines = rnbinom(n, size = 2, mu = exp(-3.2 + cp_int[cp]) * later),
              intrusion_class_any = rnbinom(n, size = 2, mu = 4 * mu),
-             intrusion_method_any = rnbinom(n, size = 2, mu = 3 * mu), tied = rbinom(n, 1, 0.8) == 1,
+             intrusion_method_any = rnbinom(n, size = 2, mu = 3 * mu), bound = rbinom(n, 1, 0.8) == 1,
              bystanders_class = byc, bystanders_method = bym, class_positions = rpois(n, 60),
              drawn_class = rnbinom(n, size = 2, mu = dr * exp(log(1.15) * byc)),
              drawn_method = rnbinom(n, size = 2, mu = dr * exp(log(1.10) * bym)),
-             tie = tie, tie_no_param = tie, tie_no_injected = tie, net_added = rpois(n, 4) + 1,
+             binding = binding, binding_no_param = binding, binding_no_injected = binding, net_added = rpois(n, 4) + 1,
              addition_positions = rpois(n, 8) + 1, declared_crossings = rpois(n, 1),
              pre_positions = rpois(n, 20), host_new = new == 1, shape_found = TRUE,
              s1_long = rbinom(n, 1, 0.3) == 1, s2_stuck = rbinom(n, 1, 0.2) == 1,
@@ -90,7 +90,7 @@ write.csv(cap, file.path(dir, "capture.csv"), row.names = FALSE)
 write.csv(h1, file.path(dir, "h1.csv"), row.names = FALSE)
 write.csv(h2, file.path(dir, "h2.csv"), row.names = FALSE)
 writeLines(jsonlite::toJSON(list(
-  analysis = "selftest", role = "development", seed = 20261116, boot = 60, bound = c(0.8, 1.25),
+  analysis = "selftest", role = "development", seed = 20261116, boot = 60, margin = c(0.8, 1.25),
   methods_arm = "spring", function_arm = "officefloor", checkpoints = 60,
   shape_kept = c("s1_long", "s2_stuck", "s3_junction", "s4_cognitive", "s5_class_gini"),
   acts = FALSE, frontends = list()), auto_unbox = TRUE), file.path(dir, "spec.json"))
@@ -114,20 +114,20 @@ check(e$H1$within_class$places == 48, "H1 within a class is read on the classes 
 for (lev in c("class", "method")) {
   m <- e$H2[[lev]]
   true <- if (lev == "class") 1.15 else 1.10
-  check(m$irr_lower > 1, paste("H2 recovers later code tied to what stood by, at the", lev, "level"))
+  check(m$irr_lower > 1, paste("H2 recovers later code bound to what stood by, at the", lev, "level"))
   check(abs(log(m$irr) - log(true)) < 0.05, paste("H2's ratio is within 5% of the true one,", lev))
   check(!is.null(e$reported[[paste0("H2_function_arm_", lev)]]$irr), paste("H2 in the function arm is reported,", lev))
-  t <- e$reported[[paste0("ties_intrusion_", lev)]]
-  check(abs(log(t$irr) - 0.25) < 0.05, paste("the ties' ratio in later intrusion is reported, near the true one,", lev))
+  t <- e$reported[[paste0("bindings_intrusion_", lev)]]
+  check(abs(log(t$irr) - 0.25) < 0.05, paste("the bindings' ratio in later intrusion is reported, near the true one,", lev))
 }
 for (lev in c("class", "method")) {
   x <- e$reported[[paste0("size_or_data_", lev)]]
   check(!is.null(x$bystanders$irr) && !is.null(x$size$irr) && !is.null(x$size_alone$irr) &&
         !is.null(x$correlation$spring), paste("size or data is reported at the", lev))
 }
-check(e$H2$n < e$reported$intrusion_rows$tied, "H2 is read on the methods arm's tied rows")
-check(abs(log(e$reported$ties_lines$irr)) < 0.05,
-      "intrusion on the problem's own lines, simulated unrelated to ties, is reported as such")
+check(e$H2$n < e$reported$intrusion_rows$bound, "H2 is read on the methods arm's bound rows")
+check(abs(log(e$reported$bindings_lines$irr)) < 0.05,
+      "intrusion on the problem's own lines, simulated unrelated to bindings, is reported as such")
 for (k in names(e$H3$measures)) {
   m <- e$H3$measures[[k]]
   check(m$irr_lower > 0.5 && m$irr_upper < 2, paste("H3 estimates", k, "near no effect"))
@@ -139,25 +139,25 @@ check(e$H4$centre_checkpoint == 30.5, "H4's checkpoint index is centred at the m
 for (lev in c("intrusion_class", "intrusion_method")) {
   check(e$H4[[lev]]$irr_upper < 1, paste("H4 recovers the function arm's lower", lev))
 }
-check(e$reported$intrusion_rows$tied < e$reported$intrusion_rows$all, "intrusion is read on the tied rows only")
+check(e$reported$intrusion_rows$bound < e$reported$intrusion_rows$all, "intrusion is read on the bound rows only")
 check(abs(log(e$reported$reopen_with_wiring$irr) - log(1 / 3)) < 0.15, "reopening is reported, near the true ratio")
-check(!is.null(e$reported$ties_any_change_class$irr), "H2 on any later change is reported")
+check(!is.null(e$reported$bindings_any_change_class$irr), "H2 on any later change is reported")
 check(abs(e$reported$H1_levels$function_arm$estimate) < 0.01, "the function arm's slope is reported, near flat")
 check(abs(e$reported$needed_arm$estimate) < 0.05, "the arms need the same")
 check(e$reported$capture_spring$lower > 0, "capture is recovered in the methods arm")
-check(e$reported$H1_ties$log_host$lower > 0, "H1 as first registered (ties) is reported")
-check(e$reported$H4_ties$arm$upper < 0, "H4 as first registered (ties) is reported")
-check(e$reported$H4_ties$centre_positions > 3 && e$reported$H4_ties$centre_positions < 120,
-      "the tie-based H4's host size is centred within the data")
+check(e$reported$H1_bindings$log_host$lower > 0, "H1 as first registered (bindings) is reported")
+check(e$reported$H4_bindings$arm$upper < 0, "H4 as first registered (bindings) is reported")
+check(e$reported$H4_bindings$centre_positions > 3 && e$reported$H4_bindings$centre_positions < 120,
+      "the binding-based H4's host size is centred within the data")
 check(e$reported$H4_arm_at[["50"]]$estimate < e$reported$H4_arm_at[["10"]]$estimate,
-      "the arm difference in ties widens with host size, as simulated")
+      "the arm difference in bindings widens with host size, as simulated")
 check(isTRUE(e$checkpoint_intercept$H1) && isTRUE(e$checkpoint_intercept$H4) &&
       isTRUE(e$checkpoint_intercept$H2_class), "the models carry the checkpoint's intercept")
 check(e$reported$formation_lagged_spring$lower > 0, "the lagged formation term is recovered")
 check(!is.null(e$reported$junction_x_arm_s3_junction$irr), "junction x arm is estimated")
-check(e$reported$H1_without_injected$log_host$lower > 0, "H1 (ties) without injected dependencies is estimated")
+check(e$reported$H1_without_injected$log_host$lower > 0, "H1 (bindings) without injected dependencies is estimated")
 check(!is.null(e$reported$H1_class_level_without_injected$log_class$estimate),
-      "class-level H1 (ties) without injected dependencies is estimated")
-check(!is.null(e$reported$H4_without_injected$slope$estimate), "H4 (ties) without injected dependencies is estimated")
-check(!is.null(e$reported$ties_without_injected_class$irr), "H2 without injected dependencies is estimated")
+      "class-level H1 (bindings) without injected dependencies is estimated")
+check(!is.null(e$reported$H4_without_injected$slope$estimate), "H4 (bindings) without injected dependencies is estimated")
+check(!is.null(e$reported$bindings_without_injected_class$irr), "H2 without injected dependencies is estimated")
 cat("analysis/analyse.R self-test passed\n")

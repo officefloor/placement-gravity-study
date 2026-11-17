@@ -50,17 +50,42 @@ def bystander_lines(r: dict) -> list[str]:
 
 
 def drawn_lines(r: dict) -> list[str]:
-    """The description beside H2: what stood by where tied code was placed, and how much of the
-    later intrusion there is tied to it, per arm (PLAN.md §4.4)."""
+    """The description beside H2: what stood by where bound code was placed, and how much of the
+    later intrusion there is bound to it, per arm (PLAN.md §4.4)."""
     L = []
     for arm, x in (r.get("drawn") or {}).items():
         if not x.get("rows"):
             continue
         c, m = x["class"], x["method"]
-        L.append(f"- Reported, {arm}: {f(x['rows'])} tied rows; at the class {f(c['bystanders'])} fields "
-                 f"stood by, {f(c['drawn'])} of {f(c['later'])} later intrusions tied to one of them "
+        L.append(f"- Reported, {arm}: {f(x['rows'])} bound rows; at the class {f(c['bystanders'])} fields "
+                 f"stood by, {f(c['drawn'])} of {f(c['later'])} later intrusions bound to one of them "
                  f"({f(c['share'])}); at the method {f(m['bystanders'])} values stood by, {f(m['drawn'])} of "
                  f"{f(m['later'])} ({f(m['share'])})")
+    return L
+
+
+def landing_section(r: dict) -> list[str]:
+    """Where bound and unbound code lands among the places it could have gone (PLAN.md §5)."""
+    data = r.get("landings") or {}
+    if not data:
+        return []
+    L = ["", "## Reported: where bound and unbound code lands", "",
+         "A rank is the place's standing among every candidate of its checkpoint (0.5: no regard to "
+         "that size; near 1: the largest). Method ranks are over landings into existing methods, class "
+         "ranks over landings into existing classes.", "",
+         "| Arm | Code | Landings | Existing method | New method | New class | Method: complexity | "
+         "Method: data width | Class: complexity | Class: fields | Agreement (method) | Agreement (class) |",
+         "|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    for arm, both in data.items():
+        for label, x in both.items():
+            L.append(f"| {arm} | {label} | {f(x.get('landings'))} | {f(x.get('existing method'))} | "
+                     f"{f(x.get('new method'))} | {f(x.get('new class'))} | "
+                     f"{f(x.get('rank_cognitive'))} (n {f(x.get('n_rank_cognitive'))}) | {f(x.get('rank_width'))} | "
+                     f"{f(x.get('rank_class_cognitive'))} (n {f(x.get('n_rank_class_cognitive'))}) | "
+                     f"{f(x.get('rank_class_fields'))} | {f(x.get('agreement_method'))} | "
+                     f"{f(x.get('agreement_class'))} |")
+    L += ["", "Agreement is Spearman's rho, over the places landed in, of the complexity rank with the "
+          "data-width rank: whether the two kinds of size point to the same places."]
     return L
 
 
@@ -70,11 +95,11 @@ def readings_section(est: dict, r: dict) -> list[str]:
     L = ["", "## Reported readings: choice, formation, review", ""]
     for arm, c in (r.get("choice") or {}).items():
         L.append(f"- Choice, {arm}: {f(c.get('no_choice'))} of {f(c.get('checkpoints'))} checkpoints "
-                 f"left no choice (every chain with the same ties, on the same side of new or existing); "
-                 f"median spread of ties over chains {f(c.get('median_tie_sd'))}, median distinct hosts "
+                 f"left no choice (every chain with the same bindings, on the same side of new or existing); "
+                 f"median spread of bindings over chains {f(c.get('median_binding_sd'))}, median distinct hosts "
                  f"{f(c.get('median_distinct_hosts'))}")
     for arm in sorted(k[len("formation_lagged_"):] for k in rep if k.startswith("formation_lagged_")):
-        L.append(f"- Formation, lagged, {arm}: ties now on the chain's mean ties so far "
+        L.append(f"- Formation, lagged, {arm}: bindings now on the chain's mean bindings so far "
                  f"{interval(rep['formation_lagged_' + arm])} (predicted above 0 in the methods arm)")
     for arm in sorted(k[len("capture_"):] for k in rep if k.startswith("capture_")):
         L.append(f"- Capture, {arm}: share of the addition landing in existing hosts on the fields held "
@@ -90,13 +115,13 @@ def readings_section(est: dict, r: dict) -> list[str]:
                      f"{ratio(x.get('size_alone'))}; within arms, bystanders {ratio(x.get('bystanders_within_arms'))} "
                      f"and size {ratio(x.get('size_within_arms'))}; Spearman's rho of size with what stood by: {cor}")
     for arm, x in (r.get("formation_end") or {}).items():
-        L.append(f"- Formation, where it ends, {arm}: Spearman's rho of early ties with the largest "
+        L.append(f"- Formation, where it ends, {arm}: Spearman's rho of early bindings with the largest "
                  f"method's share {f(x.get('rho'))} {x.get('interval') or '[no interval]'} over "
                  f"{f(x.get('chains'))} chains (predicted above 0 in the methods arm)")
     rv = r.get("review")
     for arm, x in ((rv or {}).items()):
         if isinstance(x, dict):
-            L.append(f"- Review against {rv['against']}, {arm}: Spearman's rho of ties with the change "
+            L.append(f"- Review against {rv['against']}, {arm}: Spearman's rho of bindings with the change "
                      f"in placement {f(x.get('rho'))} {x.get('interval') or '[no interval]'} over "
                      f"{f(x.get('checkpoints'))} checkpoints (predicted below 0), against: {f(x.get('against'))}")
     for arm, x in (r.get("own_lines") or {}).items():
@@ -118,7 +143,7 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
         L.append(f"| {k} | {v['verdict']} | {f(v.get('p_holm'))} |")
     h1 = est.get("H1") or {}
     lv = rep.get("H1_levels") or {}
-    t1 = rep.get("H1_ties") or {}
+    t1 = rep.get("H1_bindings") or {}
     L += ["", "## H1, gravity compounds (methods arm)", "",
           f"Runs that need a pre-existing value {f(h1.get('n_runs'))} over {f(h1.get('n_chains'))} "
           f"chains; the slope of log(1 + bystanders) on the checkpoint index, cluster-bootstrap 95% interval "
@@ -137,18 +162,18 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           f"constants {interval(lv.get('without_constants'))}",
           f"- Reported, the function arm's slope: {interval(lv.get('function_arm'))}",
           *bystander_lines(readings or {}),
-          f"- Reported, H1 as first registered (ties of runs into existing methods): on log(host "
+          f"- Reported, H1 as first registered (bindings of runs into existing methods): on log(host "
           f"positions) {interval(t1.get('log_host'))}; on the checkpoint index {interval(t1.get('cp'))}",
-          f"- Reported, ties in the function arm: on host size {interval((rep.get('H1_function_arm') or {}).get('log_host'))}",
-          f"- Reported, ties at class level (methods arm): on class size {interval((rep.get('H1_class_level') or {}).get('log_class'))}",
-          f"- Reported, ties without injected dependencies: on host size {interval((rep.get('H1_without_injected') or {}).get('log_host'))}; "
+          f"- Reported, bindings in the function arm: on host size {interval((rep.get('H1_function_arm') or {}).get('log_host'))}",
+          f"- Reported, bindings at class level (methods arm): on class size {interval((rep.get('H1_class_level') or {}).get('log_class'))}",
+          f"- Reported, bindings without injected dependencies: on host size {interval((rep.get('H1_without_injected') or {}).get('log_host'))}; "
           f"class level on class size {interval((rep.get('H1_class_level_without_injected') or {}).get('log_class'))}"]
     e2 = est.get("H2") or {}
     rows_ = rep.get("intrusion_rows") or {}
     L += ["", "## H2, data draws code in (methods arm)", "",
-          f"Where code was tied to a class or a method ({f(rows_.get('tied'))} of {f(rows_.get('all'))} "
+          f"Where code was bound to a class or a method ({f(rows_.get('bound'))} of {f(rows_.get('all'))} "
           f"problem and host rows, both arms; {f(e2.get('n'))} in the methods arm): the later intrusions "
-          f"there that are tied to a value which stood by at the placement, as a rate ratio per value "
+          f"there that are bound to a value which stood by at the placement, as a rate ratio per value "
           f"that stood by.", "",
           f"- **At the class (its fields): {ratio(e2.get('class'))}**",
           f"- **At the method (its values): {ratio(e2.get('method'))}**",
@@ -157,20 +182,20 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           f"{interval(rep.get('H2_log_method'))}",
           f"- Reported, the function arm: class {ratio(rep.get('H2_function_arm_class'))}; method "
           f"{ratio(rep.get('H2_function_arm_method'))}",
-          f"- Reported, H2 as it stood until 17 November 2026 (later intrusion per tie): class "
-          f"{ratio(rep.get('ties_intrusion_class'))}; method {ratio(rep.get('ties_intrusion_method'))}",
-          f"- For information, the same on the problem's own lines: {ratio(rep.get('ties_lines'))}",
-          f"- Reported, per tie, any later change, tied or not: class {ratio(rep.get('ties_any_change_class'))}; "
-          f"method {ratio(rep.get('ties_any_change_method'))}",
-          f"- Reported, per tie, existing hosts only: class {ratio(rep.get('ties_existing_hosts_class'))}; method "
-          f"{ratio(rep.get('ties_existing_hosts_method'))}",
-          f"- Reported, per tie, without injected dependencies: class {ratio(rep.get('ties_without_injected_class'))}; "
-          f"method {ratio(rep.get('ties_without_injected_method'))}"]
+          f"- Reported, H2 as it stood until 17 November 2026 (later intrusion per binding): class "
+          f"{ratio(rep.get('bindings_intrusion_class'))}; method {ratio(rep.get('bindings_intrusion_method'))}",
+          f"- For information, the same on the problem's own lines: {ratio(rep.get('bindings_lines'))}",
+          f"- Reported, per binding, any later change, bound or not: class {ratio(rep.get('bindings_any_change_class'))}; "
+          f"method {ratio(rep.get('bindings_any_change_method'))}",
+          f"- Reported, per binding, existing hosts only: class {ratio(rep.get('bindings_existing_hosts_class'))}; method "
+          f"{ratio(rep.get('bindings_existing_hosts_method'))}",
+          f"- Reported, per binding, without injected dependencies: class {ratio(rep.get('bindings_without_injected_class'))}; "
+          f"method {ratio(rep.get('bindings_without_injected_method'))}"]
     h3 = hyp["H3"]
     b = est.get("H3") or {}
     L += ["", "## H3, shape adds nothing", "",
-          f"- **{h3.get('state', h3.get('verdict'))}**; bound {f((b.get('bound') or [None])[0])} to "
-          f"{f((b.get('bound') or [None, None])[1])}, 90% intervals, method-level intrusion, the ties and the bystanders in the model "
+          f"- **{h3.get('state', h3.get('verdict'))}**; margin {f((b.get('margin') or [None])[0])} to "
+          f"{f((b.get('margin') or [None, None])[1])}, 90% intervals, method-level intrusion, the bindings and the bystanders in the model "
           f"(n = {f(b.get('n'))})"]
     for k, m in (b.get("measures") or {}).items():
         L.append(f"  - {k}: {ratio(m)}, TOST p {f(m.get('p_tost'))}")
@@ -184,7 +209,7 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
                  + "; ".join(f"{k} {ratio(v)}" for k, v in cl.items()))
     sw = rep.get("shape_without_problem") or {}
     if sw:
-        L.append("- Reported, shape without the problem terms, the ties and the bystanders: "
+        L.append("- Reported, shape without the problem terms, the bindings and the bystanders: "
                  + "; ".join(f"{k} {ratio(v)}" for k, v in sw.items()))
     for j in ("s3_junction", "s3_junction_injection_aware"):
         L.append(f"- Reported, junction × arm ({j}): {ratio(rep.get('junction_x_arm_' + j))}")
@@ -196,9 +221,9 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           f"- **Function arm's bystanders (arm term, at checkpoint {f(m3.get('centre_checkpoint'), 1)}, "
           f"the middle of the stream): {interval(m3.get('arm'))}**",
           f"- **Their slope on the checkpoint index (interaction): {interval(m3.get('slope'))}**",
-          f"- **Later intrusion where tied code was placed, function arm / methods arm: at the class "
+          f"- **Later intrusion where bound code was placed, function arm / methods arm: at the class "
           f"{ratio(m3.get('intrusion_class'))}; at the method {ratio(m3.get('intrusion_method'))}**",
-          *[f"- Reported, {arm}: per checkpoint, classes its tied code goes back into {f(x.get('classes'))}, "
+          *[f"- Reported, {arm}: per checkpoint, classes its bound code goes back into {f(x.get('classes'))}, "
             f"wiring files changed again {f(x.get('wiring'))}" for arm, x in rs.items()],
           f"- Reported, reopening, function arm / methods arm: classes {ratio(rep.get('reopen_classes'))}; "
           f"with wiring files {ratio(rep.get('reopen_with_wiring'))}",
@@ -207,11 +232,11 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           f"{interval((rep.get('H4_bystanders_without_injected') or {}).get('slope'))}",
           f"- Reported, the needed values, function arm against methods arm: {interval(rep.get('needed_arm'))} "
           f"(expected about 0: the same stream)",
-          f"- Reported, H4 as first registered (ties): arm at a host of "
-          f"{f((rep.get('H4_ties') or {}).get('centre_positions'), 1)} positions "
-          f"{interval((rep.get('H4_ties') or {}).get('arm'))}; slope on host size "
-          f"{interval((rep.get('H4_ties') or {}).get('slope'))}",
-          "- Reported, the arm difference in ties at a host of " + "; ".join(
+          f"- Reported, H4 as first registered (bindings): arm at a host of "
+          f"{f((rep.get('H4_bindings') or {}).get('centre_positions'), 1)} positions "
+          f"{interval((rep.get('H4_bindings') or {}).get('arm'))}; slope on host size "
+          f"{interval((rep.get('H4_bindings') or {}).get('slope'))}",
+          "- Reported, the arm difference in bindings at a host of " + "; ".join(
               f"{k} positions {interval(v)}" for k, v in (rep.get("H4_arm_at") or {}).items()),
           f"- Amount added since the base, function arm / methods arm at the final checkpoint: "
           f"{f(amt.get('ratio'))} "
@@ -222,12 +247,13 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           f"against: {f(w.get('growth_against'))}",
           f"- Wiring concentration: largest file {f(w.get('largest_share'))}, against: "
           f"{f(w.get('concentration_against'))}",
-          f"- Reported, ties without parameters: arm {interval((rep.get('H4_without_parameters') or {}).get('arm'))}, "
+          f"- Reported, bindings without parameters: arm {interval((rep.get('H4_without_parameters') or {}).get('arm'))}, "
           f"slope {interval((rep.get('H4_without_parameters') or {}).get('slope'))}",
-          f"- Reported, ties without injected dependencies: arm {interval((rep.get('H4_without_injected') or {}).get('arm'))}, "
+          f"- Reported, bindings without injected dependencies: arm {interval((rep.get('H4_without_injected') or {}).get('arm'))}, "
           f"slope {interval((rep.get('H4_without_injected') or {}).get('slope'))}",
-          f"- Reported, trajectory of the ties (arm × checkpoint): {interval(rep.get('H4_trajectory'))}",
+          f"- Reported, trajectory of the bindings (arm × checkpoint): {interval(rep.get('H4_trajectory'))}",
           *readings_section(est, readings or {}),
+          *landing_section(readings or {}),
           "", "## Provenance", "",
           "Checkpoint intercept in the model: " + (", ".join(
               f"{k} {f(v)}" for k, v in (est.get("checkpoint_intercept") or {}).items()) or "–") + ".", "",

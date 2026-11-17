@@ -1,16 +1,16 @@
 """Tables from a measured chain: hosts, runs, classes, additions and outcomes (PLAN.md §4.2–4.6).
 
-Ties (the instrument's measure of how far an addition is held to its location):
+Bindings (the instrument's measure of how far an addition is held to its location):
 
-- ``tie_method``: the host method's pre-existing parameters (not injected) and locals the added
+- ``binding_method``: the host method's pre-existing parameters (not injected) and locals the added
   code uses;
-- ``tie_field`` and ``tie_class_method``: the host class's pre-existing fields and methods it uses;
-  together the **class ties**;
-Ties are read from the **logic lines** the change adds or edits (a method's body statements;
+- ``binding_field`` and ``binding_class_method``: the host class's pre-existing fields and methods it uses;
+  together the **class bindings**;
+Bindings are read from the **logic lines** the change adds or edits (a method's body statements;
 signatures, declarations and constructor wiring are organisation). Every reference on those lines
 counts, edited lines alike. ``tok_*`` counts only the references an edit itself introduced, as a
-secondary reading. Not ties: class **utilities** (loggers), which any class can declare, and
-``birth_tie`` (the values a caller passes a new method: the tie is already on the caller's line).
+secondary reading. Not bindings: class **utilities** (loggers), which any class can declare, and
+``birth_binding`` (the values a caller passes a new method: the binding is already on the caller's line).
 ``unresolved`` lists references that resolve to nothing seen (inherited members, static imports).
 """
 
@@ -100,11 +100,11 @@ def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
     for r in _hosts(measured):
         moved = r["moved_rm"] + r["moved_text"]
         runs = r["runs"]
-        tm = sorted({v for x in runs for v in x["tie_method"]})
-        tp = sorted({v for x in runs for v in x.get("tie_param", [])})
-        ti = sorted({v for x in runs for v in x.get("tie_field_injected", [])})
-        tf = sorted({v for x in runs for v in x["tie_field"]})
-        tc = sorted({v for x in runs for v in x["tie_class_method"]})
+        tm = sorted({v for x in runs for v in x["binding_method"]})
+        tp = sorted({v for x in runs for v in x.get("binding_param", [])})
+        ti = sorted({v for x in runs for v in x.get("binding_field_injected", [])})
+        tf = sorted({v for x in runs for v in x["binding_field"]})
+        tc = sorted({v for x in runs for v in x["binding_class_method"]})
         tu = sorted({v for x in runs for v in x["utility"]})
         un = sorted({v for x in runs for v in x["unresolved"]})
         rows.append({
@@ -118,16 +118,16 @@ def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
             "removed": r["removed"], "net_added": r["added"] - moved,
             "replacement": r["added"] > 0 and moved / r["added"] >= REPLACEMENT_SHARE,
             "runs": len(runs), "edits": sum(1 for x in runs if x["replaces"] > 0),
-            "tie_method": len(tm), "tie_field": len(tf), "tie_class_method": len(tc),
-            "tie_class": len(tf) + len(tc), "tie": len(tm) + len(tf) + len(tc),
-            "tie_param": len(tp), "tie_no_param": len(tm) - len(tp) + len(tf) + len(tc),
-            "tie_injected": len(ti), "tie_class_no_injected": len(tf) - len(ti) + len(tc),
-            "tie_no_injected": len(tm) + len(tf) - len(ti) + len(tc),
+            "binding_method": len(tm), "binding_field": len(tf), "binding_class_method": len(tc),
+            "binding_class": len(tf) + len(tc), "binding": len(tm) + len(tf) + len(tc),
+            "binding_param": len(tp), "binding_no_param": len(tm) - len(tp) + len(tf) + len(tc),
+            "binding_injected": len(ti), "binding_class_no_injected": len(tf) - len(ti) + len(tc),
+            "binding_no_injected": len(tm) + len(tf) - len(ti) + len(tc),
             "utility": len(tu), "unresolved": len(un), "unresolved_values": " ".join(un),
             "organisation": r["organisation"],
-            "birth_tie": len(r.get("birth_tie", [])),
-            "tie_method_values": " ".join(tm),
-            "tie_class_values": " ".join(tf + [m + "()" for m in tc]),
+            "birth_binding": len(r.get("birth_binding", [])),
+            "binding_method_values": " ".join(tm),
+            "binding_class_values": " ".join(tf + [m + "()" for m in tc]),
             "params": r["params"],
             **standing(runs),
         })
@@ -149,24 +149,24 @@ def run_rows(arm: str, chain: str, measured: dict) -> list[dict]:
                 "pre_positions": r["pre_positions"], "positions": x["positions"],
                 "replaces": x["replaces"], "edit": x["replaces"] > 0,
                 "added_tokens": x["added_tokens"], "inputs": x["inputs"], "outputs": x["outputs"],
-                "tie_method": len(x["tie_method"]), "tie_field": len(x["tie_field"]),
-                "tie_class_method": len(x["tie_class_method"]),
-                "tie_class": len(x["tie_field"]) + len(x["tie_class_method"]),
+                "binding_method": len(x["binding_method"]), "binding_field": len(x["binding_field"]),
+                "binding_class_method": len(x["binding_class_method"]),
+                "binding_class": len(x["binding_field"]) + len(x["binding_class_method"]),
                 "utility": len(x["utility"]),
-                "tok_tie_method": x["tok_tie_method"], "tok_tie_class": x["tok_tie_class"],
-                "tok_tie": x["tok_tie_method"] + x["tok_tie_class"],
+                "tok_binding_method": x["tok_binding_method"], "tok_binding_class": x["tok_binding_class"],
+                "tok_binding": x["tok_binding_method"] + x["tok_binding_class"],
                 "unresolved": len(x["unresolved"]), "unresolved_values": " ".join(x["unresolved"]),
-                "tie": len(x["tie_method"]) + len(x["tie_field"]) + len(x["tie_class_method"]),
-                "tie_param": len(x.get("tie_param", [])),
-                "tie_no_param": len(x["tie_method"]) - len(x.get("tie_param", []))
-                + len(x["tie_field"]) + len(x["tie_class_method"]),
-                "tie_injected": len(x.get("tie_field_injected", [])),
-                "tie_class_no_injected": len(x["tie_field"]) - len(x.get("tie_field_injected", []))
-                + len(x["tie_class_method"]),
-                "tie_no_injected": len(x["tie_method"]) + len(x["tie_field"])
-                - len(x.get("tie_field_injected", [])) + len(x["tie_class_method"]),
-                "tie_method_values": " ".join(x["tie_method"]),
-                "tie_class_values": " ".join(x["tie_field"] + [m + "()" for m in x["tie_class_method"]]),
+                "binding": len(x["binding_method"]) + len(x["binding_field"]) + len(x["binding_class_method"]),
+                "binding_param": len(x.get("binding_param", [])),
+                "binding_no_param": len(x["binding_method"]) - len(x.get("binding_param", []))
+                + len(x["binding_field"]) + len(x["binding_class_method"]),
+                "binding_injected": len(x.get("binding_field_injected", [])),
+                "binding_class_no_injected": len(x["binding_field"]) - len(x.get("binding_field_injected", []))
+                + len(x["binding_class_method"]),
+                "binding_no_injected": len(x["binding_method"]) + len(x["binding_field"])
+                - len(x.get("binding_field_injected", [])) + len(x["binding_class_method"]),
+                "binding_method_values": " ".join(x["binding_method"]),
+                "binding_class_values": " ".join(x["binding_field"] + [m + "()" for m in x["binding_class_method"]]),
                 "utility_values": " ".join(x["utility"]),
                 **bystanders(x),
                 # which values: what the run needed and what stood by, in the method and the class
@@ -210,7 +210,7 @@ def bystanders(run: dict) -> dict:
 
 def class_rows(arm: str, chain: str, hosts: list[dict], measured: dict) -> list[dict]:
     """Class level: per addition and class it reaches, the hosts and positions added there and the
-    class ties (distinct pre-existing fields and methods of the class the added code uses)."""
+    class bindings (distinct pre-existing fields and methods of the class the added code uses)."""
     out: dict[tuple[int, str, str], dict] = {}
     for h in hosts:
         if h["net_added"] <= 0 or h["replacement"]:
@@ -218,15 +218,15 @@ def class_rows(arm: str, chain: str, hosts: list[dict], measured: dict) -> list[
         k = (h["cp"], h["path"], h["type"])
         row = out.setdefault(k, {"arm": arm, "chain": chain, "cp": h["cp"], "path": h["path"],
                                  "type": h["type"], "class_new": h["class_new"], "hosts": 0,
-                                 "positions_added": 0, "ties": set()})
+                                 "positions_added": 0, "bindings": set()})
         row["hosts"] += 1
         row["positions_added"] += h["net_added"]
-        if h["tie_class_values"]:
-            row["ties"] |= set(h["tie_class_values"].split())
+        if h["binding_class_values"]:
+            row["bindings"] |= set(h["binding_class_values"].split())
     rows = []
     for row in out.values():
-        ties = sorted(row.pop("ties"))
-        rows.append({**row, "tie_class": len(ties), "tie_class_values": " ".join(ties)})
+        bindings = sorted(row.pop("bindings"))
+        rows.append({**row, "binding_class": len(bindings), "binding_class_values": " ".join(bindings)})
     return sorted(rows, key=lambda r: (r["cp"], r["path"], r["type"]))
 
 
@@ -264,9 +264,9 @@ def addition_rows(arm: str, chain: str, measured: dict, hosts: list[dict],
             "share_in_existing": (sum(h["net_added"] for h in existing) / added) if added else None,
             "gini": gini([h["net_added"] for h in hs]),
             "largest_host_pre": max((h["pre_positions"] for h in existing), default=0),
-            "tie_method": sum(h["tie_method"] for h in hs),
-            "tie_class": sum(h["tie_class"] for h in hs),
-            "birth_tie": sum(h["birth_tie"] for h in hs if h["host_new"]),
+            "binding_method": sum(h["binding_method"] for h in hs),
+            "binding_class": sum(h["binding_class"] for h in hs),
+            "birth_binding": sum(h["birth_binding"] for h in hs if h["host_new"]),
             "replacements": sum(1 for h in hosts if h["cp"] == cp and h["replacement"]),
             "refactorings": refs.get(unit, 0),
             "amount_positions": measured["amount"][unit]["positions"],
@@ -318,9 +318,9 @@ def outcome_rows(arm: str, chain: str, hosts: list[dict], streamed: dict[int, di
 
     Intrusion is read at three levels (PLAN.md §4.4). The **class** (``intrusion_class``) and the
     **method** (``intrusion_method``) are the placement: every later checkpoint, neither declared
-    nor crossing, whose own code in that class, or method, is tied there (``is_tied``). It applies
-    only to a problem that was itself tied there (``tied``): a place a problem was not drawn to is
-    not one it can be said to have drawn others into. ``*_any`` count any later change, tied or not. The
+    nor crossing, whose own code in that class, or method, is bound there (``is_bound``). It applies
+    only to a problem that was itself bound there (``bound``): a place a problem was not drawn to is
+    not one it can be said to have drawn others into. ``*_any`` count any later change, bound or not. The
     problem's **own lines** (``intrusion_lines``, with ``followed`` from ``lines.follow``) are for
     information: a later checkpoint that edits or removes one of them, or inserts between them, is
     changing the problem more than the placement.
@@ -328,7 +328,7 @@ def outcome_rows(arm: str, chain: str, hosts: list[dict], streamed: dict[int, di
     **Drawn in by what stood by** (H2): ``bystanders_class`` and ``bystanders_method`` are the
     pre-existing fields of the class and values of the method that stood by when the problem's code
     was placed in this host (``standing``); ``drawn_class`` and ``drawn_method`` count the later
-    intrusions whose tied code there uses one of them."""
+    intrusions whose bound code there uses one of them."""
     own = identities(hosts)
     ct_identity = (ct or {}).get("ct_identity", {})
     ct_touched = (ct or {}).get("ct_touched", {})
@@ -357,19 +357,19 @@ def outcome_rows(arm: str, chain: str, hosts: list[dict], streamed: dict[int, di
     # the class level: every later checkpoint that changes the class the host is in
     cls = class_identities(hosts)
     class_touched = touched_classes(hosts, cls)
-    # drawn in (PLAN.md 4.4): a later checkpoint counts when its own code there is tied, that is,
-    # when it reuses data that was already there. Adding a field and its accessor ties nothing.
-    class_drawn = touched_classes(hosts, cls, tied=True)
+    # drawn in (PLAN.md 4.4): a later checkpoint counts when its own code there is bound, that is,
+    # when it reuses data that was already there. Adding a field and its accessor binds nothing.
+    class_drawn = touched_classes(hosts, cls, bound=True)
     drawn: dict[str, set[int]] = {}
     for h in hosts:
-        if is_tied(h):
+        if is_bound(h):
             drawn.setdefault(ident(h), set()).add(h["cp"])
-    # what each checkpoint's tied code uses, per method and per class (H2: is later code tied to
+    # what each checkpoint's bound code uses, per method and per class (H2: is later code bound to
     # what stood by?)
     uses_m: dict[tuple[str, int], set[str]] = {}
     uses_c: dict[tuple[str, int], set[str]] = {}
     for h in hosts:
-        if is_tied(h):
+        if is_bound(h):
             uses_m.setdefault((ident(h), h["cp"]), set()).update(h.get("need_method_values", "").split())
             uses_c.setdefault((cls[(h["cp"], h["type"])], h["cp"]), set()).update(
                 h.get("need_class_values", "").split())
@@ -391,10 +391,10 @@ def outcome_rows(arm: str, chain: str, hosts: list[dict], streamed: dict[int, di
         later_class = sorted(j for j in class_drawn.get(c, set()) if j > k)
         md, mc, mi = split(later, k)
         cd, cc, ci = split(later_class, k)
-        # any later change, tied or not (as first built), reported
+        # any later change, bound or not (as first built), reported
         any_m = split(sorted(j for j in touched.get(i, set()) if j > k), k)[2]
         any_c = split(sorted(j for j in class_touched.get(c, set()) if j > k), k)[2]
-        # drawn in by what stood by (H2): the later tied arrivals that use a value which was a
+        # drawn in by what stood by (H2): the later bound arrivals that use a value which was a
         # bystander when this code was placed
         stood_m, stood_c = set(h.get("by_method_values", "").split()), set(h.get("by_class_values", "").split())
         drawn_m = split([j for j in later if uses_m.get((i, j), set()) & stood_m], k)[2]
@@ -415,8 +415,8 @@ def outcome_rows(arm: str, chain: str, hosts: list[dict], streamed: dict[int, di
             "class_identity": c,
             "type": h["type"], "name": h["name"], "signature": h.get("signature"),
             "host_new": h["host_new"], "pre_positions": h["pre_positions"],
-            "net_added": h["net_added"], "tie_method": h["tie_method"], "tie_class": h["tie_class"],
-            "tie": h["tie"], "tied": is_tied(h), "later_checkpoints": last - k,
+            "net_added": h["net_added"], "binding_method": h["binding_method"], "binding_class": h["binding_class"],
+            "binding": h["binding"], "bound": is_bound(h), "later_checkpoints": last - k,
             "class_touches": len(later_class), "class_declared": cd, "class_crossed": cc,
             "intrusion_class": ci,
             "later_touches": len(later), "declared": md, "crossed": mc, "intrusion_method": mi,
@@ -442,32 +442,32 @@ def class_identities(hosts: list[dict]) -> dict[tuple[int, str], str]:
     return out
 
 
-def is_tied(h: dict) -> bool:
-    """Whether the code a checkpoint added to this host is tied there: it reuses data that already
+def is_bound(h: dict) -> bool:
+    """Whether the code a checkpoint added to this host is bound there: it reuses data that already
     existed (a parameter or local of the method, a field or method of the class). Only then was it
     drawn to the place, and only then is the place one to watch for what is drawn in later."""
-    return h["tie"] >= 1 and h["net_added"] > 0 and not h.get("replacement")
+    return h["binding"] >= 1 and h["net_added"] > 0 and not h.get("replacement")
 
 
-def touched_classes(hosts: list[dict], cls: dict[tuple[int, str], str], tied: bool = False
+def touched_classes(hosts: list[dict], cls: dict[tuple[int, str], str], bound: bool = False
                     ) -> dict[str, set[int]]:
-    """Class identity -> the checkpoints that change any method of it; with ``tied``, only those
-    whose code there is tied (``is_tied``)."""
+    """Class identity -> the checkpoints that change any method of it; with ``bound``, only those
+    whose code there is bound (``is_bound``)."""
     out: dict[str, set[int]] = {}
     for h in hosts:
-        if is_tied(h) if tied else (h["net_added"] > 0 or h["removed"] > 0):
+        if is_bound(h) if bound else (h["net_added"] > 0 or h["removed"] > 0):
             out.setdefault(cls[(h["cp"], h["type"])], set()).add(h["cp"])
     return out
 
 
 def reopened(hosts: list[dict], wiring_changes: dict[str, list]) -> dict[int, dict]:
-    """Per checkpoint (reported, PLAN.md §4.4): the classes its tied code goes into that an earlier
-    checkpoint's tied code had gone into, and the wiring files it changes that an earlier
+    """Per checkpoint (reported, PLAN.md §4.4): the classes its bound code goes into that an earlier
+    checkpoint's bound code had gone into, and the wiring files it changes that an earlier
     checkpoint had created or changed (the function arm's equivalent of the calling method lives
-    there; a wiring file has no ties, so every change counts)."""
+    there; a wiring file has no bindings, so every change counts)."""
     cls = class_identities(hosts)
     by_cp: dict[int, set[str]] = {}
-    for c, cps in touched_classes(hosts, cls, tied=True).items():
+    for c, cps in touched_classes(hosts, cls, bound=True).items():
         for cp in cps:
             by_cp.setdefault(cp, set()).add(c)
     files: dict[int, set[str]] = {}

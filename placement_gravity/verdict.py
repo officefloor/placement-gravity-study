@@ -4,19 +4,19 @@
 - **H1** (the methods arm): the slope of the bystanders (PLAN.md §4.3a) on the checkpoint index
   above 0, over all runs and within a place: the class's bystanders within a class, the method's
   within a method. p = the largest of the three one-sided bootstrap p-values.
-- **H2** (the methods arm): where code was tied to a class or a method, the rate ratio, per value
-  that stood by there, of the later intrusions tied to what stood by, above 1 at the class and at
+- **H2** (the methods arm): where code was bound to a class or a method, the rate ratio, per value
+  that stood by there, of the later intrusions bound to what stood by, above 1 at the class and at
   the method (one-sided Wald; p = the larger of the two; PLAN.md §4.4).
-- **H3**: every shape measure kept within the equivalence bound by two one-sided tests, on
-  method-level intrusion, with the ties and the bystanders in the model. p = the largest TOST p.
+- **H3**: every shape measure kept within the equivalence margin by two one-sided tests, on
+  method-level intrusion, with the bindings and the bystanders in the model. p = the largest TOST p.
 - **H4**: the function arm's bystanders fewer half-way through the stream, their slope on the
-  checkpoint index flatter, and its tied code come back to less, at the class and at the method
+  checkpoint index flatter, and its bound code come back to less, at the class and at the method
   (p = the largest of the four one-sided p-values); the amount within its band; and neither wiring
   condition against.
 - **Multiplicity**: Holm over H1 to H4 at α = 0.05.
 
 Verdicts: ``supported``; ``not supported``; ``reversed`` (an interval wholly on the wrong side);
-``unresolved`` (H3: an interval reaching outside the bound without lying outside it);
+``unresolved`` (H3: an interval reaching outside the margin without lying outside it);
 ``not testable`` (H3: no shape measure varies); ``descriptive only`` (fewer than 6 chains in an
 arm, or the development analysis).
 """
@@ -76,7 +76,7 @@ def h3(est: dict) -> dict:
                 "detail": b}
     if any(m["outside"] for m in measures.values()):
         state = "against"           # a shape measure carries information beyond the problem
-    elif all(b["bound"][0] <= m["irr_lower"] and m["irr_upper"] <= b["bound"][1]
+    elif all(b["margin"][0] <= m["irr_lower"] and m["irr_upper"] <= b["margin"][1]
              for m in measures.values()):
         state = "within"
     else:

@@ -54,7 +54,7 @@ def test_an_insertion_outside_a_problems_span_is_host_level_only(records):
               "before_type": r.get("before_type"), "before_name": r.get("before_name"),
               "host_new": r["host_new"], "pre_positions": r["pre_positions"],
               "net_added": r["added"] - r["moved_rm"] - r["moved_text"], "removed": r["removed"],
-              "replacement": False, "tie_method": 1, "tie_class": 0, "tie": 1}
+              "replacement": False, "binding_method": 1, "binding_class": 0, "binding": 1}
              for r in records if r["kind"] == "host"]
     streamed = {k: {"mutates": [], "crosses": []} for k in range(1, 5)}
     rows = {(r["cp"], r["name"]): r for r in
@@ -71,7 +71,7 @@ def test_a_new_method_in_the_same_class_is_class_level_intrusion(records):
               "before_type": r.get("before_type"), "before_name": r.get("before_name"),
               "host_new": r["host_new"], "pre_positions": r["pre_positions"],
               "net_added": r["added"] - r["moved_rm"] - r["moved_text"], "removed": r["removed"],
-              "replacement": False, "tie_method": 1, "tie_class": 0, "tie": 1}
+              "replacement": False, "binding_method": 1, "binding_class": 0, "binding": 1}
              for r in records if r["kind"] == "host"]
     cls = tables.class_identities(hosts)
     assert set(cls.values()) == {"Owners"}

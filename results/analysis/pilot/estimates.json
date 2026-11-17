@@ -17,7 +17,7 @@
     "H3": true
   },
   "reported": {
-    "H1_ties": {
+    "H1_bindings": {
       "n_runs": 74,
       "log_host": {
         "estimate": 0.0303307029217156,
@@ -140,7 +140,7 @@
       "n": 61,
       "checkpoint_intercept": true
     },
-    "H4_ties": {
+    "H4_bindings": {
       "n_runs": 135,
       "centre_positions": 7.25702361660817,
       "arm": {
@@ -358,7 +358,7 @@
     },
     "intrusion_rows": {
       "all": 350,
-      "tied": 109
+      "bound": 109
     },
     "H2_log_class": {
       "estimate": 1.04218314577139,
@@ -387,7 +387,7 @@
     "H2_function_arm_method": {
       "error": "standard error not computed: bystanders_method"
     },
-    "ties_intrusion_class": {
+    "bindings_intrusion_class": {
       "estimate": -0.116237404179681,
       "se": 0.090755090398547,
       "lower": -0.29411411277451,
@@ -399,7 +399,7 @@
       "irr_lower": 0.745191450727281,
       "irr_upper": 1.06357864741097
     },
-    "ties_intrusion_method": {
+    "bindings_intrusion_method": {
       "estimate": -0.158802514697515,
       "se": 0.173494156713839,
       "lower": -0.498844813384788,
@@ -547,7 +547,7 @@
         "spring": 0.867078726242371
       }
     },
-    "ties_any_change_class": {
+    "bindings_any_change_class": {
       "estimate": -0.154428551903618,
       "se": 0.0906244292653162,
       "lower": -0.332049169383135,
@@ -559,7 +559,7 @@
       "irr_lower": 0.717452045312666,
       "irr_upper": 1.02346309269938
     },
-    "ties_any_change_method": {
+    "bindings_any_change_method": {
       "estimate": -0.290555055281677,
       "se": 0.181305995746673,
       "lower": -0.645908277126329,
@@ -571,10 +571,10 @@
       "irr_lower": 0.52418621946978,
       "irr_upper": 1.06694365774527
     },
-    "ties_lines": {
-      "error": "standard error not computed: tie"
+    "bindings_lines": {
+      "error": "standard error not computed: binding"
     },
-    "ties_without_injected_class": {
+    "bindings_without_injected_class": {
       "estimate": -0.207681114829731,
       "se": 0.0788103735352332,
       "lower": -0.362146608566936,
@@ -586,7 +586,7 @@
       "irr_lower": 0.696180294364245,
       "irr_upper": 0.948175543792551
     },
-    "ties_without_injected_method": {
+    "bindings_without_injected_method": {
       "estimate": -0.0807440565486393,
       "se": 0.175623719608904,
       "lower": -0.424960221813052,
@@ -598,7 +598,7 @@
       "irr_lower": 0.653795791423819,
       "irr_upper": 1.30144099557472
     },
-    "ties_existing_hosts_class": {
+    "bindings_existing_hosts_class": {
       "estimate": -0.087279238691809,
       "se": 0.0642592498909091,
       "lower": -0.21322505415155,
@@ -610,7 +610,7 @@
       "irr_lower": 0.807974278787472,
       "irr_upper": 1.03942385780466
     },
-    "ties_existing_hosts_method": {
+    "bindings_existing_hosts_method": {
       "estimate": -0.0526952277291185,
       "se": 0.179908676007498,
       "lower": -0.4053097532101,
@@ -857,7 +857,7 @@
     "n": 77,
     "kept": ["s3_junction", "s4_cognitive", "s5_class_gini"],
     "testable": true,
-    "bound": [0.8, 1.25],
+    "margin": [0.8, 1.25],
     "measures": {
       "s3_junction": {
         "estimate": -0.343939353486141,

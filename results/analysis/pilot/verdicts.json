@@ -83,7 +83,7 @@
      "s5_class_gini"
     ],
     "testable": true,
-    "bound": [
+    "margin": [
      0.8,
      1.25
     ],

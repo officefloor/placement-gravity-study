@@ -13,15 +13,15 @@ is cohesive with that problem, and measures how that code was placed:
   **forced** placement (gravity) from a **chosen** one.
 - its **bystanders**: what else was there with the data it needed. The data a problem needs is
   the problem's; what surrounds that data, and grows, is the gravity (H1, H4), and what later code
-  is then tied to (H2).
+  is then bound to (H2).
 
 It then follows each problem forward, in the class and the method its code was placed in, to see
-whether the data that stood by there is what later changes are tied to when they come back. The primary data is the paired Spring and OfficeFloor change streams of the degradation
+whether the data that stood by there is what later changes are bound to when they come back. The primary data is the paired Spring and OfficeFloor change streams of the degradation
 harnesses, where one checkpoint is one problem.
 
 Shape is read only where the problem is fixed. The measures of solution shape used by the earlier
 studies (long, not slimmable, junction, complexity outlier, concentration) enter as competitors:
-H3 tests whether they predict anything once the problem, the ties and the bystanders are held fixed. The plan
+H3 tests whether they predict anything once the problem, the bindings and the bystanders are held fixed. The plan
 absorbs three drafts that read the same runs: flow-injection containment, the ui harness's
 SinewSlim analysis plan, and sinew identification (`PLAN.md` §1.1).
 
@@ -56,13 +56,14 @@ cloned into `~/placement-gravity-data/`. The streams are read at the commits `ru
 
 | Code | |
 |---|---|
-| `instrument/Pull.java` | The instrument: per addition, hosts, runs and their ties (method and class), their bystanders (the pre-existing values visible where a run lands that it does not use, PLAN.md §4.3a), birth ties, moved code; the amount; with `--shape`, every method of a tree as the earlier studies read it (SinewSlim's length and assessment, junction counts). |
+| `instrument/Pull.java` | The instrument: per addition, hosts, runs and their bindings (method and class), their bystanders (the pre-existing values visible where a run lands that it does not use, PLAN.md §4.3a), birth bindings, moved code; the amount; with `--shape`, every method of a tree as the earlier studies read it (SinewSlim's length and assessment, junction counts). |
 | `refactor/` | RefactoringMiner 3.0.4 at each commit (`Refactorings.java`) and CodeTracker 2.6 histories (`Histories.java`), built by Maven. |
 | `placement_gravity/refactor.py` | RefactoringMiner's findings as the instrument's hints: renames, matches, moved code. |
 | `placement_gravity/crosscheck.py` | CodeTracker against the instrument's following of hosts. |
 | `placement_gravity/chain.py` | A chain's checkpoints from git, the files of each addition, the wiring. |
 | `placement_gravity/tables.py` | Hosts, runs, additions and outcomes from the instrument's output. |
 | `placement_gravity/lines.py` | A problem's own lines followed from checkpoint to checkpoint: reported for information beside intrusion at the class and the method (PLAN.md §4.4). |
+| `placement_gravity/places.py` | Where bound and unbound code lands among the methods and classes it could have gone to, ranked by complexity and by data width (PLAN.md §5, reported). |
 | `placement_gravity/readings.py` | The reported readings: choice at a checkpoint, formation and review (PLAN.md §5). |
 | `placement_gravity/shape.py` | The shape competitors S1–S5 (PLAN.md §4.7) on each existing host at k − 1, with the complexity-concentration study's cognitive extractor and outlier rule (pinned in `requirements.txt`). |
 | `runs.yaml` | The runs read: streams pinned per run, repositories, and each analysis with its role. |

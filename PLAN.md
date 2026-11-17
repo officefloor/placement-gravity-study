@@ -5,7 +5,7 @@
 > (§9, five revisions so far). It will be set again when that work is done; until then only the
 > development chain can be read.** As first registered, on 16 November 2026: the tag was first pushed on commit
 > `4bb8973` and moved the same day, before any run named for analysis was read, to this revision,
-> which adds ties to injected dependencies reported apart (§4.3, §5). The instrument is piloted on
+> which adds bindings to injected dependencies reported apart (§4.3, §5). The instrument is piloted on
 > one pair of chains
 > (`results/pilot/PILOT.md`); no run named for analysis has been read. What remains open is only
 > what needs the data to exist (§3.1a): Run B's ids, Run C's ids when its stack is built, and each
@@ -42,7 +42,7 @@ This study turns the question round:
   fixes the size. The form of the code (methods sharing a scope, or injected functions) fixes how
   much of that space is open.
 - **The concern is gravitation:** code for a new problem has to land in an existing
-  concentration because its data ties it there, not because the problem belongs there. Each
+  concentration because its data binds it there, not because the problem belongs there. Each
   forced placement widens the host, and a wider host pulls the next addition in.
 - **What pulls is what surrounds the data** (stated 17 November 2026, §9). The data a problem
   needs is the problem's: the same rule needs the same values however it is built. Where a value
@@ -66,7 +66,7 @@ together, and that is only known afterwards. What can be measured at the time of
 whether the placement was **chosen** or **forced**. The claim under test is that forced
 placement, not concentration as such, is what does the harm. As the hypotheses now stand (§2, §9),
 the part of that claim tested is the mechanism: a place gathers data (H1), and the data it has
-gathered is what later code is tied to (H2). The study measures what is drawn in, not the harm
+gathered is what later code is bound to (H2). The study measures what is drawn in, not the harm
 done.
 
 **The problem has to be held fixed.** The earlier studies, like most of the code-smell literature,
@@ -78,7 +78,7 @@ assistants, which may be given larger and harder problems, so a change in the sh
 need not mean a change in how well it is written. This study therefore reads shape only where the
 problem is fixed: one checkpoint is one problem, and both arms solve the same stream. It also
 **tests** the claim rather than assuming it. H3 asks whether the shape measures the earlier studies
-used predict later intrusion once the problem, the ties and the bystanders are held fixed (§2, §4.7).
+used predict later intrusion once the problem, the bindings and the bystanders are held fixed (§2, §4.7).
 
 ### 1.1 What this plan absorbs (16 November 2026)
 
@@ -95,11 +95,11 @@ registration covers them:
   slope, read per arm. Its god-unit count (P3) and its gated-condition lever (P4) are dropped.
 - **The ui harness's SinewSlim analysis plan** (branch `sinewslim-analysis-plan`, 31 October 2026).
   Its not-slimmable methods (H1) become a shape competitor of §4.7. Its mechanism (H2, behaviour
-  added inside existing methods) is what Q1 and the ties measure. Its wiring test (H4) becomes H4's
+  added inside existing methods) is what Q1 and the bindings measure. Its wiring test (H4) becomes H4's
   wiring condition. Its go/no-go bar for OfficeFloorSlim is a product decision and stays in the
   harness, outside this study.
 - **The sinew-identification study** (on hold since 19 October 2026; closed by its own commit). Its
-  restated sinew, data coupled to the control flow, is what the ties measure at the commit where
+  restated sinew, data coupled to the control flow, is what the bindings measure at the commit where
   code is placed.
 
 The injected-coupling measurement study existed to validate the flow-injection draft's coupling
@@ -113,8 +113,8 @@ gate.
   ones, how far is it dispersed, and how large were the hosts it landed in?
 - **Q2 (gravity).** How strongly does each addition depend on state that already existed in its
   host (its **pull**, §4)? Does pull grow as hosts grow and the system ages?
-- **Q3 (consequence).** Where a problem's code was tied to a place, is the data that lay there
-  what later changes to *other* problems are tied to when they arrive? (As first asked: are forced
+- **Q3 (consequence).** Where a problem's code was bound to a place, is the data that lay there
+  what later changes to *other* problems are bound to when they arrive? (As first asked: are forced
   placements followed by more tangling than chosen placements of the same size? Reported.)
 - **Q4 (form).** For the same stream of problems, is pull lower and flatter under function
   injection than under methods, while the amount stays about the same?
@@ -126,26 +126,26 @@ Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 Novem
   above 0). They rise over all additions, and **within a place**: among the additions that go into
   one class, the later ones find more of the class's data standing by, and likewise within one
   method. The place itself gathers data; the rise is not code moving to places that hold more.
-  - *As first registered:* the addition's ties rise with its host's size and with the checkpoint
-    index. That is kept and reported beside it. It was replaced because the ties an addition has
+  - *As first registered:* the addition's bindings rise with its host's size and with the checkpoint
+    index. That is kept and reported beside it. It was replaced because the bindings an addition has
     are largely the data its problem needs, and because nearly every Spring run into an existing
     method already has one (the ceiling the pilot found).
 - **H2, data draws code in** (restated 17 November 2026, §9). In the methods arm, where an
-  addition was tied to a **class** or a **method**: the more data stood by there when it was
-  placed, the more later code for other problems arrives there **tied to that data** (§4.4).
+  addition was bound to a **class** or a **method**: the more data stood by there when it was
+  placed, the more later code for other problems arrives there **bound to that data** (§4.4).
   Holding the problem fixed (its checkpoint, the addition's size and the earlier rules it declares
   it crosses) and the host's size, the rate ratio per value that stood by is above 1, at the class
   and at the method. With H1 this is the loop: a place gathers data, and the data it has gathered
-  is what the next code is tied to.
-  - *As it stood until then* (forcing does the harm): the more ties an addition has, the more
+  is what the next code is bound to.
+  - *As it stood until then* (forcing does the harm): the more bindings an addition has, the more
     cross-problem intrusion follows where it was placed. That is kept and reported beside it. It
-    was replaced because it is not the number of ties a problem has that draws later code, but the
+    was replaced because it is not the number of bindings a problem has that draws later code, but the
     data lying where the problem's code was put.
-- **H3, shape adds nothing.** With the problem held fixed, and the ties and the bystanders in the
+- **H3, shape adds nothing.** With the problem held fixed, and the bindings and the bystanders in the
   model, the shape of the host the addition landed in adds nothing to the intrusion that follows in
   that method. The
   shape measures are those of §4.7: long, not slimmable, junction, complexity outlier and
-  concentration. Each one's effect lies within the equivalence bound of §5. This makes confirmatory
+  concentration. Each one's effect lies within the equivalence margin of §5. This makes confirmatory
   the result of Olbrich, Cruzes and Sjøberg (2010): god and brain classes change more and hold
   more defects, but less per line once size is controlled.
   - *H2 and H3 were one hypothesis* (H2a and H2b) until 17 November 2026, supported only if both
@@ -153,8 +153,8 @@ Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 Novem
     equivalence, and the second should not decide the first.
 - **H4, function injection keeps the space open** (restated 17 November 2026, §9). On the same
   stream, the function arm's bystanders are fewer, and their slope on the checkpoint index is
-  flatter, than the methods arm's; and its tied code is **come back to less**, at the class and at
-  the method (§4.4). (*As first registered:* its ties are lower and their slope on host size
+  flatter, than the methods arm's; and its bound code is **come back to less**, at the class and at
+  the method (§4.4). (*As first registered:* its bindings are lower and their slope on host size
   flatter; kept and reported beside it.) The total amount
   (positions, tokens) of the function arm lies within 0.8 to 1.25 times the methods arm's, the
   band the flow-injection draft took from the conservation study's spread. The coupling that
@@ -165,7 +165,7 @@ Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 Novem
 - **Two readings with a stated direction, reported and not among the confirmatory tests** (added
   16 November 2026, §9):
   - **Formation.** Within an arm, for the same problem, a chain that has been forced more so far is
-    tied more now, and ends more concentrated (§5, *Formation*). This is the black hole forming,
+    bound more now, and ends more concentrated (§5, *Formation*). This is the black hole forming,
     read directly and not from a slope.
   - **Review.** Where a placement was chosen, a reviewing agent re-places it; where it was forced,
     it cannot (§5, *Review*).
@@ -179,9 +179,9 @@ Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 Novem
   surroundings of a problem's data would then be a constant cost of the form, not something that
   grows: no gravity. A rise over all additions with none within a place would mean that code moves
   to fuller places, not that places fill.
-- H2: later code no more tied to what stood by where more stood by, at the class or at the method.
+- H2: later code no more bound to what stood by where more stood by, at the class or at the method.
   The data a place gathers would then be clutter, not pull.
-- H3: any shape measure that still predicts intrusion with the problem, the ties and the bystanders
+- H3: any shape measure that still predicts intrusion with the problem, the bindings and the bystanders
   held fixed.
   That would mean that shape carries information the problem does not, and it is reported as such.
 - H4: no difference between the arms in bystanders, in their growth or in later intrusion, or an amount
@@ -256,8 +256,8 @@ end's production Java of the four stacks of its Runs A and B, a front end × bac
   function injection, so every datum is passed or becomes a shared static) is read as a **third
   arm** once it exists (decided 16 November 2026). Its stack had not been built on 16 November 2026. It is added by a
   dated amendment, naming its run ids, before any of its backend Java is read. Its predicted
-  direction is fixed now: the most ties of the three arms, as nothing is lifted off the flow
-  (dependency injection weakens ties, function injection removes them). Spring against
+  direction is fixed now: the most bindings of the three arms, as nothing is lifted off the flow
+  (dependency injection weakens bindings, function injection removes them). Spring against
   OfficeFloor stays the primary contrast; the control is read against each.
 - Every new rule in the stream declares the earlier rules it crosses (at least two from cp17),
   which gives the declared crossings of §4.4. They are read from the stream's
@@ -305,8 +305,8 @@ this analysis.
 ### 3.2 Corpus B: open-source histories (secondary, external validity)
 
 Pre-AI Java repositories drawn by `open-source-repository-sampler` with **seed 2** (decided 16 November 2026), the
-population the complexity-concentration and sinew-identification studies drew, so the ties can be
-set beside their shape findings on the same code (their shape results have been seen; ties on this
+population the complexity-concentration and sinew-identification studies drew, so the bindings can be
+set beside their shape findings on the same code (their shape results have been seen; bindings on this
 code have not). History is read up to **29 June 2021**, the day GitHub Copilot's preview opened.
 Additions are commits linked to an issue labelled as a feature or enhancement, of **at most 200
 changed lines** of production Java, with refactorings removed by RefactoringMiner. Commits linked
@@ -348,7 +348,7 @@ runs, each run being contiguous positions of one host.
 - **Interleaving:** the number of runs per host. An addition split across a host's statements
   is placed against the host's order.
 
-### 4.3 Ties (Q2), the measure of gravitation
+### 4.3 Bindings (Q2), the measure of gravitation
 
 Only **logic lines** carry the value of a change: a method's body statements. Signatures,
 declarations, imports and constructor wiring are organisation. So is a **plain accessor**
@@ -357,69 +357,69 @@ its parameters to one. It exposes the field for use elsewhere and holds no logic
 does anything more is logic: logic has then been put into a data carrier, and it counts. What matters is where the data each
 added or edited logic line uses comes from. If it comes from values the change itself defines, the
 code could have been placed anywhere. If it comes from values that already existed, the code has to
-be placed near them, so choice is restricted. Those are its **ties** (`instrument/Pull.java`;
+be placed near them, so choice is restricted. Those are its **bindings** (`instrument/Pull.java`;
 `results/pilot/PILOT.md`):
 
-- **Method ties:** the host method's pre-existing parameters and locals.
-- **Class ties:** the host class's pre-existing fields (constants included) and methods. In Spring,
-  injected dependencies are fields, so they tie code to its class. Inherited members tie too; the
+- **Method bindings:** the host method's pre-existing parameters and locals.
+- **Class bindings:** the host class's pre-existing fields (constants included) and methods. In Spring,
+  injected dependencies are fields, so they bind code to its class. Inherited members bind too; the
   instrument reports any reference it cannot resolve (none in the pilot).
 - Every reference on an added or edited logic line counts. A token-level reading, which counts
   only what an edit itself introduced, is reported beside it.
 
-**Not ties:**
+**Not bindings:**
 
 - **Injected parameters.** A function placed anywhere can declare them; every parameter of a wired
-  OfficeFloor function is injected, though its locals still tie.
+  OfficeFloor function is injected, though its locals still bind.
 - **Class utilities** (loggers), which any class can declare; they are reported apart.
-- **Birth ties**, the values a caller passes a new method; they are reported, already counted on
+- **Birth bindings**, the values a caller passes a new method; they are reported, already counted on
   the caller's line.
 
-**Ties to injected dependencies, reported apart.** A field holding an injected dependency can be
+**Bindings to injected dependencies, reported apart.** A field holding an injected dependency can be
 declared by any other class too, so using it may not pin code to this class: the same reasoning
-that makes an injected parameter not a tie. A field counts as injected when it is annotated for injection (`@Autowired`,
+that makes an injected parameter not a binding. A field counts as injected when it is annotated for injection (`@Autowired`,
 `@Inject`, `@Resource`, `@Value`, OfficeFloor's `@Dependency`); when, in a container-managed class
 (`@Component`, `@Service`, `@Repository`, `@Controller`, `@RestController`, `@Configuration`,
 `@ControllerAdvice`, `@RestControllerAdvice`), it is assigned from a constructor parameter or filled
 by Lombok's `@RequiredArgsConstructor` (final fields) or `@AllArgsConstructor`; or when it is assigned
 from the parameter of a method annotated for injection (setter injection). A constructor parameter of
-a class the container does not manage is data, and a constant (`static final`) still ties.
+a class the container does not manage is data, and a constant (`static final`) still bindings.
 
-- **The primary measure keeps them:** an injected field is a class tie, and H1 to H4 are read on
-  all ties.
+- **The primary measure keeps them:** an injected field is a class binding, and H1 to H4 are read on
+  all bindings.
 - **Reported beside it** (§5): H1, at method level and at class level, H4 and H2, each with the
-  ties to injected dependencies left out (`tie_no_injected`, `tie_class_no_injected`).
+  bindings to injected dependencies left out (`binding_no_injected`, `binding_class_no_injected`).
 
 **Pull is graded by where the value comes from** (stated 16 November 2026, §9). The expected
 order, from the least pull to the most:
 
 1. an **injected parameter** of a wired function: no pull, as any function placed anywhere can
-   declare it (not a tie);
+   declare it (not a binding);
 2. an **injected dependency** held in a field: a pull by convenience, as another class could declare
-   it too, but the code is easiest to place where it already is (a tie, reported apart);
+   it too, but the code is easiest to place where it already is (a binding, reported apart);
 3. a **value bound to the control flow**: the request object, a parameter or a local of the host
    method. It exists only there, so code that uses it has to be placed there or be handed it (a
-   tie).
+   binding).
 
 Spring's handler receives the request object on its control flow, so its additions start with the
 strongest pull; OfficeFloor's functions receive theirs by injection. The primary measure counts 2
 and 3 alike. The readings without injected dependencies (above) and without parameters (§5) show
 how much of each result rests on each grade.
 
-**A tie shows pull, not the absence of an alternative.** It is evidence that the placement was
+**A binding shows pull, not the absence of an alternative.** It is evidence that the placement was
 held, not proof that no other placement existed. Two readings check it: the spread of placements
 over the chains at one checkpoint (§5, *Choice at a checkpoint*), and whether a reviewing agent
 moves the code (§5, *Review*).
 
-Ties are related to Feature Envy turned inwards (Tsantalis and Chatzigeorgiou 2009). Their metric
-finds a method drawn towards *another* class's data, as a snapshot recommendation. Ties measure an
+Bindings are related to Feature Envy turned inwards (Tsantalis and Chatzigeorgiou 2009). Their metric
+finds a method drawn towards *another* class's data, as a snapshot recommendation. Bindings measure an
 addition held by its *own* host's pre-existing data, at the commit where it is placed.
 
-**Forced / chosen:** a run is forced when its ties are 1 or more, and chosen otherwise. The cuts
+**Forced / chosen:** a run is forced when its bindings are 1 or more, and chosen otherwise. The cuts
 2, 3 and 4 are reported beside it. Because the pilot finds 93% of Spring's runs into existing
-methods forced at 1, H2 is tested on the tie count, with the cut as a reading aid. H1 and H4 are
-read on the bystanders (§4.3a). The tie-based readings of H1 as first registered (at method level
-in both arms, and at class level in Spring: class ties against the class's size) are reported.
+methods forced at 1, H2 is tested on the binding count, with the cut as a reading aid. H1 and H4 are
+read on the bystanders (§4.3a). The binding-based readings of H1 as first registered (at method level
+in both arms, and at class level in Spring: class bindings against the class's size) are reported.
 
 ### 4.3a Bystanders (H1, H2, H4), the measure of what gravity gathers
 
@@ -441,7 +441,7 @@ injection.
   - **state:** fields that are neither constants nor injected;
   - **injected dependencies:** as §4.3 defines them;
   - **constants** (`static final`).
-- **Utilities** (loggers) are not counted; they are reported apart, as for the ties.
+- **Utilities** (loggers) are not counted; they are reported apart, as for the bindings.
 - A new method has no pre-existing method values, but it sees its class's fields. A method of a new
   class sees nothing that existed before.
 
@@ -470,7 +470,7 @@ all.
 - the share of free runs, per arm.
 
 **Unit.** Every run of added logic that needs a pre-existing value, in new hosts and existing ones
-alike (moved code left out). Unlike the ties, the measure is defined for a new method, which sees
+alike (moved code left out). Unlike the bindings, the measure is defined for a new method, which sees
 its class's fields.
 
 **Two links, reported** (not confirmatory):
@@ -559,49 +559,49 @@ lines of logic are the thing being placed, and changing a line is changing the p
 method and the class are the placement: it is the structure and organisation of the code that
 gathers later changes, and a busy method or class is the finding, not a nuisance.
 
-**Intrusion applies only where there was a tie** (decided by the author, 17 November 2026). A
-tie is the reuse of data that was already there: a parameter or local of the method, a field or
+**Intrusion applies only where there was a binding** (decided by the author, 17 November 2026). A
+binding is the reuse of data that was already there: a parameter or local of the method, a field or
 method of the class (§4.3). Code that reuses nothing that was there was not drawn to its place, so
 that place is not one to watch for what it draws in. Adding a field to an entity, with its
-accessor, ties nothing: it is the problem's data growing, the same in both arms. So:
+accessor, binds nothing: it is the problem's data growing, the same in both arms. So:
 
-- **Which problems are followed:** a problem and host whose added code there has at least one tie.
+- **Which problems are followed:** a problem and host whose added code there has at least one binding.
   The others are counted and set aside (their number is reported).
 - **What counts as drawn in:** a later checkpoint *j* whose own added code in that place has at
-  least one tie there. A later change that ties nothing (a new field and accessor, a new method
+  least one binding there. A later change that binds nothing (a new field and accessor, a new method
   that uses nothing of the class) is not an intrusion.
-- **Class level:** *j*'s tied code is in any method of the class *p*'s tied code was placed in, the
+- **Class level:** *j*'s bound code is in any method of the class *p*'s bound code was placed in, the
   class followed across renames and moves by RefactoringMiner's matches.
-- **Method level:** *j*'s tied code is in the method *p*'s tied code was placed in. The method's
+- **Method level:** *j*'s bound code is in the method *p*'s bound code was placed in. The method's
   identity is CodeTracker's for a method that survives and the instrument's chaining for one that
-  is removed; which checkpoints are tied there is the instrument's reading.
+  is removed; which checkpoints are bound there is the instrument's reading.
 - **Own lines:** as above; reported for information, and not part of any hypothesis.
 - At each level the same three-way split applies: declared, crossed, or intrusion.
 - **H2** is read at the class and at the method, and needs both (below, *Drawn in by what stood
   by*). **H3** is read at the method, since S1 to S4 are measures of the method; the same block at
   the class is reported.
-- **H4's condition:** for the same problems, the function arm's tied code is come back to less than
+- **H4's condition:** for the same problems, the function arm's bound code is come back to less than
   the methods arm's, at the class and at the method.
-- **Reported beside it:** the count of any later change, tied or not (as first built).
+- **Reported beside it:** the count of any later change, bound or not (as first built).
 - Problems placed in one class or method share its later changes, so their counts are not
   independent of each other. The checkpoint's and the chain's intercepts do not remove that (§7).
 
 **Drawn in by what stood by (H2)** (decided by the author, 17 November 2026, §9). H2 is not about
-how many ties a problem has. It is about the data that lay where the problem's code was put, and
-whether that data is what later code is tied to. For a problem *p* and a host its tied code went
+how many bindings a problem has. It is about the data that lay where the problem's code was put, and
+whether that data is what later code is bound to. For a problem *p* and a host its bound code went
 into:
 
 - **What stood by at the class:** the fields of the host's class, as it was before the change
   (state, injected dependencies and constants, §4.3a), that *p*'s code in that host does not use.
 - **What stood by at the method:** the host method's pre-existing parameters and locals visible
   where *p*'s code starts (§4.3a) that *p*'s code there does not use. A new method has none.
-- **Drawn in by it:** a later intrusion, as defined above (tied there; neither declared nor
+- **Drawn in by it:** a later intrusion, as defined above (bound there; neither declared nor
   crossing), whose code in that class, or that method, **uses** one of the values that stood by for
   *p*. A value added after *p* was placed did not stand by for *p*; a value *p* itself used did not
   stand by.
 - **The outcome of H2** is the number of such later intrusions, at the class and at the method; its
   predictor is the number of values that stood by at that level.
-- **Reported beside it:** per arm, how many of the later intrusions are tied to something that
+- **Reported beside it:** per arm, how many of the later intrusions are bound to something that
   stood by, and the mean number that stood by.
 - **This is opportunity, and is meant to be.** A place where nothing stood by cannot draw anything
   by what stood by, so some rise is given by construction. The hypothesis is the mechanism: that
@@ -615,16 +615,16 @@ checkpoint is not followed, and a local of the same name declared anew counts as
 (§7). Over the several runs a checkpoint adds to one host, a value stands by when one of them sees
 it and none uses it.
 
-**Reopening, reported** (17 November 2026). Per checkpoint: the classes its tied code goes into
-that an earlier checkpoint's tied code had gone into; and the wiring files it changes that an
+**Reopening, reported** (17 November 2026). Per checkpoint: the classes its bound code goes into
+that an earlier checkpoint's bound code had gone into; and the wiring files it changes that an
 earlier checkpoint had created or changed. In the function arm the equivalent of the method that
 calls the others is the flow configuration, so the wiring files are counted beside the classes; a
-wiring file has no ties, so every change to one counts. This was first written as a condition of
-H4 on the count of places reopened, tied or not. On the development chain that count did not tell
+wiring file has no bindings, so every change to one counts. This was first written as a condition of
+H4 on the count of places reopened, bound or not. On the development chain that count did not tell
 the arms apart (§6): it counts a class once however many problems have piled into it, and it
 counted the entity's new fields in both arms. It is kept as a reported reading.
 
-**As built** (`tables.is_tied`, `tables.class_identities`, `tables.reopened`, `chain.measure`,
+**As built** (`tables.is_bound`, `tables.class_identities`, `tables.reopened`, `chain.measure`,
 17 November 2026): a class's identity is its type name, carried through the instrument's matches
 when a type is renamed or moved; a nested type is a class of its own. A wiring file's changes are
 the YAML files under the wiring root that the checkpoint's commit adds, modifies, renames or
@@ -639,9 +639,9 @@ coupling the form moves out of the code from going unreported.
 
 **New injected dependencies are not edges** (decided by the author, 16 November 2026). A new
 dependency creates mass, not pull: it is gravity only when a later change has no choice but to be
-placed with it. That is measured where it happens, as the ties of the later change (§4.3): in
-Spring an injected dependency is a field, so later code using it is tied to its class. A wired
-OfficeFloor function using an existing injected object is not tied by it, since any function can
+placed with it. That is measured where it happens, as the bindings of the later change (§4.3): in
+Spring an injected dependency is a field, so later code using it is bound to its class. A wired
+OfficeFloor function using an existing injected object is not bound by it, since any function can
 declare it.
 
 Two conditions of H4 are read on the wiring, as the SinewSlim analysis plan set them (its H4):
@@ -697,13 +697,13 @@ were ordinary methods; that is conservative towards OfficeFloor.
 - S2 counts SinewSlim's `not_slimmable` and `slimmable_with_record` together, the long-method-slim
   study's *stuck*; strict `not_slimmable` and the obstacle are kept beside it. The assessor is
   SinewSlim's defaults, which OfficeFloorSlim's conventional pricing also uses.
-- S3's calls are matched to the application's methods by name and arity, lexically, as the ties
+- S3's calls are matched to the application's methods by name and arity, lexically, as the bindings
   are (§7, *Lexical names*). A call on an object of another type with a matching name counts.
 - S3 is conventional, not injection-aware. A wired OfficeFloor function receives only injected
   values: every function is a starting point. Leaving them out of *in* made any call such a function
   made with an argument a junction, so S3 measured whether a function calls anything (corrected
   16 November 2026, after the pilot: 65 of 92 OfficeFloor junctions at cp60 were wired functions).
-  This differs from the ties on purpose. Ties ask what pins new code to its place, and an injected
+  This differs from the bindings on purpose. Bindings ask what pins new code to its place, and an injected
   value pins nothing (§4.3). S3 is the earlier studies' shape measure, read the same way on both
   arms.
 - S4 is the complexity-concentration study's own `cognitive.analyze` and `modified_z_scale`
@@ -718,7 +718,7 @@ trajectories can be set beside the per-problem ones.
 
 ## 5. Analysis
 
-- **Unit:** an addition run (Q2, H1, H4) or a problem and host whose code was tied there (Q3, H2,
+- **Unit:** an addition run (Q2, H1, H4) or a problem and host whose code was bound there (Q3, H2,
   H3, H4), nested in checkpoints nested in chains.
 - **The problem is held fixed by its identity** (revised before the start, 16 November 2026, §9).
   Every checkpoint is one problem, solved once by every chain of both arms. Every model
@@ -740,26 +740,26 @@ trajectories can be set beside the per-problem ones.
     interval above 0.
   - **Reported beside it:** the same model on method bystanders and on class bystanders, without
     injected dependencies, and without constants; the slopes within a place in the function arm;
-    and H1 as first registered, log(1 + ties) on
+    and H1 as first registered, log(1 + bindings) on
     log(host positions) and the checkpoint index, on runs into existing methods.
 - **The base model of H2 and H3:** a negative binomial model, per problem and host whose code was
-  tied there (§4.4), of later intrusion (H3, H4) or of the later intrusions tied to what stood by
+  bound there (§4.4), of later intrusion (H3, H4) or of the later intrusions bound to what stood by
   (H2). It holds the problem fixed: the checkpoint's intercept, the addition's size, its declared
-  crossings, host size, whether the host is new, and act. A new host has almost no ties and a
+  crossings, host size, whether the host is new, and act. A new host has almost no bindings and a
   different later life from an existing one (on the development chain, Spring's new hosts averaged
-  0.31 ties and existing ones 1.81), so without the new-host term that contrast alone could carry
+  0.31 bindings and existing ones 1.81), so without the new-host term that contrast alone could carry
   a difference. Host size also stands for the plain fact that a longer method has more values in it.
 - **H2** (restated 17 November 2026, §9): in the methods arm, the number of values that stood by
-  (§4.4) added to the base model, on the later intrusions tied to what stood by: the class's fields
+  (§4.4) added to the base model, on the later intrusions bound to what stood by: the class's fields
   at the **class**, the method's values at the **method**. It is supported when the incidence rate
   ratio per value that stood by has a 95% interval above 1 at both levels.
   - **Reported beside it:** the same on log(1 + the number that stood by); the same in the function
-    arm; and H2 as it stood, the ties added to the base model on later intrusion, at the class and
+    arm; and H2 as it stood, the bindings added to the base model on later intrusion, at the class and
     the method, with its own readings (on the problem's own lines, for information; on existing
-    hosts only; with ties to injected dependencies left out).
-- **H3:** the shape block S1 to S5 added to the base model with the ties and the method's
+    hosts only; with bindings to injected dependencies left out).
+- **H3:** the shape block S1 to S5 added to the base model with the bindings and the method's
   bystanders, on intrusion at the **method**, on existing hosts. It is supported when every shape measure's incidence rate ratio
-  has a 90% interval inside an equivalence bound of 0.8 to 1.25 (decided 16 November 2026), per
+  has a 90% interval inside an equivalence margin of 0.8 to 1.25 (decided 16 November 2026), per
   standard deviation for continuous measures and present against absent for flags. A null is not
   taken from a non-significant test. The same block on class-level intrusion is reported.
   - **How the shape block enters** (decided 16 November 2026). S4 enters as a level, log(1 + cognitive complexity),
@@ -767,7 +767,7 @@ trajectories can be set beside the per-problem ones.
     (the pilot: 45% of Spring's existing hosts); the flag is reported beside it. A shape measure
     that does not vary in a corpus, with fewer than 10 hosts flagged over all chains of an arm,
     leaves the block for that corpus. It is reported as not testable there, never as meeting the
-    bound, and H3 is read on the measures that remain.
+    margin, and H3 is read on the measures that remain.
   - **Reported beside it:** the shape block in a model *without* the problem terms and pull. This
     shows how much of shape's apparent association comes from leaving the problem out. Each shape
     measure alone, and the change in fit for every block, are also reported.
@@ -785,35 +785,35 @@ trajectories can be set beside the per-problem ones.
   is the difference between the arms half-way through. Both have to be below 0: the function arm
   has fewer bystanders, and they grow more slowly.
   - **Come back to less** (17 November 2026, §4.4): the arm term of the base model of H2 and H3,
-    without the ties (the arm itself changes them), on intrusion at the class and at the method.
+    without the bindings (the arm itself changes them), on intrusion at the class and at the method.
     The function arm's rate ratio has to have a 95% interval below 1 at both levels.
   - **Reported:** reopening per checkpoint (§4.4), a Poisson mixed model on the arm, for the
     classes and for the classes with the wiring files.
-  - **Reported beside it:** H4 as first registered, on the ties: the arm term and its interaction
+  - **Reported beside it:** H4 as first registered, on the bindings: the arm term and its interaction
     with host size, as below.
-  - **Host size is centred, in the tie-based reading** (16 November 2026, §9): log(host positions)
+  - **Host size is centred, in the binding-based reading** (16 November 2026, §9): log(host positions)
     less its mean over the rows of the model, both arms together. With an interaction in the model,
     the arm term is the difference between the arms where the centred host size is 0. Uncentred,
     that is a host of one position, which no host is. Centred, it is the difference at a typical
     host. The difference is also reported at hosts of 10, 25 and 50 positions.
 - **H4 without the injection rule:** bystanders count injected parameters like any other, so the
-  restated H4 does not rest on the rule that an injected parameter is not a tie. The tie-based
-  reading does: a wired OfficeFloor function's parameters cannot be ties by definition. It is
-  therefore repeated with ties counted from locals, fields and methods only, leaving out parameters
+  restated H4 does not rest on the rule that an injected parameter is not a binding. The binding-based
+  reading does: a wired OfficeFloor function's parameters cannot be bindings by definition. It is
+  therefore repeated with bindings counted from locals, fields and methods only, leaving out parameters
   in both arms, and reported.
 - **Without injected dependencies** (reported, §4.3): H1 at method and class level, H4 and H2,
-  each with ties to injected dependencies left out. These do not change any verdict.
+  each with bindings to injected dependencies left out. These do not change any verdict.
 - **Choice at a checkpoint** (reported; added 16 November 2026, §9). Per checkpoint and arm, over
   the chains: the share of chains that placed any of the addition in an existing host, the number
-  of distinct hosts the chains used between them, and the standard deviation of the ties per
-  addition. A checkpoint where every chain made the same placement with the same ties left no
+  of distinct hosts the chains used between them, and the standard deviation of the bindings per
+  addition. A checkpoint where every chain made the same placement with the same bindings left no
   choice; one where the chains differ did.
 - **Formation** (reported with a stated direction, not confirmatory; added 16 November 2026, §9).
   Read within each arm, never across arms.
   - **Lagged:** the H1 model, with its checkpoint intercept, and one more term: the chain's mean
-    ties per run over all its checkpoints before *k*. Predicted: positive in the methods arm. For
-    the same problem, a chain that has been forced more so far is tied more now.
-  - **Where it ends:** over the chains of an arm, Spearman's correlation between the mean ties per
+    bindings per run over all its checkpoints before *k*. Predicted: positive in the methods arm. For
+    the same problem, a chain that has been forced more so far is bound more now.
+  - **Where it ends:** over the chains of an arm, Spearman's correlation between the mean bindings per
     run in the first third of the stream and the share of the tree's positions held by its largest
     method at the final checkpoint. Predicted: positive in the methods arm. With about nine chains
     this is a direction with a wide interval (bootstrap over chains), and is reported as that.
@@ -824,20 +824,20 @@ trajectories can be set beside the per-problem ones.
 - **Review** (reported with a stated direction, not confirmatory; added 16 November 2026, §9). The
   `reviewed` run (`blind-202609290948`) is set against the primary just-solve run, per arm. This is
   the one reading that sets two conditions side by side; neither run's hypothesis tests are pooled.
-  - Per checkpoint *k*: *T* is the mean ties per run of the just-solve chains; *D* is the absolute
+  - Per checkpoint *k*: *T* is the mean bindings per run of the just-solve chains; *D* is the absolute
     difference between the two conditions in the share of the addition's positions that land in
     existing hosts, each averaged over its chains.
   - Predicted: Spearman's correlation of *T* and *D* over the checkpoints is negative. The review
-    changes the placement where the ties are few, and leaves it where they are many. No direction is
+    changes the placement where the bindings are few, and leaves it where they are many. No direction is
     predicted for *which way* the review moves a placement: the conservation paper found it
     consolidating OfficeFloor's pipeline (§6).
-  - A correlation of zero or above counts against reading ties as the absence of choice.
+  - A correlation of zero or above counts against reading bindings as the absence of choice.
 - **Size or data** (reported with a stated direction, not confirmatory; added 17 November 2026,
   §9). The author's claim: size attracts, but as a proxy for the data that made it. Within the
   methods arm the two cannot be told apart, because a place that holds more data is larger (§6).
   The arms can separate them: they add about the same amount of code (§4.6), and the function arm
   leaves far less standing by.
-  - The base model on later intrusion (§4.4), every tied problem and host of **both arms, without
+  - The base model on later intrusion (§4.4), every bound problem and host of **both arms, without
     the arm term**, with the number that stood by and the size of the place: at the method,
     log(1 + host positions); at the class, also log(1 + the class's positions at *k* − 1), on the
     hosts that existed then.
@@ -850,6 +850,31 @@ trajectories can be set beside the per-problem ones.
     intrusion is carried by the two terms. That is why it is a reading and not a hypothesis. If it
     is clear on the petclinic runs, it may be registered as a hypothesis for the ui runs by a dated
     amendment made before their backend Java is read.
+- **Where bound and unbound code lands** (reported, no direction stated; added 17 November 2026,
+  §9). The author's question: a place has two kinds of size, the data available there and its
+  shape. Bound code went where its data was; is that also where the complexity is? And unbound
+  code, which nothing held to a place: does it go where the complexity is, where the data is, or
+  away from both, to a new place? If shape influences choice, it is the unbound code that would
+  show it.
+  - **Candidates:** at each checkpoint, every method and every class of the tree as it stood before
+    the change (the shape pass of §4.7 already reads them).
+  - **Two sizes of a place.** Shape: positions and cognitive complexity (a class: summed over its
+    methods). Data width: a method's parameters and locals with its class's fields; a class's
+    fields (state, injected dependencies and constants).
+  - **A landing** is one host a checkpoint adds logic to (moved code left out), bound or unbound
+    (§4.3), with its destination: an existing method, a new method in an existing class, or a new
+    class.
+  - **The rank of the place landed in** among that checkpoint's candidates, on each size: the share
+    of candidates below it, counting half of those equal. 0.5 is no regard to that size.
+  - **Reported per arm, for bound and unbound landings:** the shares of the three destinations;
+    the mean rank on complexity and on data width, at the method (landings into existing methods)
+    and at the class (landings into existing classes); and Spearman's correlation of the two ranks
+    over the places landed in, which says whether the two kinds of size point to the same places.
+  - **What it cannot say:** unbound is not free. Code can belong to a class by convention without
+    using any of its data, and most classes of a tree are small, so a mean rank well above 0.5 is
+    expected of almost any code that enters an existing class. The reading is therefore between
+    bound and unbound, and between the arms, not against 0.5. It replaces nothing: H3 stands as it
+    is until this has been looked at on the development chain.
 - **Corpus B:** the H1 and H2 models with a random intercept for the repository. Direction and
   interval only.
 - **Multiplicity:** H1–H4 are four confirmatory tests at α = 0.05 each, Holm-corrected. All
@@ -862,8 +887,8 @@ binomial mixed model). These details are fixed with the code before any run is r
 - **Each analysis is read on its own** (`runs.yaml`): the petclinic primary, each petclinic
   secondary, and the ui primary. An analysis with fewer than 6 chains in an arm is descriptive only.
 - **H1 and H4** are fitted on runs of added logic into **existing** methods: a new method has no
-  prior size, so including new methods would make "more ties in bigger hosts" true by
-  construction. Gaussian mixed models of log(1 + ties) on log(host positions) and the checkpoint
+  prior size, so including new methods would make "more bindings in bigger hosts" true by
+  construction. Gaussian mixed models of log(1 + bindings) on log(host positions) and the checkpoint
   index, random intercepts per chain and per checkpoint; H4 adds the arm and its interaction with host
   size, centred (and the front end, where the analysis has more than one). Intervals: a cluster bootstrap, chains resampled
   with replacement within arm and the model refitted, **1,000 refits, seed 20261116**. One-sided
@@ -873,7 +898,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   checkpoint. Its base terms are log(1 + the problem's positions added), the problem's declared
   crossings (the checkpoints it mutates or crosses), log(1 + host positions), whether the host is
   new, the act (the ui stream only; petclinic has no
-  acts), the arm and, where present, the front end. **H2** is read on every tied problem and host of the methods arm,
+  acts), the arm and, where present, the front end. **H2** is read on every bound problem and host of the methods arm,
   with a one-sided Wald test at each level; **H3** on existing hosts with their shape at k − 1, by two one-sided
   Wald tests per shape measure (90% intervals). S4 enters as log(1 + cognitive complexity) and S5
   as the class Gini, both standardised; S1 to S3 as 0/1.
@@ -883,7 +908,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   term, the interaction and the arm's rate ratio in intrusion at the class and at the method. A hypothesis is supported when its Holm-adjusted p (over the
   four) is at most 0.05 **and** its conditions hold (H4: the amount in its band and neither wiring
   condition against). The verdicts are supported, not supported, reversed (an interval wholly on
-  the wrong side), unresolved (H3: an interval reaching outside the bound), not testable (H3: no
+  the wrong side), unresolved (H3: an interval reaching outside the margin), not testable (H3: no
   shape measure varies) or descriptive only.
 - **The revisions of 16 November 2026** (§9) are built: the checkpoint intercept, the centred host
   size, the new-host term and the lagged formation term in `analysis/analyse.R` (its self-test
@@ -894,7 +919,7 @@ binomial mixed model). These details are fixed with the code before any run is r
     converge or its Hessian is not positive definite; each report lists which models carry it.
   - *The lagged term* counts every run of added logic (new and existing hosts, moved code left
     out) at the chain's earlier checkpoints.
-  - *Choice:* a checkpoint "left no choice" when every chain has the same ties and all are on the
+  - *Choice:* a checkpoint "left no choice" when every chain has the same bindings and all are on the
     same side of new or existing host.
   - *Review:* its interval resamples the chains of each condition (2,000 resamples, seed 20261116);
     the formation correlation's interval resamples chains (10,000). Either is given only with four
@@ -910,7 +935,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   - *Capture* is a Gaussian mixed model of the share on log(1 + the heaviest class's fields), per
     arm, with Wald intervals.
 - **H1 within a place and H2 as restated** (17 November 2026, §9) are built: what stood by per
-  host and the later intrusions tied to it (`tables.standing`, `tables.outcome_rows`,
+  host and the later intrusions bound to it (`tables.standing`, `tables.outcome_rows`,
   `tests/test_stream.py`); the class and method each run is in (`prepare.by_rows`); the models
   (`analysis/analyse.R`, whose self-test simulates both and recovers them); the verdicts
   (`verdict.py`: H1 on its three slopes, H2 on the bystanders' rate ratio at both levels).
@@ -937,24 +962,24 @@ binomial mixed model). These details are fixed with the code before any run is r
 - **The models on the development chain** (16 November 2026, after every decision rule and the
   analysis code were committed, `1f1f962` and `7c3c013`). Running steps 2 to 5 end to end on the
   pilot's chain 9, to test them, computed the hypothesis statistics on it, one chain per arm and so
-  descriptive only (`results/analysis/pilot/REPORT.md`). Seen: H2's rate ratio per tie 0.90
-  [0.63, 1.30]; with the problem and ties held fixed, the junction 1.11 [0.52, 2.35], cognitive
+  descriptive only (`results/analysis/pilot/REPORT.md`). Seen: H2's rate ratio per binding 0.90
+  [0.63, 1.30]; with the problem and bindings held fixed, the junction 1.11 [0.52, 2.35], cognitive
   complexity 0.54 [0.35, 0.85] and the class Gini 0.44 [0.25, 0.76] (90% intervals); the junction
   without them 5.34 [2.38, 12.0]; junction × arm 0.20 [0.04, 1.01]; H1's slopes 0.025 on host size
   and 0.006 on the checkpoint; H4's arm term −0.64 and interaction 0.13. That chain is excluded
   from every registered analysis, and nothing in the plan was changed after these were seen.
-- **Ties to injected dependencies** (§4.3, added 16 November 2026 after `plan-v1` was first tagged,
+- **Bindings to injected dependencies** (§4.3, added 16 November 2026 after `plan-v1` was first tagged,
   and before any run named for analysis was read; the tag was moved to include it), on the
   development chain only: of Spring's 74 runs
-  into existing methods, 12 used an injected dependency; leaving those ties out, the runs with a
-  class tie fall from 20 to 10 and the forced runs from 71 to 67. Every class tie to `clinicService`
+  into existing methods, 12 used an injected dependency; leaving those bindings out, the runs with a
+  class binding fall from 20 to 10 and the forced runs from 71 to 67. Every class binding to `clinicService`
   and `ownerMapper`, the controller's constructor-injected dependencies, is counted as injected.
   OfficeFloor's runs into existing methods used none. The pilot raised six decisions (PILOT.md, *Decisions*), which are
   settled at registration.
 - **The review before the start** (16 November 2026, on the development chain only, after
   `plan-v1` and before any run named for analysis was read). Seen, and the reason for the revisions
   of §9: Spring's 396 host-level intrusions all fall in methods holding several problems, one method
-  holding 26; Spring's new hosts average 0.31 ties and 0.005 intrusions per later checkpoint, its
+  holding 26; Spring's new hosts average 0.31 bindings and 0.005 intrusions per later checkpoint, its
   existing hosts 1.81 and 0.24; H2's model refitted with an intercept per host gave a host standard
   deviation of 2.7 and took the host-size coefficient from 1.27 to −0.07 (its standard errors did
   not compute); a simulation of the H2 test under no effect, with that dependence between rows,
@@ -966,11 +991,11 @@ binomial mixed model). These details are fixed with the code before any run is r
   written into this plan and built; one chain per arm, descriptive only,
   `results/analysis/pilot/REPORT.md`). Seen: on a problem's own lines Spring has 23 intrusions and
   OfficeFloor 26, where the host-level count had 396 and 44; no line was lost track of (569 and 616
-  placed); H2's rate ratio per tie 1.17 [0.76, 1.81]; the junction 0.52 [0.17, 1.63], cognitive
+  placed); H2's rate ratio per binding 1.17 [0.76, 1.81]; the junction 0.52 [0.17, 1.63], cognitive
   complexity 1.59 [0.77, 3.27] and the class Gini 0.32 [0.13, 0.82] (90% intervals); H1's slopes
   0.030 and 0.006; H4's arm term −0.40 at the centre (a host of 7.3 positions) and interaction
   0.046, the arm difference −0.39, −0.35 and −0.32 at 10, 25 and 50 positions; without parameter
-  ties −0.20 [−0.37, −0.04]; the amount added 1.08 (totals 0.88); the lagged formation term −0.36
+  bindings −0.20 [−0.37, −0.04]; the amount added 1.08 (totals 0.88); the lagged formation term −0.36
   [−2.16, 1.44] in Spring. With one chain per arm H2's model fell back to no checkpoint
   intercept. Nothing in the plan was changed after these were seen.
 - **Bystanders on the development chain** (17 November 2026; a scratch copy of the instrument, one
@@ -1007,33 +1032,33 @@ binomial mixed model). These details are fixed with the code before any run is r
   Nothing in the plan was changed after these were seen.
 - **The fourth revision on the development chain** (17 November 2026; one chain per arm,
   descriptive only, `results/analysis/pilot/REPORT.md`). Seen, in the order it was built:
-  - *Before the tie rule* (any later change counted): per problem and host, 10.9 later intrusions at
+  - *Before the binding rule* (any later change counted): per problem and host, 10.9 later intrusions at
     the class in Spring against 2.1 in OfficeFloor, 2.3 against 0.23 at the method, 0.13 against 0.14
     on own lines. Places reopened per checkpoint, as first written into H4: 1.33 classes in Spring;
     1.35 classes and 0.45 wiring files in OfficeFloor; ratio 1.35 [1.01, 1.80], against H4. **The
-    author's rule that intrusion applies only where there is a tie, and the replacement of the
+    author's rule that intrusion applies only where there is a binding, and the replacement of the
     reopening count by the arm's rate ratio in intrusion, were decided after seeing this.**
-  - *With the tie rule:* 89 of Spring's 174 problem and host rows and 31 of OfficeFloor's 192 are
-    tied and followed. Per tied row: 11.9 later tied arrivals at the class against 0.84, 3.3
-    against 0.10 at the method. H2's rate ratio per tie 0.89 [0.75, 1.06] at the class and 0.85
+  - *With the binding rule:* 89 of Spring's 174 problem and host rows and 31 of OfficeFloor's 192 are
+    bound and followed. Per bound row: 11.9 later bound arrivals at the class against 0.84, 3.3
+    against 0.10 at the method. H2's rate ratio per binding 0.89 [0.75, 1.06] at the class and 0.85
     [0.61, 1.20] at the method: below 1, not the direction predicted. H3 at the method: the
     junction 0.84 [0.35, 2.00], cognitive complexity 0.36 [0.22, 0.60], the class Gini 0.71
-    [0.43, 1.17], so against (complexity lies wholly below the bound). H4: the arm's rate ratio in
+    [0.43, 1.17], so against (complexity lies wholly below the margin). H4: the arm's rate ratio in
     intrusion 0.16 [0.10, 0.27] at the class and 0.11 [0.03, 0.43] at the method. Reopening,
-    reported: tied classes 0.26 [0.15, 0.48]; with the wiring files 0.77 [0.52, 1.16].
-  Nothing in the plan was changed after the figures with the tie rule were seen.
+    reported: bound classes 0.26 [0.15, 0.48]; with the wiring files 0.77 [0.52, 1.16].
+  Nothing in the plan was changed after the figures with the binding rule were seen.
 - **H2 as restated, on the development chain** (17 November 2026; one chain per arm, descriptive
   only). **H2 was restated, and H1 extended, by the author before any of this was computed; the
   operational form of §4.4 and §5 was written after the first look below**, so on this chain
   neither is a prediction.
   - *A first look, in scratch:* in Spring's controller class the fields standing by rose from 4 to
-    16 over 41 tied arrivals, and in its `addOwner` method the values standing by from 0 to 13 over
-    25; of later tied arrivals 44% at the class and 16% at the method used something that had stood
+    16 over 41 bound arrivals, and in its `addOwner` method the values standing by from 0 to 13 over
+    25; of later bound arrivals 44% at the class and 16% at the method used something that had stood
     by; OfficeFloor had 40 later arrivals at the class in all, 3 of them such.
   - *As built* (`results/analysis/pilot/REPORT.md`): H1's slope within a class 0.026 (3 classes)
     and within a method 0.023 (11 methods), beside 0.015 over all runs; in OfficeFloor 0.001 and
-    −0.001. Per tied row in Spring 7.5 fields and 2.2 method values stood by; 449 of 1,056 later
-    intrusions at the class (43%) and 43 of 292 at the method (15%) were tied to one of them; in
+    −0.001. Per bound row in Spring 7.5 fields and 2.2 method values stood by; 449 of 1,056 later
+    intrusions at the class (43%) and 43 of 292 at the method (15%) were bound to one of them; in
     OfficeFloor 3 of 26 and 1 of 3. H2's rate ratio per field that stood by 1.10 [1.04, 1.16] at
     the class; at the method the model gave no standard error on this one chain (43 events), so H2
     was not estimable there. H3 with the bystanders in its model: the junction 0.71 [0.30, 1.67],
@@ -1051,8 +1076,21 @@ binomial mixed model). These details are fixed with the code before any run is r
   against the stated direction**; size with what stood by held fixed 3.05 [2.08, 4.48] and 4.80
   [2.52, 9.14]; size alone 1.78 and 3.27. Pooling did not separate the two on this chain: the
   correlation of size with what stood by is 0.95 pooled at the class and 0.81 at the method (0.57
-  and 0.50 within OfficeFloor, which has 26 tied rows). Nothing in the plan was changed after
+  and 0.50 within OfficeFloor, which has 26 bound rows). Nothing in the plan was changed after
   these were seen.
+- **Where bound and unbound code lands, on the development chain** (17 November 2026; one chain
+  per arm, descriptive only). *Before the reading was written*, from the tables as they stood:
+  Spring's unbound runs went 5% into existing methods, 77% into new methods of existing classes
+  and 18% into new classes; OfficeFloor's 24%, 19% and 57%. *As built*
+  (`results/analysis/pilot/REPORT.md`), per landing: Spring's 85 unbound landings went 2%, 78% and
+  20%, OfficeFloor's 161 went 16%, 35% and 49%; bound landings went into existing methods 67% in
+  Spring and 87% in OfficeFloor, and never into a new class. Mean rank of the class landed in, on
+  complexity and on fields: Spring bound 0.92 and 0.93, Spring unbound 0.93 and 0.83; OfficeFloor
+  bound 0.82 and 0.59, unbound 0.78 and 0.68. Of the method landed in, on complexity and data
+  width: Spring bound 0.80 and 0.88; OfficeFloor bound 0.76 and 0.62, unbound 0.55 and 0.38 (25
+  landings); Spring had 2 unbound landings into existing methods. The two ranks agree over Spring's
+  bound landings at the class (rho 0.96) and less elsewhere (0.26 to 0.77). Nothing in the plan was
+  changed after these were seen.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
@@ -1061,9 +1099,9 @@ binomial mixed model). These details are fixed with the code before any run is r
   that they read OfficeFloor's parameters differently, which is why the reading without the
   injection rule (§5) is added. None of their measures was computed on any run.
 - **Expectation.** The author expects H1, H2 and H4 to hold; of H2's two levels the method is the
-  harder to show, because few later arrivals at a method are tied to what stood by. The author also expects H3 to hold:
+  harder to show, because few later arrivals at a method are bound to what stood by. The author also expects H3 to hold:
   that shape outside the problem carries no information beyond it. H3 is the hypothesis this
-  expectation could most bias, which is why its criterion is an equivalence bound fixed here. The
+  expectation could most bias, which is why its criterion is an equivalence margin fixed here. The
   author expects OfficeFloor's junctions to stay contained to their injection point (the junction ×
   arm reading of §5); that reading's direction is stated here, before any intrusion is computed by
   junction.
@@ -1107,10 +1145,10 @@ binomial mixed model). These details are fixed with the code before any run is r
 - **Values are matched by name.** A renamed field is lost between a placement and a later use, and
   a new local with an old name is counted as the old value. The first lowers H2's count, the second
   raises it at the method.
-- **Ties decide what is followed.** Intrusion is read only on tied code, and a wired function's
-  parameters are not ties (§4.3). So fewer of the function arm's placements are followed at all;
+- **Bindings decide what is followed.** Intrusion is read only on bound code, and a wired function's
+  parameters are not bindings (§4.3). So fewer of the function arm's placements are followed at all;
   the number followed and set aside is reported per analysis.
-- **Pull is not proof of force.** A tie shows that the code used something that was already there.
+- **Pull is not proof of force.** A binding shows that the code used something that was already there.
   It does not show that no other placement existed (§4.3). The choice-at-a-checkpoint and review
   readings are the checks, and both are indirect.
 - **H1 and H4 were shaped on the development chain.** The bystander measure and the direction of
@@ -1139,7 +1177,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   beyond the addition's size and its declared crossings. In corpus B a commit is not one problem,
   so H3 is not read there.
 - **Power for H3.** An equivalence test needs more data than a difference test. If the intervals
-  are too wide to fall inside the bound, H3 is reported as unresolved, not as supported.
+  are too wide to fall inside the margin, H3 is reported as unresolved, not as supported.
 
 ## 8. Order of work
 
@@ -1199,9 +1237,9 @@ after the fix side by side. A verdict that changes is reported as changed, with 
 
 *Hypothesis numbers, here and throughout the plan, are those of the fourth revision: what was H2a
 is H2, what was H2b is H3, and what was H3 is H4. H2's content is that of the fifth revision; where
-an entry dated before it says H2, it means the ties and later intrusion.*
+an entry dated before it says H2, it means the bindings and later intrusion.*
 
-**16 November 2026, first.** Ties to injected dependencies reported apart (§4.3, §5); the tag moved
+**16 November 2026, first.** Bindings to injected dependencies reported apart (§4.3, §5); the tag moved
 from `4bb8973` to `4ec41dd`.
 
 **16 November 2026, second: after a review of the plan.** Nothing but the development chain had
@@ -1212,10 +1250,10 @@ holds this revision. The changes:
 |---|---|---|---|
 | 1 | A random intercept for the checkpoint in the H1, H2 and H4 models | §5 | The problem was held fixed only by its size and declared crossings; its identity is known and replicated over the chains |
 | 2 | Intrusion read on the problem's own lines; the host-level count reported beside it | §4.4, §5 | As built it counted any later change to the host method, a property of the host and, in petclinic, of the stream |
-| 3 | Whether the host is new, in H2's base model | §5 | New hosts have almost no ties and a different later life, so that contrast alone could carry H2 |
+| 3 | Whether the host is new, in H2's base model | §5 | New hosts have almost no bindings and a different later life, so that contrast alone could carry H2 |
 | 4 | Host size centred in H4's model; the arm difference also reported at 10, 25 and 50 positions | §5 | Uncentred, the arm term was the difference at a host of one position |
 | 5 | H4's amount band read on the amount added since the base | §4.6 | The petclinic arms start from conversions of different size; no change for the ui stacks, which start empty |
-| 6 | Pull stated as graded: injected parameter, injected dependency, value bound to the control flow; a tie stated as evidence of pull, not proof of force | §4.3, §7 | To say what the measure claims |
+| 6 | Pull stated as graded: injected parameter, injected dependency, value bound to the control flow; a binding stated as evidence of pull, not proof of force | §4.3, §7 | To say what the measure claims |
 | 7 | Three reported readings: choice at a checkpoint, formation, review | §2, §5 | The same problem at every checkpoint lets the choice, and what follows from it, be read directly |
 | 8 | Editorial: §3.1a's "[DECIDE] before registration", §8 step 1, `README.md` | | Stale text |
 | 9 | The guard refuses uncommitted changes to registered files; reports list the files changed since the tag | `runs.py`, `report.py` | So a change after registration cannot pass unseen |
@@ -1223,7 +1261,7 @@ holds this revision. The changes:
 | 11 | A tree with no production Java (a ui stack's empty base) is read as empty | `chain.extract` | Reading it failed |
 
 In that revision the hypotheses H1 to H4, their directions, their thresholds, the equivalence
-bound, the runs read and the Holm correction were unchanged.
+margin, the runs read and the Holm correction were unchanged.
 
 **17 November 2026, third: H1 and H4 restated on bystanders.** Nothing but the development chain
 had been read; what was seen on it is in §6. This revision changes two hypotheses, and it was made
@@ -1231,15 +1269,15 @@ after seeing the measure on the development chain (§7).
 
 | | Change | Where | Why |
 |---|---|---|---|
-| 12 | A new measure, bystanders: the pre-existing values visible where a run starts that it does not use, at method and class level | §4.3a | Ties count the data a problem needs, which the problem sets. What surrounds that data is what the placement sets, and what grows |
-| 13 | H1 restated: bystanders rise with the checkpoint index in the methods arm. H1 as first registered (ties on host size and checkpoint) is reported | §2, §5 | The tie-based slope was at a ceiling in Spring and measured the problem's use of data |
-| 14 | H4 restated: the function arm's bystanders are fewer and grow more slowly. H4 as first registered (ties, slope on host size) is reported | §2, §5 | So that H4 is read on the same measure as H1; and bystanders count injected parameters, so H4 no longer rests on the injection rule |
+| 12 | A new measure, bystanders: the pre-existing values visible where a run starts that it does not use, at method and class level | §4.3a | Bindings count the data a problem needs, which the problem sets. What surrounds that data is what the placement sets, and what grows |
+| 13 | H1 restated: bystanders rise with the checkpoint index in the methods arm. H1 as first registered (bindings on host size and checkpoint) is reported | §2, §5 | The binding-based slope was at a ceiling in Spring and measured the problem's use of data |
+| 14 | H4 restated: the function arm's bystanders are fewer and grow more slowly. H4 as first registered (bindings, slope on host size) is reported | §2, §5 | So that H4 is read on the same measure as H1; and bystanders count injected parameters, so H4 no longer rests on the injection rule |
 | 15 | Two reported readings: accretion and capture | §4.3a | The two links of compounding, each read on its own |
 | 16 | Constants count as bystanders; the count without them is reported | §4.3a | A constant is not to be duplicated, so code that needs it comes to it. Decided after the development chain showed that Spring's growth is mostly constants (§6) |
 | 17 | Bystanders are read only on runs that use at least one pre-existing value; the share of free runs is reported | §4.3a | Code that needs nothing that was there was not pulled anywhere. Decided after the development chain showed new entity accessors diluting both arms (§6) |
-| 18 | A plain accessor is organisation, not logic | §4.3 | It exposes a field and holds no logic. This also removes accessor lines from the ties and from a problem's own lines |
+| 18 | A plain accessor is organisation, not logic | §4.3 | It exposes a field and holds no logic. This also removes accessor lines from the bindings and from a problem's own lines |
 
-H2, the equivalence bound, the amount band, the wiring conditions, the runs read and the Holm
+H2, the equivalence margin, the amount band, the wiring conditions, the runs read and the Holm
 correction over three hypotheses are unchanged. The tag `plan-v1` moved from `f780a5a` to the
 commit that holds this revision, built.
 
@@ -1250,12 +1288,12 @@ the development chain had been read (§6).
 |---|---|---|---|
 | 19 | H2a and H2b become H2 and H3, each decided on its own; the former H3 becomes H4; Holm over four | §2, §5 | One is a difference to show and the other an equivalence; the second should not decide the first |
 | 20 | Intrusion is read at the class and at the method; a problem's own lines are for information | §4.4, §5 | The lines are what is placed, and changing one changes the problem. The class and the method are the placement, and it is the organisation of the code that gathers later changes |
-| 21 | H2 needs the ties' rate ratio above 1 at both the class and the method; H3 is read at the method | §5 | S1 to S4 are measures of the method |
-| 22 | H4 gains a condition: the function arm's tied code is come back to less, at the class and at the method | §4.4, §5 | The busy class is the finding. First written as a count of places reopened per checkpoint, which did not tell the arms apart on the development chain (§6) and is now reported |
-| 23 | Intrusion applies only where there was a tie: only tied problems are followed, and only later code that is tied there counts | §4.4 | Code that reuses nothing that was there was not drawn to its place. A new field and accessor on an entity ties nothing |
+| 21 | H2 needs the bindings' rate ratio above 1 at both the class and the method; H3 is read at the method | §5 | S1 to S4 are measures of the method |
+| 22 | H4 gains a condition: the function arm's bound code is come back to less, at the class and at the method | §4.4, §5 | The busy class is the finding. First written as a count of places reopened per checkpoint, which did not tell the arms apart on the development chain (§6) and is now reported |
+| 23 | Intrusion applies only where there was a binding: only bound problems are followed, and only later code that is bound there counts | §4.4 | Code that reuses nothing that was there was not drawn to its place. A new field and accessor on an entity binds nothing |
 | 24 | A model whose standard errors do not compute is refitted without the checkpoint intercept, and a term that still has none is reported as not estimable | `analyse.R`, `verdict.py` | On the development chain the method-level model returned none |
 
-The directions of all four, the thresholds, the equivalence bound, the amount band, the wiring
+The directions of all four, the thresholds, the equivalence margin, the amount band, the wiring
 conditions and the runs read are unchanged.
 
 **17 November 2026, fifth: H2 restated, and H1 read within a place.** Nothing but the development
@@ -1264,14 +1302,17 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 
 | | Change | Where | Why |
 |---|---|---|---|
-| 25 | H2 restated: where code was tied to a class or a method, the more data stood by there, the more later code arrives tied to that data. H2 as it stood (ties and later intrusion) is reported | §2, §4.4, §5 | Decided by the author: it is not the number of ties that draws later code in, it is the data gathered in the place, which later code is then tied to |
+| 25 | H2 restated: where code was bound to a class or a method, the more data stood by there, the more later code arrives bound to that data. H2 as it stood (bindings and later intrusion) is reported | §2, §4.4, §5 | Decided by the author: it is not the number of bindings that draws later code in, it is the data gathered in the place, which later code is then bound to |
 | 26 | H1 also read within a place: the class's bystanders within a class, the method's within a method; all three slopes needed | §2, §5 | The first half of the author's restatement (a place gathers data as changes arrive) is H1 seen inside one place; it rules out a rise that comes only from code moving to fuller places |
-| 27 | H3's model holds the method's bystanders fixed beside the ties | §5 | H2's predictor joins the things shape has to add to |
+| 27 | H3's model holds the method's bystanders fixed beside the bindings | §5 | H2's predictor joins the things shape has to add to |
 | 28 | The instrument names the fields a run uses and those standing by; each host row carries what stood by | `Pull.java`, `tables.py` | Needed to tell which later code uses what stood by |
 
 | 29 | A reported reading with a stated direction, size or data: both arms pooled, later intrusion on what stood by with the size of the place held fixed | §2, §5 | The author's claim that size attracts only as a proxy for the data gathered. Not a hypothesis: within the methods arm the two are nearly one variable (§6), and the pooled form leans on the arm contrast |
 
-The directions of H3 and H4, the thresholds, the equivalence bound, the amount band, the wiring
+| 31 | A reported reading: where bound and unbound code lands among the methods and classes it could have gone to, ranked by complexity and by data width; the instrument counts each method's locals | §5, `places.py`, `Pull.java` | The author's question for H3: whether shape influences choice shows in the code that nothing bound to a place. H3 is unchanged until this has been looked at |
+| 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
+
+The directions of H3 and H4, the thresholds, the equivalence margin, the amount band, the wiring
 conditions, the runs read and the Holm correction over four hypotheses are unchanged. The author
 confirmed row 22 on 17 November 2026: H4's condition is the arm's rate ratio in intrusion, and the
 count of places reopened is reported.

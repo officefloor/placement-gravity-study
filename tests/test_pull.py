@@ -48,23 +48,23 @@ def run(r, i=0):
     return r["runs"][i]
 
 
-def test_accretion_ties_to_existing_local_and_field_not_new_ones(records):
+def test_accretion_bindings_to_existing_local_and_field_not_new_ones(records):
     r = records[("accrete", "create")]
     assert not r["host_new"] and r["pre_positions"] == 4 and r["added"] == 5
     x = run(r)
-    assert x["tie_method"] == ["digits"]     # n is new
-    assert x["tie_field"] == ["repo"]        # audit is a new field, clock is untouched
-    assert x["utility"] == ["LOG"]           # a logger is a class utility, not a tie
+    assert x["binding_method"] == ["digits"]     # n is new
+    assert x["binding_field"] == ["repo"]        # audit is a new field, clock is untouched
+    assert x["utility"] == ["LOG"]           # a logger is a class utility, not a binding
     assert x["replaces"] == 0
 
 
-def test_new_helper_is_tied_at_birth_and_to_its_class(records):
+def test_new_helper_is_bound_at_birth_and_to_its_class(records):
     caller, helper = records[("helper", "create")], records[("helper", "check")]
-    assert run(caller)["tie_method"] == ["digits"]
-    assert run(caller)["tie_class_method"] == []   # check is new, not a pre-existing method
+    assert run(caller)["binding_method"] == ["digits"]
+    assert run(caller)["binding_class_method"] == []   # check is new, not a pre-existing method
     assert helper["host_new"] and not helper["class_new"]
-    assert helper["birth_tie"] == ["create:digits"]
-    assert run(helper)["tie_field"] == ["repo"] and run(helper)["tie_method"] == []
+    assert helper["birth_binding"] == ["create:digits"]
+    assert run(helper)["binding_field"] == ["repo"] and run(helper)["binding_method"] == []
 
 
 def test_extraction_without_hints_falls_back_to_identical_text(records):
@@ -72,61 +72,61 @@ def test_extraction_without_hints_falls_back_to_identical_text(records):
     assert r["moved_text"] == 2 and r["added"] == 3
 
 
-def test_write_back_to_an_existing_local_is_a_tie(records):
-    assert run(records[("writeback", "create")])["tie_method"] == ["name"]
+def test_write_back_to_an_existing_local_is_a_binding(records):
+    assert run(records[("writeback", "create")])["binding_method"] == ["name"]
 
 
 def test_lambda_parameters_are_not_host_state(records):
     x = run(records[("lambda", "join")])
-    assert x["tie_method"] == ["key"] and x["tie_field"] == ["service"]
+    assert x["binding_method"] == ["key"] and x["binding_field"] == ["service"]
 
 
 def test_edited_logic_line_counts_every_reference(records):
     x = run(records[("modify", "code")])
     assert x["replaces"] == 1
-    assert x["tie_method"] == ["prefix", "seq"]  # the edited line sources both
-    assert x["tok_tie_method"] >= 1              # the edit itself applies .toUpperCase() to prefix
+    assert x["binding_method"] == ["prefix", "seq"]  # the edited line sources both
+    assert x["tok_binding_method"] >= 1              # the edit itself applies .toUpperCase() to prefix
 
 
-def test_new_class_has_no_ties(records):
+def test_new_class_has_no_bindings(records):
     r = records[("newclass", "service")]
     assert r["host_new"] and r["class_new"]
-    assert r["birth_tie"] == [] and run(r)["tie_method"] == [] and run(r)["tie_field"] == []
+    assert r["birth_binding"] == [] and run(r)["binding_method"] == [] and run(r)["binding_field"] == []
 
 
-def test_injected_parameters_do_not_tie_but_locals_do(records):
+def test_injected_parameters_do_not_binding_but_locals_do(records):
     r = records[("injected", "service")]
     assert r["injected"]
-    assert run(r)["tie_method"] == ["a"]       # request and repo are injected
+    assert run(r)["binding_method"] == ["a"]       # request and repo are injected
 
 
-def test_injected_parameters_tie_when_not_wired(tmp_path):
+def test_injected_parameters_binding_when_not_wired(tmp_path):
     r = measure(tmp_path, ["injected"], [])[("injected", "service")]
-    assert not r["injected"] and run(r)["tie_method"] == ["a", "repo", "request"]
-    assert run(r)["tie_param"] == ["repo", "request"]   # a is a local
+    assert not r["injected"] and run(r)["binding_method"] == ["a", "repo", "request"]
+    assert run(r)["binding_param"] == ["repo", "request"]   # a is a local
 
 
-def test_parameter_ties_are_split_out(records):
+def test_parameter_bindings_are_split_out(records):
     # code(String last, int seq): the edited line uses prefix (a local) and seq (a parameter)
-    assert run(records[("modify", "code")])["tie_param"] == ["seq"]
-    assert run(records[("accrete", "create")])["tie_param"] == []   # digits is a local
+    assert run(records[("modify", "code")])["binding_param"] == ["seq"]
+    assert run(records[("accrete", "create")])["binding_param"] == []   # digits is a local
 
 
 def test_rename_hint_keeps_the_value_pre_existing(records):
     r = records[("rename", "count")]
     assert r["added"] == 1                      # the renamed lines are not edits
-    assert run(r)["tie_method"] == ["total"]
+    assert run(r)["binding_method"] == ["total"]
 
 
 def test_rename_without_hint_reads_as_new_value(tmp_path):
     r = measure(tmp_path, ["rename"], [])[("rename", "count")]
     assert r["added"] == 3
-    assert run(r)["tie_method"] == ["o"]        # total reads as new; the line still sources o
+    assert run(r)["binding_method"] == ["o"]        # total reads as new; the line still sources o
 
 
-def test_call_to_existing_class_method_is_a_class_tie(records):
+def test_call_to_existing_class_method_is_a_class_binding(records):
     x = run(records[("classmethod", "create")])
-    assert x["tie_class_method"] == ["audit"] and x["tie_method"] == ["o"]
+    assert x["binding_class_method"] == ["audit"] and x["binding_method"] == ["o"]
 
 
 def test_refactoringminer_findings_become_hints():
@@ -164,13 +164,13 @@ def test_constructor_wiring_is_organisation_not_logic(records):
     r = records[("organisation", "Owners")]
     assert r["organisation"] == 1                # this.audit = audit;
     assert len(r["runs"]) == 1 and run(r)["positions"] == 1   # repo.warm(); is logic
-    assert run(r)["tie_method"] == ["repo"]     # the constructor's own parameter
+    assert run(r)["binding_method"] == ["repo"]     # the constructor's own parameter
 
 
 def test_inherited_members_are_reported_unresolved(records):
     x = run(records[("inherited", "display")])
     assert x["unresolved"] == ["getFirstName()", "lastName"]
-    assert x["tie_method"] == [] and x["tie_field"] == []
+    assert x["binding_method"] == [] and x["binding_field"] == []
 
 
 @pytest.mark.parametrize("method, fields, injected", [
@@ -180,13 +180,13 @@ def test_inherited_members_are_reported_unresolved(records):
     ("setterInjected", ["repo"], ["repo"]),                              # an @Autowired setter
     ("dto", ["name"], []),                                               # a constructor of an unmanaged class: data
 ])
-def test_injected_dependencies_are_reported_apart_from_other_field_ties(records, method, fields, injected):
+def test_injected_dependencies_are_reported_apart_from_other_field_bindings(records, method, fields, injected):
     x = run(records[("injection", method)])
-    assert x["tie_field"] == fields and x["tie_field_injected"] == injected
+    assert x["binding_field"] == fields and x["binding_field_injected"] == injected
 
 
-def test_a_constant_is_a_field_tie(records):
-    assert run(records[("constant", "code")])["tie_field"] == ["WIDTH"]
+def test_a_constant_is_a_field_binding(records):
+    assert run(records[("constant", "code")])["binding_field"] == ["WIDTH"]
 
 
 def test_gini():
@@ -206,17 +206,17 @@ def test_identity_follows_renames():
 def test_codetracker_is_the_identity_of_surviving_methods():
     hosts = [
         {"cp": 1, "type": "A", "name": "f", "before_type": None, "before_name": None, "net_added": 2,
-         "removed": 0, "replacement": False, "host_new": True, "pre_positions": 0, "tie_method": 0,
-         "tie_class": 0, "tie": 0},
+         "removed": 0, "replacement": False, "host_new": True, "pre_positions": 0, "binding_method": 0,
+         "binding_class": 0, "binding": 0},
         {"cp": 3, "type": "A", "name": "g", "before_type": None, "before_name": None, "net_added": 1,
-         "removed": 0, "replacement": False, "host_new": False, "pre_positions": 2, "tie_method": 1,
-         "tie_class": 0, "tie": 1},
+         "removed": 0, "replacement": False, "host_new": False, "pre_positions": 2, "binding_method": 1,
+         "binding_class": 0, "binding": 1},
         {"cp": 2, "type": "B", "name": "h", "before_type": None, "before_name": None, "net_added": 1,
-         "removed": 0, "replacement": False, "host_new": True, "pre_positions": 0, "tie_method": 0,
-         "tie_class": 0, "tie": 0},
+         "removed": 0, "replacement": False, "host_new": True, "pre_positions": 0, "binding_method": 0,
+         "binding_class": 0, "binding": 0},
         {"cp": 4, "type": "B", "name": "h", "before_type": None, "before_name": None, "net_added": 0,
-         "removed": 1, "replacement": False, "host_new": False, "pre_positions": 1, "tie_method": 0,
-         "tie_class": 0, "tie": 0},
+         "removed": 1, "replacement": False, "host_new": False, "pre_positions": 1, "binding_method": 0,
+         "binding_class": 0, "binding": 0},
     ]
     # CodeTracker: A.f was renamed to A.g at cp3 (the instrument missed the rename) and changed at cp5
     ct = {"ct_identity": {(1, "A", "f"): "ct:A#g", (3, "A", "g"): "ct:A#g", (5, "A", "g"): "ct:A#g"},
@@ -224,6 +224,6 @@ def test_codetracker_is_the_identity_of_surviving_methods():
     rows = {(r["cp"], r["name"]): r for r in tables.outcome_rows("x", "c", hosts, {}, ct)}
     assert rows[(1, "f")]["identity"] == rows[(3, "g")]["identity"] == "ct:A#g"
     assert rows[(1, "f")]["intrusion_method_any"] == 2          # cp3 and cp5, from CodeTracker
-    assert rows[(1, "f")]["later_touches"] == 1                 # of those, cp3's code is tied there
+    assert rows[(1, "f")]["later_touches"] == 1                 # of those, cp3's code is bound there
     assert rows[(2, "h")]["identity_source"] == "instrument"    # B.h is removed: own chaining
     assert rows[(2, "h")]["intrusion_method_any"] == 1 and rows[(2, "h")]["later_touches"] == 0

@@ -1,5 +1,8 @@
 # Pilot: the pull instrument on chain 9
 
+> *Terms were changed on 17 November 2026 (PLAN.md §9): what this pilot calls a tie is now a
+> binding, and tied code is bound code.*
+>
 > *Hypothesis numbers were changed on 17 November 2026 (PLAN.md §9): what this pilot called H2b is
 > H3 and what it called H3 is H4, and they are written so below. The pilot itself is as it was:
 > the bystanders, the class and method levels of intrusion and reopening came after it.*

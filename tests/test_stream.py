@@ -46,7 +46,7 @@ def test_a_rule_introduced_twice_is_refused():
 def test_later_touches_split_into_declared_crossed_and_intrusion():
     s = tables.stream(FX / "checkpoints.yaml", FX / "DENSITY.md")
     host = {"type": "A", "name": "f", "before_type": None, "before_name": None, "removed": 0,
-            "replacement": False, "pre_positions": 0, "tie_method": 0, "tie_class": 0, "tie": 1}
+            "replacement": False, "pre_positions": 0, "binding_method": 0, "binding_class": 0, "binding": 1}
     hosts = [{**host, "cp": 3, "net_added": 2, "host_new": True}]
     # later checkpoints touching the host: 4 mutates 3; 6 crosses 3; 5 does neither
     hosts += [{**host, "cp": j, "net_added": 1, "host_new": False, "before_type": "A",
@@ -56,22 +56,22 @@ def test_later_touches_split_into_declared_crossed_and_intrusion():
     # the class level: the same three later checkpoints change class A
     assert (row["class_touches"], row["class_declared"], row["class_crossed"], row["intrusion_class"]) == (3, 1, 1, 1)
     # a later change that reuses nothing that was there (a field and its accessor) is not drawn in
-    untied = [h if h["cp"] != 5 else {**h, "tie": 0} for h in hosts]
-    [row] = [r for r in tables.outcome_rows("x", "c", untied, s) if r["cp"] == 3]
+    unbound = [h if h["cp"] != 5 else {**h, "binding": 0} for h in hosts]
+    [row] = [r for r in tables.outcome_rows("x", "c", unbound, s) if r["cp"] == 3]
     assert row["intrusion_method"] == 0 and row["intrusion_class"] == 0
     assert row["intrusion_method_any"] == 1 and row["intrusion_class_any"] == 1
-    # and a problem that was not tied to the place is marked as such: intrusion does not apply to it
-    free = [h if h["cp"] != 3 else {**h, "tie": 0} for h in hosts]
+    # and a problem that was not bound to the place is marked as such: intrusion does not apply to it
+    free = [h if h["cp"] != 3 else {**h, "binding": 0} for h in hosts]
     [row] = [r for r in tables.outcome_rows("x", "c", free, s) if r["cp"] == 3]
-    assert row["tied"] is False
+    assert row["bound"] is False
 
 
-def test_later_code_tied_to_what_stood_by_is_drawn_in():
+def test_later_code_bound_to_what_stood_by_is_drawn_in():
     """H2 (PLAN.md 4.4): cp3's code in A.f used `id` and left `owner` and the fields `LIMIT` and
     `repo` standing by. cp5 comes back to f and uses `owner`; cp7 goes to another method of A, g,
     and uses `LIMIT`; cp8 comes back to f and uses only `id`, which did not stand by."""
     host = {"type": "A", "name": "f", "before_type": "A", "before_name": "f", "removed": 0,
-            "replacement": False, "pre_positions": 5, "tie_method": 1, "tie_class": 0, "tie": 1,
+            "replacement": False, "pre_positions": 5, "binding_method": 1, "binding_class": 0, "binding": 1,
             "net_added": 2, "host_new": False, "need_class_values": "", "by_class_values": "",
             "need_method_values": "", "by_method_values": ""}
     hosts = [{**host, "cp": 3, "need_method_values": "id", "by_method_values": "owner",
@@ -86,9 +86,9 @@ def test_later_code_tied_to_what_stood_by_is_drawn_in():
     assert (r["intrusion_class"], r["drawn_class"]) == (3, 1)        # cp7, in g, for LIMIT
     # a value used at the placement did not stand by, so later use of it is not drawn by a bystander
     assert rows[(5, "f")]["drawn_method"] == 0 and rows[(5, "f")]["drawn_class"] == 1
-    # later code that is not tied there does not count, whatever it names
-    untied = [h if h["cp"] != 5 else {**h, "tie": 0} for h in hosts]
-    assert {(r["cp"], r["name"]): r for r in tables.outcome_rows("x", "c", untied, {})}[(3, "f")]["drawn_method"] == 0
+    # later code that is not bound there does not count, whatever it names
+    unbound = [h if h["cp"] != 5 else {**h, "binding": 0} for h in hosts]
+    assert {(r["cp"], r["name"]): r for r in tables.outcome_rows("x", "c", unbound, {})}[(3, "f")]["drawn_method"] == 0
 
 
 def test_what_stood_by_is_read_over_the_runs_of_one_host():

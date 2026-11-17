@@ -35,7 +35,7 @@ def _ranks(xs: list[float]) -> list[float]:
 
 
 def spearman(xs: list[float], ys: list[float]) -> float | None:
-    """Spearman's rank correlation (ties share their mean rank); None when it is not defined."""
+    """Spearman's rank correlation (bindings share their mean rank); None when it is not defined."""
     if len(xs) < 3:
         return None
     rx, ry = _ranks(xs), _ranks(ys)
@@ -54,20 +54,20 @@ def _interval(draws: list[float]) -> list[float] | None:
     return [draws[int(0.025 * (len(draws) - 1))], draws[int(0.975 * (len(draws) - 1))]]
 
 
-def ties_per_run(run_rows: list[dict]) -> dict[str, dict[int, list[int]]]:
-    """chain -> checkpoint -> the ties of each run of added logic (moved code left out)."""
+def bindings_per_run(run_rows: list[dict]) -> dict[str, dict[int, list[int]]]:
+    """chain -> checkpoint -> the bindings of each run of added logic (moved code left out)."""
     out: dict[str, dict[int, list[int]]] = {}
     for r in run_rows:
         if not _true(r.get("replacement")):
-            out.setdefault(r["chain_id"], {}).setdefault(int(r["cp"]), []).append(int(r["tie"]))
+            out.setdefault(r["chain_id"], {}).setdefault(int(r["cp"]), []).append(int(r["binding"]))
     return out
 
 
-def prior_tie_mean(run_rows: list[dict]) -> dict[tuple[str, int], float]:
-    """(chain, checkpoint k) -> the chain's mean ties per run over its checkpoints before k: how
+def prior_binding_mean(run_rows: list[dict]) -> dict[tuple[str, int], float]:
+    """(chain, checkpoint k) -> the chain's mean bindings per run over its checkpoints before k: how
     far the chain has been forced so far (the lagged formation term)."""
     out = {}
-    for chain_id, by_cp in ties_per_run(run_rows).items():
+    for chain_id, by_cp in bindings_per_run(run_rows).items():
         total = n = 0
         last = max(by_cp)
         for cp in range(1, last + 2):
@@ -82,7 +82,7 @@ def prior_tie_mean(run_rows: list[dict]) -> dict[tuple[str, int], float]:
 
 def choice(additions: list[dict], hosts: list[dict]) -> list[dict]:
     """Per checkpoint and arm, over the chains: the share that placed any of the addition in an
-    existing host, the distinct hosts the chains used between them, and the spread of the ties."""
+    existing host, the distinct hosts the chains used between them, and the spread of the bindings."""
     used: dict[tuple[str, int], set] = {}
     for h in hosts:
         if float(h["net_added"]) > 0 and not _true(h["replacement"]):
@@ -93,26 +93,26 @@ def choice(additions: list[dict], hosts: list[dict]) -> list[dict]:
             cells.setdefault((a["arm"], int(a["cp"])), []).append(a)
     rows = []
     for (arm, cp), xs in sorted(cells.items()):
-        ties = [int(a["tie_method"]) + int(a["tie_class"]) for a in xs]
+        bindings = [int(a["binding_method"]) + int(a["binding_class"]) for a in xs]
         rows.append({"arm": arm, "cp": cp, "chains": len(xs),
                      "share_in_existing_host": sum(int(a["hosts_existing"]) > 0 for a in xs) / len(xs),
                      "distinct_hosts": len(used.get((arm, cp), ())),
                      "hosts_per_chain": statistics.fmean(int(a["hosts"]) for a in xs),
-                     "tie_mean": statistics.fmean(ties),
-                     "tie_sd": statistics.pstdev(ties) if len(ties) > 1 else None})
+                     "binding_mean": statistics.fmean(bindings),
+                     "binding_sd": statistics.pstdev(bindings) if len(bindings) > 1 else None})
     return rows
 
 
 def choice_summary(rows: list[dict]) -> dict:
-    """Per arm: how many checkpoints left no choice (every chain with the same ties and the same
+    """Per arm: how many checkpoints left no choice (every chain with the same bindings and the same
     side of new or existing host) and how many left one."""
     out = {}
     for arm in sorted({r["arm"] for r in rows}):
         xs = [r for r in rows if r["arm"] == arm and r["chains"] > 1]
-        same = [r for r in xs if r["tie_sd"] == 0 and r["share_in_existing_host"] in (0.0, 1.0)]
+        same = [r for r in xs if r["binding_sd"] == 0 and r["share_in_existing_host"] in (0.0, 1.0)]
         out[arm] = {"checkpoints": len(xs), "no_choice": len(same),
                     "share_no_choice": len(same) / len(xs) if xs else None,
-                    "median_tie_sd": statistics.median(r["tie_sd"] for r in xs) if xs else None,
+                    "median_binding_sd": statistics.median(r["binding_sd"] for r in xs) if xs else None,
                     "median_distinct_hosts": statistics.median(r["distinct_hosts"] for r in xs)
                     if xs else None}
     return out
@@ -122,10 +122,10 @@ def choice_summary(rows: list[dict]) -> dict:
 
 def formation_end(run_rows: list[dict], additions: list[dict], checkpoints: int,
                   seed: int = SEED, resamples: int = RESAMPLES) -> dict:
-    """Per arm, over its chains: Spearman's correlation between the mean ties per run in the first
+    """Per arm, over its chains: Spearman's correlation between the mean bindings per run in the first
     third of the stream and the share of the tree's positions held by its largest method at the
     final checkpoint. Predicted positive in the methods arm. Interval: chains resampled."""
-    ties = ties_per_run(run_rows)
+    bindings = bindings_per_run(run_rows)
     third = checkpoints / 3
     final: dict[str, dict] = {}
     for a in additions:
@@ -135,7 +135,7 @@ def formation_end(run_rows: list[dict], additions: list[dict], checkpoints: int,
     for arm in sorted({a["arm"] for a in additions}):
         pairs = []
         for chain_id, a in sorted(final.items()):
-            early = [t for cp, ts in ties.get(chain_id, {}).items() if cp <= third for t in ts]
+            early = [t for cp, ts in bindings.get(chain_id, {}).items() if cp <= third for t in ts]
             if a["arm"] != arm or not early or a.get("amount_largest") in (None, "") \
                     or not float(a["amount_positions"]):
                 continue
@@ -152,7 +152,7 @@ def formation_end(run_rows: list[dict], additions: list[dict], checkpoints: int,
                     draws.append(r)
             interval = _interval(draws)
         out[arm] = {"chains": len(pairs), "rho": rho, "interval": interval,
-                    "early_ties_mean": statistics.fmean(p[0] for p in pairs) if pairs else None,
+                    "early_bindings_mean": statistics.fmean(p[0] for p in pairs) if pairs else None,
                     "largest_share_mean": statistics.fmean(p[1] for p in pairs) if pairs else None}
     return out
 
@@ -176,19 +176,19 @@ def _mean_over(chains: list[dict[int, float]], cp: int) -> float | None:
 
 def review(primary_runs: list[dict], primary_additions: list[dict], reviewed_additions: list[dict],
            seed: int = SEED, resamples: int = 2_000) -> dict:
-    """Per arm, over the checkpoints: Spearman's correlation of T, the mean ties per run of the
+    """Per arm, over the checkpoints: Spearman's correlation of T, the mean bindings per run of the
     just-solve chains, with D, the absolute difference between the conditions in the share of the
     addition's positions landing in existing hosts. Predicted negative: the review changes the
-    placement where the ties are few. Interval: the chains of each condition resampled."""
+    placement where the bindings are few. Interval: the chains of each condition resampled."""
     def share(a):
         return float(a["share_in_existing"]) if a.get("share_in_existing") not in (None, "", "None") else None
 
-    by_run = ties_per_run(primary_runs)
+    by_run = bindings_per_run(primary_runs)
     arm_of = {a["chain_id"]: a["arm"] for a in primary_additions}
-    ties: dict[str, list[dict[int, float]]] = {}
+    bindings: dict[str, list[dict[int, float]]] = {}
     for chain_id, by_cp in by_run.items():
         if chain_id in arm_of:
-            ties.setdefault(arm_of[chain_id], []).append(
+            bindings.setdefault(arm_of[chain_id], []).append(
                 {cp: statistics.fmean(ts) for cp, ts in by_cp.items()})
     prim, rev = _per_chain(primary_additions, share), _per_chain(reviewed_additions, share)
 
@@ -203,7 +203,7 @@ def review(primary_runs: list[dict], primary_additions: list[dict], reviewed_add
 
     out = {}
     for arm in sorted(set(prim) & set(rev)):
-        t, p, r = ties.get(arm, []), list(prim[arm].values()), list(rev[arm].values())
+        t, p, r = bindings.get(arm, []), list(prim[arm].values()), list(rev[arm].values())
         est, n = rho(t, p, r)
         interval = None
         if est is not None and min(len(t), len(p), len(r)) >= MIN_CHAINS:
@@ -257,12 +257,12 @@ def reopening_summary(rows: list[dict]) -> dict:
 
 
 def drawn_summary(h2: list[dict]) -> dict:
-    """Per arm, over the problem and host rows whose code was tied there (PLAN.md §4.4, H2): what
-    stood by at the placement, the later intrusions there, and how many of them are tied to
+    """Per arm, over the problem and host rows whose code was bound there (PLAN.md §4.4, H2): what
+    stood by at the placement, the later intrusions there, and how many of them are bound to
     something that stood by, at the class and at the method."""
     out = {}
     for arm in sorted({r["arm"] for r in h2}):
-        rows = [r for r in h2 if r["arm"] == arm and r["tied"]]
+        rows = [r for r in h2 if r["arm"] == arm and r["bound"]]
         if not rows:
             out[arm] = {"rows": 0}
             continue

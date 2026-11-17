@@ -9,17 +9,17 @@ Writes data/analysis/<name>/:
   visible where it starts that it does not use; and the class and the method it is in.
 - ``capture.csv``: one row per addition, with the share of its positions landing in existing hosts
   and the fields held by the chain's heaviest class at k − 1 (the capture reading).
-- ``h1.csv``: one row per run of added logic into an existing method, with its ties and its host's
+- ``h1.csv``: one row per run of added logic into an existing method, with its bindings and its host's
   size before the addition (H1 and H4 as first registered, reported; the lagged formation term).
-  New methods are left out: a new host has no prior size, so including them would make "more ties
+  New methods are left out: a new host has no prior size, so including them would make "more bindings
   in bigger hosts" true by construction.
-- ``reopen.csv``: one row per checkpoint, with the classes its tied code goes back into and the
+- ``reopen.csv``: one row per checkpoint, with the classes its bound code goes back into and the
   wiring files it changes again (reported).
 - ``h2.csv``: one row per problem and host its code went into (H2, H3, H4, the junction × arm
   reading), with what stood by there, the later intrusion at the class and the method, how much of
-  it is tied to what stood by, the problem's own lines, the problem's size and declared crossings,
+  it is bound to what stood by, the problem's own lines, the problem's size and declared crossings,
   the host's size and its shape at k − 1.
-- ``spec.json``: what the R models need (seed, resamples, the equivalence bound, the shape measures
+- ``spec.json``: what the R models need (seed, resamples, the equivalence margin, the shape measures
   kept by the variation rule, whether the stream has acts).
 - ``conditions.json``: what H4 reads besides the models (the amount band and the wiring checks),
   and whether the analysis is descriptive only (fewer than 6 chains in an arm).
@@ -34,13 +34,13 @@ import random
 import statistics
 from pathlib import Path
 
-from . import chain, readings, runs, wiring
+from . import chain, places, readings, runs, wiring
 
 DATA = chain.ROOT / "data" / "analysis"
 SEED = 20261116
 #: Cluster-bootstrap refits for the H1 and H4 models (PLAN.md §5).
 BOOT = 1000
-BOUND = [0.8, 1.25]
+MARGIN = [0.8, 1.25]
 AMOUNT_BAND = [0.8, 1.25]
 MIN_FLAGGED = 10
 MIN_CHAINS = 6
@@ -75,7 +75,7 @@ def gather(analysis: str, table: str, root: Path | None = None) -> list[dict]:
 
 
 def h1_rows(run_rows: list[dict], host_rows: list[dict], streamed: dict) -> list[dict]:
-    prior = readings.prior_tie_mean(run_rows)
+    prior = readings.prior_binding_mean(run_rows)
     cls = {(h["chain_id"], h["cp"], h["type"], h["signature"]): h.get("s5_class_positions")
            for h in host_rows}
     out = []
@@ -86,13 +86,13 @@ def h1_rows(run_rows: list[dict], host_rows: list[dict], streamed: dict) -> list
         out.append({
             "chain_id": r["chain_id"], "arm": r["arm"], "frontend": r.get("frontend", ""),
             "cp": cp, "act": streamed.get(cp, {}).get("act"),
-            "tie": int(r["tie"]), "tie_no_param": int(r["tie_no_param"]),
-            "tie_class": int(r["tie_class"]), "tie_no_injected": int(r["tie_no_injected"]),
-            "tie_class_no_injected": int(r["tie_class_no_injected"]),
+            "binding": int(r["binding"]), "binding_no_param": int(r["binding_no_param"]),
+            "binding_class": int(r["binding_class"]), "binding_no_injected": int(r["binding_no_injected"]),
+            "binding_class_no_injected": int(r["binding_class_no_injected"]),
             "pre_positions": int(r["pre_positions"]),
             "class_positions": num(cls.get((r["chain_id"], r["cp"], r["type"], r["signature"]))),
-            # the chain's mean ties per run over its earlier checkpoints (formation, PLAN.md 5)
-            "prior_tie_mean": prior.get((r["chain_id"], cp)),
+            # the chain's mean bindings per run over its earlier checkpoints (formation, PLAN.md 5)
+            "prior_binding_mean": prior.get((r["chain_id"], cp)),
         })
     return out
 
@@ -135,7 +135,7 @@ def capture_rows(additions: list[dict]) -> list[dict]:
 
 
 def reopen_rows(additions: list[dict]) -> list[dict]:
-    """Per checkpoint: the classes its tied code goes back into and the wiring files it changes
+    """Per checkpoint: the classes its bound code goes back into and the wiring files it changes
     again (reported)."""
     return [{"chain_id": a["chain_id"], "arm": a["arm"], "frontend": a.get("frontend", ""),
              "cp": int(a["cp"]), "reopened": int(a["reopened"]),
@@ -157,19 +157,19 @@ def h2_rows(outcomes: list[dict], host_rows: list[dict], additions: list[dict],
             "cp": cp, "act": s.get("act"),
             # intrusion at the class and the method (the placement) and, for information, on the
             # problem's own lines (PLAN.md 4.4)
-            "tied": truth(o.get("tied", int(o["tie"]) >= 1)),
+            "bound": truth(o.get("bound", int(o["binding"]) >= 1)),
             "intrusion_class": int(o["intrusion_class"]), "intrusion_method": int(o["intrusion_method"]),
             "intrusion_class_any": int(o.get("intrusion_class_any", o["intrusion_class"])),
             "intrusion_method_any": int(o.get("intrusion_method_any", o["intrusion_method"])),
             "intrusion_lines": num(o.get("intrusion_lines")),
-            # H2: what stood by where the code was placed, and the later intrusions tied to it
+            # H2: what stood by where the code was placed, and the later intrusions bound to it
             "bystanders_class": int(o.get("bystanders_class") or 0),
             "bystanders_method": int(o.get("bystanders_method") or 0),
             "drawn_class": int(o.get("drawn_class") or 0), "drawn_method": int(o.get("drawn_method") or 0),
             "own_lines": num(o.get("own_lines")), "own_lost": num(o.get("own_lost")),
             "later_checkpoints": int(o["later_checkpoints"]),
-            "tie": int(o["tie"]), "tie_no_param": int(h.get("tie_no_param", o["tie"])),
-            "tie_no_injected": int(h.get("tie_no_injected", o["tie"])),
+            "binding": int(o["binding"]), "binding_no_param": int(h.get("binding_no_param", o["binding"])),
+            "binding_no_injected": int(h.get("binding_no_injected", o["binding"])),
             "net_added": int(o["net_added"]),
             "addition_positions": size.get((o["chain_id"], o["cp"]), int(o["net_added"])),
             "declared_crossings": len(set(s.get("crosses", [])) | set(s.get("mutates", []))),
@@ -189,7 +189,7 @@ def h2_rows(outcomes: list[dict], host_rows: list[dict], additions: list[dict],
 def shape_kept(h2: list[dict]) -> tuple[list[str], dict]:
     """The variation rule (PLAN.md §5): a shape measure flagged (or, for a level, non-zero) on
     fewer than MIN_FLAGGED existing hosts in any arm leaves the H3 block."""
-    rows = [r for r in h2 if not r["host_new"] and r["shape_found"] and r["tied"]]
+    rows = [r for r in h2 if not r["host_new"] and r["shape_found"] and r["bound"]]
     arms = sorted({r["arm"] for r in rows})
     counts, kept = {}, []
     for c in SHAPE_FLAGS + SHAPE_LEVELS:
@@ -277,7 +277,7 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
     write_csv(out / "reopen.csv", again)
     write_csv(out / "h2.csv", h2)
     spec = {"analysis": name, "role": analysis["role"], "seed": SEED, "boot": BOOT,
-            "bound": BOUND, "methods_arm": METHODS_ARM, "function_arm": FUNCTION_ARM,
+            "margin": MARGIN, "methods_arm": METHODS_ARM, "function_arm": FUNCTION_ARM,
             "shape_kept": kept, "shape_counts": counts, "checkpoints": len(streamed),
             "acts": any(r["act"] is not None for r in h1 + h2),
             "frontends": sorted({r["frontend"] for r in h1 if r["frontend"]})}
@@ -286,7 +286,7 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
                   or any(len(v) < MIN_CHAINS for v in chains.values()) or len(chains) < 2,
                   "amount": amount(additions), "wiring": wiring_checks(additions)}
     # the readings reported beside the hypotheses (PLAN.md 5): choice at a checkpoint, formation
-    full = all(k in (additions[0] if additions else {}) for k in ("hosts", "hosts_existing", "tie_method"))
+    full = all(k in (additions[0] if additions else {}) for k in ("hosts", "hosts_existing", "binding_method"))
     chosen = readings.choice(additions, hosts) if full else []
     write_csv(out / "choice.csv", chosen)
     lost = {arm: {"lines": sum(r["own_lines"] or 0 for r in h2 if r["arm"] == arm),
@@ -298,6 +298,7 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
         "bystanders": readings.bystander_summary(by, captured, len(streamed)),
         "reopening": readings.reopening_summary(again),
         "drawn": readings.drawn_summary(h2),
+        "landings": places.summary(gather(name, "landings", measured_root)),
         "own_lines": lost}, indent=1) + "\n")
     (out / "spec.json").write_text(json.dumps(spec, indent=1) + "\n")
     (out / "conditions.json").write_text(json.dumps(conditions, indent=1) + "\n")

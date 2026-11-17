@@ -53,14 +53,14 @@ import net.officefloor.sinewslim.javaparser.ParsedFile;
 /**
  * The pull instrument (PLAN.md §4). For each addition (one checkpoint's change) it reads the before
  * and after version of every changed Java file and writes, per host method, the code added for the
- * new problem and the <b>ties</b> that code has to its location: the data it uses that existed
+ * new problem and the <b>bindings</b> that code has to its location: the data it uses that existed
  * before the change and that it could not have had anywhere else without threading it there.
  *
  * <ul>
- * <li><b>Method ties</b>: the host method's own parameters and locals. A parameter the framework
- * injects (a public method of an OfficeFloor function, see {@code injected}) does not tie: a function
+ * <li><b>Method bindings</b>: the host method's own parameters and locals. A parameter the framework
+ * injects (a public method of an OfficeFloor function, see {@code injected}) does not bind: a function
  * placed anywhere can declare it.</li>
- * <li><b>Class ties</b>: the host class's fields and methods.</li>
+ * <li><b>Class bindings</b>: the host class's fields and methods.</li>
  * </ul>
  *
  * Only the added code's own references count: for a pure insertion every token of the run, for an
@@ -95,7 +95,7 @@ import net.officefloor.sinewslim.javaparser.ParsedFile;
 public final class Pull {
 
 	/** Bump whenever a field's meaning changes. */
-	static final int VERSION = 9;
+	static final int VERSION = 10;
 
 	/** A removed position's text must be at least this long to mark an added one as moved. */
 	static final int MOVED_MIN_CHARS = 12;
@@ -565,12 +565,12 @@ public final class Pull {
 				}
 				// primary: every reference of the run's logic lines (new and edited lines alike)
 				Set<String> tm = new TreeSet<>(), tf = new TreeSet<>(), tc = new TreeSet<>(), tu = new TreeSet<>();
-				ties(m, from, to, lineTokens, values, ownVars, preFields, preMethods, tm, tf, tc);
-				ties(m, from, to, lineTokens, Set.of(), ownVars, preUtilities, Set.of(), new TreeSet<>(), tu,
+				bindings(m, from, to, lineTokens, values, ownVars, preFields, preMethods, tm, tf, tc);
+				bindings(m, from, to, lineTokens, Set.of(), ownVars, preUtilities, Set.of(), new TreeSet<>(), tu,
 						new TreeSet<>());
 				// secondary: only the references the edit itself introduced
 				Set<String> km = new TreeSet<>(), kf = new TreeSet<>(), kc = new TreeSet<>();
-				ties(m, from, to, addedTokens, values, ownVars, preFields, preMethods, km, kf, kc);
+				bindings(m, from, to, addedTokens, values, ownVars, preFields, preMethods, km, kf, kc);
 				// references that resolve to nothing seen: inherited members, static imports
 				Set<String> un = unresolved(m, from, to, ownVars, knownNames, knownMethods);
 				Seam seam = index.seam(m.lines[from], m.lines[to]);
@@ -615,18 +615,18 @@ public final class Pull {
 				s.append(",\"added_tokens\":").append(addedTokens.size());
 				s.append(",\"inputs\":").append(seam.inputs().size());
 				s.append(",\"outputs\":").append(seam.outputs().size());
-				s.append(",\"tie_method\":").append(strs(tm));
+				s.append(",\"binding_method\":").append(strs(tm));
 				Set<String> tp = new TreeSet<>(tm);
 				tp.retainAll(params(m));
-				s.append(",\"tie_param\":").append(strs(tp));
-				s.append(",\"tie_field\":").append(strs(tf));
+				s.append(",\"binding_param\":").append(strs(tp));
+				s.append(",\"binding_field\":").append(strs(tf));
 				Set<String> ti = new TreeSet<>(tf);
 				ti.retainAll(preInjected);
-				s.append(",\"tie_field_injected\":").append(strs(ti));
-				s.append(",\"tie_class_method\":").append(strs(tc));
+				s.append(",\"binding_field_injected\":").append(strs(ti));
+				s.append(",\"binding_class_method\":").append(strs(tc));
 				s.append(",\"utility\":").append(strs(tu));
-				s.append(",\"tok_tie_method\":").append(km.size());
-				s.append(",\"tok_tie_class\":").append(kf.size() + kc.size());
+				s.append(",\"tok_binding_method\":").append(km.size());
+				s.append(",\"tok_binding_class\":").append(kf.size() + kc.size());
 				s.append(",\"unresolved\":").append(strs(un));
 				s.append(",\"vis_method\":").append(strs(visM)).append(",\"need_method\":").append(strs(needM));
 				s.append(",\"vis_fields\":[").append(vis[0]).append(',').append(vis[1]).append(',').append(vis[2]);
@@ -637,7 +637,7 @@ public final class Pull {
 			}
 			s.append(']');
 			if (isNew) {
-				s.append(",\"birth_tie\":").append(strs(birthTies(m)));
+				s.append(",\"birth_binding\":").append(strs(birthBindings(m)));
 			}
 			s.append('}');
 			return s.toString();
@@ -743,7 +743,7 @@ public final class Pull {
 		}
 
 		/**
-		 * The host method's values that existed before the change and tie code to it: parameters (not
+		 * The host method's values that existed before the change and bind code to it: parameters (not
 		 * injected ones) and locals whose declaration is not itself added. Renames are followed.
 		 */
 		Set<String> methodValues(M m, M b, boolean[] added, Map<String, String> ren) {
@@ -883,7 +883,7 @@ public final class Pull {
 		 * A value is used by added code when its own token is added, or when the expression directly
 		 * applied to it is (an added call on it, an added operator beside it).
 		 */
-		static void ties(M m, int from, int to, Set<Long> addedTokens, Set<String> values, Set<String> ownVars,
+		static void bindings(M m, int from, int to, Set<Long> addedTokens, Set<String> values, Set<String> ownVars,
 				Set<String> fields, Set<String> methods, Set<String> tm, Set<String> tf, Set<String> tc) {
 			int lo = m.lines[from], hi = m.lines[to];
 			List<Tok> runToks = new ArrayList<>();
@@ -953,8 +953,8 @@ public final class Pull {
 			return afterBegin && beforeEnd;
 		}
 
-		/** A new method is tied at birth to its existing callers by the existing values passed to it. */
-		Set<String> birthTies(M m) {
+		/** A new method is bound at birth to its existing callers by the existing values passed to it. */
+		Set<String> birthBindings(M m) {
 			Set<String> bound = new TreeSet<>();
 			for (Map.Entry<M, M> e : match.entrySet()) {
 				M caller = e.getKey();
@@ -1174,6 +1174,14 @@ public final class Pull {
 					passed += mc.getArguments().size();
 				}
 				int length = u.facts().length();
+				// the method's own local variables: with its parameters, the values it holds
+				int locals = 0;
+				for (com.github.javaparser.ast.body.VariableDeclarator v
+						: c.findAll(com.github.javaparser.ast.body.VariableDeclarator.class)) {
+					if (enclosingCallable(v) == c) {
+						locals++;
+					}
+				}
 				out.add("{\"v\":" + VERSION + ",\"kind\":\"shape\",\"unit\":" + q(unit) + ",\"path\":" + q(sh.rel)
 						+ ",\"type\":" + q(m.type) + ",\"name\":" + q(m.name) + ",\"signature\":" + q(m.signature)
 						+ ",\"decl_line\":" + u.declLine() + ",\"end_line\":" + u.endLine()
@@ -1181,7 +1189,7 @@ public final class Pull {
 						+ ",\"long\":" + (length >= trigger) + ",\"status\":" + q(status)
 						+ ",\"obstacle\":" + (obstacle == null ? "null" : q(obstacle))
 						+ ",\"injected\":" + injected + ",\"in\":" + in + ",\"in_injection_aware\":" + inAware
-						+ ",\"out\":" + passed + ",\"calls\":" + calls
+						+ ",\"out\":" + passed + ",\"calls\":" + calls + ",\"locals\":" + locals
 						+ ",\"class_held\":" + (m.owner == null ? 0 : m.owner.held())
 						+ "}");
 			}
@@ -1248,7 +1256,7 @@ public final class Pull {
 			Set<String> fields = new HashSet<>(), utilities = new HashSet<>(), methods = new HashSet<>();
 			Set<String> constants = new HashSet<>();
 			for (FieldDeclaration fd : t.getFields()) {
-				// a class utility (a logger) is not a tie: any class can declare its own
+				// a class utility (a logger) is not a binding: any class can declare its own
 				fd.getVariables().forEach(v -> (utility(v) ? utilities : fields).add(v.getNameAsString()));
 				if (fd.isStatic() && fd.isFinal()) {
 					fd.getVariables().forEach(v -> {
