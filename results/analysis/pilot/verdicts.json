@@ -17,98 +17,125 @@
      "p_less": 1,
      "refits": 1000,
      "failed": 0
+    },
+    "within_class": {
+     "estimate": 0.026028393045027,
+     "lower": 0.026028393045027,
+     "upper": 0.026028393045027,
+     "p_greater": 0.000999000999000999,
+     "p_less": 1,
+     "refits": 1000,
+     "failed": 0,
+     "places": 3,
+     "checkpoint_intercept": false
+    },
+    "within_method": {
+     "estimate": 0.0233651314507861,
+     "lower": 0.0233651314507861,
+     "upper": 0.0233651314507861,
+     "p_greater": 0.000999000999000999,
+     "p_less": 1,
+     "refits": 1000,
+     "failed": 0,
+     "places": 11,
+     "checkpoint_intercept": false
     }
    },
    "p_holm": 0.002997002997002997,
    "verdict": "descriptive only"
   },
   "H2": {
-   "p": 0.945001087395809,
-   "h2a_supported": false,
-   "h2a_reversed": false,
-   "h2b": "unresolved",
-   "h2b_dropped": [
+   "p": null,
+   "verdict": "descriptive only",
+   "detail": {
+    "n": 83,
+    "class": {
+     "estimate": 0.0946431444800598,
+     "se": 0.0292104220260187,
+     "lower": 0.0373917693358477,
+     "upper": 0.151894519624272,
+     "level": 0.95,
+     "p_greater": 0.000597549691634284,
+     "p_less": 0.999402450308366,
+     "irr": 1.09926650580377,
+     "irr_lower": 1.03809963678837,
+     "irr_upper": 1.16403744684903
+    },
+    "method": {
+     "error": "standard error not computed: bystanders_method"
+    }
+   },
+   "p_holm": null
+  },
+  "H3": {
+   "p": 0.99246992142544,
+   "state": "against",
+   "dropped": [
     "s1_long",
     "s2_stuck"
    ],
    "conditions_met": false,
-   "partial": false,
    "detail": {
-    "H2a": {
-     "n": 350,
-     "estimate": 0.159614200464031,
-     "se": 0.220463881679787,
-     "lower": -0.272487067520252,
-     "upper": 0.591715468448314,
-     "level": 0.95,
-     "p_greater": 0.23453516474627,
-     "p_less": 0.76546483525373,
-     "irr": 1.17305821836453,
-     "irr_lower": 0.761483276978585,
-     "irr_upper": 1.80708575654152
-    },
-    "H2b": {
-     "n": 103,
-     "kept": [
-      "s3_junction",
-      "s4_cognitive",
-      "s5_class_gini"
-     ],
-     "testable": true,
-     "bound": [
-      0.8,
-      1.25
-     ],
-     "measures": {
-      "s3_junction": {
-       "estimate": -0.655571454614177,
-       "se": 0.695445369513499,
-       "lower": -1.79947729300506,
-       "upper": 0.488334383776707,
-       "level": 0.9,
-       "p_greater": 0.827073655423963,
-       "p_less": 0.172926344576037,
-       "irr": 0.519145309822029,
-       "irr_lower": 0.165385313692347,
-       "irr_upper": 1.62959967057028,
-       "p_tost": 0.732963293846158,
-       "outside": false
-      },
-      "s4_cognitive": {
-       "estimate": 0.462150651117529,
-       "se": 0.438754026460759,
-       "lower": -0.259535500646013,
-       "upper": 1.18383680288107,
-       "level": 0.9,
-       "p_greater": 0.146095997832331,
-       "p_less": 0.853904002167669,
-       "irr": 1.58748444151709,
-       "irr_lower": 0.771409821960853,
-       "irr_upper": 3.2668845797853,
-       "p_tost": 0.707034006446966,
-       "outside": false
-      },
-      "s5_class_gini": {
-       "estimate": -1.13629708128394,
-       "se": 0.571362698291958,
-       "lower": -2.07610508787424,
-       "upper": -0.196489074693631,
-       "level": 0.9,
-       "p_greater": 0.976635551073596,
-       "p_less": 0.0233644489264036,
-       "irr": 0.32100548098318,
-       "irr_lower": 0.125417753245369,
-       "irr_upper": 0.821610307590546,
-       "p_tost": 0.945001087395809,
-       "outside": false
-      }
+    "n": 77,
+    "kept": [
+     "s3_junction",
+     "s4_cognitive",
+     "s5_class_gini"
+    ],
+    "testable": true,
+    "bound": [
+     0.8,
+     1.25
+    ],
+    "measures": {
+     "s3_junction": {
+      "estimate": -0.343939353486141,
+      "se": 0.521578278976458,
+      "lower": -1.20185927739967,
+      "upper": 0.513980570427392,
+      "level": 0.9,
+      "p_greater": 0.745187074722945,
+      "p_less": 0.254812925277055,
+      "irr": 0.708971923421317,
+      "irr_lower": 0.300634728599594,
+      "irr_upper": 1.67193321457274,
+      "p_tost": 0.591574360082458,
+      "outside": false
+     },
+     "s4_cognitive": {
+      "estimate": -0.966714455966416,
+      "se": 0.305879292992875,
+      "lower": -1.4698411204551,
+      "upper": -0.463587791477733,
+      "level": 0.9,
+      "p_greater": 0.999212356286401,
+      "p_less": 0.000787643713599071,
+      "irr": 0.380330580422837,
+      "irr_lower": 0.229962018545296,
+      "irr_upper": 0.629022789588533,
+      "p_tost": 0.99246992142544,
+      "outside": true
+     },
+     "s5_class_gini": {
+      "estimate": -0.389878205653285,
+      "se": 0.307624018886691,
+      "lower": -0.895874688856446,
+      "upper": 0.116118277549876,
+      "level": 0.9,
+      "p_greater": 0.897491250125446,
+      "p_less": 0.102508749874554,
+      "irr": 0.677139341219771,
+      "irr_lower": 0.408250350390967,
+      "irr_upper": 1.12312870518896,
+      "p_tost": 0.706093474744578,
+      "outside": false
      }
     }
    },
-   "p_holm": 0.945001087395809,
+   "p_holm": 0.99246992142544,
    "verdict": "descriptive only"
   },
-  "H3": {
+  "H4": {
    "p": 0.000999000999000999,
    "reversed": false,
    "amount_in_band": true,
@@ -136,6 +163,30 @@
       "p_less": 0.000999000999000999,
       "refits": 1000,
       "failed": 0
+     },
+     "intrusion_class": {
+      "estimate": -1.81949942224687,
+      "se": 0.25634857721569,
+      "lower": -2.32193340107771,
+      "upper": -1.31706544341604,
+      "level": 0.95,
+      "p_greater": 0.999999999999366,
+      "p_less": 6.33998055429259e-13,
+      "irr": 0.162106877723671,
+      "irr_lower": 0.0980837669050115,
+      "irr_upper": 0.267920376985179
+     },
+     "intrusion_method": {
+      "estimate": -2.20348152186643,
+      "se": 0.688747234637626,
+      "lower": -3.55340129620773,
+      "upper": -0.853561747525124,
+      "level": 0.95,
+      "p_greater": 0.99931109589908,
+      "p_less": 0.000688904100920336,
+      "irr": 0.110418065487234,
+      "irr_lower": 0.0286271046131281,
+      "irr_upper": 0.42589529575939
      }
     },
     "amount": {

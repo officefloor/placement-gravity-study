@@ -1,5 +1,5 @@
 # Results
 
-| Analysis | Role | H1 | H2 | H3 |
-|---|---|---|---|---|
-| [pilot](pilot/REPORT.md) | development | descriptive only | descriptive only | descriptive only |
+| Analysis | Role | H1 | H2 | H3 | H4 |
+|---|---|---|---|---|---|
+| [pilot](pilot/REPORT.md) | development | descriptive only | descriptive only | descriptive only | descriptive only |

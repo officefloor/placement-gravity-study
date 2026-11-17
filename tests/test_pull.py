@@ -223,6 +223,7 @@ def test_codetracker_is_the_identity_of_surviving_methods():
           "ct_touched": {"ct:A#g": {1, 3, 5}}}
     rows = {(r["cp"], r["name"]): r for r in tables.outcome_rows("x", "c", hosts, {}, ct)}
     assert rows[(1, "f")]["identity"] == rows[(3, "g")]["identity"] == "ct:A#g"
-    assert rows[(1, "f")]["later_touches"] == 2                 # cp3 and cp5, from CodeTracker
+    assert rows[(1, "f")]["intrusion_method_any"] == 2          # cp3 and cp5, from CodeTracker
+    assert rows[(1, "f")]["later_touches"] == 1                 # of those, cp3's code is tied there
     assert rows[(2, "h")]["identity_source"] == "instrument"    # B.h is removed: own chaining
-    assert rows[(2, "h")]["later_touches"] == 1
+    assert rows[(2, "h")]["intrusion_method_any"] == 1 and rows[(2, "h")]["later_touches"] == 0

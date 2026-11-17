@@ -129,6 +129,7 @@ def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
             "tie_method_values": " ".join(tm),
             "tie_class_values": " ".join(tf + [m + "()" for m in tc]),
             "params": r["params"],
+            **standing(runs),
         })
         if shaped:
             rows[-1].update(shape.host_shape(rows[-1], shaped))
@@ -168,8 +169,25 @@ def run_rows(arm: str, chain: str, measured: dict) -> list[dict]:
                 "tie_class_values": " ".join(x["tie_field"] + [m + "()" for m in x["tie_class_method"]]),
                 "utility_values": " ".join(x["utility"]),
                 **bystanders(x),
+                # which values: what the run needed and what stood by, in the method and the class
+                "need_method_values": " ".join(x.get("need_method", [])),
+                "by_method_values": " ".join(sorted(set(x.get("vis_method", [])) - set(x.get("need_method", [])))),
+                "need_class_values": " ".join(x.get("need_field_names", [])),
+                "by_class_values": " ".join(x.get("by_field_names", [])),
             })
     return rows
+
+
+def standing(runs: list[dict]) -> dict:
+    """For one host and addition (PLAN.md §4.4, H2): the pre-existing values its added code uses
+    there and those that stood by, in the method and in the class. A value stands by when it is
+    visible to one of the addition's runs in the host and none of them uses it."""
+    need_m = {v for x in runs for v in x.get("need_method", [])}
+    need_c = {v for x in runs for v in x.get("need_field_names", [])}
+    by_m = {v for x in runs for v in x.get("vis_method", [])} - need_m
+    by_c = {v for x in runs for v in x.get("by_field_names", [])} - need_c
+    return {"need_method_values": " ".join(sorted(need_m)), "by_method_values": " ".join(sorted(by_m)),
+            "need_class_values": " ".join(sorted(need_c)), "by_class_values": " ".join(sorted(by_c))}
 
 
 def bystanders(run: dict) -> dict:
@@ -227,6 +245,7 @@ def addition_rows(arm: str, chain: str, measured: dict, hosts: list[dict],
             left[r["unit"]] = left.get(r["unit"], 0) + r["fields_added"]
     for r in measured.get("shape", []):
         heaviest[r["unit"]] = max(heaviest.get(r["unit"], 0), r.get("class_held", 0))
+    again = reopened(hosts, measured.get("wiring_changes", {}))
     rows = []
     for c in measured["checkpoints"]:
         cp, unit = c["cp"], f"cp{c['cp']:02d}"
@@ -257,6 +276,9 @@ def addition_rows(arm: str, chain: str, measured: dict, hosts: list[dict],
             "amount_added": measured["amount"][unit]["positions"] - base,
             "amount_largest": measured["amount"][unit].get("largest"),
             "fields_added": left.get(unit, 0), "heaviest_class": heaviest.get(unit, 0),
+            "reopened_classes": again.get(cp, {}).get("reopened_classes", 0),
+            "reopened_wiring": again.get(cp, {}).get("reopened_wiring", 0),
+            "reopened": sum(again.get(cp, {}).values()),
             "wiring_nodes_added": w["after"]["nodes"] - w["before"]["nodes"],
             "wiring_edges_added": w["after"]["edges"] - w["before"]["edges"],
             "wiring_files": w["after"]["files"], "wiring_edges": w["after"]["edges"],
@@ -294,11 +316,19 @@ def outcome_rows(arm: str, chain: str, hosts: list[dict], streamed: dict[int, di
     from ``crosscheck``): its identity and its body-changing checkpoints. A host removed before the
     end is followed by the instrument's own chaining across RefactoringMiner's renames and moves.
 
-    That is the **host-level** reading (``intrusion_host``, as first built): any later change to
-    the host. With ``followed`` (``lines.follow``), the outcome of H2 is read on the problem's **own
-    lines** (PLAN.md §4.4): ``intrusion`` counts the later checkpoints, neither declared nor
-    crossing, that edit or remove one of the lines k placed in the host or insert between them.
-    Without ``followed`` the host-level count stands in."""
+    Intrusion is read at three levels (PLAN.md §4.4). The **class** (``intrusion_class``) and the
+    **method** (``intrusion_method``) are the placement: every later checkpoint, neither declared
+    nor crossing, whose own code in that class, or method, is tied there (``is_tied``). It applies
+    only to a problem that was itself tied there (``tied``): a place a problem was not drawn to is
+    not one it can be said to have drawn others into. ``*_any`` count any later change, tied or not. The
+    problem's **own lines** (``intrusion_lines``, with ``followed`` from ``lines.follow``) are for
+    information: a later checkpoint that edits or removes one of them, or inserts between them, is
+    changing the problem more than the placement.
+
+    **Drawn in by what stood by** (H2): ``bystanders_class`` and ``bystanders_method`` are the
+    pre-existing fields of the class and values of the method that stood by when the problem's code
+    was placed in this host (``standing``); ``drawn_class`` and ``drawn_method`` count the later
+    intrusions whose tied code there uses one of them."""
     own = identities(hosts)
     ct_identity = (ct or {}).get("ct_identity", {})
     ct_touched = (ct or {}).get("ct_touched", {})
@@ -324,39 +354,135 @@ def outcome_rows(arm: str, chain: str, hosts: list[dict], streamed: dict[int, di
             touched.setdefault(ident(h), set()).add(h["cp"])
     for c, cps in ct_touched.items():
         touched[c] = set(cps)  # CodeTracker's history is the source for a surviving method
+    # the class level: every later checkpoint that changes the class the host is in
+    cls = class_identities(hosts)
+    class_touched = touched_classes(hosts, cls)
+    # drawn in (PLAN.md 4.4): a later checkpoint counts when its own code there is tied, that is,
+    # when it reuses data that was already there. Adding a field and its accessor ties nothing.
+    class_drawn = touched_classes(hosts, cls, tied=True)
+    drawn: dict[str, set[int]] = {}
+    for h in hosts:
+        if is_tied(h):
+            drawn.setdefault(ident(h), set()).add(h["cp"])
+    # what each checkpoint's tied code uses, per method and per class (H2: is later code tied to
+    # what stood by?)
+    uses_m: dict[tuple[str, int], set[str]] = {}
+    uses_c: dict[tuple[str, int], set[str]] = {}
+    for h in hosts:
+        if is_tied(h):
+            uses_m.setdefault((ident(h), h["cp"]), set()).update(h.get("need_method_values", "").split())
+            uses_c.setdefault((cls[(h["cp"], h["type"])], h["cp"]), set()).update(
+                h.get("need_class_values", "").split())
     last = max((h["cp"] for h in hosts), default=0)
+
+    def split(js: list[int], k: int) -> tuple[int, int, int]:
+        """(declared, crossed, intrusion) of the later checkpoints js for problem k."""
+        declared = [j for j in js if k in streamed.get(j, {}).get("mutates", [])]
+        crossed = [j for j in js if j not in declared and k in streamed.get(j, {}).get("crosses", [])]
+        return len(declared), len(crossed), len(js) - len(declared) - len(crossed)
+
     rows = []
     for h in hosts:
         if h["net_added"] <= 0 or h["replacement"]:
             continue
         k, i = h["cp"], ident(h)
-        later = sorted(j for j in touched.get(i, set()) if j > k)
-        declared = [j for j in later if k in streamed.get(j, {}).get("mutates", [])]
-        crossed = [j for j in later if j not in declared
-                   and k in streamed.get(j, {}).get("crosses", [])]
-        lines_ = None
+        c = cls[(k, h["type"])]
+        later = sorted(j for j in drawn.get(i, set()) if j > k)
+        later_class = sorted(j for j in class_drawn.get(c, set()) if j > k)
+        md, mc, mi = split(later, k)
+        cd, cc, ci = split(later_class, k)
+        # any later change, tied or not (as first built), reported
+        any_m = split(sorted(j for j in touched.get(i, set()) if j > k), k)[2]
+        any_c = split(sorted(j for j in class_touched.get(c, set()) if j > k), k)[2]
+        # drawn in by what stood by (H2): the later tied arrivals that use a value which was a
+        # bystander when this code was placed
+        stood_m, stood_c = set(h.get("by_method_values", "").split()), set(h.get("by_class_values", "").split())
+        drawn_m = split([j for j in later if uses_m.get((i, j), set()) & stood_m], k)[2]
+        drawn_c = split([j for j in later_class if uses_c.get((c, j), set()) & stood_c], k)[2]
+        mine = {"own_lines": None, "own_present": None, "own_lost": None, "own_touches": None,
+               "own_declared": None, "own_crossed": None, "intrusion_lines": None}
         if followed is not None:
             f = followed.get((k, h["type"], h.get("signature")),
                              {"placed": 0, "touched": set(), "present": 0, "lost": 0})
             ot = sorted(j for j in f["touched"] if j > k)
-            od = [j for j in ot if k in streamed.get(j, {}).get("mutates", [])]
-            oc = [j for j in ot if j not in od and k in streamed.get(j, {}).get("crosses", [])]
-            lines_ = {"own_lines": f["placed"], "own_present": f["present"], "own_lost": f["lost"],
-                   "own_touches": len(ot), "own_declared": len(od), "own_crossed": len(oc),
-                   "intrusion": len(ot) - len(od) - len(oc)}
-        host_intrusion = len(later) - len(declared) - len(crossed)
+            od, oc, oi = split(ot, k)
+            mine = {"own_lines": f["placed"], "own_present": f["present"], "own_lost": f["lost"],
+                   "own_touches": len(ot), "own_declared": od, "own_crossed": oc,
+                   "intrusion_lines": oi}
         rows.append({
             "arm": arm, "chain": chain, "cp": k, "identity": i,
             "identity_source": "codetracker" if i.startswith("ct:") else "instrument",
+            "class_identity": c,
             "type": h["type"], "name": h["name"], "signature": h.get("signature"),
             "host_new": h["host_new"], "pre_positions": h["pre_positions"],
             "net_added": h["net_added"], "tie_method": h["tie_method"], "tie_class": h["tie_class"],
-            "tie": h["tie"], "later_checkpoints": last - k,
-            "later_touches": len(later), "declared": len(declared), "crossed": len(crossed),
-            "intrusion_host": host_intrusion,
-            **(lines_ or {"own_lines": None, "own_present": None, "own_lost": None,
-                       "own_touches": None, "own_declared": None, "own_crossed": None,
-                       "intrusion": host_intrusion}),
+            "tie": h["tie"], "tied": is_tied(h), "later_checkpoints": last - k,
+            "class_touches": len(later_class), "class_declared": cd, "class_crossed": cc,
+            "intrusion_class": ci,
+            "later_touches": len(later), "declared": md, "crossed": mc, "intrusion_method": mi,
+            "intrusion_class_any": any_c, "intrusion_method_any": any_m,
+            "bystanders_class": len(stood_c), "bystanders_method": len(stood_m),
+            "drawn_class": drawn_c, "drawn_method": drawn_m,
+            **mine,
+            "intrusion_per_100": (100 * ci / (last - k)) if last > k else None,
         })
-        rows[-1]["intrusion_per_100"] = (100 * rows[-1]["intrusion"] / (last - k)) if last > k else None
     return rows
+
+
+def class_identities(hosts: list[dict]) -> dict[tuple[int, str], str]:
+    """(checkpoint, type) -> a stable identity for the class across renames and moves: a host
+    matched to a before version of another type keeps that type's identity."""
+    current: dict[str, str] = {}
+    out = {}
+    for h in sorted(hosts, key=lambda h: h["cp"]):
+        before = h.get("before_type")
+        ident = current.get(before, before) if before else current.get(h["type"], h["type"])
+        current[h["type"]] = ident
+        out[(h["cp"], h["type"])] = ident
+    return out
+
+
+def is_tied(h: dict) -> bool:
+    """Whether the code a checkpoint added to this host is tied there: it reuses data that already
+    existed (a parameter or local of the method, a field or method of the class). Only then was it
+    drawn to the place, and only then is the place one to watch for what is drawn in later."""
+    return h["tie"] >= 1 and h["net_added"] > 0 and not h.get("replacement")
+
+
+def touched_classes(hosts: list[dict], cls: dict[tuple[int, str], str], tied: bool = False
+                    ) -> dict[str, set[int]]:
+    """Class identity -> the checkpoints that change any method of it; with ``tied``, only those
+    whose code there is tied (``is_tied``)."""
+    out: dict[str, set[int]] = {}
+    for h in hosts:
+        if is_tied(h) if tied else (h["net_added"] > 0 or h["removed"] > 0):
+            out.setdefault(cls[(h["cp"], h["type"])], set()).add(h["cp"])
+    return out
+
+
+def reopened(hosts: list[dict], wiring_changes: dict[str, list]) -> dict[int, dict]:
+    """Per checkpoint (reported, PLAN.md §4.4): the classes its tied code goes into that an earlier
+    checkpoint's tied code had gone into, and the wiring files it changes that an earlier
+    checkpoint had created or changed (the function arm's equivalent of the calling method lives
+    there; a wiring file has no ties, so every change counts)."""
+    cls = class_identities(hosts)
+    by_cp: dict[int, set[str]] = {}
+    for c, cps in touched_classes(hosts, cls, tied=True).items():
+        for cp in cps:
+            by_cp.setdefault(cp, set()).add(c)
+    files: dict[int, set[str]] = {}
+    for unit, changes in wiring_changes.items():
+        files[int(unit[2:])] = {path for status, path in changes}
+    created = {int(unit[2:]): {path for status, path in changes if status == "A"}
+               for unit, changes in wiring_changes.items()}
+    out = {}
+    seen_c: set[str] = set()
+    seen_f: set[str] = set()
+    for cp in sorted(set(by_cp) | set(files)):
+        c = by_cp.get(cp, set())
+        f = files.get(cp, set())
+        out[cp] = {"reopened_classes": len(c & seen_c),
+                   "reopened_wiring": len((f - created.get(cp, set())) & seen_f)}
+        seen_c |= c
+        seen_f |= f
+    return out

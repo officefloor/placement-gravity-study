@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 # A self-test of analysis/analyse.R on simulated data with known effects (run by step1_setup.sh):
 # ties rise with host size in the methods arm and less so in the function arm; intrusion rises with
-# ties; the shape measures are unrelated to intrusion; every checkpoint (problem) has its own level
+# ties; later intrusions tied to what stood by rise with how much stood by; the shape measures are unrelated to intrusion; every checkpoint (problem) has its own level
 # of ties and of intrusion, shared by all chains. The models must recover each direction.
 
 set.seed(20261116)
@@ -31,11 +31,22 @@ h2 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
   cp <- 60 - later
   new <- rbinom(n, 1, 0.4)
   tie <- ifelse(new == 1, rbinom(n, 1, 0.2), tie)      # new hosts have few ties and are left alone
-  mu <- exp(-3.2 + 0.25 * tie - 0.8 * new + cp_int[cp]) * later
+  mu <- exp(-3.2 + 0.25 * tie - 0.8 * new + cp_int[cp] + (if (arm == "spring") 0 else -0.9)) * later
+  # what stood by where the code was placed, and the later intrusions tied to it: 15% more per
+  # field of the class, 10% more per value of the method
+  byc <- rpois(n, if (arm == "spring") 6 else 1)
+  bym <- rpois(n, if (arm == "spring") 3 else 1)
+  dr <- exp(-4.5 + cp_int[cp]) * later
   data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "",
              cp = cp, act = NA,
-             intrusion = rnbinom(n, size = 2, mu = mu), later_checkpoints = later,
-             intrusion_host = rnbinom(n, size = 2, mu = 2 * mu),
+             intrusion_class = rnbinom(n, size = 2, mu = 3 * mu), later_checkpoints = later,
+             intrusion_method = rnbinom(n, size = 2, mu = 2 * mu),
+             intrusion_lines = rnbinom(n, size = 2, mu = exp(-3.2 + cp_int[cp]) * later),
+             intrusion_class_any = rnbinom(n, size = 2, mu = 4 * mu),
+             intrusion_method_any = rnbinom(n, size = 2, mu = 3 * mu), tied = rbinom(n, 1, 0.8) == 1,
+             bystanders_class = byc, bystanders_method = bym, class_positions = rpois(n, 60),
+             drawn_class = rnbinom(n, size = 2, mu = dr * exp(log(1.15) * byc)),
+             drawn_method = rnbinom(n, size = 2, mu = dr * exp(log(1.10) * bym)),
              tie = tie, tie_no_param = tie, tie_no_injected = tie, net_added = rpois(n, 4) + 1,
              addition_positions = rpois(n, 8) + 1, declared_crossings = rpois(n, 1),
              pre_positions = rpois(n, 20), host_new = new == 1, shape_found = TRUE,
@@ -54,6 +65,8 @@ by <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
   b <- rpois(n, mu)
   m <- rbinom(n, b, 0.3)
   data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = cp,
+             place_class = paste0(arm, ch, "|C", sample(1:6, n, replace = TRUE)),
+             place_method = paste0(arm, ch, "|M", sample(1:25, n, replace = TRUE)),
              host_new = rbinom(n, 1, 0.5) == 1, bystanders = b, by_method = m, by_class = b - m,
              bystanders_no_injected = rbinom(n, b, 0.7), bystanders_no_constants = rbinom(n, b, 0.6),
              need = rpois(n, 1.4))
@@ -64,6 +77,14 @@ cap <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, func
   data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = 1:60,
              share_in_existing = p, heaviest_class = heavy, fields_added = rpois(60, 0.2))
 }))))
+# reopening: the methods arm reopens about three places per checkpoint, the function arm one
+reopen <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
+  r <- rpois(60, (if (arm == "spring") 3 else 1) * exp(cp_by))
+  w <- if (arm == "spring") rep(0, 60) else rbinom(60, r, 0.5)
+  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = 1:60,
+             reopened = r, reopened_classes = r - w, reopened_wiring = w)
+}))))
+write.csv(reopen, file.path(dir, "reopen.csv"), row.names = FALSE)
 write.csv(by, file.path(dir, "by.csv"), row.names = FALSE)
 write.csv(cap, file.path(dir, "capture.csv"), row.names = FALSE)
 write.csv(h1, file.path(dir, "h1.csv"), row.names = FALSE)
@@ -87,33 +108,56 @@ check <- function(ok, what) {
 }
 check(e$H1$cp$lower > 0, "H1 recovers bystanders rising with the checkpoint in the methods arm")
 check(e$H1$cp$lower < 0.02 && 0.02 < e$H1$cp$upper + 0.01, "H1's slope is near the simulated one")
-check(e$H3$arm$upper < 0, "H3 recovers the function arm's fewer bystanders half-way through")
-check(e$H3$slope$upper < 0, "H3 recovers their slower growth")
-check(e$H3$centre_checkpoint == 30.5, "H3's checkpoint index is centred at the middle of the stream")
+check(e$H1$within_class$lower > 0 && e$H1$within_method$lower > 0,
+      "H1 recovers bystanders rising within a class and within a method")
+check(e$H1$within_class$places == 48, "H1 within a class is read on the classes with runs at two checkpoints")
+for (lev in c("class", "method")) {
+  m <- e$H2[[lev]]
+  true <- if (lev == "class") 1.15 else 1.10
+  check(m$irr_lower > 1, paste("H2 recovers later code tied to what stood by, at the", lev, "level"))
+  check(abs(log(m$irr) - log(true)) < 0.05, paste("H2's ratio is within 5% of the true one,", lev))
+  check(!is.null(e$reported[[paste0("H2_function_arm_", lev)]]$irr), paste("H2 in the function arm is reported,", lev))
+  t <- e$reported[[paste0("ties_intrusion_", lev)]]
+  check(abs(log(t$irr) - 0.25) < 0.05, paste("the ties' ratio in later intrusion is reported, near the true one,", lev))
+}
+for (lev in c("class", "method")) {
+  x <- e$reported[[paste0("size_or_data_", lev)]]
+  check(!is.null(x$bystanders$irr) && !is.null(x$size$irr) && !is.null(x$size_alone$irr) &&
+        !is.null(x$correlation$spring), paste("size or data is reported at the", lev))
+}
+check(e$H2$n < e$reported$intrusion_rows$tied, "H2 is read on the methods arm's tied rows")
+check(abs(log(e$reported$ties_lines$irr)) < 0.05,
+      "intrusion on the problem's own lines, simulated unrelated to ties, is reported as such")
+for (k in names(e$H3$measures)) {
+  m <- e$H3$measures[[k]]
+  check(m$irr_lower > 0.5 && m$irr_upper < 2, paste("H3 estimates", k, "near no effect"))
+}
+check(!is.null(e$reported$H3_class_level$s3_junction$irr), "H3's block on class-level intrusion is reported")
+check(e$H4$arm$upper < 0, "H4 recovers the function arm's fewer bystanders half-way through")
+check(e$H4$slope$upper < 0, "H4 recovers their slower growth")
+check(e$H4$centre_checkpoint == 30.5, "H4's checkpoint index is centred at the middle of the stream")
+for (lev in c("intrusion_class", "intrusion_method")) {
+  check(e$H4[[lev]]$irr_upper < 1, paste("H4 recovers the function arm's lower", lev))
+}
+check(e$reported$intrusion_rows$tied < e$reported$intrusion_rows$all, "intrusion is read on the tied rows only")
+check(abs(log(e$reported$reopen_with_wiring$irr) - log(1 / 3)) < 0.15, "reopening is reported, near the true ratio")
+check(!is.null(e$reported$ties_any_change_class$irr), "H2 on any later change is reported")
 check(abs(e$reported$H1_levels$function_arm$estimate) < 0.01, "the function arm's slope is reported, near flat")
-check(e$reported$needed_arm$lower < 0 && e$reported$needed_arm$upper > 0, "the arms need the same")
+check(abs(e$reported$needed_arm$estimate) < 0.05, "the arms need the same")
 check(e$reported$capture_spring$lower > 0, "capture is recovered in the methods arm")
 check(e$reported$H1_ties$log_host$lower > 0, "H1 as first registered (ties) is reported")
-check(e$reported$H3_ties$arm$upper < 0, "H3 as first registered (ties) is reported")
-check(e$reported$H3_ties$centre_positions > 3 && e$reported$H3_ties$centre_positions < 120,
-      "the tie-based H3's host size is centred within the data")
-check(e$reported$H3_arm_at[["50"]]$estimate < e$reported$H3_arm_at[["10"]]$estimate,
+check(e$reported$H4_ties$arm$upper < 0, "H4 as first registered (ties) is reported")
+check(e$reported$H4_ties$centre_positions > 3 && e$reported$H4_ties$centre_positions < 120,
+      "the tie-based H4's host size is centred within the data")
+check(e$reported$H4_arm_at[["50"]]$estimate < e$reported$H4_arm_at[["10"]]$estimate,
       "the arm difference in ties widens with host size, as simulated")
-check(isTRUE(e$checkpoint_intercept$H1) && isTRUE(e$checkpoint_intercept$H3) &&
-      isTRUE(e$checkpoint_intercept$H2a), "the models carry the checkpoint's intercept")
+check(isTRUE(e$checkpoint_intercept$H1) && isTRUE(e$checkpoint_intercept$H4) &&
+      isTRUE(e$checkpoint_intercept$H2_class), "the models carry the checkpoint's intercept")
 check(e$reported$formation_lagged_spring$lower > 0, "the lagged formation term is recovered")
-check(!is.null(e$reported$H2a_host_level$irr), "H2a on the host-level count is estimated")
-check(e$H2a$irr_lower > 1, "H2a recovers intrusion rising with ties")
-irr_true <- exp(0.25)
-check(e$H2a$irr_lower < irr_true && irr_true < e$H2a$irr_upper, "H2a's interval covers the true ratio")
-for (k in names(e$H2b$measures)) {
-  m <- e$H2b$measures[[k]]
-  check(m$irr_lower > 0.5 && m$irr_upper < 2, paste("H2b estimates", k, "near no effect"))
-}
 check(!is.null(e$reported$junction_x_arm_s3_junction$irr), "junction x arm is estimated")
-check(e$reported$H1_without_injected$log_host$lower > 0, "H1 without injected dependencies is estimated")
+check(e$reported$H1_without_injected$log_host$lower > 0, "H1 (ties) without injected dependencies is estimated")
 check(!is.null(e$reported$H1_class_level_without_injected$log_class$estimate),
-      "class-level H1 without injected dependencies is estimated")
-check(!is.null(e$reported$H3_without_injected$slope$estimate), "H3 without injected dependencies is estimated")
-check(!is.null(e$reported$H2a_without_injected$irr), "H2a without injected dependencies is estimated")
+      "class-level H1 (ties) without injected dependencies is estimated")
+check(!is.null(e$reported$H4_without_injected$slope$estimate), "H4 (ties) without injected dependencies is estimated")
+check(!is.null(e$reported$ties_without_injected_class$irr), "H2 without injected dependencies is estimated")
 cat("analysis/analyse.R self-test passed\n")

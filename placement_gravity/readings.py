@@ -221,7 +221,7 @@ def review(primary_runs: list[dict], primary_additions: list[dict], reviewed_add
     return out
 
 
-# ---- bystanders: the description beside H1 and H3 ----
+# ---- bystanders: the description beside H1 and H4 ----
 
 def bystander_summary(by: list[dict], captured: list[dict], checkpoints: int) -> dict:
     """Per arm: the share of runs that need nothing that was there (free: not pulled anywhere), and
@@ -243,4 +243,34 @@ def bystander_summary(by: list[dict], captured: list[dict], checkpoints: int) ->
                     "by_method": mean(rows, "by_method"), "by_class": mean(rows, "by_class"),
                     "without_constants": mean(rows, "bystanders_no_constants"), "thirds": thirds,
                     "fields_added_per_addition": mean(adds, "fields_added")}
+    return out
+
+
+def reopening_summary(rows: list[dict]) -> dict:
+    """Per arm: the classes and the wiring files reopened per checkpoint (PLAN.md §4.4)."""
+    out = {}
+    for arm in sorted({r["arm"] for r in rows}):
+        xs = [r for r in rows if r["arm"] == arm]
+        out[arm] = {"checkpoints": len(xs), "classes": statistics.fmean(r["reopened_classes"] for r in xs),
+                    "wiring": statistics.fmean(r["reopened_wiring"] for r in xs)}
+    return out
+
+
+def drawn_summary(h2: list[dict]) -> dict:
+    """Per arm, over the problem and host rows whose code was tied there (PLAN.md §4.4, H2): what
+    stood by at the placement, the later intrusions there, and how many of them are tied to
+    something that stood by, at the class and at the method."""
+    out = {}
+    for arm in sorted({r["arm"] for r in h2}):
+        rows = [r for r in h2 if r["arm"] == arm and r["tied"]]
+        if not rows:
+            out[arm] = {"rows": 0}
+            continue
+        x = {"rows": len(rows)}
+        for lev in ("class", "method"):
+            later = sum(r[f"intrusion_{lev}"] for r in rows)
+            drawn = sum(r[f"drawn_{lev}"] for r in rows)
+            x[lev] = {"bystanders": statistics.fmean(r[f"bystanders_{lev}"] for r in rows),
+                      "later": later, "drawn": drawn, "share": (drawn / later) if later else None}
+        out[arm] = x
     return out

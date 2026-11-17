@@ -54,14 +54,33 @@ def test_an_insertion_outside_a_problems_span_is_host_level_only(records):
               "before_type": r.get("before_type"), "before_name": r.get("before_name"),
               "host_new": r["host_new"], "pre_positions": r["pre_positions"],
               "net_added": r["added"] - r["moved_rm"] - r["moved_text"], "removed": r["removed"],
-              "replacement": False, "tie_method": 0, "tie_class": 0, "tie": 0}
+              "replacement": False, "tie_method": 1, "tie_class": 0, "tie": 1}
              for r in records if r["kind"] == "host"]
     streamed = {k: {"mutates": [], "crosses": []} for k in range(1, 5)}
     rows = {(r["cp"], r["name"]): r for r in
             tables.outcome_rows("x", "c", hosts, streamed, None, lines.follow(records))}
     two = rows[(2, "create")]
-    assert two["intrusion_host"] == 2 and two["intrusion"] == 0
-    assert rows[(1, "create")]["intrusion"] == 2 and rows[(1, "create")]["own_lines"] == 3
+    assert two["intrusion_method"] == 2 and two["intrusion_class"] == 2 and two["intrusion_lines"] == 0
+    assert rows[(1, "create")]["intrusion_lines"] == 2 and rows[(1, "create")]["own_lines"] == 3
+
+
+def test_a_new_method_in_the_same_class_is_class_level_intrusion(records):
+    """cp4 extracted checkName: it did not change cp3's method lines beyond create, but any change to
+    the class reopens it for every problem placed there."""
+    hosts = [{"cp": int(r["unit"][2:]), "type": r["type"], "name": r["name"], "signature": r["signature"],
+              "before_type": r.get("before_type"), "before_name": r.get("before_name"),
+              "host_new": r["host_new"], "pre_positions": r["pre_positions"],
+              "net_added": r["added"] - r["moved_rm"] - r["moved_text"], "removed": r["removed"],
+              "replacement": False, "tie_method": 1, "tie_class": 0, "tie": 1}
+             for r in records if r["kind"] == "host"]
+    cls = tables.class_identities(hosts)
+    assert set(cls.values()) == {"Owners"}
+    assert tables.touched_classes(hosts, cls) == {"Owners": {1, 2, 3, 4}}
+    # reopening: cp1 is the first to write into the base's class; cp2 to cp4 reopen it
+    again = tables.reopened(hosts, {"cp02": [["A", "a.yml"]], "cp03": [["M", "a.yml"], ["A", "b.yml"]],
+                                    "cp04": [["M", "b.yml"]]})
+    assert [again[k]["reopened_classes"] for k in (1, 2, 3, 4)] == [0, 1, 1, 1]
+    assert [again[k]["reopened_wiring"] for k in (1, 2, 3, 4)] == [0, 0, 1, 1]
 
 
 def test_a_lost_host_is_counted_lost(records):

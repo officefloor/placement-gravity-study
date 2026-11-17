@@ -1,4 +1,4 @@
-"""The wiring conditions of H3 (PLAN.md §4.5): the reader, and the growth and concentration checks."""
+"""The wiring conditions of H4 (PLAN.md §4.5): the reader, and the growth and concentration checks."""
 
 from placement_gravity import chain, wiring
 

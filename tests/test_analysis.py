@@ -93,14 +93,19 @@ def chain_tables(root: Path, arm: str, n: int, amount: int, junction_hosts: int 
                       "tie_no_injected": i % 2, "tie_class_no_injected": 0,
                       "pre_positions": 5 + i})
         outs.append({**common, "cp": 2 + i, "type": "T", "signature": f"m{i}()", "name": f"m{i}",
-                     "intrusion": i % 2, "later_checkpoints": 30 - i, "tie": i % 3, "net_added": 3,
+                     "intrusion_class": i % 3, "intrusion_method": i % 2, "intrusion_lines": 0,
+                     "class_identity": "T", "identity": f"T#m{i}", "bystanders_class": 4,
+                     "bystanders_method": i % 2, "drawn_class": i % 2, "drawn_method": 0,
+                     "tied": str(i % 5 != 0), "later_checkpoints": 30 - i, "tie": i % 3, "net_added": 3,
                      "pre_positions": 5 + i, "host_new": "False"})
     runs_.append({**runs_[0], "host_new": "True"})                 # a new host: not in H1
     runs_.append({**runs_[1], "replacement": "True"})              # moved code: not in H1
     adds = [{**common, "cp": c, "positions_added": 4, "amount_positions": amount + c,
              "wiring_edges_added": 1 if arm == "officefloor" else 0,
              "wiring_files": 3 if arm == "officefloor" else 0, "wiring_lines": 30 if arm == "officefloor" else 0,
-             "wiring_largest_share": 0.4 if arm == "officefloor" else ""} for c in range(1, 23)]
+             "wiring_largest_share": 0.4 if arm == "officefloor" else "",
+             "reopened": 2 if arm == "spring" else 1, "reopened_classes": 2 if arm == "spring" else 0,
+             "reopened_wiring": 0 if arm == "spring" else 1} for c in range(1, 23)]
     for name, rows in (("hosts", hosts), ("runs", runs_), ("outcomes", outs), ("additions", adds)):
         write(d / f"{name}.csv", rows)
 
@@ -123,9 +128,18 @@ def test_prepare_builds_the_datasets_and_applies_the_rules(tmp_path):
     cond = json.loads((out / "conditions.json").read_text())
     assert cond["chains"] == {"spring": 6, "officefloor": 6} and not cond["descriptive_only"]
     assert abs(cond["amount"]["ratio"] - (922 / 1022)) < 1e-9 and cond["amount"]["in_band"]
-    assert {"prior_tie_mean", "tie"} <= set(h1[0]) and {"intrusion", "intrusion_host", "own_lines"} <= set(h2[0])
+    assert {"prior_tie_mean", "tie"} <= set(h1[0]) and {"intrusion_class", "intrusion_method", "intrusion_lines", "own_lines"} <= set(h2[0])
     assert (out / "readings.json").exists()
     assert (out / "by.csv").exists() and (out / "capture.csv").exists()
+    assert {"bystanders_class", "bystanders_method", "drawn_class", "drawn_method"} <= set(h2[0])
+    assert h2[0]["class_positions"] == "50.0"
+    drawn = json.loads((out / "readings.json").read_text())["drawn"]["spring"]
+    # per chain 16 tied rows (i % 5 != 0): class intrusions sum(i % 3), of them drawn sum(i % 2)
+    tied = [i for i in range(20) if i % 5 != 0]
+    assert drawn["rows"] == 6 * 16 and drawn["class"]["later"] == 6 * sum(i % 3 for i in tied)
+    assert drawn["class"]["drawn"] == 6 * sum(i % 2 for i in tied) and drawn["method"]["share"] == 0
+    again = list(csv.DictReader((out / "reopen.csv").open()))
+    assert len(again) == 12 * 22 and {r["reopened"] for r in again if r["arm"] == "spring"} == {"2"}
     assert cond["wiring"]["verdict"]["concentration_against"] is False
 
 
@@ -155,12 +169,17 @@ def measure(irr, lo, hi, p, outside=False):
 
 
 def estimates(**over):
-    e = {"H1": {"cp": boot(0.01, 0.002, 0.02, 0.004, 0.99)},
-         "H2a": {"irr": 1.3, "irr_lower": 1.1, "irr_upper": 1.5, "p_greater": 0.001, "n": 100},
-         "H2b": {"testable": True, "bound": [0.8, 1.25], "kept": ["s1_long", "s3_junction"],
-                 "measures": {"s1_long": measure(1.0, 0.9, 1.1, 0.002),
-                              "s3_junction": measure(1.05, 0.95, 1.15, 0.01)}},
-         "H3": {"arm": boot(-0.5, -0.8, -0.2, 0.999, 0.001), "slope": boot(-0.2, -0.3, -0.1, 0.99, 0.002)}}
+    e = {"H1": {"cp": boot(0.01, 0.002, 0.02, 0.004, 0.99),
+                "within_class": boot(0.02, 0.005, 0.03, 0.003, 0.99),
+                "within_method": boot(0.01, 0.001, 0.02, 0.004, 0.99)},
+         "H2": {"n": 100, "class": {"irr": 1.3, "irr_lower": 1.1, "irr_upper": 1.5, "p_greater": 0.001},
+                "method": {"irr": 1.2, "irr_lower": 1.05, "irr_upper": 1.4, "p_greater": 0.004}},
+         "H3": {"testable": True, "bound": [0.8, 1.25], "kept": ["s1_long", "s3_junction"],
+                "measures": {"s1_long": measure(1.0, 0.9, 1.1, 0.002),
+                             "s3_junction": measure(1.05, 0.95, 1.15, 0.01)}},
+         "H4": {"arm": boot(-0.5, -0.8, -0.2, 0.999, 0.001), "slope": boot(-0.2, -0.3, -0.1, 0.99, 0.002),
+                "intrusion_class": {"irr": 0.4, "irr_lower": 0.3, "irr_upper": 0.6, "p_less": 0.001},
+                "intrusion_method": {"irr": 0.5, "irr_lower": 0.3, "irr_upper": 0.8, "p_less": 0.003}}}
     e.update(over)
     return e
 
@@ -171,48 +190,72 @@ COND = {"descriptive_only": False, "amount": {"in_band": True, "ratio": 0.95},
 
 def test_all_supported():
     v = verdict.decide(estimates(), COND)["hypotheses"]
-    assert [v[k]["verdict"] for k in ("H1", "H2", "H3")] == ["supported"] * 3
+    assert [v[k]["verdict"] for k in ("H1", "H2", "H3", "H4")] == ["supported"] * 4
 
 
-def test_h2b_interval_reaching_outside_the_bound_is_unresolved():
+def test_h1_needs_the_rise_within_a_class_and_within_a_method():
     e = estimates()
-    e["H2b"]["measures"]["s1_long"] = measure(1.1, 0.7, 1.5, 0.3)
-    assert verdict.decide(e, COND)["hypotheses"]["H2"]["verdict"] == "unresolved"
+    e["H1"]["within_method"] = boot(0.001, -0.01, 0.012, 0.4, 0.6)
+    assert verdict.decide(e, COND)["hypotheses"]["H1"]["verdict"] == "not supported"
+    e["H1"]["within_method"] = {"error": "no place with runs at two checkpoints"}
+    assert verdict.decide(e, COND)["hypotheses"]["H1"]["verdict"] == "not estimable"
 
 
-def test_h2b_shape_carrying_information_is_not_supported():
+def test_h2_needs_both_the_class_and_the_method():
     e = estimates()
-    e["H2b"]["measures"]["s1_long"] = measure(1.6, 1.3, 1.9, 0.99, outside=True)
-    v = verdict.decide(e, COND)["hypotheses"]["H2"]
-    assert v["h2b"] == "against" and v["verdict"] == "not supported"
+    e["H2"]["method"] = {"irr": 1.1, "irr_lower": 0.9, "irr_upper": 1.3, "p_greater": 0.2}
+    assert verdict.decide(e, COND)["hypotheses"]["H2"]["verdict"] == "not supported"
+    e["H2"]["method"] = {"irr": 0.7, "irr_lower": 0.5, "irr_upper": 0.9, "p_greater": 0.99}
+    assert verdict.decide(e, COND)["hypotheses"]["H2"]["verdict"] == "reversed"
 
 
-def test_h2_without_a_testable_shape_measure_is_read_on_h2a_and_says_so():
-    e = estimates(H2b={"testable": False, "bound": [0.8, 1.25], "kept": []})
-    v = verdict.decide(e, COND)["hypotheses"]["H2"]
-    assert v["h2b"] == "not testable" and v["verdict"] == "not supported"   # H2 needs H2b within
-    assert v["partial"] and set(v["h2b_dropped"]) == {"s1_long", "s2_stuck", "s3_junction",
-                                                      "s4_cognitive", "s5_class_gini"}
+def test_h2_and_h3_are_decided_apart():
+    """What stood by can draw later code in (H2) while the shape is unresolved (H3), and the other way."""
+    e = estimates()
+    e["H3"]["measures"]["s1_long"] = measure(1.1, 0.7, 1.5, 0.3)
+    v = verdict.decide(e, COND)["hypotheses"]
+    assert v["H2"]["verdict"] == "supported" and v["H3"]["verdict"] == "unresolved"
 
 
-def test_h3_fails_on_the_amount_or_the_wiring():
+def test_h3_shape_carrying_information_is_not_supported():
+    e = estimates()
+    e["H3"]["measures"]["s1_long"] = measure(1.6, 1.3, 1.9, 0.99, outside=True)
+    v = verdict.decide(e, COND)["hypotheses"]["H3"]
+    assert v["state"] == "against" and v["verdict"] == "not supported"
+
+
+def test_h3_without_a_testable_shape_measure_says_so():
+    e = estimates(H3={"testable": False, "bound": [0.8, 1.25], "kept": []})
+    v = verdict.decide(e, COND)["hypotheses"]
+    assert v["H3"]["verdict"] == "not testable" and set(v["H3"]["dropped"]) == set(verdict.SHAPES)
+    assert v["H2"]["verdict"] == "supported"          # H2 no longer waits on the shape
+
+
+def test_h4_fails_on_the_amount_the_wiring_or_intrusion():
     c = json.loads(json.dumps(COND))
     c["amount"]["in_band"] = False
-    assert verdict.decide(estimates(), c)["hypotheses"]["H3"]["verdict"] == "not supported"
+    assert verdict.decide(estimates(), c)["hypotheses"]["H4"]["verdict"] == "not supported"
     c = json.loads(json.dumps(COND))
     c["wiring"]["verdict"]["growth_against"] = True
-    assert verdict.decide(estimates(), c)["hypotheses"]["H3"]["verdict"] == "not supported"
+    assert verdict.decide(estimates(), c)["hypotheses"]["H4"]["verdict"] == "not supported"
+    e = estimates()
+    e["H4"]["intrusion_method"] = {"irr": 0.9, "irr_lower": 0.7, "irr_upper": 1.2, "p_less": 0.2}
+    assert verdict.decide(e, COND)["hypotheses"]["H4"]["verdict"] == "not supported"
 
 
 def test_reversed_and_holm_failures():
-    e = estimates(H1={"cp": boot(-0.01, -0.02, -0.002, 0.999, 0.001)})
+    e = estimates()
+    e["H1"]["cp"] = boot(-0.01, -0.02, -0.002, 0.999, 0.001)
     assert verdict.decide(e, COND)["hypotheses"]["H1"]["verdict"] == "reversed"
-    # each interval clears 0, but p = 0.03 for all three: Holm makes them 0.09
-    e = estimates(H1={"cp": boot(0.01, 0.001, 0.02, 0.03, 0.97)},
-                  H3={"arm": boot(-0.5, -0.8, -0.01, 0.97, 0.03), "slope": boot(-0.2, -0.3, -0.01, 0.97, 0.03)})
-    e["H2a"]["p_greater"] = 0.03
+    # each interval clears its line, but p = 0.02 for all four: Holm makes them 0.08
+    e = estimates(H1={k: boot(0.01, 0.001, 0.02, 0.02, 0.98) for k in ("cp", "within_class", "within_method")})
+    e["H2"]["class"]["p_greater"] = e["H2"]["method"]["p_greater"] = 0.02
+    e["H3"]["measures"] = {"s1_long": measure(1.0, 0.9, 1.1, 0.02)}
+    e["H4"] = {"arm": boot(-0.5, -0.8, -0.01, 0.98, 0.02), "slope": boot(-0.2, -0.3, -0.01, 0.98, 0.02),
+               "intrusion_class": {"irr": 0.4, "irr_lower": 0.3, "irr_upper": 0.9, "p_less": 0.02},
+               "intrusion_method": {"irr": 0.4, "irr_lower": 0.3, "irr_upper": 0.9, "p_less": 0.02}}
     v = verdict.decide(e, COND)["hypotheses"]
-    assert v["H1"]["p_holm"] == pytest.approx(0.09) and v["H1"]["verdict"] == "not supported"
+    assert v["H1"]["p_holm"] == pytest.approx(0.08) and v["H1"]["verdict"] == "not supported"
 
 
 def test_descriptive_only_decides_nothing():
@@ -221,8 +264,14 @@ def test_descriptive_only_decides_nothing():
 
 
 def test_an_error_in_a_model_is_not_estimable():
-    v = verdict.decide(estimates(H1={"cp": {"error": "no fit"}}), COND)
+    e = estimates()
+    e["H1"]["cp"] = {"error": "no fit"}
+    v = verdict.decide(e, COND)
     assert v["hypotheses"]["H1"]["verdict"] == "not estimable"
+    e = estimates()
+    e["H2"]["method"] = {"error": "standard error not computed: tie"}
+    v = verdict.decide(e, COND)["hypotheses"]
+    assert v["H2"]["verdict"] == "not estimable" and v["H1"]["verdict"] == "supported"
 
 
 # ---------------------------------------------------------------- step 5
@@ -233,14 +282,17 @@ def test_the_report_names_every_hypothesis_and_commit():
     cond = {**COND, "chains": {"spring": 9, "officefloor": 9}}
     heads = [{"arm": "spring", "run": "r", "chain": 1, "excluded": False, "sha": "a" * 40}]
     md = report.render("petclinic-primary", "primary", est, ver, cond, {"shape_counts": {}}, heads)
-    for k in ("H1", "H2", "H3", "supported", "`aaaaaaaaaaaa`", "s3_junction"):
+    for k in ("H1", "H2", "H3", "H4", "supported", "`aaaaaaaaaaaa`", "s3_junction", "At the class (its fields)", "Within a class",
+              "Later intrusion where tied code was placed"):
         assert k in md
     rd = {"choice": {"spring": {"checkpoints": 59, "no_choice": 12, "median_tie_sd": 0.5,
                                 "median_distinct_hosts": 2}},
+          "drawn": {"spring": {"rows": 80, "class": {"bystanders": 7.5, "later": 900, "drawn": 400, "share": 0.444},
+                               "method": {"bystanders": 1.5, "later": 300, "drawn": 50, "share": 0.167}}},
           "review": {"against": "petclinic-primary",
                      "spring": {"rho": -0.4, "interval": [-0.6, -0.1], "checkpoints": 59, "against": False}}}
     md = report.render("x", "secondary", est, ver, cond, {"shape_counts": {}}, heads,
                        {"tag": "plan-v1", "changed": ["PLAN.md"]}, rd)
     for k in ("12 of 59 checkpoints left no choice", "Review against petclinic-primary", "`PLAN.md`",
-              "own lines"):
+              "own lines", "400 of 900 later intrusions tied to one of them"):
         assert k in md

@@ -1,5 +1,5 @@
 """The pilot (PLAN.md §8, step 2): the instrument on two chains, to check that the measures compute
-and are not degenerate. It is not a test of H1–H3, and its chains are excluded from registration.
+and are not degenerate. It is not a test of H1–H4, and its chains are excluded from registration.
 
     python -m placement_gravity.pilot --out results/pilot
 """
@@ -124,7 +124,7 @@ def main() -> None:
             "wiring_nodes_added": sum(x["wiring_nodes_added"] for x in ad),
             "wiring_edges_added": sum(x["wiring_edges_added"] for x in ad),
             "outcome_rows": len(o),
-            "outcomes_with_intrusion": sum(1 for x in o if x["intrusion"] > 0),
+            "outcomes_with_intrusion": sum(1 for x in o if x["intrusion_method"] > 0),
             "intrusion_per_100": quantiles([x["intrusion_per_100"] for x in o
                                             if x["intrusion_per_100"] is not None]),
             "declared_touches": sum(x["declared"] for x in o),
@@ -132,7 +132,7 @@ def main() -> None:
             "codetracker": {k: v for k, v in cc.items()
                             if k not in ("per_method", "ct_identity", "ct_touched")},
             "outcomes_followed_by_codetracker": sum(1 for x in o if x["identity_source"] == "codetracker"),
-            # §4.7: the shape competitors on existing hosts at k - 1 (descriptive; no H2 statistic)
+            # §4.7: the shape competitors on existing hosts at k - 1 (descriptive; no H3 statistic)
             "shape_problems": len(measured["shape_problems"]),
             "shape_errors": sum(x["errors"] for x in se),
             "existing_hosts_shape_found": sum(1 for x in real if not x["host_new"] and x["shape_found"]),
@@ -145,7 +145,7 @@ def main() -> None:
             "existing_hosts_s5_class_gini": quantiles([x["s5_class_gini"] for x in real
                                                       if not x["host_new"] and x["shape_found"]]),
             "series_first_last": [se[0], se[-1]] if se else None,
-            # §4.5: H3's wiring conditions on this one chain (no interval with one chain)
+            # §4.5: H4's wiring conditions on this one chain (no interval with one chain)
             "wiring_checks": wiring.chain_checks(ad),
             "wiring_verdict_one_chain": wiring.verdict([wiring.chain_checks(ad)]),
         }

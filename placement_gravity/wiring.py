@@ -1,15 +1,16 @@
-"""The two wiring conditions of H3 (PLAN.md §4.5), taken from the SinewSlim analysis plan's H4.
+"""The two wiring conditions of this study's H4 (PLAN.md §4.5), taken from the SinewSlim analysis
+plan's own H4.
 
-On the OfficeFloor arm, coupling that leaves a scope becomes configuration. H3 counts against
+On the OfficeFloor arm, coupling that leaves a scope becomes configuration. H4 counts against
 itself if that configuration carries the cost the code no longer does:
 
 - **Growth.** Per chain, the least-squares slope of the wiring edges each addition adds, over the
   checkpoint index. Over chains: the mean slope with a percentile bootstrap interval (chains
-  resampled with replacement). An interval above 0 counts against H3: the wiring grows faster
+  resampled with replacement). An interval above 0 counts against H4: the wiring grows faster
   than the problems.
 - **Concentration.** Per chain, at its final checkpoint, the share of the configuration's lines
   (neither blank nor only a comment) held by its largest file. Over chains: the mean share, with
-  its interval. A mean over 0.5 counts against H3: one file holds most of the wiring.
+  its interval. A mean over 0.5 counts against H4: one file holds most of the wiring.
 
 The rows are ``tables.addition_rows`` of one arm, any number of chains.
 """
@@ -22,7 +23,7 @@ import statistics
 #: The bootstrap of PLAN.md §4.5: resamples, and a seed fixed before any run is read.
 RESAMPLES = 10_000
 SEED = 20261116
-#: A largest-file share above this counts against H3.
+#: A largest-file share above this counts against H4.
 CONCENTRATION_LIMIT = 0.5
 
 

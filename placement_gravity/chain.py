@@ -159,6 +159,7 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path, java_src: str = 
     work.mkdir(parents=True)
     cps = checkpoints(repo, branch, base_ref)
     manifest, amounts, wires, shapes = [], [], {}, []
+    wire_changes: dict[str, list] = {}
     for c in cps:
         unit = f"cp{c.cp:02d}"
         for old, new in changed_java(repo, c.parent, c.commit, java_src):
@@ -175,6 +176,11 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path, java_src: str = 
         shapes.append(f"{unit}\t{prior}\t{','.join(sorted(wired_types(repo, c.parent, wiring_root))) or '-'}")
         wires[unit] = {"before": wiring(repo, c.parent, wiring_root),
                        "after": wiring(repo, c.commit, wiring_root)}
+        # the wiring files this checkpoint changes (status, path), for reopening (PLAN.md 4.4)
+        wire_changes[unit] = [] if c.noop else [
+            [line.split("\t")[0][0], line.split("\t")[-1]]
+            for line in git(repo, "diff", "--name-status", c.parent, c.commit, "--", wiring_root).splitlines()
+            if line.split("\t")[-1].endswith((".yml", ".yaml"))]
     (work / "manifest.tsv").write_text("\n".join(manifest) + "\n")
     # RefactoringMiner at each agent commit, and the injected (wired) types, as hints
     real = [(f"cp{c.cp:02d}", c.commit) for c in cps if not c.noop]
@@ -216,6 +222,6 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path, java_src: str = 
     amount = {r["unit"]: r for r in
               (json.loads(l) for l in (work / "amount.jsonl").read_text().splitlines() if l)}
     return {"checkpoints": [c.__dict__ for c in cps], "records": records, "amount": amount,
-            "wiring": wires, "refactorings": found, "hints": len(hint_lines),
+            "wiring": wires, "wiring_changes": wire_changes, "refactorings": found, "hints": len(hint_lines),
             "shape": methods, "shape_problems": [r for r in shaped if r["kind"] == "problem"],
             "hints_unmatched": unmatched}

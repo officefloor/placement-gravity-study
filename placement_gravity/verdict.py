@@ -2,18 +2,23 @@
 (PLAN.md §2, §5). Every decision rule of the study is here.
 
 - **H1** (the methods arm): the slope of the bystanders (PLAN.md §4.3a) on the checkpoint index
-  above 0. p = its one-sided bootstrap p-value.
-- **H2**: H2a (the rate ratio per tie above 1, one-sided Wald) and H2b (every shape measure kept
-  within the equivalence bound by two one-sided tests). p = the larger of H2a's p and the largest
-  TOST p. With no shape measure testable, H2 is read on H2a alone and says so.
-- **H3**: the function arm's bystanders fewer half-way through the stream and their slope on the
-  checkpoint index flatter (both one-sided bootstrap p-values; p = the larger), the amount within
-  its band, and neither wiring condition against.
-- **Multiplicity**: Holm over H1, H2 and H3 at α = 0.05.
+  above 0, over all runs and within a place: the class's bystanders within a class, the method's
+  within a method. p = the largest of the three one-sided bootstrap p-values.
+- **H2** (the methods arm): where code was tied to a class or a method, the rate ratio, per value
+  that stood by there, of the later intrusions tied to what stood by, above 1 at the class and at
+  the method (one-sided Wald; p = the larger of the two; PLAN.md §4.4).
+- **H3**: every shape measure kept within the equivalence bound by two one-sided tests, on
+  method-level intrusion, with the ties and the bystanders in the model. p = the largest TOST p.
+- **H4**: the function arm's bystanders fewer half-way through the stream, their slope on the
+  checkpoint index flatter, and its tied code come back to less, at the class and at the method
+  (p = the largest of the four one-sided p-values); the amount within its band; and neither wiring
+  condition against.
+- **Multiplicity**: Holm over H1 to H4 at α = 0.05.
 
 Verdicts: ``supported``; ``not supported``; ``reversed`` (an interval wholly on the wrong side);
-``unresolved`` (H2b: an interval reaching outside the bound without lying outside it);
-``descriptive only`` (fewer than 6 chains in an arm, or the development analysis).
+``unresolved`` (H3: an interval reaching outside the bound without lying outside it);
+``not testable`` (H3: no shape measure varies); ``descriptive only`` (fewer than 6 chains in an
+arm, or the development analysis).
 """
 
 from __future__ import annotations
@@ -22,6 +27,7 @@ import json
 from pathlib import Path
 
 ALPHA = 0.05
+SHAPES = ("s1_long", "s2_stuck", "s3_junction", "s4_cognitive", "s5_class_gini")
 
 
 def holm(ps: dict[str, float | None]) -> dict[str, float | None]:
@@ -42,50 +48,54 @@ def _ok(x: dict | None) -> bool:
 
 def h1(est: dict) -> dict:
     x = est.get("H1") or {}
-    b = x.get("cp")
-    if not _ok(b):
+    parts = [x.get("cp"), x.get("within_class"), x.get("within_method")]
+    if not all(_ok(b) for b in parts):
         return {"p": None, "verdict": "not estimable", "detail": x}
-    return {"p": b["p_greater"], "reversed": b["upper"] < 0,
-            "conditions_met": b["lower"] > 0, "detail": x}
+    return {"p": max(b["p_greater"] for b in parts), "reversed": any(b["upper"] < 0 for b in parts),
+            "conditions_met": all(b["lower"] > 0 for b in parts), "detail": x}
 
 
 def h2(est: dict) -> dict:
-    a = est.get("H2a") or {}
-    b = est.get("H2b") or {}
-    if not _ok(a):
-        return {"p": None, "verdict": "not estimable", "detail": {"H2a": a, "H2b": b}}
+    x = est.get("H2") or {}
+    c, m = x.get("class"), x.get("method")
+    if not (_ok(c) and _ok(m)):
+        return {"p": None, "verdict": "not estimable", "detail": x}
+    return {"p": max(c["p_greater"], m["p_greater"]),
+            "reversed": c["irr_upper"] < 1 or m["irr_upper"] < 1,
+            "conditions_met": c["irr_lower"] > 1 and m["irr_lower"] > 1, "detail": x}
+
+
+def h3(est: dict) -> dict:
+    b = est.get("H3") or {}
     measures = b.get("measures") or {}
-    bad = [k for k, m in measures.items() if not _ok(m)]
-    testable = bool(b.get("testable")) and not bad and bool(measures)
-    p_tost = max((m["p_tost"] for m in measures.values()), default=None) if testable else None
-    h2a_ok = a["irr_lower"] > 1
-    h2b_state = None
-    if testable:
-        if any(m["outside"] for m in measures.values()):
-            h2b_state = "against"          # a shape measure carries information beyond the problem
-        elif all(b["bound"][0] <= m["irr_lower"] and m["irr_upper"] <= b["bound"][1]
-                 for m in measures.values()):
-            h2b_state = "within"
-        else:
-            h2b_state = "unresolved"
-    p = max(a["p_greater"], p_tost) if p_tost is not None else a["p_greater"]
-    return {"p": p, "h2a_supported": h2a_ok, "h2a_reversed": a["irr_upper"] < 1,
-            "h2b": h2b_state or "not testable", "h2b_dropped": [k for k in ("s1_long", "s2_stuck",
-            "s3_junction", "s4_cognitive", "s5_class_gini") if k not in (b.get("kept") or [])],
-            "conditions_met": h2a_ok and h2b_state == "within", "partial": not testable,
-            "detail": {"H2a": a, "H2b": b}}
+    dropped = [k for k in SHAPES if k not in (b.get("kept") or [])]
+    if any(not _ok(m) for m in measures.values()):
+        return {"p": None, "verdict": "not estimable", "dropped": dropped, "detail": b}
+    if not (b.get("testable") and measures):
+        return {"p": None, "verdict": "not testable", "state": "not testable", "dropped": dropped,
+                "detail": b}
+    if any(m["outside"] for m in measures.values()):
+        state = "against"           # a shape measure carries information beyond the problem
+    elif all(b["bound"][0] <= m["irr_lower"] and m["irr_upper"] <= b["bound"][1]
+             for m in measures.values()):
+        state = "within"
+    else:
+        state = "unresolved"
+    return {"p": max(m["p_tost"] for m in measures.values()), "state": state, "dropped": dropped,
+            "conditions_met": state == "within", "detail": b}
 
 
-def h3(est: dict, cond: dict) -> dict:
-    x = est.get("H3") or {}
+def h4(est: dict, cond: dict) -> dict:
+    x = est.get("H4") or {}
     arm, slope = x.get("arm"), x.get("slope")
-    if not (_ok(arm) and _ok(slope)):
+    ic, im = x.get("intrusion_class"), x.get("intrusion_method")
+    if not (_ok(arm) and _ok(slope) and _ok(ic) and _ok(im)):
         return {"p": None, "verdict": "not estimable", "detail": x}
     amount = cond.get("amount") or {}
     w = (cond.get("wiring") or {}).get("verdict") or {}
     wiring_against = bool(w.get("growth_against")) or bool(w.get("concentration_against"))
-    lower = arm["upper"] < 0 and slope["upper"] < 0
-    return {"p": max(arm["p_less"], slope["p_less"]),
+    lower = arm["upper"] < 0 and slope["upper"] < 0 and ic["irr_upper"] < 1 and im["irr_upper"] < 1
+    return {"p": max(arm["p_less"], slope["p_less"], ic["p_less"], im["p_less"]),
             "reversed": arm["lower"] > 0,
             "amount_in_band": amount.get("in_band"), "wiring_against": wiring_against,
             "conditions_met": lower and amount.get("in_band") is True and not wiring_against,
@@ -93,7 +103,7 @@ def h3(est: dict, cond: dict) -> dict:
 
 
 def decide(est: dict, cond: dict) -> dict:
-    parts = {"H1": h1(est), "H2": h2(est), "H3": h3(est, cond)}
+    parts = {"H1": h1(est), "H2": h2(est), "H3": h3(est), "H4": h4(est, cond)}
     adjusted = holm({k: v["p"] for k, v in parts.items()})
     for k, v in parts.items():
         v["p_holm"] = adjusted[k]
@@ -102,10 +112,10 @@ def decide(est: dict, cond: dict) -> dict:
         elif "verdict" in v:
             continue
         elif v["p_holm"] is not None and v["p_holm"] <= ALPHA and v["conditions_met"]:
-            v["verdict"] = "supported" + (" (H2a only; H2b not testable)" if v.get("partial") else "")
-        elif v.get("reversed") or v.get("h2a_reversed"):
+            v["verdict"] = "supported"
+        elif v.get("reversed"):
             v["verdict"] = "reversed"
-        elif k == "H2" and v.get("h2a_supported") and v.get("h2b") == "unresolved":
+        elif k == "H3" and v.get("state") == "unresolved":
             v["verdict"] = "unresolved"
         else:
             v["verdict"] = "not supported"

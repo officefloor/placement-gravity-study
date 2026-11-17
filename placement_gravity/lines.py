@@ -1,4 +1,5 @@
-"""Following a problem's own lines (PLAN.md §4.4): the outcome of H2.
+"""Following a problem's own lines (PLAN.md §4.4). Reported for information: the hypotheses read
+intrusion where the code was placed, at the class and the method (``tables.outcome_rows``).
 
 A problem's lines in a host are the logic lines its addition placed there. They are followed from
 checkpoint to checkpoint through the instrument's line facts (``pair``, ``kinds``, ``hash`` and

@@ -1,6 +1,10 @@
 # Pilot: the pull instrument on chain 9
 
-**16 November 2026. A pilot (PLAN.md §8, step 2), not a test of H1–H3.** It checks that the measures
+> *Hypothesis numbers were changed on 17 November 2026 (PLAN.md §9): what this pilot called H2b is
+> H3 and what it called H3 is H4, and they are written so below. The pilot itself is as it was:
+> the bystanders, the class and method levels of intrusion and reopening came after it.*
+
+**16 November 2026. A pilot (PLAN.md §8, step 2), not a test of H1–H4.** It checks that the measures
 compute and are not degenerate, and settles the rules before registration. This version replaces
 two uncommitted drafts of 15 and 16 November: seam-based pull without RefactoringMiner, then
 token-level ties.
@@ -10,8 +14,8 @@ The two chains it reads are development data, **excluded from the registered ana
 - `evolve/blind-202608100006/just-solve/spring/chain9` (head `b48eb0c`)
 - `evolve/blind-202608100006/just-solve/officefloor/chain9` (head `b824bf9`)
 
-No hypothesis statistic (H1's slope, H2's model, H3's arm term) was computed. The arm figures come
-from one pair of chains and are not evidence for H3.
+No hypothesis statistic (H1's slope, H2's model, H4's arm term) was computed. The arm figures come
+from one pair of chains and are not evidence for H4.
 
 Reproduce: `./setup.sh && ./pilot.sh`. Two runs from an empty `.tmp/pilot` give byte-identical
 outputs: `hosts.csv`, `runs.csv`, `classes.csv`, `additions.csv`, `outcomes.csv`, `summary.json`
@@ -173,7 +177,7 @@ Over the whole tree, cp1 → cp60:
 | Junction share, injection-aware | 0.33 → 0.31 | 0.30 → 0.42 |
 | Complexity outliers | 16 → 21 | 13 → 25 |
 
-Three things follow for H2b:
+Three things follow for H3:
 
 - **S2 is degenerate on this stream.** No method in either arm, at any checkpoint, is stuck. A
   measure with no variation cannot enter the model. The 60-checkpoint petclinic stream may simply
@@ -198,7 +202,7 @@ draft's P1 direction and is recorded because it was seen before registration (PL
 Whether OfficeFloor's junctions stay contained to their injection point, as the author expects,
 is what intrusion measures (§4.4); it was not computed by shape here.
 
-## The wiring conditions of H3 (§4.5), added 16 November 2026
+## The wiring conditions of H4 (§4.5), added 16 November 2026
 
 On OfficeFloor's chain 9, the configuration grew from 465 to 568 lines over 51 files at cp60, with
 24 edges added in all. Most checkpoints add none, and the rest add 1 or 2; two remove 1. Growth: the
@@ -214,7 +218,7 @@ its configuration is Java, inside the Java measures.
 - **Utility, organisation, birth ties and unresolved references** are all rare here. Each is
   reported, so a change of this in other chains will show.
 - **Placement, dispersion, amount, wiring and outcomes** compute and vary.
-- **Wiring conditions** compute; on this chain neither comes near counting against H3.
+- **Wiring conditions** compute; on this chain neither comes near counting against H4.
 - **Shape (S1–S5)** computes on every existing host. S2 does not vary, S1 hardly varies in
   OfficeFloor, and S4's flag is broad (decisions 8 and 9). S3 (conventional) and S5 vary.
 
@@ -239,8 +243,8 @@ Settled 16 November 2026 (by the author, after this pilot's figures):
 7. **Run and chains** (settled 16 November 2026). Chain 9 of `blind-202608100006/just-solve` stays
    development data, excluded in both arms. The analysed runs are named in PLAN.md §3.1 and §3.1a.
 8. **A shape measure with no variation** (settled 16 November 2026, as proposed). a shape measure that does not vary in a corpus
-   (for example, fewer than 10 hosts flagged over all chains of an arm) leaves the H2b block for
-   that corpus and is reported as such. H2b is then read on the measures that remain, and the
+   (for example, fewer than 10 hosts flagged over all chains of an arm) leaves the H3 block for
+   that corpus and is reported as such. H3 is then read on the measures that remain, and the
    equivalence bound is not taken as met for the measure that left.
 9. **S4 as a flag or a level** (settled 16 November 2026, as proposed). enter cognitive complexity as log(1 + cognitive), a
    continuous measure, with the outlier flag reported beside it. On zero-heavy data the flag

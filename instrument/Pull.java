@@ -95,7 +95,7 @@ import net.officefloor.sinewslim.javaparser.ParsedFile;
 public final class Pull {
 
 	/** Bump whenever a field's meaning changes. */
-	static final int VERSION = 8;
+	static final int VERSION = 9;
 
 	/** A removed position's text must be at least this long to mark an added one as moved. */
 	static final int MOVED_MIN_CHARS = 12;
@@ -597,10 +597,14 @@ public final class Pull {
 					}
 				}
 				int[] vis = new int[3], need = new int[3]; // 0 state, 1 injected, 2 constant
+				Set<String> byF = new TreeSet<>();
 				for (String f : preFields) {
 					int k = preConstants.contains(f) ? 2 : preInjected.contains(f) ? 1 : 0;
 					vis[k]++;
 					need[k] += needF.contains(f) ? 1 : 0;
+					if (!needF.contains(f)) {
+						byF.add(f);
+					}
 				}
 				if (r > 0) {
 					s.append(',');
@@ -628,6 +632,7 @@ public final class Pull {
 				s.append(",\"vis_fields\":[").append(vis[0]).append(',').append(vis[1]).append(',').append(vis[2]);
 				s.append("],\"need_fields\":[").append(need[0]).append(',').append(need[1]).append(',')
 						.append(need[2]).append(']');
+				s.append(",\"need_field_names\":").append(strs(needF)).append(",\"by_field_names\":").append(strs(byF));
 				s.append('}');
 			}
 			s.append(']');

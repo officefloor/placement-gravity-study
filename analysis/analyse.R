@@ -8,14 +8,21 @@
 # and the conditions that are not models (the amount band, the wiring) are applied by
 # placement_gravity/verdict.py, so every decision rule sits in one place.
 #
-# H1 and H3: a Gaussian mixed model of log(1 + bystanders) per run of added logic (by.csv) on the
+# H1 and H4: a Gaussian mixed model of log(1 + bystanders) per run of added logic (by.csv) on the
 # checkpoint index: its slope in the methods arm (H1), and the arm term and the arm's interaction
-# with the checkpoint (H3), the checkpoint index centred at the middle of the stream so that the arm
+# with the checkpoint (H4), the checkpoint index centred at the middle of the stream so that the arm
 # term is the difference half-way through. Their intervals are a cluster bootstrap: chains
 # resampled with replacement within arm, the model refitted (spec$boot refits, spec$seed).
-# H1 and H3 as first registered, on the ties of runs into existing methods (h1.csv), are reported.
-# H2: a negative binomial (nbinom2) mixed model of later intrusion on the problem's own lines, per
-# problem and host, offset by the log of the later checkpoints; Wald intervals.
+# H1 and H4 as first registered, on the ties of runs into existing methods (h1.csv), are reported.
+# H1 also reads the same slope within a place: the class's bystanders over the runs in one class,
+# and the method's over the runs in one method, the checkpoint index centred on the place's mean.
+# H2 and H3: negative binomial (nbinom2) mixed models per problem and host whose code was tied
+# there, at the class and at the method it was placed in, offset by the log of the later
+# checkpoints; Wald intervals. H2, in the methods arm: the later intrusions tied to what stood by
+# at the placement, on the number that stood by (the rate ratio per bystander). H3: the shape
+# measures' equivalence, on later intrusion at the method, with the ties and the bystanders in the
+# model. H4 also reads the arm's rate ratio in later intrusion, without either in the model.
+# The ties' rate ratio in later intrusion (H2 until 17 November 2026) is reported.
 # Every model carries random intercepts for the chain and for the checkpoint: a checkpoint is one
 # problem, solved by every chain, so the problem is held fixed by its identity. A model that does
 # not converge with the checkpoint intercept is refitted without it, and that is recorded
@@ -40,6 +47,7 @@ read <- function(f) {
 h1 <- read("h1.csv")
 by <- read("by.csv")
 cap <- read("capture.csv")
+reopen <- read("reopen.csv")
 h2 <- read("h2.csv")
 set.seed(spec$seed)
 
@@ -60,6 +68,7 @@ wald <- function(fit, term, level = 0.95) {
   if (!term %in% rownames(co)) return(list(error = paste("term not estimated:", term)))
   est <- co[term, "Estimate"]
   se <- co[term, "Std. Error"]
+  if (!is.finite(est) || !is.finite(se)) return(list(error = paste("standard error not computed:", term)))
   z <- qnorm(1 - (1 - level) / 2)
   list(estimate = est, se = se, lower = est - z * se, upper = est + z * se, level = level,
        p_greater = pnorm(est / se, lower.tail = FALSE), p_less = pnorm(est / se))
@@ -125,7 +134,8 @@ fit_cp <- function(fixed, d, family) {
   f0 <- as.formula(paste(fixed, "+ (1 | chain_id)"))
   fit <- if (length(unique(d$cp)) > 1) fit_or_error(glmmTMB(f1, data = d, family = family)) else
     structure(list(msg = "one checkpoint"), class = "fit_error")
-  ok <- !inherits(fit, "fit_error") && isTRUE(fit$sdr$pdHess) && isTRUE(fit$fit$convergence == 0)
+  ok <- !inherits(fit, "fit_error") && isTRUE(fit$sdr$pdHess) && isTRUE(fit$fit$convergence == 0) &&
+    all(is.finite(summary(fit)$coefficients$cond[, "Std. Error"]))
   if (ok) return(list(fit = fit, formula = f1, cp = TRUE, data = d))
   list(fit = fit_or_error(glmmTMB(f0, data = d, family = family)), formula = f0, cp = FALSE, data = d)
 }
@@ -140,11 +150,12 @@ combo <- function(fit, weights, level = 0.95) {
   w[names(weights)] <- weights
   est <- sum(w * b)
   se <- sqrt(as.numeric(t(w) %*% V %*% w))
+  if (!is.finite(se)) return(list(error = "standard error not computed"))
   z <- qnorm(1 - (1 - level) / 2)
   list(estimate = est, se = se, lower = est - z * se, upper = est + z * se, level = level)
 }
 
-# ---------------------------------------------------------------- H1 and H3
+# ---------------------------------------------------------------- H1 and H4 on the ties (reported)
 
 res <- list(analysis = spec$analysis,
             versions = list(R = R.version.string,
@@ -195,7 +206,7 @@ if (!is.null(h1)) {
       c(wald(ml$fit, "prior_tie_mean"), list(n = nrow(dl), checkpoint_intercept = ml$cp))
   }
 
-  # H3 as first registered (reported): the arms against each other on the ties, the host size centred
+  # H4 as first registered (reported): the arms against each other on the ties, the host size centred
   # so that the arm term is the difference at a typical host
   d3 <- h1[h1$arm %in% c(spec$methods_arm, spec$function_arm), ]
   d3$arm <- droplevels(d3$arm)
@@ -203,23 +214,23 @@ if (!is.null(h1)) {
   d3$log_host_c <- d3$log_host - centre
   inter <- paste0("log_host_c:", FARM)
   fit3 <- fit_cp(paste0("y ~ log_host_c * arm + cp", fe_terms), d3, gaussian())$fit
-  res$reported$H3_ties <- list(n_runs = nrow(d3), centre_positions = exp(centre),
+  res$reported$H4_ties <- list(n_runs = nrow(d3), centre_positions = exp(centre),
                                arm = wald(fit3, FARM), slope = wald(fit3, inter))
   # the arm difference at hosts of 10, 25 and 50 positions (reported)
-  res$reported$H3_arm_at <- setNames(lapply(c(10, 25, 50), function(x)
+  res$reported$H4_arm_at <- setNames(lapply(c(10, 25, 50), function(x)
     combo(fit3, setNames(c(1, log(x) - centre), c(FARM, inter)))), c("10", "25", "50"))
 
-  # H3 without the injection rule: ties counted without parameters, in both arms (reported)
+  # H4 (ties) without the injection rule: ties counted without parameters, in both arms (reported)
   fit3n <- fit_cp(paste0("y_no_param ~ log_host_c * arm + cp", fe_terms), d3, gaussian())$fit
-  res$reported$H3_without_parameters <- list(arm = wald(fit3n, FARM), slope = wald(fit3n, inter))
+  res$reported$H4_without_parameters <- list(arm = wald(fit3n, FARM), slope = wald(fit3n, inter))
   fit3i <- fit_cp(paste0("y_no_injected ~ log_host_c * arm + cp", fe_terms), d3, gaussian())$fit
-  res$reported$H3_without_injected <- list(arm = wald(fit3i, FARM), slope = wald(fit3i, inter))
+  res$reported$H4_without_injected <- list(arm = wald(fit3i, FARM), slope = wald(fit3i, inter))
   # the trajectory: the arm's interaction with the checkpoint index
   fit3t <- fit_cp(paste0("y ~ log_host_c * arm + cp * arm", fe_terms), d3, gaussian())$fit
-  res$reported$H3_trajectory <- wald(fit3t, paste0(FARM, ":cp"))
+  res$reported$H4_trajectory <- wald(fit3t, paste0(FARM, ":cp"))
 }
 
-# ---------------------------------------------------------------- H1 and H3: bystanders
+# ---------------------------------------------------------------- H1 and H4: bystanders
 
 if (!is.null(by)) {
   by$arm <- as_arm(by$arm)
@@ -237,6 +248,27 @@ if (!is.null(by)) {
     cluster_boot(mb1$data, mb1$formula, gaussian(), "cp", spec$boot)
   res$H1 <- list(n_runs = nrow(dm), n_chains = length(unique(dm$chain_id)),
                  cp = if (is.null(bb1)) list(error = mb1$fit$msg) else boot_summary(mb1$fit, bb1, "cp"))
+  # H1 within a place: among the runs in one class, the class's bystanders, and among the runs in
+  # one method, the method's, on the checkpoint index less the place's mean (the place's mean is in
+  # the model, so the slope is not the code moving to places that hold more)
+  within <- function(d, place, col) {
+    d$yy <- log1p(d[[col]])
+    d$cp_m <- ave(d$cp, d[[place]])
+    d$cp_w <- d$cp - d$cp_m
+    if (length(unique(d$cp_w)) < 2) return(list(error = "no place with runs at two checkpoints"))
+    mw <- fit_cp("yy ~ cp_w + cp_m", d, gaussian())
+    if (inherits(mw$fit, "fit_error")) return(list(error = mw$fit$msg))
+    c(boot_summary(mw$fit, cluster_boot(mw$data, mw$formula, gaussian(), "cp_w", spec$boot), "cp_w"),
+      list(places = sum(tapply(d$cp_w, d[[place]], function(v) length(unique(v)) > 1)),
+           checkpoint_intercept = mw$cp))
+  }
+  if ("place_class" %in% names(dm)) {
+    res$H1$within_class <- within(dm, "place_class", "by_class")
+    res$H1$within_method <- within(dm, "place_method", "by_method")
+    dfa <- by[by$arm == spec$function_arm, ]
+    res$reported$H1_within_function_arm <- list(class = within(dfa, "place_class", "by_class"),
+                                                method = within(dfa, "place_method", "by_method"))
+  }
   # the same slope at each level, without injected dependencies, without constants, and in the
   # function arm (reported)
   slope_of <- function(d, col) {
@@ -249,20 +281,20 @@ if (!is.null(by)) {
     without_constants = slope_of(dm, "bystanders_no_constants"),
     function_arm = slope_of(by[by$arm == spec$function_arm, ], "bystanders"))
 
-  # H3: the function arm has fewer bystanders half-way through, and they grow more slowly
+  # H4: the function arm has fewer bystanders half-way through, and they grow more slowly
   db <- by[by$arm %in% c(spec$methods_arm, spec$function_arm), ]
   db$arm <- droplevels(db$arm)
   interb <- paste0("cp_c:", FARM)
   mb3 <- fit_cp(paste0("y ~ cp_c * arm", fe_by), db, gaussian())
-  note("H3", mb3)
+  note("H4", mb3)
   bb3 <- if (inherits(mb3$fit, "fit_error")) NULL else
     cluster_boot(mb3$data, mb3$formula, gaussian(), c(FARM, interb), spec$boot)
-  res$H3 <- list(n_runs = nrow(db), n_chains = length(unique(db$chain_id)), centre_checkpoint = mid,
+  res$H4 <- list(n_runs = nrow(db), n_chains = length(unique(db$chain_id)), centre_checkpoint = mid,
                  arm = if (is.null(bb3)) list(error = mb3$fit$msg) else boot_summary(mb3$fit, bb3, FARM),
                  slope = if (is.null(bb3)) list(error = mb3$fit$msg) else boot_summary(mb3$fit, bb3, interb))
   db$yn <- log1p(db$bystanders_no_injected)
   fitbn <- fit_cp(paste0("yn ~ cp_c * arm", fe_by), db, gaussian())$fit
-  res$reported$H3_bystanders_without_injected <- list(arm = wald(fitbn, FARM), slope = wald(fitbn, interb))
+  res$reported$H4_bystanders_without_injected <- list(arm = wald(fitbn, FARM), slope = wald(fitbn, interb))
   # the needed values: the same stream, so the arms are expected to need the same
   db$need_y <- log1p(db$need)
   res$reported$needed_arm <- wald(fit_cp(paste0("need_y ~ arm", fe_by), db, gaussian())$fit, FARM)
@@ -282,10 +314,13 @@ if (!is.null(cap)) {
   }
 }
 
-# ---------------------------------------------------------------- H2
+# ---------------------------------------------------------------- H2 and H3
 
 if (!is.null(h2)) {
   h2 <- h2[h2$later_checkpoints > 0, ]
+  # intrusion applies only where the problem's code was tied to the place (PLAN.md 4.4)
+  res$reported$intrusion_rows <- list(all = nrow(h2), tied = sum(as.logical(h2$tied)))
+  h2 <- h2[as.logical(h2$tied), ]
   h2$arm <- as_arm(h2$arm)
   h2$log_size <- log1p(h2$addition_positions)
   h2$log_host <- log1p(h2$pre_positions)
@@ -304,17 +339,82 @@ if (!is.null(h2)) {
   }
   nb <- nbinom2()
 
-  # H2a: every problem and host, intrusion on the problem's own lines
-  m2a <- fit_cp(base(h2, lead = "tie + "), h2, nb)
-  note("H2a", m2a)
-  res$H2a <- c(list(n = nrow(h2)), irr(wald(m2a$fit, "tie")))
-  res$reported$H2a_without_injected <-
-    irr(wald(fit_cp(base(h2, lead = "tie_no_injected + "), h2, nb)$fit, "tie_no_injected"))
-  # the host-level count as first built: any later change to the host (reported)
-  res$reported$H2a_host_level <-
-    irr(wald(fit_cp(base(h2, "intrusion_host", "tie + "), h2, nb)$fit, "tie"))
+  # H2: data draws code in. In the methods arm, per problem and host whose code was tied there:
+  # the later intrusions tied to a value that stood by at the placement, on the number that stood
+  # by, at the class (its fields) and at the method (its values).
+  drawn <- function(d, lev, term = paste0("bystanders_", lev)) {
+    if (nrow(d) == 0 || length(unique(d[[term]])) < 2) return(list(fit = structure(
+      list(msg = "the bystanders do not vary"), class = "fit_error"), cp = FALSE))
+    fit_cp(base(d, paste0("drawn_", lev), paste0(term, " + ")), d, nb)
+  }
+  h2$log_by_class <- log1p(h2$bystanders_class)
+  h2$log_by_method <- log1p(h2$bystanders_method)
+  hm <- h2[h2$arm == spec$methods_arm, ]
+  hf <- h2[h2$arm == spec$function_arm, ]
+  res$H2 <- list(n = nrow(hm))
+  for (lev in c("class", "method")) {
+    term <- paste0("bystanders_", lev)
+    md <- drawn(hm, lev)
+    note(paste0("H2_", lev), md)
+    res$H2[[lev]] <- irr(wald(md$fit, term))
+    # reported: per doubling-like step, log(1 + bystanders); and the function arm
+    res$reported[[paste0("H2_log_", lev)]] <- wald(drawn(hm, lev, paste0("log_by_", lev))$fit, paste0("log_by_", lev))
+    res$reported[[paste0("H2_function_arm_", lev)]] <- irr(wald(drawn(hf, lev)$fit, term))
+  }
+  # H2 until 17 November 2026 (reported): the ties and later intrusion, at the class and at the
+  # method, every tied problem and host. The problem's own lines are for information.
+  m2c <- fit_cp(base(h2, "intrusion_class", "tie + "), h2, nb)
+  m2m <- fit_cp(base(h2, "intrusion_method", "tie + "), h2, nb)
+  res$reported$ties_intrusion_class <- irr(wald(m2c$fit, "tie"))
+  res$reported$ties_intrusion_method <- irr(wald(m2m$fit, "tie"))
+  # Size or data (reported, with a stated direction): both arms pooled and no arm term, so that the
+  # arms' difference in what stands by, at about the same amount of code, separates the two. Later
+  # intrusion on what stood by with the size of the place held fixed (predicted above 1), the
+  # size's own ratio beside it, the size alone, and the same with the arm term (within arms).
+  if (multi(as.character(h2$arm))) {
+    h2$log_class <- log1p(h2$class_positions)
+    no_arm <- function(f) sub(" + arm", "", f, fixed = TRUE)
+    for (lev in c("class", "method")) {
+      d <- if (lev == "class") h2[!is.na(h2$log_class), ] else h2
+      size <- if (lev == "class") "log_class" else "log_host"
+      extra <- if (lev == "class") "log_class + " else ""
+      byt <- paste0("bystanders_", lev)
+      y <- paste0("intrusion_", lev)
+      both <- fit_cp(no_arm(base(d, y, paste0(byt, " + ", extra))), d, nb)$fit
+      alone <- fit_cp(no_arm(base(d, y, extra)), d, nb)$fit
+      inarm <- fit_cp(base(d, y, paste0(byt, " + ", extra)), d, nb)$fit
+      rho <- function(x) if (nrow(x) > 2) suppressWarnings(cor(x[[size]], x[[byt]], method = "spearman")) else NA
+      res$reported[[paste0("size_or_data_", lev)]] <- list(
+        n = nrow(d), bystanders = irr(wald(both, byt)), size = irr(wald(both, size)),
+        size_alone = irr(wald(alone, size)),
+        bystanders_within_arms = irr(wald(inarm, byt)), size_within_arms = irr(wald(inarm, size)),
+        correlation = c(list(pooled = rho(d)), lapply(split(d, as.character(d$arm)), rho)))
+    }
+  }
+  # H4: for the same problems, the function arm's tied code is come back to less, at the class and
+  # at the method (the base model without the ties, which the arm itself changes)
+  if (multi(as.character(h2$arm))) {
+    for (lev in c("class", "method")) {
+      ma <- fit_cp(base(h2, paste0("intrusion_", lev)), h2, nb)
+      note(paste0("H4_intrusion_", lev), ma)
+      res$H4[[paste0("intrusion_", lev)]] <- irr(wald(ma$fit, FARM))
+    }
+  }
+  # any later change, tied or not (as first built), reported
+  for (lev in c("class", "method")) {
+    res$reported[[paste0("ties_any_change_", lev)]] <- irr(wald(fit_cp(
+      base(h2, paste0("intrusion_", lev, "_any"), "tie + "), h2, nb)$fit, "tie"))
+  }
+  hl <- h2[!is.na(h2$intrusion_lines), ]
+  res$reported$ties_lines <- if (nrow(hl) > 0)
+    irr(wald(fit_cp(base(hl, "intrusion_lines", "tie + "), hl, nb)$fit, "tie")) else list(error = "no lines followed")
+  for (lev in c("class", "method")) {
+    res$reported[[paste0("ties_without_injected_", lev)]] <- irr(wald(fit_cp(
+      base(h2, paste0("intrusion_", lev), "tie_no_injected + "), h2, nb)$fit, "tie_no_injected"))
+  }
 
-  # H2b: existing hosts with their shape at k - 1
+  # H3: existing hosts with their shape at k - 1, on method-level intrusion (the shape measures are
+  # the method's), with the ties and what stood by in the method in the model
   ex <- h2[h2$host_new == 0 & as.logical(h2$shape_found) %in% TRUE, ]
   for (c in c("s1_long", "s2_stuck", "s3_junction", "s3_junction_injection_aware")) {
     ex[[c]] <- as.numeric(as.logical(ex[[c]]))
@@ -322,15 +422,23 @@ if (!is.null(h2)) {
   if ("s4_cognitive" %in% spec$shape_kept) ex$s4_cognitive <- as.numeric(scale(log1p(ex$s4_cognitive)))
   if ("s5_class_gini" %in% spec$shape_kept) ex$s5_class_gini <- as.numeric(scale(ex$s5_class_gini))
   kept <- spec$shape_kept
-  res$H2b <- list(n = nrow(ex), kept = kept, testable = length(kept) > 0, bound = spec$bound)
-  res$reported$H2a_existing_hosts <- irr(wald(fit_cp(base(ex, lead = "tie + "), ex, nb)$fit, "tie"))
+  res$H3 <- list(n = nrow(ex), kept = kept, testable = length(kept) > 0, bound = spec$bound)
+  for (lev in c("class", "method")) {
+    res$reported[[paste0("ties_existing_hosts_", lev)]] <-
+      irr(wald(fit_cp(base(ex, paste0("intrusion_", lev), "tie + "), ex, nb)$fit, "tie"))
+  }
   if (length(kept) > 0) {
-    m2b <- fit_cp(base(ex, lead = paste0("tie + ", paste(kept, collapse = " + "), " + ")), ex, nb)
-    note("H2b", m2b)
-    res$H2b$measures <- setNames(lapply(kept, function(k) tost(m2b$fit, k, spec$bound)), kept)
-    # shape without the problem terms (the checkpoint's intercept among them) and the ties: how
+    shape_block <- paste0("tie + bystanders_method + ", paste(kept, collapse = " + "), " + ")
+    m3s <- fit_cp(base(ex, "intrusion_method", shape_block), ex, nb)
+    note("H3", m3s)
+    res$H3$measures <- setNames(lapply(kept, function(k) tost(m3s$fit, k, spec$bound)), kept)
+    # the same block on class-level intrusion (reported)
+    m3c <- fit_cp(base(ex, "intrusion_class", sub("bystanders_method", "bystanders_class", shape_block)), ex, nb)
+    res$reported$H3_class_level <- setNames(lapply(kept, function(k) tost(m3c$fit, k, spec$bound)), kept)
+    # shape without the problem terms (the checkpoint's intercept among them), the ties and the
+    # bystanders: how
     # much association leaving the problem out makes
-    fsh <- as.formula(paste0("intrusion ~ ", paste(kept, collapse = " + "),
+    fsh <- as.formula(paste0("intrusion_method ~ ", paste(kept, collapse = " + "),
                              if (multi(as.character(ex$arm))) " + arm" else "",
                              " + offset(log_later) + (1 | chain_id)"))
     fitsh <- fit_or_error(glmmTMB(fsh, data = ex, family = nb))
@@ -344,9 +452,18 @@ if (!is.null(h2)) {
       res$reported[[paste0("junction_x_arm_", j)]] <- list(error = "junction does not vary in every arm")
       next
     }
-    fj <- sub(" + arm", "", base(ex, lead = paste0("tie + ", j, " * arm + ")), fixed = TRUE)
+    fj <- sub(" + arm", "", base(ex, "intrusion_method", paste0("tie + bystanders_method + ", j, " * arm + ")), fixed = TRUE)
     res$reported[[paste0("junction_x_arm_", j)]] <- irr(wald(fit_cp(fj, ex, nb)$fit, paste0(j, ":", FARM)))
   }
+}
+
+# Reopening (reported): per checkpoint, the classes its tied code goes back into, and the wiring
+# files it changes again; the function arm against the methods arm, a Poisson mixed model each.
+if (!is.null(reopen)) {
+  reopen$arm <- as_arm(reopen$arm)
+  fe_r <- if (multi(reopen$frontend)) " + frontend" else ""
+  res$reported$reopen_classes <- irr(wald(fit_cp(paste0("reopened_classes ~ arm", fe_r), reopen, poisson())$fit, FARM))
+  res$reported$reopen_with_wiring <- irr(wald(fit_cp(paste0("reopened ~ arm", fe_r), reopen, poisson())$fit, FARM))
 }
 
 dir.create(dirname(out), recursive = TRUE, showWarnings = FALSE)
