@@ -1,0 +1,338 @@
+score	year	title	venue	via
+9	2019	Finding needles in a haystack: Leveraging co-change dependencies to recommend refactorings	Journal of Systems and Software	tsantalis2009:fwd
+9	2018	MMRUC3: A recommendation approach of move method refactoring using coupling, cohesion, and contextual similarity to enhance software design	Software, Practice & Experience	tsantalis2009:fwd
+9	2017	Understanding the impact of refactoring on smells: a longitudinal study of 23 software projects	ACM Joint European Software Engineering Conference and Symposium on the Foundations of Software Engineering (ESEC/FSE)	tufano2015:fwd
+8	2026	Analyzing Software Evolution Dynamics using Execution Path-aware Graph Divergence	Journal of ICT Research and Applications	vasa2007:fwd
+8	2025	Leveraging LLMs, IDEs, and Semantic Embeddings for Automated Move Method Refactoring	arXiv.org	tsantalis2009:fwd
+8	2014	Methodbook: Recommending Move Method Refactorings via Relational Topic Models	IEEE Transactions on Software Engineering	tsantalis2009:fwd
+8	2020	Recommending Composite Refactorings for Smell Removal: Heuristics and Evaluation	Brazilian Symposium on Software Engineering	tufano2015:fwd
+8	2020	Reduction of Multiple Move Method Suggestions Using Total Call-Frequencies of Distinct Entities	International Journal of Information Engineering and Electronic Business	tsantalis2009:fwd
+8	2025	Together We are Better: LLM, IDE and Semantic Embedding to Assist Move Method Refactoring	IEEE International Conference on Software Maintenance and Evolution	tsantalis2009:fwd
+7	2020	30 Years of Software Refactoring Research: A Systematic Literature Review	arXiv.org	olbrich2010:fwd
+7	2020	A Systematic Literature Review on Software Refactoring	Deep Blue (University of Michigan)	tsantalis2009:fwd
+7	2020	Assessing the quality of evolving Haskell systems by measuring structural inequality	Haskell@ICFP	vasa2007:fwd
+7	2026	Characteristics and Automated Detection and Refactoring of Data Clumps	osnaDocs (Osnabrück University)	chatzigeorgiou2010:fwd
+7	2018	Controlling the Attack Surface of Object-Oriented Refactorings	Lecture notes in computer science	tsantalis2009:fwd
+7	2021	Design and Implementation of a Web-Based Application for Code Smells Repository	Tehnički glasnik	tufano2015:fwd
+7	2016	Domino Effect: Move More Methods Once a Method is Moved	IEEE International Conference on Software Analysis, Evolution, and Reengineering	tsantalis2009:fwd
+7	2026	From UIKit to SwiftUI: a reproducible protocol and a priori typology for open-source iOS application migration	American Impact Review	tufano2015:fwd
+7	2022	GitHub Marketplace for Practitioners and Researchers to Date: A Systematic Analysis of the Knowledge Mobilization Gap in Open Source Software Automation	arXiv.org	tsantalis2009:fwd
+7	2019	GodExpo: An Automated God Structure Detection Tool for Golang	2019 IEEE/ACM 3rd International Workshop on Refactoring (IWoR)	chatzigeorgiou2010:fwd,olbrich2010:fwd
+7	2018	Identifying refactoring opportunities for replacing type code with subclass and state	Proc. ACM Program. Lang.	tsantalis2009:fwd
+7	2020	Improving regression testing efficiency and reliability via test-suite transformations	Illinois Digital Environment for Access to Learning and Scholarship (University of Illinois at Urbana-Champaign)	tsantalis2009:fwd
+7	2025	MANTRA: Enhancing Automated Method-Level Refactoring with Contextual RAG and Multi-Agent LLM Collaboration	arXiv (Cornell University)	tsantalis2009:fwd
+7	2025	Oops!... I did it again. Analysing and Handling Conclusion (In-)Stability in Socio-Technical Software Engineering	arXiv (Cornell University)	tufano2015:fwd
+7	2018	PyDriller: Python framework for mining software repositories	ESEC/SIGSOFT FSE	olbrich2010:fwd
+7	2022	RMove: Recommending Move Method Refactoring Opportunities using Structural and Semantic Representations of Code	IEEE International Conference on Software Maintenance and Evolution	tsantalis2009:fwd
+7	2020	Recommendation of Move Method Refactoring Using Path-Based Representation of Code	International Conference on Software Engineering	tsantalis2009:fwd
+7	2026	Recommending Move Method Refactoring Opportunities Based on Feature Fusion and Deep Learning	IEEE Latin America Transactions	tsantalis2009:fwd
+7	2021	Reducing Technical Debt Density: Refactoring vs. Writing Clean New Code	University of Groningen research database (University of Groningen / Centre for Information Technology)	tufano2015:fwd
+7	2023	The Smelly Eight: An Empirical Study on the Prevalence of Code Smells in Quantum Computing	International Conference on Software Engineering	chatzigeorgiou2010:fwd,tufano2015:fwd
+7	2019	UNDERSTANDING CHARACTERISTICS AND STRUCTURAL EFFECTS OF BATCH REFACTORINGS IN PRACTICE		tsantalis2009:fwd
+6	2016	A Deep and Longitudinal Approach to Mining Mobile Applications	CU Scholar (University of Colorado Boulder)	tufano2015:fwd
+6	2025	A First Look at the Lifecycle of DL-Specific Self-Admitted Technical Debt	IEEE International Conference on Software Analysis, Evolution and Reengineering - Companion (SANER-C)	tufano2015:fwd
+6	2019	A case study on the effects and limitations of refactoring	2019 IEEE 15th International Scientific Conference on Informatics	chatzigeorgiou2010:fwd
+6	2002	A hierarchical model for object-oriented design quality assessment	IEEE Transactions on Software Engineering	tsantalis2009:back
+6	2024	A new architecture reconciling refactorings and transformations	Journal of Computer Languages	tsantalis2009:fwd
+6	2015	Cohesion-Driven Decomposition of Service Interfaces without Access to Source Code	IEEE Transactions on Services Computing	tsantalis2009:fwd
+6	2019	Deep Learning Anti-Patterns from Code Metrics History	IEEE International Conference on Software Maintenance and Evolution	chatzigeorgiou2010:fwd,tsantalis2009:fwd,tufano2015:fwd
+6	2026	Evolving Trends in Cleanliness of Open Source Projects	ACM Transactions on Software Engineering and Methodology	tufano2015:fwd
+6	2009	Examining the Potentially Confounding Effect of Class Size on the Associations between Object-Oriented Metrics and Change-Proneness	IEEE Transactions on Software Engineering	olbrich2010:back
+6	2021	Explainable, Security-Aware and Dependency-Aware Framework for Intelligent Software Refactoring	Deep Blue (University of Michigan)	olbrich2010:fwd,tsantalis2009:fwd
+6	2025	Exploring the relation between source code commit information and SonarQube issues	Procedia Computer Science	chatzigeorgiou2010:fwd
+6	2025	Graph neural network-based long method and blob code smell detection	Science of Computer Programming	olbrich2010:fwd
+6	2019	GraphEvo: Characterizing and Understanding Software Evolution using Call Graphs	2019 IEEE International Conference on Big Data (Big Data)	vasa2007:fwd
+6	2009	Identification of Move Method Refactoring Opportunities	IEEE Transactions on Software Engineering	chatzigeorgiou2010:back,tufano2015:back
+6	2011	Investigating the impact of design debt on software quality	MTD '11	olbrich2010:fwd
+6	2019	Learning Code Transformations Via Neural Machine Translation	W&M Publish (College of William & Mary)	tufano2015:fwd
+6	2021	Local and Global Feature Based Explainable Feature Envy Detection	Annual International Computer Software and Applications Conference	tsantalis2009:fwd
+6	2019	Machine learning techniques for code smell detection: A systematic literature review and meta-analysis	Information and Software Technology	chatzigeorgiou2010:fwd,tsantalis2009:fwd
+6	2018	Metric-based code smell detection technique for python software	Universiti Putra Malaysia Institutional Repository (Universiti Putra Malaysia)	olbrich2010:fwd
+6	2015	Modeling Design Flaw Evolution Using Complex Systems	International Symposium on Symbolic and Numeric Algorithms for Scientific Computing (SYNASC)	tufano2015:fwd
+6	2018	Move Method Recommendation using Call Frequency of Methods and Attributes	International Conference on Informatics, Electronics and Vision	tsantalis2009:fwd
+6	2019	On the impact of code smells on the energy consumption of mobile applications	Information and Software Technology	tsantalis2009:fwd,tufano2015:fwd
+6	2024	Proceedings of the 7th ACM/IEEE International Conference on Technical Debt		olbrich2010:fwd
+6	2025	Racing Against the Clock: Exploring the Impact of Scheduled Deadlines on Technical Debt	International Conference on Evaluation & Assessment in Software Engineering	chatzigeorgiou2010:fwd
+6	2006	Refactoring Practice: How it is and How it Should be Supported - An Eclipse Case Study	IEEE International Conference on Software Maintenance (ICSM)	chatzigeorgiou2010:back
+6	2026	STOA-C: integrating sandpiper optimization with decision trees for code smell identification in object-oriented system(s)	Scientific Reports	tufano2015:fwd
+6	2018	Software Code Smell Prediction Model Using Shannon, Rényi and Tsallis Entropies	Entropy	tufano2015:fwd
+6	2021	The Ghost Commit Problem When Identifying Fix-Inducing Changes: An Empirical Study of Apache Projects	IEEE Transactions on Software Engineering	tufano2015:fwd
+6	2023	Towards Reliable Rule Mining about Code Smells: The McPython Approach	Conference on Computer Science and Information Systems	olbrich2010:fwd
+6	2024	Towards Understanding the Distribution and Evolution of Code Smells: An Empirical Study on Java and Python Projects (S)	Proceedings/Proceedings of the ... International Conference on Software Engineering and Knowledge Engineering	olbrich2010:fwd
+6	2020	Towards a Live Refactoring Recommender Based on Code Smells and Quality Metrics	Portuguese National Funding Agency for Science, Research and Technology (RCAAP Project by FCT)	tsantalis2009:fwd
+6	2024	Unraveling the Impact of Code Smell Agglomerations on Code Stability	IEEE International Conference on Software Maintenance and Evolution	olbrich2010:fwd,tufano2015:fwd
+6	2013	Using Modularity Metrics to Assist Move Method Refactoring of Large Systems	2013 Seventh International Conference on Complex, Intelligent, and Software Intensive Systems	tsantalis2009:fwd
+6	2021	WhoReview: A multi-objective search-based approach for code reviewers recommendation in modern code review	Applied Soft Computing	tsantalis2009:fwd
+5	2026	A Model of Software Code Quality Analysis, Assessment, and Improvement System	Automation, Control, and Information Technology	chatzigeorgiou2010:fwd
+5	2026	A Novel Entropy based Maintainability Measurement Algorithm For Java Source Code.	Communications of the IIMA	tufano2015:fwd
+5	2024	A Survey of Deep Learning Based Software Refactoring	ACM Computing Surveys	tsantalis2009:fwd
+5	1994	A metrics suite for object oriented design	IEEE Transactions on Software Engineering	olbrich2010:back,tsantalis2009:back,tufano2015:back
+5	2019	Active Hotspot: An Issue-Oriented Model to Monitor Software Evolution and Degradation	IEEE/ACM International Conference on Automated Software Engineering (ASE)	tufano2015:fwd
+5	2021	An Evolutionary Analysis of Software-Architecture Smells	IEEE International Conference on Software Maintenance (ICSM)	tufano2015:fwd
+5	2024	An empirical study into the effects of transpilation on quantum circuit smells	Empirical Software Engineering	chatzigeorgiou2010:fwd,tsantalis2009:fwd,tufano2015:fwd
+5	2007	An empirical study of slice-based cohesion and coupling metrics	ACM Transactions on Software Engineering and Methodology	chatzigeorgiou2010:back
+5	2023	Analyzing the Impact of CI Sub-practices on Continuous Code Quality in Open-Source Projects: An Empirical Study	Brazilian Symposium on Software Engineering	tufano2015:fwd
+5	2022	Are We There Yet? Novices' Code Smells linked to Loop Constructs	ACM Technical Symposium on Computer Science Education (SIGCSE)	tufano2015:fwd
+5	2012	Assessing the Capability of Code Smells to Support Software Maintainability Assessments: Empirical Inquiry and Methodological Approach		chatzigeorgiou2010:fwd,olbrich2010:fwd
+5	2020	Automated End-to-End Management of the Deep Learning Lifecycle	MOspace Institutional Repository (University of Missouri)	vasa2007:fwd
+5	2018	Automatic Software Refactoring via Weighted Clustering in Method-Level Networks	IEEE Transactions on Software Engineering	tsantalis2009:fwd
+5	2022	Code Smells in Machine Learning Systems	arXiv.org	chatzigeorgiou2010:fwd,tufano2015:fwd
+5	2015	Compreensão de mudanças estruturais no código fonte usando análise dinâmica e estática		tufano2015:fwd
+5	2016	Continuous detection of design flaws in evolving object-oriented programs using incremental multi-pattern matching	International Conference on Automated Software Engineering	olbrich2010:fwd,tufano2015:fwd
+5	2023	Dependent or Not: Detecting and Understanding Collections of Refactorings	IEEE Transactions on Software Engineering	tsantalis2009:fwd
+5	2013	Detecting bad smells in source code using change history information	International Conference on Automated Software Engineering	tsantalis2009:fwd,tufano2015:back
+5	2022	EkmEx - an extended framework for labeling an unlabeled fault dataset	Multimedia tools and applications	olbrich2010:fwd
+5	2015	Estimating the breaking point for technical debt	2015 IEEE 7th International Workshop on Managing Technical Debt (MTD)	tsantalis2009:fwd
+5	2024	Evolution patterns of software-architecture smells: An empirical study of intra- and inter-version smells	Journal of Systems and Software	chatzigeorgiou2010:fwd,olbrich2010:fwd,tufano2015:fwd
+5	2021	Extraction of Prediction Rules of Code Smell using Decision Tree Algorithm	International Conference on Internet of Everything, Microwave Engineering, Communication and Networks (IEMECON)	olbrich2010:fwd
+5	2015	Feature envy factor: A metric for automatic feature envy detection	International Conference on Knowledge and Smart Technology	tsantalis2009:fwd
+5	2015	Forecasting Java Software Evolution Trends Employing Network Models	IEEE Transactions on Software Engineering	vasa2007:fwd
+5	2020	Green software: Refactoring approach	Journal of King Saud University: Computer and Information Sciences	olbrich2010:fwd
+5	2014	HIST (Historical Information for Smell deTection) - Replication Package	Figshare	tufano2015:back
+5	2015	Hotspot Patterns: The Formal Definition and Automatic Detection of Architecture Smells	Working IEEE/IFIP Conference on Software Architecture	tsantalis2009:fwd
+5	2018	How Maintainability Issues of Android Apps Evolve	IEEE International Conference on Software Maintenance (ICSM)	tufano2015:fwd
+5	2013	Identifying the move method refactoring opportunities based on evolutionary algorithm	International journal of Modeling, identification and control	tsantalis2009:fwd
+5	2019	Improving change prediction models with code smell-related information	Empirical Software Engineering	olbrich2010:fwd,tsantalis2009:fwd,tufano2015:fwd
+5	2023	La gestion de la dette technique dans le cadre des pratiques DevOps	theses.fr (ABES)	olbrich2010:fwd
+5	2015	Mining Version Histories for Detecting Code Smells	IEEE Transactions on Software Engineering	chatzigeorgiou2010:fwd,tsantalis2009:fwd
+5	1999	Modern Information Retrieval		tufano2015:back
+5	2016	Multi-Criteria Code Refactoring Using Search-Based Software Engineering: An Industrial Case Study	ACM Transactions on Software Engineering and Methodology	tsantalis2009:fwd
+5	2022	PHP Code Smells in Web Apps: Evolution, Survival and Anomalies	Journal of Systems and Software	chatzigeorgiou2010:fwd,olbrich2010:fwd,tufano2015:fwd
+5	2020	PHP code smells in web apps: survival and anomalies	Journal of Systems and Software	chatzigeorgiou2010:fwd,olbrich2010:fwd
+5	2010	Placement of Entities in Object-Oriented Systems by Means of a Single-Objective Genetic Algorithm	2010 Fifth International Conference on Software Engineering Advances	tsantalis2009:fwd
+5	2018	Prioritizing Code Smell Correction Task using Strength Pareto Evolutionary Algorithm	Indian Journal of Science and Technology	olbrich2010:fwd
+5	2017	Recommendation of Move Method Refactoring to Optimize Modularization Using Conceptual Similarity		tsantalis2009:fwd
+5	2023	Research Trends, Detection Methods, Practices, and Challenges in Code Smell: SLR	IEEE Access	tufano2015:fwd
+5	2023	Rubbing salt in the wound? A large-scale investigation into the effects of refactoring on security	Empirical Software Engineering	tsantalis2009:fwd
+5	2006	Search-based determination of refactorings for improving the class structure of object-oriented systems	Genetic and Evolutionary Computation Conference (GECCO)	tsantalis2009:back
+5	2013	Supporting requirements traceability through refactoring	IEEE International Requirements Engineering Conference	tsantalis2009:fwd
+5	2025	Testing without Scripts: An Approach to Smart GUI Exploration	DSpace (Open University in the Netherlands)	olbrich2010:fwd
+5	2009	The evolution and impact of code smells: A case study of two open source systems	Proceedings of the ... ACM-IEEE International Symposium on Empirical Software Engineering and Measurement/International Symposium on Empirical Software Engineering and Measurement	chatzigeorgiou2010:back,olbrich2010:back
+5	2024	Three Heads Are Better Than One: Suggesting Move Method Refactoring Opportunities with Inter-class Code Entity Dependency Enhanced Hybrid Hypergraph Neural Network	International Conference on Automated Software Engineering	tsantalis2009:fwd
+5	2017	Towards a Severity and Activity based Assessment of Code Smells	International Conference on Computer Science and Computational Intelligence	olbrich2010:fwd
+5	2009	Tracking Design Smells: Lessons from a Study of God Classes	Working Conference on Reverse Engineering (WCRE)	olbrich2010:back
+5	2024	Unmasking Data Secrets: An Empirical Investigation into Data Smells and Their Impact on Data Quality	IEEE/ACM International Conference on AI Engineering – Software Engineering for AI (CAIN)	tufano2015:fwd
+5	2018	Using Code Evolution Information to Improve the Quality of Labels in Code Smell Datasets	Annual International Computer Software and Applications Conference	olbrich2010:fwd
+5	2004	Using history information to improve design flaws detection	Euromicro Conference on Software Maintenance and Reengineering (CSMR)	olbrich2010:back,tufano2015:back
+5	2017	Utilization of code clones in productization process to detect customer-specific differences	Aaltodoc (Aalto University)	tufano2015:fwd
+5	2008	Visually Summarising Software Change	2008 12th International Conference Information Visualisation	vasa2007:fwd
+5	2022	What Refactoring Topics Do Developers Discuss? A Large Scale Empirical Study Using Stack Overflow	IEEE Access	tsantalis2009:fwd
+5	2023	Yazılım zafiyetlerini tahmin etmek için kapsamlı bir teknik borç tanımlama yöntemi	Istanbul Technical University Academic Open Archive (Istanbul Technical University)	chatzigeorgiou2010:fwd
+4	2010	A Comprehensive Review and Synthesis of Open Source Research	Journal of the AIS	tsantalis2009:fwd
+4	2025	A Methodological Framework for LLM-Based Mining of Software Repositories	arXiv (Cornell University)	tufano2015:fwd
+4	2024	A Position-Aware Approach to Decomposing God Classes	International Conference on Automated Software Engineering	tsantalis2009:fwd
+4	2018	A Quality-oriented Approach to Recommend Move Method Refactorings	Brazilian Symposium on Software Quality	tsantalis2009:fwd
+4	2019	A User Feedback Centric Approach for Detecting and Mitigating God Class Code Smell Using Frequent Usage Patterns	Journal of Communications Software and Systems	olbrich2010:fwd,tufano2015:fwd
+4	2019	A large-scale empirical exploration on refactoring activities in open source software projects	Science of Computer Programming	tsantalis2009:fwd
+4	2018	A large-scale empirical study on the lifecycle of code smell co-occurrences	Information and Software Technology	chatzigeorgiou2010:fwd,olbrich2010:fwd,tsantalis2009:fwd
+4	2003	A metric-based approach to enhance design quality through meta-pattern transformations	Euromicro Conference on Software Maintenance and Reengineering (CSMR)	tsantalis2009:back
+4	2015	A review of code smell mining techniques	Journal of Software Evolution and Process	tufano2015:fwd
+4	2007	A survey and taxonomy of approaches for mining software repositories in the context of software evolution	Journal of Software Maintenance and Evolution Research and Practice	chatzigeorgiou2010:back
+4	2025	An Automated Approach to Discovering Software Refactorings by Comparing Successive Versions	IEEE Transactions on Software Engineering	tsantalis2009:fwd
+4	2025	An Empirical Study on Software Developer-Related Factors and Technical Debt in Open-Source Software Projects	International Conference on Software and e-Business (ICSEB)	tufano2015:fwd
+4	2020	Anomaly Analyses to Guide Software Testing Activity	International Conference on Information Control Systems & Technologies	olbrich2010:fwd
+4	2026	Architectural blueprinting for pattern-driven refactoring: a multi-agent framework with bounded recovery	PeerJ Computer Science	chatzigeorgiou2010:fwd
+4	2016	Aspect Oriented Re-engineering of Legacy Software Using Cross-Cutting Concern Characterization and Significant Code Smells Detection	International journal of software engineering and knowledge engineering	tsantalis2009:fwd
+4	2017	Assessing and improving code transformations to support software evolution	theses.fr (ABES)	tufano2015:fwd
+4	2007	Assessing the impact of bad smells using historical information	International Workshop on Principles of Software Evolution	tufano2015:back
+4	2013	Automated inequality analysis of evolving software systems	Swinburne figshare (Swinburne University of Technology)	vasa2007:fwd
+4	2018	Automatic Test Smell Detection Using Information Retrieval Techniques	IEEE International Conference on Software Maintenance and Evolution	tsantalis2009:fwd
+4	2022	Call Graph Evolution Analytics over a Version Series of an Evolving Software System	International Conference on Automated Software Engineering	vasa2007:fwd
+4	2020	Characterizing and Identifying Composite Refactorings: Concepts, Heuristics and Patterns	International Conference on Mining Software Repositories (MSR)	tufano2015:fwd
+4	2016	Characterizing and Improving Logging Practices in Java-based Open Source Software Projects - A Large-scale Case Study in Apache Software Foundation		tsantalis2009:fwd
+4	2015	Code Bad Smell Detection through Evolutionary Data Mining	International Symposium on Empirical Software Engineering and Measurement	chatzigeorgiou2010:fwd
+4	2009	Comparative analysis of evolving software systems using the Gini coefficient	2009 IEEE International Conference on Software Maintenance	vasa2007:fwd
+4	2022	Correlation Feature Mining Model Based on Dual Attention for Feature Envy Detection	Proceedings/Proceedings of the ... International Conference on Software Engineering and Knowledge Engineering	tsantalis2009:fwd
+4	2009	DECOR: A Method for the Specification and Detection of Code and Design Smells	IEEE Transactions on Software Engineering	chatzigeorgiou2010:back,olbrich2010:back,tufano2015:back
+4	2018	Deep Learning Structural and Historical Features for Anti-Patterns Detection	PolyPublie (École Polytechnique de Montréal)	chatzigeorgiou2010:fwd,tsantalis2009:fwd,tufano2015:fwd
+4	2019	Deep Representation Learning for Code Smells Detection using Variational Auto-Encoder	International Joint Conference on Neural Networks (IJCNN)	tufano2015:fwd
+4	2022	Deprewriter: On the fly rewriting method deprecations	Journal of Object Technology	tsantalis2009:fwd
+4	2026	Detecting Behavioral Changes in Python Refactoring Implementations with Foundation Models	arXiv.org	tsantalis2009:fwd
+4	2020	Development of Agent-Based Simulation Models for Software Evolution		tsantalis2009:fwd
+4	2021	Empirical evaluation of code smells in open-source software (OSS) using Best Worst Method (BWM) and TOPSIS approach	International Journal of Quality & Reliability Management	olbrich2010:fwd,tufano2015:fwd
+4	2021	Evolution of Bad Smells in LabVIEW Graphical Models.	The Journal of Object Technology	tufano2015:fwd
+4	2024	Evolution of internal dimensions in object‐oriented software–A time series based approach	Software Practice and Experience	tufano2015:fwd
+4	2022	Extract Class Refactoring Based on Cohesion and Coupling: A Greedy Approach	Computers	tsantalis2009:fwd
+4	2020	Feature Envy Detection based on Bi-LSTM with Self-Attention Mechanism	2020 IEEE Intl Conf on Parallel & Distributed Processing with Applications, Big Data & Cloud Computing, Sustainable Computing & Communications, Social Computing & Networking (ISPA/BDCloud/SocialCom/SustainCom)	tsantalis2009:fwd
+4	2016	Finding the Best Compromise Between Design Quality and Testing Effort During Refactoring	IEEE International Conference on Software Analysis, Evolution, and Reengineering	olbrich2010:fwd
+4	2026	God Class Detection Using Thresholds of Software Code Metrics Derived from Metaheuristic Optimization	Sakarya University Journal of Computer and Information Sciences	olbrich2010:fwd
+4	2010	Growth and Change Dynamics in Open Source Software Systems		vasa2007:fwd
+4	2015	How do Java methods grow?	IEEE International Working Conference on Source Code Analysis and Manipulation (SCAM)	tufano2015:fwd
+4	2018	How do developers fix issues and pay back technical debt in the Apache ecosystem?	IEEE International Conference on Software Analysis, Evolution and Reengineering (SANER)	tufano2015:fwd
+4	2026	Incremental Static Analysis for Detecting and Refactoring Data Clumps in TypeScript	International Conference on Evaluation of Novel Approaches to Software Engineering	olbrich2010:fwd
+4	2016	Internal quality evolution of a large test system – an industrial study		chatzigeorgiou2010:fwd
+4	2022	Is There Any Correlation between Refactoring and Design Smell Occurrence?	International Conference on Software and Data Technologies	tsantalis2009:fwd
+4	2023	Machine Learning-Based Exploration of the Impact of Move Method Refactoring on Object-Oriented Software Quality Attributes	The Arabian journal for science and engineering	tsantalis2009:fwd
+4	2013	Measuring the Structural Similarity between Source Code Entities (S)	International Conference on Software Engineering and Knowledge Engineering	tsantalis2009:fwd
+4	2020	Mining Version Control Systems and Issue Trackers with LibVCS4j	IEEE International Conference on Software Analysis, Evolution and Reengineering (SANER)	tufano2015:fwd
+4	2015	Modeling changeset topics for feature location	IEEE International Conference on Software Maintenance and Evolution	vasa2007:fwd
+4	2012	Move code refactoring with dynamic analysis	International Conference on Smart Multimedia	tsantalis2009:fwd
+4	2013	OBEY: Optimal Batched Refactoring Plan Execution for Class Responsibility Redistribution	IEEE Transactions on Software Engineering	tsantalis2009:fwd
+4	1992	Orthogonal defect classification-a concept for in-process measurements	IEEE Transactions on Software Engineering	olbrich2010:back
+4	2019	Parameter-free Community Detection through Distance Dynamic Synchronization	Computer/law journal	tsantalis2009:fwd
+4	2004	Populating a Release History Database from version control and bug tracking systems	International Conference on Software Maintenance	tufano2015:back
+4	2017	Prioritization of smelly classes: A two phase approach (Reducing refactoring efforts)	Conference Information and Communication Technology	olbrich2010:fwd
+4	2012	Quantitative Decision-making in Software Engineering		vasa2007:fwd
+4	2011	ReLink: recovering links between bugs and changes	ACM Joint European Software Engineering Conference and Symposium on the Foundations of Software Engineering (ESEC/FSE)	tufano2015:back
+4	2017	Recommendation of move method refactorings using coupling, cohesion and contextual similarity	2017 IEEE International Conference on Imaging, Vision & Pattern Recognition (icIVPR)	tsantalis2009:fwd
+4	2020	Recommending refactorings via commit message analysis	Information and Software Technology	tsantalis2009:fwd
+4	2015	Reducing Object-Oriented Testing Cost Through the Analysis of Antipatterns		chatzigeorgiou2010:fwd,tsantalis2009:fwd
+4	2023	Research on mining software repositories to facilitate refactoring	Wiley Interdisciplinary Reviews Data Mining and Knowledge Discovery	tufano2015:fwd
+4	2011	Software Cartography and Code Navigation		vasa2007:fwd
+4	1998	Software Metrics : A Rigorous and Practical Approach		vasa2007:back
+4	2017	Software Musification	International Conference on Information Visualisation (IV)	tufano2015:fwd
+4	1997	Software evolution observations based on product release history	1997 Proceedings International Conference on Software Maintenance	vasa2007:back
+4	2012	Studying volatility predictors in open source software	Proceedings of the 2012 ACM-IEEE International Symposium on Empirical Software Engineering and Measurement	vasa2007:fwd
+4	2016	Supervised Learning For Orphan Adoption Problem In Software Architecture Recovery		vasa2007:fwd
+4	2024	Technical debt in AI-enabled systems: On the prevalence, severity, impact, and management strategies for code and architecture	Journal of Systems and Software	tufano2015:fwd
+4	2015	Textual Analysis for Code Smell Detection	2015 IEEE/ACM 37th IEEE International Conference on Software Engineering	chatzigeorgiou2010:fwd,tsantalis2009:fwd
+4	2022	The Lifecycle of Technical Debt that Manifest in Both Source Code and Issue Trackers	Information and Software Technology	chatzigeorgiou2010:fwd
+4	2018	The Scent of a Smell: An Extensive Comparison Between Textual and Structural Smells	IEEE Transactions on Software Engineering	chatzigeorgiou2010:fwd,tsantalis2009:fwd,tufano2015:fwd
+4	2019	Toward a Smell-Aware Bug Prediction Model	IEEE Transactions on Software Engineering	chatzigeorgiou2010:fwd,tsantalis2009:fwd,tufano2015:fwd
+4	2019	Towards the Definition of Enterprise Architecture Debts	IEEE International Enterprise Distributed Object Computing Conference Workshops (EDOCW)	tufano2015:fwd
+4	2022	Transformation-based Refactorings: a First Analysis	International Workshop on Smalltalk Technologies	tsantalis2009:fwd
+4	2002	Understanding software evolution using a combination of software visualization and software metrics	Obj. Logiciel Base données Réseaux	vasa2007:back
+4	2026	When Post-Anchor Metrics Fail: Stabilization Regimes in AI-Evidence Open-Source Projects	arXiv (Cornell University)	tufano2015:fwd
+4	2004	Yesterday's Weather: guiding early reverse engineering efforts by summarizing the evolution of changes	20th IEEE International Conference on Software Maintenance, 2004. Proceedings.	chatzigeorgiou2010:back,vasa2007:back
+4	2018	[Journal First] The Scent of a Smell: An Extensive Comparison Between Textual and Structural Smells	International Conference on Software Engineering	tsantalis2009:fwd
+4	2017	c-JRefRec: Change-based identification of Move Method refactoring opportunities	IEEE International Conference on Software Analysis, Evolution, and Reengineering	tsantalis2009:fwd
+3	2026	A Causal Perspective on Measuring, Explaining and Mitigating Smells in LLM-Generated Code	ACM/IEEE International Conference on Software Engineering: Companion Proceedings (ICSE-Companion)	tufano2015:fwd
+3	2018	A Feature Envy Detection Method Based on Dataflow Analysis	Annual International Computer Software and Applications Conference	tsantalis2009:fwd
+3	2019	A Quantitative Study on Characteristics and Effect of Batch Refactoring on Code Smells	International Symposium on Empirical Software Engineering and Measurement	tsantalis2009:fwd
+3	2016	A Study about the Life Cycle of Code Anomalies	Brazilian Symposium on Software Components, Architectures, and Reuse (SBCARS)	tufano2015:fwd
+3	2016	A Study on Software Testability and the Quality of Testing in Object-Oriented Systems		tsantalis2009:fwd
+3	2024	A Systematic Literature Review on the Influence of Enhanced Developer Experience on Developers' Productivity: Factors, Practices, and Recommendations	ACM Computing Surveys	tufano2015:fwd
+3	2020	A User-aware Intelligent Refactoring for Discrete and Continuous Software Integration		tsantalis2009:fwd
+3	2020	A comparison of quality flaws and technical debt in model transformation specifications	Journal of Systems and Software	tufano2015:fwd
+3	2016	A textual-based technique for Smell Detection	IEEE International Conference on Program Comprehension	chatzigeorgiou2010:fwd,tsantalis2009:fwd,tufano2015:fwd
+3	1996	A validation of object-oriented design metrics as quality indicators	IEEE Transactions on Software Engineering	tsantalis2009:back
+3	2019	Adapting God Class thresholds for software defect prediction: A case study	International Convention on Information and Communication Technology, Electronics and Microelectronics	olbrich2010:fwd,tufano2015:fwd
+3	2025	Alleviating class imbalance in Feature Envy prediction: An oversampling technique based on code entity attributes	Information and Software Technology	tsantalis2009:fwd,tufano2015:fwd
+3	2016	Alternative Sources of Information for Code Smell Detection: Postcards from Far Away	IEEE International Conference on Software Maintenance and Evolution	chatzigeorgiou2010:fwd,tsantalis2009:fwd,tufano2015:fwd
+3	2022	An Anomaly-Based Approach for Detecting Modularity Violations on Method Placement	International Conference on Software Quality, Reliability and Security	tsantalis2009:fwd
+3	2015	An Empirical Study of Architectural Change in Open-Source Software Systems	2015 IEEE/ACM 12th Working Conference on Mining Software Repositories	chatzigeorgiou2010:fwd
+3	2015	An Empirical Study of Design Degradation: How Software Projects Get Worse over Time	International Symposium on Empirical Software Engineering and Measurement	chatzigeorgiou2010:fwd,olbrich2010:fwd
+3	2018	An Empirical Study of the Impact of Code Smell on File Changes	International Conference on Software Quality, Reliability and Security	chatzigeorgiou2010:fwd,olbrich2010:fwd,tsantalis2009:fwd,tufano2015:fwd
+3	2020	An Exploratory Study of Code Smells in Web Games	arXiv.org	chatzigeorgiou2010:fwd,olbrich2010:fwd
+3	2025	An Insight into the Technical Debt-Fix Trade Off in Software Backporting	IEEE International Conference on Collaborative Advances in Software and Computing (CASCON)	tufano2015:fwd
+3	2024	An empirical investigation of the relationship between pattern grime and code smells	J. Softw. Evol. Process.	chatzigeorgiou2010:fwd,olbrich2010:fwd
+3	2014	An empirical investigation on MPI open source applications	International Conference on Evaluation & Assessment in Software Engineering	olbrich2010:fwd
+3	2018	An empirical study on quality of Android applications written in Kotlin language	Empirical Software Engineering	tufano2015:fwd
+3	2025	Analyzing Dependency Distribution Changes Arising from Code Smell Interactions	IEEE Working Conference on Mining Software Repositories	olbrich2010:fwd
+3	2018	Anatomy of Functionality Deletion: An Exploratory Study on Mobile Apps	IEEE Working Conference on Mining Software Repositories	tsantalis2009:fwd
+3	1998	AntiPatterns: Refactoring Software, Architectures, and Projects in Crisis		chatzigeorgiou2010:back,tufano2015:back
+3	2010	Application of Identical Degree of Set Pair Analysis on Software Refactoring	2010 International Conference on Computational Intelligence and Software Engineering	tsantalis2009:fwd
+3	2021	Assessing Growth and Instability of Open Source Software Systems	IEEE International Maghreb Meeting of the Conference on Sciences and Techniques of Automatic Control and Computer Engineering (MI-STA)	vasa2007:fwd
+3	2012	Automatic detection of bad smells in code: An experimental assessment	Journal of Object Technology	olbrich2010:fwd,tsantalis2009:fwd
+3	2018	Automatically measuring software architecture and identifying architecture problems	iDEA - Drexel University Institutional Repository	tsantalis2009:fwd
+3	2024	Boosting and Comparing Performance of Machine Learning Classifiers with Meta-heuristic Techniques to Detect Code Smell	e-Informatica Software Engineering Journal	olbrich2010:fwd,tufano2015:fwd
+3	2015	CLEAR: Class Level Software Refactoring Using Evolutionary Algorithms	Journal of Intelligent Systems	tsantalis2009:fwd
+3	2014	Case study on software refactoring tactics	IET Software	tsantalis2009:fwd
+3	2020	Characteristics of method extractions in Java: a large scale empirical study	Empirical Software Engineering	tsantalis2009:fwd
+3	2017	Characterizing and Detecting Anti-Patterns in the Logging Code	International Conference on Software Engineering	tsantalis2009:fwd,tufano2015:fwd
+3	2011	Code Restructuring: Tool for Quality Improvment		tsantalis2009:fwd
+3	2022	Code Smell Detection Using Ensemble Machine Learning Algorithms	Applied Sciences	olbrich2010:fwd
+3	2019	Code Smells Quantification: A Case Study on Large Open Source Research Codebase		chatzigeorgiou2010:fwd,olbrich2010:fwd
+3	2019	Code Transformation Issues in Move-Instance-Method Refactorings	2019 IEEE/ACM 3rd International Workshop on Refactoring (IWoR)	tsantalis2009:fwd
+3	2002	Code churn: a measure for estimating the impact of code change	International Conference on Software Maintenance	olbrich2010:back
+3	2018	Code smells and their collocations: A large-scale experiment on open-source systems	Journal of Systems and Software	chatzigeorgiou2010:fwd,olbrich2010:fwd
+3	2022	Cognitive-Driven Development Helps Software Teams to Keep Code Units Under the Limit!	Journal of Systems and Software	olbrich2010:fwd
+3	2013	Combining metrics for software evolution assessment by means of Data Envelopment Analysis	J. Softw. Evol. Process.	chatzigeorgiou2010:fwd
+3	2018	Datasets of Android Applications: a Literature Review	arXiv (Cornell University)	tufano2015:fwd
+3	2024	Debt Stories: Capturing Social and Technical Debt in the Industry	2024 IEEE/ACM International Conference on Technical Debt (TechDebt)	olbrich2010:fwd
+3	2015	Dependency cycles in software systems : quality issues and opportunities for refactoring	BIBSYS Brage (BIBSYS (Norway))	olbrich2010:fwd
+3	2018	Design patterns impact on software quality: Where are the theories?	IEEE International Conference on Software Analysis, Evolution and Reengineering (SANER)	tufano2015:fwd
+3	2024	Detecting Self-Admitted Technical Debts via Prompt-Based Method in Issue-Tracking Systems	Electronics	tufano2015:fwd
+3	2006	Diagnosing Design Problems in Object Oriented Systems	Working Conference on Reverse Engineering (WCRE)	chatzigeorgiou2010:back
+3	2016	Do Code Smells Impact the Effort of Different Maintenance Programming Activities?	IEEE International Conference on Software Analysis, Evolution, and Reengineering	chatzigeorgiou2010:fwd,olbrich2010:fwd
+3	2013	Do software categories impact coupling metrics?	IEEE Working Conference on Mining Software Repositories	olbrich2010:fwd
+3	2016	Does refactoring improve software structural quality? A longitudinal study of 25 projects		tufano2015:fwd
+3	2021	E-SC4R: Explaining Software Clustering for Remodularisation	Journal of Systems and Software	tsantalis2009:fwd
+3	2018	Empirical Evaluation of the Impact of Object-Oriented Code Refactoring on Quality Attributes: A Systematic Literature Review	IEEE Transactions on Software Engineering	tsantalis2009:fwd
+3	2025	Evaluating LLMs Effectiveness in Detecting and Correcting Test Smells: An Empirical Study	arXiv (Cornell University)	tufano2015:fwd
+3	1996	Evaluating the impact of object-oriented design on software quality	IEEE International Software Metrics Symposium (METRICS)	tsantalis2009:back
+3	2004	Evolution of understandability in OSS projects	Eighth European Conference on Software Maintenance and Reengineering, 2004. CSMR 2004. Proceedings.	vasa2007:back
+3	2025	Exceptional Behaviors: How Frequently Are They Tested?	International Conference/Workshop on Automation of Software Test	tsantalis2009:fwd
+3	2015	Exploring Software Refactoring Decisions in a Lean Startup	Aaltodoc (Aalto University)	chatzigeorgiou2010:fwd
+3	2024	Exploring the potential of general purpose LLMs in automated software refactoring: an empirical study	International Conference on Automated Software Engineering	tsantalis2009:fwd
+3	2022	Exploring the relationship between refactoring and code debt indicators	J. Softw. Evol. Process.	chatzigeorgiou2010:fwd
+3	2022	Feature Envy Detection with Deep Learning and Snapshot Ensemble	International Conferences on Dependable Systems and Their Applications	tsantalis2009:fwd
+3	2023	Fusion of deep convolutional and LSTM recurrent neural networks for automated detection of code smells	International Conference on Evaluation & Assessment in Software Engineering	chatzigeorgiou2010:fwd
+3	2024	GitHub marketplace for automation and innovation in software production	Information and Software Technology	tsantalis2009:fwd
+3	2012	Graph-based analysis and prediction for software evolution	International Conference on Software Engineering	vasa2007:fwd
+3	2001	Growth, evolution, and structural change in open source software	International Workshop on Principles of Software Evolution	vasa2007:back
+3	2017	House of Cards: Code Smells in Open-Source C# Repositories	Proceedings of the ... ACM-IEEE International Symposium on Empirical Software Engineering and Measurement/International Symposium on Empirical Software Engineering and Measurement	tufano2015:fwd
+3	2011	How We Refactor, and How We Know It	IEEE Transactions on Software Engineering	chatzigeorgiou2010:back
+3	2019	How does Object-Oriented Code Refactoring Influence Software Quality? Research Landscape and Challenges	Journal of Systems and Software	tsantalis2009:fwd
+3	2010	How multiple-dependency structure of classes affects their functions a statistical perspective	International Conference on Software Technology and Engineering	vasa2007:fwd
+3	2011	Identifying method friendships to remove the feature envy bad smell: NIER track	International Conference on Software Engineering	tsantalis2009:fwd
+3	2024	Impact of methodological choices on the analysis of code metrics and maintenance	Journal of Systems and Software	olbrich2010:fwd
+3	2020	Improving Machine Learning-Based Code Smell Detection via Hyper-Parameter Optimization	Asia-Pacific Software Engineering Conference	olbrich2010:fwd
+3	2019	Improving the Identification of Code Smells by Combining Structural and Semantic Information	International Conference on Neural Information Processing	tsantalis2009:fwd,tufano2015:fwd
+3	2023	Improving the Quality of Open Source Software	Wiley eBooks	chatzigeorgiou2010:fwd
+3	2013	International Conference on Information Systems and Computing ( ICISC-2013 ) , INDIA		tsantalis2009:fwd
+3	None	International Journal of Information and Communication Technology Research Code to Design Migration from Structured to Object Oriented Paradigm		tsantalis2009:fwd
+3	2016	Investigating Design Debt in Safety-Critical Systems: A Case Study	NORA - Norwegian Open Research Archives	olbrich2010:fwd
+3	2017	Investigating code smell co-occurrences using association rule learning: A replicated study	2017 IEEE Workshop on Machine Learning Techniques for Software Quality Evaluation (MaLTeSQuE)	chatzigeorgiou2010:fwd,tsantalis2009:fwd,tufano2015:fwd
+3	1999	Investigating quality factors in object-oriented designs: an industrial case study	ACM/IEEE International Conference on Software Engineering: Companion Proceedings (ICSE-Companion)	tsantalis2009:back
+3	2007	JDeodorant: Identification and Removal of Feature Envy Bad Smells	IEEE International Conference on Software Maintenance (ICSM)	tsantalis2009:back
+3	2021	Javadoc Violations and Their Evolution in Open-Source Software	IEEE International Conference on Software Analysis, Evolution, and Reengineering	chatzigeorgiou2010:fwd,tufano2015:fwd
+3	2019	Learning Code Context Information to Predict Comment Locations	IEEE Transactions on Reliability	tufano2015:fwd
+3	2017	MORE: A multi‐objective refactoring recommendation approach to introducing design patterns and fixing code smells	J. Softw. Evol. Process.	chatzigeorgiou2010:fwd
+3	2018	Machine Learning to Evaluate Evolvability Defects: Code Metrics Thresholds for a Given Context	International Conference on Software Quality, Reliability and Security	tsantalis2009:fwd
+3	2016	Minimizing Refactoring Effort through Prioritization of Classes based on Historical, Architectural and Code Smell Information	QuASoQ/TDA@APSEC	olbrich2010:fwd
+3	2017	Modelo de estimación de valor para la toma de decisiones relacionadas con la evolución de productos software	UPM Digital Archive (Technical University of Madrid)	olbrich2010:fwd
+3	2003	Models for the evolution of OS projects	International Conference on Software Maintenance, 2003. ICSM 2003. Proceedings.	vasa2007:back
+3	2021	On Preserving the Behavior in Software Refactoring: A Systematic Mapping Study	Information and Software Technology	tsantalis2009:fwd
+3	2019	On Relating Code Smells to Security Vulnerabilities	IEEE International Conference on Big Data Security on Cloud, IEEE International Conference on High Performance and Smart Computing, and IEEE International Conference on Intelligent Data and Security (BigDataSecurity/HPSC/IDS)	chatzigeorgiou2010:fwd,tufano2015:fwd
+3	2012	On the Existence of High-Impact Refactoring Opportunities in Programs	Australasian Computer Science Conference	tsantalis2009:fwd
+3	2014	On the Impact of Refactoring Operations on Code Quality Metrics	IEEE International Conference on Software Maintenance (ICSM)	tufano2015:back
+3	2020	On the Prevalence, Impact, and Evolution of SQL Code Smells in Data-Intensive Systems	IEEE Working Conference on Mining Software Repositories	olbrich2010:fwd
+3	2019	On the Survival of Android Code Smells in the Wild	IEEE/ACM International Conference on Mobile Software Engineering and Systems (MOBILESoft)	tufano2015:fwd
+3	2022	On the evolution and impact of architectural smells—an industrial case study	Empirical Software Engineering	tufano2015:fwd
+3	2008	On the relation of refactorings and software defect prediction	International Conference on Mining Software Repositories (MSR)	chatzigeorgiou2010:back
+3	2020	Ontology Fixing by Using Software Engineering Technology	Applied Sciences	tufano2015:fwd
+3	2026	Paired Code Smells and Test Smells: A Fine-Grained Longitudinal Empirical Study	Proceedings of the ACM on Software Engineering	tufano2015:fwd
+3	2007	Patterns of Component Evolution	International Conference on Software Composition	vasa2007:back
+3	2024	Precise temporal analysis of source code histories at scale	theses.fr (ABES)	tufano2015:fwd
+3	2021	Quantifying, characterizing, and mitigating the ghost commit problem when identifying fix-inducing changes		tufano2015:fwd
+3	2013	Recommending Move Method refactorings using dependency sets	Working Conference on Reverse Engineering	tsantalis2009:fwd
+3	2014	Recommending refactorings based on team co-maintenance patterns	International Conference on Automated Software Engineering	tsantalis2009:fwd
+3	2017	Reducing redundancies in multi-revision code analysis	IEEE International Conference on Software Analysis, Evolution and Reengineering (SANER)	tufano2015:fwd
+3	2019	RefBot: Intelligent Software Refactoring Bot	International Conference on Automated Software Engineering	tsantalis2009:fwd
+3	2005	Refactoring - improving coupling and cohesion of existing code	Working Conference on Reverse Engineering (WCRE)	tsantalis2009:back
+3	2025	Refactoring Python Code with LLM-Based Multi-Agent Systems: An Empirical Study in ML Software Projects	Brazilian Symposium on Software Engineering	tsantalis2009:fwd
+3	2014	SCIENCE CHINA Information Sciences		vasa2007:fwd
+3	2023	Sahand 1.0: A new model for extracting information from source code in object-oriented projects	Comput. Stand. Interfaces	tsantalis2009:fwd
+3	2002	Scale-free networks from optimal design		vasa2007:back
+3	2026	Smelly Bad Practices in Performance System Tests: Detection, Prevalence, and Lifetime	IEEE International Conference on Software Maintenance (ICSM)	tufano2015:fwd
+3	2019	Software Quality Prediction Using Data Mining Techniques	2019 International Conference on Information and Communications Technology (ICOIACT)	tsantalis2009:fwd
+3	2013	Software Repository Analysis for Investigating Design-Code Compliance	Joint Conference of International Workshop on Software Measurement and International Conference on Software Process and Product Measurement	chatzigeorgiou2010:fwd
+3	2021	State of Refactoring Adoption: Towards Better Understanding Developer Perception of Refactoring	RIT Scholar Works (Rochester Institute of Technology)	tsantalis2009:fwd
+3	2013	Statistical Analysis of Changes for Synthesizing Realistic Test Models	Software Engineering	vasa2007:fwd
+3	2013	Suggesting Extract Class Refactoring Opportunities by Measuring Strength of Method Interactions	Asia-Pacific Software Engineering Conference	tsantalis2009:fwd
+3	2020	Synthesis of Code Anomalies: Revealing Design Problems in the Source Code		olbrich2010:fwd
+3	2023	Technical Debt Diffuseness in the Apache Ecosystem: A Differentiated Replication	IEEE International Conference on Software Analysis, Evolution, and Reengineering	chatzigeorgiou2010:fwd
+3	2017	Technical Debt in Software Development : Examining Premises and Overcoming Implementation for Eﬃcient Management	UTUPub (University of Turku)	tsantalis2009:fwd
+3	2020	Technical debt forecasting: An empirical study on open-source repositories	Journal of Systems and Software	olbrich2010:fwd
+3	None	Tecniche model-driven avanzate per il miglioramento delle proprietà non funzionali dei sistemi software	Archivio Istituzionale della Ricerca - Università degli Studi dell Aquila	tsantalis2009:fwd
+3	1998	The Bhattacharyya metric as an absolute similarity measure for frequency coded data	Kybernetika (Praha)	vasa2007:back
+3	2011	The Effect of Lexicon Bad Smells on Concept Location in Source Code	IEEE International Working Conference on Source Code Analysis and Manipulation (SCAM)	tufano2015:back
+3	2014	The Effect of Method Origin on Method Invocation Fault Frequency	International Conference on Quality Software	vasa2007:fwd
+3	2024	The broken windows theory applies to technical debt	Empirical Software Engineering	tufano2015:fwd
+3	2019	Threshold-Driven Class Decomposition	Annual International Computer Software and Applications Conference	tsantalis2009:fwd
+3	2017	Towards Effective Teams for the Identification of Code Smells	International Workshop on Cooperative and Human Aspects of Software Engineering (CHASE)	tufano2015:fwd
+3	2019	Towards a Collaborative Repository for the Documentation of Service-Based Antipatterns and Bad Smells	IEEE International Conference on Software Architecture Companion (ICSA-C)	tufano2015:fwd
+3	2022	Towards a Robust Approach to Analyze Time-Dependent Data in Software Engineering	IEEE International Conference on Software Analysis, Evolution and Reengineering (SANER)	olbrich2010:fwd
+3	2009	Towards a better understanding of software evolution: An empirical study on open source software	IEEE International Conference on Software Maintenance (ICSM)	tufano2015:back
+3	None	Towards the establishment of a District Information Modeling		olbrich2010:fwd
+3	2021	Tracing Bad Code Smells Behavior Using Machine Learning with Software Metrics		chatzigeorgiou2010:fwd
+3	2010	Transformation monolithischer Business-Softwaresysteme in verteilte, workflowbasierte Client-Server-Architekturen		tsantalis2009:fwd
+3	2018	UNDERSTANDING AND IMPROVING BATCH REFACTORING IN SOFTWARE SYSTEMS		tsantalis2009:fwd,tufano2015:fwd
+3	2021	Understanding the impact of release policies on software development processes	theses.fr (ABES)	tufano2015:fwd
+3	2022	Untangling the Knot: Enabling Architecture Evolution with Search-Based Refactoring	IEEE International Conference on Software Architecture (ICSA)	tsantalis2009:fwd
+3	2014	Visualização de software baseada em uma metáfora do universo utilizando o conjunto de métricas CK		olbrich2010:fwd
+3	2012	When Does a Refactoring Induce Bugs? An Empirical Study	IEEE International Working Conference on Source Code Analysis and Manipulation (SCAM)	tufano2015:back
+3	2020	Why Developers Refactor Source Code	ACM Transactions on Software Engineering and Methodology	tsantalis2009:fwd
+3	2020	Why Developers Refactor Source Code: A Mining-based Study	ACM Transactions on Software Engineering and Methodology	tsantalis2009:fwd
+3	2021	Worst Smells and Their Worst Reasons	2021 IEEE/ACM International Conference on Technical Debt (TechDebt)	olbrich2010:fwd

@@ -279,6 +279,117 @@ result is "not found by this protocol", not "does not exist".**
 
 All five were applied to `PLAN.md` on 15 November 2026 (§1, §2 H2, §4.3, §4.4 and §7).
 
+### Novelty check for H1 and H2 as restated, 18 November 2026
+
+The check above searched the vocabulary of the plan as it stood on 15 November: pull, forcing,
+placement. H1 and H2 have since been restated on **bystanders** (the pre-existing values visible
+where added code lands that it does not use) and on **which of those values later code is bound
+to** (`PLAN.md` §2, §4.3a, §4.4), and H3 made one-sided. The verdicts on claims 3 and 4 above were
+for the earlier wording. This is the same check run again for the claims as they now stand.
+
+**Protocol, as run.**
+
+1. **Citation snowballing** from five new seeds, the papers nearest the restated claims:
+   - Tsantalis and Chatzigeorgiou 2009 (entity placement: where a method belongs, given the data
+     it uses);
+   - Olbrich et al. 2010 (god classes, normalised by size);
+   - Vasa, Schneider and Nierstrasz 2007 (which classes change);
+   - Tufano et al. 2015 (when smells are introduced);
+   - Chatzigeorgiou and Manakos 2010 (how smells evolve).
+
+   OpenAlex gave 1,244 forward citations and 174 backward references; Semantic Scholar gave 890
+   forward citations, and reference lists for one seed only (27). After de-duplicating by title:
+   **1,272 unique records**, 969 with an abstract.
+2. **Screening.** Every record was scored on title and abstract against 13 term groups: scope and
+   visibility; unused; fields and class state; parameters, locals, data clumps and constants;
+   gathering and attraction; how a flaw forms; god and brain units; placement and moves; data
+   coupling and field use; evolution; later change; size as a confounder; cohesion. 337 records
+   scored ≥ 3. The scores were noisy (much of the forward citation of these seeds is smell
+   detection by machine learning), so a second pass read the titles of all 1,272 records for the
+   restated vocabulary, 94 titles, and about 20 were checked by abstract or index record.
+3. **Keyword searches**, 18, in the vocabulary a reader of the restated claims would use: the
+   number of variables in scope; variable span and live time; visible but unused state and the
+   reading of LCOM; over-exposure and accessibility wider than needed; how god classes form;
+   fields gained by classes over evolution; data clumps over time; where constants gather; cohesion
+   decaying as methods are added; new code placed where its data is; an existing class against a
+   new one; preferential attachment of methods to classes; field use across commits; global data
+   and maintenance; size as a confounder of metrics and change-proneness; where agents place code.
+4. **Reproducibility.** `literature/snowball/s2b.py`, `oa2.py`, `screen2.py` and the 337 screened
+   records in `screened2-top.tsv`. The raw API responses are not kept.
+
+**Limits.** As above: one level deep, title and abstract only, "not found by this protocol" and
+not "does not exist". In addition, **most of the works below were read as abstracts or index
+records, not in full**; where a finding is quoted from an abstract or a search summary this is
+said. The vocabulary problem is worse here than in the first check: "bystander" is this study's
+word, and what it names sits between four literatures (scope, cohesion, common coupling,
+accessibility) that do not cite each other.
+
+**The nearest neighbours.**
+
+| Work | What it does | How it differs from the restated claims |
+|---|---|---|
+| Schach et al. 2002; Yu, Schach, Chen and Offutt 2004 (common coupling in the Linux kernel) | Count the instances of common coupling (modules sharing global data) over 365 versions of Linux; they grow exponentially with the version while the lines of code grow linearly (as reported in the abstract). Yu et al. categorise the coupling by definition and use. Selby et al. (2007) cite this line for *clandestine* coupling, introduced into a module without any change to it. | **The closest precedent for H1.** It is data that gathers and exposes code that did not ask for it. But it is global data between modules of C, counted per version; not the values visible at the place one addition lands, split into needed and not needed, and not followed within a class or a method. |
+| Selby, Ruffell, Giesbrecht and Godfrey 2007 (global data and maintainability) | Over the releases of several large systems, files with more references to global variables have more revisions and more lines changed (a significant positive correlation). | **The closest precedent for H2 in outcome.** Data use goes with later change. It counts references a file already has, at file level; it does not ask whether later code arrives because of data that stood by, nor which values it uses. |
+| Vidal, Bergel, Marcos and Díaz-Pace 2016 (over-exposed methods); Vidal, Bergel, Díaz-Pace and Marcos 2016 (over-exposed classes) | At least 20% of methods and about 25% of classes in open-source Java are declared more accessible than their use requires; 90% of over-exposed classes are so from their first version (abstracts). | **The closest relative of the bystander as an idea:** visible beyond what is used. But it is the declared accessibility of a member to *other* classes, mostly a snapshot, with no link to where later code goes. |
+| Ruland et al. 2018 (attack surface of refactorings) | Treats the declared accessibility of class members as an attack surface to be minimised when refactorings are searched for. | Exposure as a quantity to control, for security; not measured at the point of a change, and not followed. |
+| Counsell and Nasseri 2010 (evolution at the attribute level) | Net attributes added per version in three Java systems: some arrive with new classes, some alone, and additions go with refactoring activity. | Classes gain fields over time: the raw material of H1's class level. No account of what the fields are visible to or who later uses them. |
+| Vaucher et al. 2009; Chatzigeorgiou and Manakos 2010; Tufano et al. 2015 (life cycle of god classes and smells) | God classes mostly arise by new functionality accumulating over versions; smells persist once present; most are there from a unit's creation. | The accretion H1 describes, seen at the level of the detector's verdict. None measures the data a new addition finds around it, and none tests a mechanism. Already in the plan (§7, *Smells born, not grown*). |
+| Baumgartner and Pulvermüller 2025 (data clumps over time) | A longitudinal analysis of data clumps (groups of fields or parameters that travel together) across public repositories; a search summary of the authors' earlier conference paper says clumps remain or accumulate. **Abstract not seen.** | Method and class data that gathers, followed over history. A clump is data *used together*, the opposite side from a bystander. |
+| Chaikalis and Chatzigeorgiou 2015; Lin and Whitehead 2015 (preferential attachment in Java evolution) | Model the growth of class dependency networks: new relations attach to classes in proportion to those they have, damped by age; fine-grained changes simulated this way give the observed power laws. | **The aggregate pattern H2 would explain.** Rich-get-richer is fitted to degree in a dependency graph. It does not say what is attached to (data), nor follow the particular values later code uses. A reviewer may read H2 as preferential attachment under another name. |
+| Tsantalis and Chatzigeorgiou 2009; Kiss and Mihancea 2018 (entity placement; feature envy at block level) | Where a method, or a block, belongs given the entities it accesses. | Already the nearest relative of the binding (first check, claim 2). It reads what code uses, on a snapshot; the bystander is what it does not use. |
+| Chidamber and Kemerer 1994; Mitchell and Power 2004 (LCOM and its run-time variant) | Lack of cohesion counts the fields of a class that its methods do not share; the run-time variant counts only fields actually accessed. | **A structural relative the plan does not yet name.** A run's class bystanders are, for one piece of added code, the fields of its class it does not use: the per-addition, at-the-commit form of the quantity LCOM sums over a class. LCOM is a snapshot of the whole class and says nothing about what later code is bound to. |
+| Zhou, Leung and Xu 2009; Chowdhury et al. 2022b (size, metrics and change-proneness) | Zhou et al.: on Eclipse, class size accounts for, or reverses, the association of many object-oriented metrics with change-proneness. Chowdhury et al.: at method level, metrics still help estimate change-proneness once size is removed, and dividing by size does not remove it. | **Both sides of H3.** The first is H3's result for size at the class; the second disputes it at the method. Neither holds the problem fixed or controls for the data in the place. |
+| Feitelson 2023 (local variables of narrow and broad scope) | Scope of 637,077 Java locals against the length and wording of their names. | Scope measured at scale, for naming. No link to change. |
+
+**Verdict, claim by claim.**
+
+1. **H1, places fill with data that added code does not use, within a class and a method.**
+   *The growth is known in aggregate; the measure and the unit were not found.* That shared data
+   gathers faster than code is the Linux common-coupling result (Schach et al.; Yu et al.), and
+   classes gaining attributes and god classes forming by accretion are documented (Counsell and
+   Nasseri; Vaucher et al.). Visibility beyond use is documented for access modifiers (Vidal et
+   al.). No study found measures, at the commit where code lands, what was visible there and not
+   used, or follows that within one class and one method. **Claim:** new as a measure and as a
+   unit; **not** new as the observation that classes and shared state grow. H1 should be presented
+   as the per-addition, per-place form of the common-coupling growth result, and set beside LCOM,
+   of which the class-level bystander is the per-addition component.
+2. **H2, later code is bound to the data that stood by.** *Not found.* The nearest are a
+   correlation of global-data references with later change at file level (Selby et al.), and
+   preferential attachment fitted to dependency degree (Chaikalis and Chatzigeorgiou; Lin and
+   Whitehead). No study found identifies the values standing by when code is placed and then asks
+   whether later code for other problems uses those values. **Claim:** new, and the most
+   distinctive of the four. It needs to say why it is more than preferential attachment: it names
+   what is attached to, and the plan's size-or-data reading is where the two are set apart (on the
+   development chain that reading did not separate them).
+3. **H3, shape does not draw code in once the problem, the bindings and the bystanders are held
+   fixed (one-sided).** *Substantially anticipated for size; contested at the method.* Zhou et al.
+   (2009) and El Emam et al. (2001) show size accounting for metric associations at the class;
+   Olbrich et al. (2010) the same for god classes; Chowdhury et al. (2022b) report the opposite at
+   the method. **Claim:** a refinement, controlling for data and the problem in place of size. It
+   is not a first, and the method-level literature is against it; the development chain's
+   method-level result (complexity followed by less) should be reported against Chowdhury et al.
+4. **Human against agent, and bound against unbound code** (the readings added on 17 and 18
+   November). *Not found:* no study found measures whether added code goes to an existing class
+   or a new one as a commit-level choice, by person or by agent. One commit-classification paper
+   (arXiv:1810.04825) reports adding functions as commoner than adding classes; **its content was
+   seen only as a search summary**. The agent studies found concern unrequested file creation and
+   over-editing, not placement.
+
+**What this suggests for the plan** (suggestions; none applied):
+
+- Cite the Linux common-coupling studies in §1 and §4.3a as the precedent for data that gathers
+  and exposes code without the code changing, and state how a bystander differs.
+- Name LCOM in §4.3a. The plan says (§7 of this file) that it does not measure cohesion, yet a
+  class-level bystander count is a cohesion-like quantity, and H3 now tests LCOM* as a *shape*
+  measure beside it. A reviewer will ask how H2's predictor and one of H3's measures differ; the
+  answer (per addition against whole class; visible to this code against shared between methods)
+  should be written down.
+- Add preferential attachment to §7 as the rival reading of H2, with the size-or-data reading as
+  the check.
+- Cite Zhou et al. 2009 and Chowdhury et al. 2022b at H3 as the two sides; Chowdhury et al. is
+  already in the references.
+- Cite the over-exposure studies as the nearest "visible beyond use" measure.
+
 ## References
 
 - Abadi, A., Ettinger, R., Feldman, Y. A. (2012). Fine slicing: theory and applications for computation extraction. *FASE 2012*, LNCS 7212.
@@ -349,3 +460,25 @@ All five were applied to `PLAN.md` on 15 November 2026 (§1, §2 H2, §4.3, §4.
 - Wong, S., Cai, Y., Kim, M., Dalton, M. (2011). Detecting software modularity violations. *ICSE 2011*, 411–420. doi:10.1145/1985793.1985850
 - Yamasaki, K., Matia, K., Buldyrev, S. V., Fu, D., Pammolli, F., Riccaboni, M., Stanley, H. E. (2006). Preferential attachment and growth dynamics in complex systems. *Physical Review E* 74, 035103. doi:10.1103/PhysRevE.74.035103
 - [Authors not recorded] (2026). Does code cleanliness affect coding agents? A controlled minimal-pair study. arXiv:2605.20049. (Authors not recorded; **check before citing**.)
+
+### Added by the novelty check of 18 November 2026
+
+Details are as the indexes (OpenAlex, publisher or repository records) gave them; where something
+was not confirmed, it says so.
+
+- Baumgartner, N., Pulvermüller, E. (2025). Unveiling data clumps: a detailed longitudinal analysis on software quality across public repositories. *SN Computer Science* 6(8), 960. doi:10.1007/s42979-025-04461-9 (Abstract not seen.)
+- Chaikalis, T., Chatzigeorgiou, A. (2015). Forecasting Java software evolution trends employing network models. *IEEE TSE*. doi:10.1109/TSE.2014.2381249
+- Chatzigeorgiou, A., Manakos, A. (2010). Investigating the evolution of bad smells in object-oriented code. *QUATIC 2010*. doi:10.1109/QUATIC.2010.16
+- Chidamber, S. R., Kemerer, C. F. (1994). A metrics suite for object oriented design. *IEEE TSE* 20(6), 476–493.
+- Counsell, S., Nasseri, E. (2010). System evolution at the attribute level: an empirical study of three Java OSS and their refactorings. *Journal of Computing and Information Technology* 18(2), 167–173. doi:10.2498/cit.1001811
+- Feitelson, D. G. (2023). Reanalysis of empirical data on Java local variables with narrow and broad scope. *ICPC 2023*, 227–236. doi:10.1109/ICPC58990.2023.00037
+- Kiss, A., Mihancea, P. F. (2018). Towards feature envy design flaw detection at block level. *ICSME 2018*. doi:10.1109/ICSME.2018.00064 (Index record only.)
+- Lin, Z., Whitehead, J. (2015). Why power laws? An explanation from fine-grained code changes. *MSR 2015*. doi:10.1109/MSR.2015.14
+- Mitchell, Á., Power, J. F. (2004). Run-time cohesion metrics: an empirical investigation. (Maynooth University eprint; **the venue was not confirmed**.)
+- Ruland, S., Kulcsár, G., Leblebici, E., Peldszus, S., Lochau, M. (2018). Controlling the attack surface of object-oriented refactorings. *FASE 2018*, LNCS. doi:10.1007/978-3-319-89363-1_3
+- Schach, S. R., Jin, B., Wright, D. R., Heller, G. Z., Offutt, A. J. (2002). Maintainability of the Linux kernel. *IEE Proceedings – Software*. (**Venue and year as given by a library record and a search summary, not confirmed against the publisher**; the exponential growth of common coupling is from the abstract.)
+- Selby, J. W. A., Ruffell, F. P., Giesbrecht, M., Godfrey, M. W. (2007). Examining the effects of global data usage on software maintainability. *WCRE 2007*, 60–69. doi:10.1109/WCRE.2007.27
+- Vidal, S. A., Bergel, A., Díaz-Pace, J. A., Marcos, C. (2016). Over-exposed classes in Java: an empirical study. *Computer Languages, Systems & Structures* 46. doi:10.1016/j.cl.2016.04.001
+- Vidal, S. A., Bergel, A., Marcos, C., Díaz-Pace, J. A. (2016). Understanding and addressing exhibitionism in Java: empirical research about method accessibility. *Empirical Software Engineering* 21(2), 483–516. doi:10.1007/s10664-015-9365-9
+- Yu, L., Schach, S. R., Chen, K., Offutt, J. (2004). Categorization of common coupling and its application to the maintainability of the Linux kernel. *IEEE TSE* 30(10), 694–706. doi:10.1109/TSE.2004.58
+- Zhou, Y., Leung, H., Xu, B. (2009). Examining the potentially confounding effect of class size on the associations between object-oriented metrics and change-proneness. *IEEE TSE*. doi:10.1109/TSE.2009.32

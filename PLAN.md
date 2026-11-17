@@ -52,6 +52,13 @@ This study turns the question round:
   grows heavier, and the next problem that needs any one of its values lands beside all of them.
   That growth is the gravity.
 
+That shared data gathers faster than code is known in aggregate: across versions of the Linux
+kernel, common coupling to global data grew far faster than the code did (Schach et al. 2002; Yu
+et al. 2004), and files with more references to global data changed more (Selby et al. 2007).
+Those are counts over a whole system or file. This study reads the same thing where one problem's
+code lands: what was already visible there, split into what the code used and what it did not
+(§4.3a), and whether what stood by is what later code is bound to (H2).
+
 Following problems over time has precedents. Passos et al. (2015; 2018) follow each Linux
 feature's scattering over eight years. Bouwers, van Deursen and Visser (2014) classify each
 change-set as local or non-local. Both measure where a problem's code *ended up*, and their
@@ -159,7 +166,11 @@ Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 Novem
     0.8 to 1.25. That reading is kept and reported beside it.
   This makes confirmatory
   the result of Olbrich, Cruzes and Sjøberg (2010): god and brain classes change more and hold
-  more defects, but less per line once size is controlled.
+  more defects, but less per line once size is controlled. The question is contested: Zhou, Leung
+  and Xu (2009) find class size accounting for, or reversing, the association of many
+  object-oriented metrics with change-proneness, while Chowdhury et al. (2022b) report metrics
+  that still matter at the method once size is removed. H3 holds data fixed, not only size, and
+  the problem; its method-level result is to be set against Chowdhury et al.
   - *H2 and H3 were one hypothesis* (H2a and H2b) until 17 November 2026, supported only if both
     held (§9). They are now decided apart: one is a difference to be shown, the other an
     equivalence, and the second should not decide the first.
@@ -326,6 +337,61 @@ to issues are known to be a biased subset (Bird et al. 2009), and tangling remai
 7–20% (Herzig et al. 2016). In corpus B a commit is not reliably one problem and the problem is not
 held fixed. Corpus B is therefore read only as a check on the **direction of H1 and H2**; H3,
 H4 and the junction × arm reading are not read there.
+
+**Extended 18 November 2026** (§9; drafted, not yet built). H1 and H2 as they now stand need only
+a history, so more can be read here than the first draft allowed:
+
+- **H1**, over all additions and within a class and a method. There are no checkpoints, so the
+  index is the commit's place in the order of the repository's commits read, from 0 to 1.
+- **H2**, at the class and at the method. With no stream to declare which later changes are meant
+  to touch an earlier one, every later arrival counts.
+- **Where bound and unbound code lands** (§5), as on corpus A.
+- **H3, weaker.** The problem cannot be held fixed, so each shape measure is read with only the
+  addition's size, the place's size, the bindings and the bystanders held fixed. Reported, and not
+  called H3.
+- **Not read:** H4 (there are no arms), the junction × arm reading, the wiring.
+- **Two units.** The issue-linked feature commit above stays the unit for reading corpus B by
+  itself. For the comparison with corpus C a second unit is read in both: **every commit that is
+  not a merge** and changes at most 200 lines of production Java, refactorings removed, because
+  agents' commits are seldom linked to labelled issues.
+
+Corpus B stays a replication with direction and interval only. It is where the hypotheses meet
+code written by people, which corpus A cannot give.
+
+### 3.3 Corpus C: repositories with declared agent commits (secondary)
+
+Added 18 November 2026 (§9; drafted, not yet built). Corpus A is written by one agent on a fixed
+stream; corpus B by people before AI assistants. Corpus C is code in the wild that an agent says
+it wrote.
+
+- **A declared agent commit** is one whose author or committer is an agent's account, or whose
+  message carries an agent's `Co-authored-by` trailer or the line it adds to what it generates.
+  The rule is the sampler's, not this study's (revised 18 November 2026): its built-in
+  signatures, version 1 (`open-source-repository-sampler`, `agents.py`; Claude Code, GitHub
+  Copilot's coding agent, Cursor, Devin, Codex, Jules, aider, OpenHands), written into the
+  sample's derivation. This study reads which commits are declared with the same signatures at
+  the sampler's pinned version, and adds none of its own.
+- **The sample** is drawn by `open-source-repository-sampler` without `--as-of`, Java, the same
+  tiers and criteria as corpus B, with `--min-agent-commits 30` and a seed fixed here before the
+  draw: **seed 3**. The criterion was added to the sampler for this study (18 November 2026;
+  built there, not yet released: the sample is drawn with the release that carries it, and that
+  release is pinned here before the draw). Target 30 repositories, with `--max-clones 300`.
+  Declared agent commits may be rare among the repositories the sampler's tiers reach (200 stars
+  and more): if fewer than 10 repositories are usable when the draw stops, the corpus is reported
+  as too small and not read, rather than widened by hand. The derivation reports every
+  repository drawn, kept and left out.
+- **Two comparisons**, both reported with a stated direction and neither confirmatory:
+  - *Within a repository:* declared agent commits against its other commits after 29 June 2021.
+    The others are of unknown origin, since assisted code carries no mark, so this compares
+    declared with undeclared, not agent with person.
+  - *Between corpora:* corpus C's declared agent commits against corpus B's commits, all before
+    29 June 2021. This is agent against person, across different repositories and years.
+  - *Predicted*, from Ogenrwot and Businge (2026), who find agents' pull requests touching fewer
+    files: a declared agent commit's unbound code enters an existing class more often, and its
+    bound code lands among more bystanders, than the commits it is compared with.
+- H1 and H2 are read on corpus C as on corpus B, on all its commits, with the share that is
+  declared agent as a term.
+- **Read after corpus A**, and only when its steps are built and this section is fixed by a tag.
 
 ## 4. Measures
 
@@ -497,6 +563,23 @@ its class's fields.
 Bystanders are related to the scope-width measures of the long-method-slim study's step 7 (live
 width along a method). They differ in being read at the point where a problem's code lands, on
 what that code did not need, and in counting the class as well as the method.
+
+**Relation to measures in the literature** (added 18 November 2026 after the second novelty
+check, `LITERATURE.md` §10):
+
+- **Common coupling** (Schach et al. 2002; Yu et al. 2004) counts the global data a system's
+  modules share, per version. A bystander is the same exposure read per addition and per place,
+  and only the part the addition did not use.
+- **Over-exposure** (Vidal et al. 2016) is visibility beyond use too, but of methods and classes
+  through their access modifiers, at one snapshot. A bystander is a value visible to code where it
+  lands, at the commit.
+- **Lack of cohesion** (LCOM, Chidamber and Kemerer 1994) sums, over a class, the methods that do
+  not share fields. A class-level bystander is close to one addition's part of that sum: the
+  fields its code did not use. They differ in what they are for. LCOM* describes the class as it
+  stands and is one of H3's shape measures (§4.7a); the bystanders are what one addition found
+  there, and what later additions then use is H2's outcome. A class can have many bystanders for
+  every addition and yet a low LCOM*, if its methods share a few fields among many; and H3 is
+  read with the bystanders in the model, so LCOM* is asked what it adds to them.
 
 ### 4.4 Consequence (Q3)
 
@@ -969,8 +1052,12 @@ on the place an addition lands in, as it stood at *k* − 1, with the harness's 
     expected of almost any code that enters an existing class. The reading is therefore between
     bound and unbound, and between the arms, not against 0.5. It replaces nothing: H3 stands as it
     is until this has been looked at on the development chain.
-- **Corpus B:** the H1 and H2 models with a random intercept for the repository. Direction and
-  interval only.
+- **Corpus B and corpus C** (§3.2, §3.3; extended 18 November 2026): the H1 and H2 models with a
+  random intercept for the repository in place of the chain's and the checkpoint's, the index the
+  commit's place in the repository's order. Direction and interval only. The two comparisons of
+  §3.3 are the same models with a term for the declared agent commit (within a repository) or for
+  the corpus (between them), and the destination of unbound code as a binomial model on the same
+  term.
 - **Multiplicity:** H1–H4 are four confirmatory tests at α = 0.05 each, Holm-corrected. All
   else is descriptive.
 
@@ -1275,6 +1362,14 @@ binomial mixed model). These details are fixed with the code before any run is r
   read on Java. Where the methods arm goes back into a handler, the function arm goes back into a
   flow configuration file, and that is not in H4's intrusion. The wiring conditions of §4.5 and the
   reopening of wiring files (§4.4, reported) are where it shows.
+- **Preferential attachment is the rival reading of H2.** Busy places getting busier is a known
+  pattern of software growth, fitted to dependency degree with no mechanism (Chaikalis and
+  Chatzigeorgiou 2015; Lin and Whitehead 2015). H2 claims a mechanism: later code comes for the
+  data that gathered. A rise in H2's count could instead be a busy place receiving more of
+  everything. Two things bear on it: H2's outcome counts only the arrivals bound to what stood
+  by, with the place's size held fixed; and the size-or-data reading (§5) asks which of the two
+  later arrivals follow. On the development chain that reading went to size (§6), so on that
+  chain attachment to size is not ruled out.
 - **H2 is opportunity by construction.** Where nothing stood by, nothing can be drawn by what
   stood by, so part of H2's rate ratio is given. It tests that accumulated data is taken up in
   proportion to its amount; it does not show that the later code could not have gone elsewhere
@@ -1287,6 +1382,13 @@ binomial mixed model). These details are fixed with the code before any run is r
 - **Values are matched by name.** A renamed field is lost between a placement and a later use, and
   a new local with an old name is counted as the old value. The first lowers H2's count, the second
   raises it at the method.
+- **An agent's commit is known only where it is declared** (corpus C). Assisted code that carries
+  no mark sits among the commits it is compared with, which pulls any difference towards zero.
+  Repositories with declared agent commits are also younger and smaller than those of corpus B, so
+  the comparison between corpora is across projects and years as well as authors.
+- **Open-source commits are not problems** (corpora B and C). Without a stream, a later arrival
+  may belong to the same problem as the code it comes back to, which H2 would count as drawn in.
+  The issue-linked unit of corpus B is the stricter reading.
 - **Bindings decide what is followed.** Intrusion is read only on bound code, and a wired function's
   parameters are not bindings (§4.3). So fewer of the function arm's placements are followed at all;
   the number followed and set aside is reported per analysis.
@@ -1358,8 +1460,8 @@ binomial mixed model). These details are fixed with the code before any run is r
    work on the development chain is done, before any run named for analysis is read.
 6. `./step1_setup.sh`, then for corpus A (petclinic, then the ui runs as they finish):
    `./step2_runs.sh`, `./step3_measure.sh`, `./step4_analyse.sh`, `./step5_report.sh`. Analyse
-   once; the heads read are recorded in `results/heads.tsv`. Then corpus B (its steps are not yet
-   built).
+   once; the heads read are recorded in `results/heads.tsv`. Then corpus B and corpus C (§3.2, §3.3; their
+   steps are not yet built).
 7. Write up, reporting every hypothesis whichever way it falls.
 
 ## 9. Revisions and amendments
@@ -1471,6 +1573,9 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 34 | The literature's shape measures at the method and at the class (cyclomatic, NPath, nesting, fan-out, Halstead, Maintainability Index, Law of Demeter, clones; WMC, RFC, DIT, CBO, LCOM*, TCC, God Class, Data Class), each read alone | §4.7a, §5, `literature.py`, `setup.sh` | The author's request: to see how the measures the petclinic harness reports go on the development chain, at both levels, before choosing which join H3 |
 | 35 | The literature's class measures are read on one row per class and checkpoint, with the class's size held fixed and an intercept for the class; the Maintainability Index and TCC are read reversed | §5, `analyse.R` | On the development chain every class measure came out above the margin (§6), in a model without the class's size, with most of Spring's rows in one class sharing one value and one outcome; and the index's ratio read the wrong way up |
 | 36 | H3's measures: at the method, long, cognitive and cyclomatic complexity; at the class, the Gini, WMC and LCOM*. Each fitted alone at its level; the block as first registered (S1, S4, S5 together at the method) is reported. Fan-out and CBO are read with the sinew measures as reach, predicted above 1 | §2, §5, `prepare.py`, `analyse.R`, `verdict.py` | Decided by the author on the recommendation made after the measures were seen on the development chain (§6, §7): the usual shape measures of the literature at both levels; reach is not shape |
+| 37 | Corpus B extended to H1 and H2 as restated, the landing reading and a weaker reading of shape; a second unit (every small commit that is not a merge). Corpus C added: repositories with declared agent commits, drawn with seed 3, compared within a repository and against corpus B | §3.2, §3.3, §5, §7 | The author's proposal: the hypotheses now need only a history, so they can be read on people's code from before AI assistants and on code an agent declares it wrote. Drafted; neither corpus is built or read |
+| 38 | Corpus C's rule for a declared agent commit is the sampler's own criterion, `--min-agent-commits`, with its built-in signatures | §3.3, `open-source-repository-sampler` | The author's decision: the rule is one other studies will want, and a sampling decision belongs in the sample and its derivation, not in the experiment |
+| 39 | The second novelty check (`LITERATURE.md` §10) taken into the plan: common coupling as the precedent of H1; how a bystander differs from common coupling, over-exposure and LCOM; preferential attachment as the rival reading of H2; Zhou et al. and Chowdhury et al. as the two sides of H3 | §1, §2, §4.3a, §7 | So that what is claimed as new is the per-addition measure and the mechanism, not that shared state grows; and so that the nearest rival readings are stated before the runs are read |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring
