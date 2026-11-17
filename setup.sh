@@ -38,6 +38,15 @@ if command -v npm >/dev/null 2>&1; then
 else
   echo "   ! npm not found: jscpd is not installed, and the duplication measures will be empty"
 fi
+# open-source-repository-sampler at the release corpora B and C are drawn and read with (PLAN.md
+# 3.2, 3.3), in an environment of its own: this study's holds an older one, which the
+# complexity-concentration study's extractor requires.
+SAMPLER_VERSION="0.4.0"
+if ! lib/sampler/bin/open-source-repository-sampler --version 2>/dev/null | grep -q " $SAMPLER_VERSION "; then
+  rm -rf lib/sampler
+  python3 -m venv lib/sampler
+  lib/sampler/bin/pip install --quiet "open-source-repository-sampler==$SAMPLER_VERSION"
+fi
 # RefactoringMiner 3.0.4 and CodeTracker 2.6 (refactor/pom.xml), from Maven Central
 (cd refactor && mvn -q -DskipTests package)
 mkdir -p instrument/classes

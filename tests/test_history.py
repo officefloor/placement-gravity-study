@@ -1,0 +1,112 @@
+"""Corpora B and C: a repository's history read as units (PLAN.md 3.2, 3.3)."""
+
+import os
+import subprocess
+from pathlib import Path
+
+import pytest
+
+from placement_gravity import history, prepare, runs
+
+pytestmark = pytest.mark.skipif(not (history.SAMPLER / "python").exists(),
+                                reason="the sampler's environment is installed by setup.sh")
+
+OWNER = """public class Owner {
+    private int limit = 3;
+    private String name;
+%s
+}
+"""
+
+
+def commit(repo, files, message, date, author="Ann <ann@x>"):
+    for rel, text in files.items():
+        f = repo / rel
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text(text)
+    name, email = author[:-1].split(" <")
+    env = {**os.environ, "GIT_AUTHOR_NAME": name, "GIT_AUTHOR_EMAIL": email, "GIT_COMMITTER_NAME": name,
+           "GIT_COMMITTER_EMAIL": email, "GIT_AUTHOR_DATE": date, "GIT_COMMITTER_DATE": date}
+    subprocess.run(["git", "add", "-A"], cwd=repo, check=True, capture_output=True, env=env)
+    subprocess.run(["git", "commit", "--quiet", "-m", message], cwd=repo, check=True, env=env)
+
+
+@pytest.fixture(scope="module")
+def repo(tmp_path_factory):
+    r = tmp_path_factory.mktemp("repo")
+    subprocess.run(["git", "init", "--quiet", "-b", "main"], cwd=r, check=True)
+    body = "    int size(int n) {\n        int k = n + 1;\n        return k;\n    }\n"
+    commit(r, {"src/main/java/Owner.java": OWNER % body, "README.md": "x"}, "base", "2020-01-01T00:00:00Z")
+    # 1: a person's commit, bound to the method's local and the class's field
+    body2 = body.replace("return k;", "if (k > limit) {\n            k = limit;\n        }\n        return k;")
+    commit(r, {"src/main/java/Owner.java": OWNER % body2}, "Cap the size (#12)", "2020-06-01T00:00:00Z")
+    # not a unit: only a test changes; and only documentation
+    commit(r, {"src/test/java/OwnerTest.java": "class OwnerTest { void t() { } }"}, "test", "2020-07-01T00:00:00Z")
+    commit(r, {"README.md": "y"}, "docs", "2020-08-01T00:00:00Z")
+    # 2: an agent's commit after the date: unbound code in a new class
+    commit(r, {"src/main/java/Rule.java": "public class Rule {\n    boolean ok(int n) {\n        return n > 0;\n    }\n}\n"},
+           "Add a rule\n\nCo-Authored-By: Claude <noreply@anthropic.com>", "2022-03-01T00:00:00Z")
+    # 3: a person's commit after the date, bound in the existing class again
+    body3 = body2.replace("return k;", "if (name == null) {\n            return 0;\n        }\n        return k;")
+    commit(r, {"src/main/java/Owner.java": OWNER % body3}, "Guard the name", "2023-01-01T00:00:00Z")
+    return r
+
+
+def test_units_are_small_commits_to_production_java(repo):
+    us = history.units(repo)
+    assert [u["cp"] for u in us] == [1, 2, 3]            # the base, the test and the docs are not units
+    assert (us[0]["issues"], us[0]["agents"]) == ([12], [])
+    assert us[1]["agents"] == ["claude"] and us[2]["agents"] == []
+    assert [u["cp"] for u in history.units(repo, before="2021-06-29")] == [1]
+    assert len(history.units(repo, max_units=2)) == 2    # the newest two
+    assert history.units(repo, max_lines=1) == []
+
+
+def test_a_unit_is_in_an_arm_by_who_declares_it_and_when():
+    agent = {"agent": "True", "date": "2022-03-01T00:00:00Z"}
+    person = {"agent": "False", "date": "2020-06-01T00:00:00Z"}
+    assert history.in_arm(agent, {"commits": "agent"}) and not history.in_arm(person, {"commits": "agent"})
+    assert history.in_arm(person, {"commits": "all", "before": "2021-06-29"})
+    assert not history.in_arm(agent, {"commits": "all", "before": "2021-06-29"})
+    assert not history.in_arm(person, {"commits": "other", "after": "2021-06-29"})
+
+
+def test_a_repository_is_measured_and_gathered_into_arms(repo, tmp_path):
+    out = history.measure_repo(repo, tmp_path / "m" / "s" / "o__r", "o/r")
+    for t in ("hosts", "runs", "additions", "outcomes", "landings", "units"):
+        assert (out / f"{t}.csv").exists()
+    analysis = {"name": "a", "role": "development", "history": True, "methods_arm": "other",
+                "function_arm": "agent",
+                "sources": [{"arm": "other", "sample": "s", "commits": "other"},
+                            {"arm": "agent", "sample": "s", "commits": "agent"}]}
+    runs_ = history.gather(analysis, "runs", tmp_path / "m")
+    assert {(r["arm"], r["cp"]) for r in runs_} == {("other", "1"), ("agent", "2"), ("other", "3")}
+    first = next(r for r in runs_ if r["cp"] == "1")
+    assert first["chain_id"] == "other/o__r" and float(first["position"]) == 0.0
+    assert int(first["binding"]) >= 1                       # it used the local and the field
+    landed = history.gather(analysis, "landings", tmp_path / "m")
+    new = next(r for r in landed if r["arm"] == "agent")
+    assert new["destination"] == "new class" and new["bound"] == "False"
+    # cp1's code in size(int) is come back to by cp3, bound there too; nothing is declared
+    outs = history.gather(analysis, "outcomes", tmp_path / "m")
+    assert next(r for r in outs if r["cp"] == "1")["intrusion_method"] == "1"
+    # and step 4's datasets are built from it, the index the unit's place from 0 to 1
+    data = prepare.prepare(analysis, {}, tmp_path / "m", tmp_path / "d")
+    import csv, json
+    spec = json.loads((data / "spec.json").read_text())
+    assert spec["problem_fixed"] is False and (spec["methods_arm"], spec["function_arm"]) == ("other", "agent")
+    by = list(csv.DictReader((data / "by.csv").open()))
+    assert {r["cp"] for r in by} <= {"0.0", "0.5", "1.0"}
+    land = list(csv.DictReader((data / "landing.csv").open()))
+    assert [(r["arm"], r["existing_class"]) for r in land] == [("agent", "False")]
+
+
+def test_the_registry_declares_the_samples_and_their_analyses():
+    reg = runs.load()
+    assert reg["samples"]["open-source-agent"]["min_agent_commits"] == 30
+    assert reg["samples"]["open-source-human"]["as_of"] == "2020-12-01"
+    names = {a["name"] for a in reg["analyses"] if a.get("history")}
+    assert {"open-source-human", "open-source-agent-within", "open-source-agent-against-human",
+            "open-source-development"} <= names
+    cmd = history.sample_command("open-source-agent", reg["samples"]["open-source-agent"])
+    assert cmd[cmd.index("--min-agent-commits") + 1] == "30" and cmd[cmd.index("--seed") + 1] == "20261119"

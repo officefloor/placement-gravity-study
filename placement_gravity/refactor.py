@@ -60,8 +60,18 @@ def run(repo: Path, units: list[tuple[str, str]], out: Path) -> list[dict]:
     return [json.loads(l) for l in out.read_text().splitlines() if l]
 
 
+_TEST = re.compile(r"(^|/)(src/test|tests?|testing|it|androidTest|jmh)(/|$)", re.I)
+
+
+def production(path: str) -> bool:
+    """A production Java file: a .java file not under a test directory. (Until 18 November 2026
+    this asked for the petclinic root, ``src/main/java/``, which dropped every hint of a stack
+    whose backend sits elsewhere.)"""
+    return path.endswith(".java") and not _TEST.search(path)
+
+
 def _java(loc: dict) -> bool:
-    return loc["filePath"].startswith(JAVA_SRC)
+    return production(loc["filePath"])
 
 
 def _rel(path: str) -> str:

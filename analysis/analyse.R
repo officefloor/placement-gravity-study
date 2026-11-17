@@ -135,7 +135,9 @@ fit_cp <- function(fixed, d, family) {
   d$cp_f <- factor(d$cp)
   f1 <- as.formula(paste(fixed, "+ (1 | chain_id) + (1 | cp_f)"))
   f0 <- as.formula(paste(fixed, "+ (1 | chain_id)"))
-  fit <- if (length(unique(d$cp)) > 1) fit_or_error(glmmTMB(f1, data = d, family = family)) else
+  # on a history (corpora B and C) a unit is not a problem every chain solves: no intercept for it
+  fit <- if (isFALSE(spec$problem_fixed)) structure(list(msg = "a history"), class = "fit_error") else
+    if (length(unique(d$cp)) > 1) fit_or_error(glmmTMB(f1, data = d, family = family)) else
     structure(list(msg = "one checkpoint"), class = "fit_error")
   ok <- !inherits(fit, "fit_error") && isTRUE(fit$sdr$pdHess) && isTRUE(fit$fit$convergence == 0) &&
     all(is.finite(summary(fit)$coefficients$cond[, "Std. Error"]))
@@ -533,6 +535,18 @@ if (!is.null(h2)) {
     fj <- sub(" + arm", "", base(ex, "intrusion_method", paste0("binding + bystanders_method + ", j, " * arm + ")), fixed = TRUE)
     res$reported[[paste0("junction_x_arm_", j)]] <- irr(wald(fit_cp(fj, ex, nb)$fit, paste0(j, ":", FARM)))
   }
+}
+
+# Where unbound code lands (reported, §3.3): whether an unbound landing enters a class that
+# existed, the function arm (on a history, the declared agent commits) against the methods arm;
+# a binomial mixed model, the odds ratio.
+landing <- read("landing.csv")
+if (!is.null(landing) && multi(landing$arm)) {
+  landing$arm <- as_arm(landing$arm)
+  landing$existing <- as.numeric(as.logical(landing$existing_class))
+  fl <- fit_or_error(glmmTMB(existing ~ arm + (1 | chain_id), data = landing, family = binomial()))
+  res$reported$unbound_enters_existing_class <- c(irr(wald(fl, FARM)), list(
+    n = nrow(landing), share = as.list(tapply(landing$existing, as.character(landing$arm), mean))))
 }
 
 # Reopening (reported): per checkpoint, the classes its bound code goes back into, and the wiring

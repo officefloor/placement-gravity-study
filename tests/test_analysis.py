@@ -128,6 +128,7 @@ def test_prepare_builds_the_datasets_and_applies_the_rules(tmp_path):
     assert spec["sinew_kept"] == ["s3_junction"]
     # H3's measures are those of its six that vary; the fixture has no literature measures
     assert spec["h3_all"] == list(verdict.SHAPES) and "s1_long" in spec["h3_measures"]
+    assert spec["class_level"]["testable"] is False       # one class in the fixture
     assert "m_cyclomatic" not in spec["h3_measures"] and spec["reach"] == ["m_fanout", "c_cbo", "c_fanout"]
     assert spec["shape_counts"]["s2_stuck"] == {"officefloor": 0, "spring": 0}
     cond = json.loads((out / "conditions.json").read_text())
@@ -146,6 +147,21 @@ def test_prepare_builds_the_datasets_and_applies_the_rules(tmp_path):
     again = list(csv.DictReader((out / "reopen.csv").open()))
     assert len(again) == 12 * 22 and {r["reopened"] for r in again if r["arm"] == "spring"} == {"2"}
     assert cond["wiring"]["verdict"]["concentration_against"] is False
+
+
+def test_class_measures_are_tested_only_where_classes_can_be_told_apart():
+    def row(chain, cp, cls, arrivals, bound=True):
+        return {"chain_id": chain, "cp": cp, "class_identity": cls, "bound": bound, "intrusion_class": arrivals}
+    # one class holds nearly everything, as a single handler does
+    one = [row("c", k, "Controller", 9) for k in range(10)] + [row("c", 1, "Mapper", 2)]
+    got = prepare.class_level(one)
+    assert got["classes_with_arrivals"] == 2 and got["top_class_share"] == pytest.approx(90 / 92)
+    assert got["testable"] is False
+    # twelve classes sharing the arrivals; a class's rows of one checkpoint count once
+    many = [row("c", 1, f"C{i}", 3) for i in range(12)] + [row("c", 1, "C0", 3), row("c", 1, "X", 5, bound=False)]
+    got = prepare.class_level(many)
+    assert got["classes_with_arrivals"] == 12 and got["top_class_share"] == pytest.approx(1 / 12)
+    assert got["testable"] is True
 
 
 def test_fewer_than_six_chains_is_descriptive(tmp_path):

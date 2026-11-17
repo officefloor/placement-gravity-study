@@ -149,26 +149,43 @@ def parse_wiring(texts: dict[str, str]) -> dict:
             "largest_file": largest, "largest_lines": largest_lines}
 
 
+#: No wiring: an arm, or a history, without OfficeFloor configuration.
+NO_WIRING = {"files": 0, "nodes": 0, "edges": 0, "lines": 0, "largest_file": None, "largest_lines": 0}
+
+
 def measure(repo: Path, branch: str, base_ref: str, work: Path, java_src: str = JAVA_SRC,
-            wiring_root: str = WIRING) -> dict:
+            wiring_root: str = WIRING, cps: list[Checkpoint] | None = None,
+            keep=None) -> dict:
     """Run the instrument over every checkpoint of the chain; returns the parsed records.
     ``java_src`` and ``wiring_root`` are the stack's production Java and OfficeFloor wiring roots
     (the petclinic layout by default; a ui stack declares its own in ``stack.yaml``)."""
     if work.exists():
         shutil.rmtree(work)
     work.mkdir(parents=True)
-    cps = checkpoints(repo, branch, base_ref)
+    # A history (PLAN.md 3.2, 3.3) gives its own units (``cps``) and the files that count
+    # (``keep``). It is read light: the tree before a unit is the before versions of the files it
+    # changes, not the whole repository, and there is no amount, wiring or literature pass.
+    light = cps is not None
+    cps = cps if light else checkpoints(repo, branch, base_ref)
     manifest, amounts, wires, shapes = [], [], {}, []
     wire_changes: dict[str, list] = {}
     for c in cps:
         unit = f"cp{c.cp:02d}"
         for old, new in changed_java(repo, c.parent, c.commit, java_src):
+            if keep and not keep(new or old):
+                continue
             path = new or old
             before = (str(materialise(repo, c.parent, old, work / unit / "before" / old))
                       if old else "-")
             after = (str(materialise(repo, c.commit, new, work / unit / "after" / new))
                      if new else "-")
             manifest.append(f"{unit}\t{path}\t{before}\t{after}\t{old or '-'}")
+        if light:
+            (work / unit / "before").mkdir(parents=True, exist_ok=True)
+            shapes.append(f"{unit}\t{work / unit / 'before'}\t-")
+            wires[unit] = {"before": NO_WIRING, "after": NO_WIRING}
+            wire_changes[unit] = []
+            continue
         tree = extract(repo, c.commit, java_src, work / unit / "tree")
         amounts.append(f"{unit}\t{tree}")
         # the tree at k - 1 (the agent commit's parent), for the hosts' shape before the addition
@@ -188,7 +205,7 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path, java_src: str = 
     hint_lines = []
     for f in found:
         hint_lines += refactor.hints(f)
-    for c in cps:
+    for c in ([] if light else cps):
         for t in sorted(wired_types(repo, c.commit, wiring_root)):
             hint_lines.append(f"cp{c.cp:02d}\tinjected\t{t}")
     (work / "hints.tsv").write_text("\n".join(hint_lines) + "\n")
@@ -207,8 +224,9 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path, java_src: str = 
             named = []
         unmatched += any(p not in paths for p in named)
     # the chain's base (where it leaves base_ref): the amount added is read from it (PLAN.md 4.6)
-    base = git(repo, "merge-base", branch, base_ref).strip()
-    amounts.append(f"base\t{extract(repo, base, java_src, work / 'base' / 'tree')}")
+    if not light:
+        base = git(repo, "merge-base", branch, base_ref).strip()
+        amounts.append(f"base\t{extract(repo, base, java_src, work / 'base' / 'tree')}")
     (work / "amount.tsv").write_text("\n".join(amounts) + "\n")
     subprocess.run(["java", "-cp", CLASSPATH, "Pull", str(work / "manifest.tsv"),
                     str(work / "hints.tsv"), str(work / "pull.jsonl")], check=True)
@@ -218,11 +236,14 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path, java_src: str = 
     shaped = shape.run(work / "shape.tsv", work / "shape.jsonl")
     trees = {line.split("\t")[0]: Path(line.split("\t")[1]) for line in shapes}
     methods = shape.complete(shaped, trees)
-    from . import literature
-    literature.attach(methods, trees)   # the literature's shape measures, per method and class
+    if not light:
+        from . import literature
+        literature.attach(methods, trees)   # the literature's shape measures, per method and class
     records = [json.loads(l) for l in (work / "pull.jsonl").read_text().splitlines() if l]
     amount = {r["unit"]: r for r in
               (json.loads(l) for l in (work / "amount.jsonl").read_text().splitlines() if l)}
+    if light:   # no amount is read on a history
+        amount = {f"cp{c.cp:02d}": {"positions": 0, "methods": 0} for c in cps}
     return {"checkpoints": [c.__dict__ for c in cps], "records": records, "amount": amount,
             "wiring": wires, "wiring_changes": wire_changes, "refactorings": found, "hints": len(hint_lines),
             "shape": methods, "shape_problems": [r for r in shaped if r["kind"] == "problem"],

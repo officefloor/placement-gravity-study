@@ -28,10 +28,10 @@ def main() -> None:
         name = analysis["name"]
         if a.analysis and name not in a.analysis:
             continue
-        if not (runs.RESULTS / "measure" / name).exists():
+        if not runs.measured(analysis):
             continue
         runs.guard(reg, analysis)
-        data = prepare.prepare(analysis, runs.stream(reg, analysis["stream"]))
+        data = prepare.prepare(analysis, runs.streamed(reg, analysis))
         est = OUT / name / "estimates.json"
         subprocess.run(["Rscript", str(R_SCRIPT), str(data), str(est)], check=True)
         out = verdict.decide(json.loads(est.read_text()),

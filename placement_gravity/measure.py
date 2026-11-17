@@ -21,7 +21,7 @@ from . import chain, crosscheck, lines, places, runs, shape, tables
 OUT = runs.RESULTS / "measure"
 WORK = chain.ROOT / ".tmp" / "measure"
 #: Bump when a table's meaning changes, so measured chains are redone.
-MEASURE_VERSION = 14
+MEASURE_VERSION = 15
 
 
 def write(path: Path, rows: list[dict]) -> None:
@@ -101,7 +101,7 @@ def main() -> None:
         if not mine:
             continue
         runs.guard(reg, analysis)
-        streamed = runs.stream(reg, analysis["stream"])
+        streamed = runs.streamed(reg, analysis)
         for head in mine:
             out = measure_chain(reg, analysis, head, streamed, stacks, a.force)
             print(f"{analysis['name']}: {out.name}")

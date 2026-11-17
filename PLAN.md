@@ -98,10 +98,11 @@ registration covers them:
 
 - **The flow-injection-containment draft** (`flow-injection-containment-experiment`, 20 October
   2026; closed by its own commit). Its junction share (P1) becomes the host-level junction measure
-  of §4.7. Its conservation check (P2) is §4.6, with its band. Its trajectory (P5) is H1's checkpoint
+  of §4.7 (since 17 November 2026 a sinew measure, read apart from H3). Its conservation check (P2) is §4.6, with its band. Its trajectory (P5) is H1's checkpoint
   slope, read per arm. Its god-unit count (P3) and its gated-condition lever (P4) are dropped.
 - **The ui harness's SinewSlim analysis plan** (branch `sinewslim-analysis-plan`, 31 October 2026).
-  Its not-slimmable methods (H1) become a shape competitor of §4.7. Its mechanism (H2, behaviour
+  Its not-slimmable methods (H1) become a measure of §4.7 (since 17 November 2026 a sinew measure,
+  read apart from H3). Its mechanism (H2, behaviour
   added inside existing methods) is what Q1 and the bindings measure. Its wiring test (H4) becomes H4's
   wiring condition. Its go/no-go bar for OfficeFloorSlim is a product decision and stays in the
   harness, outside this study.
@@ -113,6 +114,13 @@ The injected-coupling measurement study existed to validate the flow-injection d
 instrument. This plan uses the simpler rule of §4.3 (a wired OfficeFloor function's parameters are
 injected). That study is shelved; if it is ever completed, it is a sensitivity reading here, not a
 gate.
+
+**What stays separate** (recorded 18 November 2026, from the author's decisions of 16 November):
+the follow-ons of `long-method-slim-study` (its third study is to be reframed as placement per
+problem, and is not part of this plan); `test-fidelity-long-run`; and the ui harness itself, which
+is this study's source of data and is run on the study laptop. The SinewSlim analysis plan's own
+branch still has to be given its run ids and its SinewSlim pin before its first scan; that is the
+harness's to do, not this plan's.
 
 ## 2. Questions and hypotheses
 
@@ -327,10 +335,10 @@ this analysis.
 
 ### 3.2 Corpus B: open-source histories (secondary, external validity)
 
-Pre-AI Java repositories drawn by `open-source-repository-sampler` with **seed 2** (decided 16 November 2026), the
-population the complexity-concentration and sinew-identification studies drew, so the bindings can be
-set beside their shape findings on the same code (their shape results have been seen; bindings on this
-code have not). History is read up to **29 June 2021**, the day GitHub Copilot's preview opened.
+Pre-AI Java repositories drawn by `open-source-repository-sampler`. (*As first drafted, 16
+November 2026:* seed 2, the sample the complexity-concentration and sinew-identification studies
+drew, its history read up to 29 June 2021. **Replaced on 18 November 2026** by a sample of its
+own, drawn as of a date, below.)
 Additions are commits linked to an issue labelled as a feature or enhancement, of **at most 200
 changed lines** of production Java, with refactorings removed by RefactoringMiner. Commits linked
 to issues are known to be a biased subset (Bird et al. 2009), and tangling remains at the reported
@@ -355,6 +363,59 @@ a history, so more can be read here than the first draft allowed:
   not a merge** and changes at most 200 lines of production Java, refactorings removed, because
   agents' commits are seldom linked to labelled issues.
 
+**As built** (18 November 2026; `placement_gravity/history.py`, `tests/test_history.py`,
+`runs.yaml`, `step2b_samples.sh`, `step3b_histories.sh`). Fixed with the code before any
+repository of corpus B or C is read:
+
+- **The sample of corpus B** follows the criteria of `long-method-slim-study`'s sample (its
+  `docs/ANALYSIS_PLAN.md`, §3; looked at on 18 November 2026 at the author's direction), which
+  were set for the same purpose, code that people wrote:
+  - **As of 1 December 2020** (`--as-of`): six months before the month GitHub Copilot's preview
+    opened (29 June 2021). Only repositories created before that date are in the frame; each is
+    pinned to its newest commit before it and judged by the criteria there. So every unit is
+    from before the date, and no date is applied to the units.
+  - **Frame:** Java, the three tiers of attention (over 5,000 stars; 1,000 to 5,000; 200 to
+    999), drawn equally.
+  - **Criteria:** at least 50 functions in at least 15 files with a function, at the pin;
+    repositories owned by `officefloor` or `sagenschneider` excluded. These say how large a
+    repository must be; there is no criterion on its commits and no cap on its units.
+  - **Seed `20261118`**, one nobody has drawn (that study's own sample, seed `20261101`, has been
+    read for its measures; seed 2 and seed 3 drew samples other studies have read). The first
+    sample drawn with it is used.
+  - **Size: 60 usable repositories**, 20 a tier. That study drew 580, but it parsed each
+    repository once; this one reads every commit of each, and the largest development repository
+    took most of an hour for 2,000 commits. **To be confirmed by the author.**
+  - The first draft's sample (seed 2) had been drawn without a date: its pins are recent, its
+    frame holds repositories created since, and its criteria describe today's code.
+- **A unit** is a commit that is not a merge and changes between 1 and 200 lines of production
+  Java (a `.java` file outside a test directory). Every such commit reachable from the pin is
+  read, in the order of committer date, not only the first-parent line: on the two development
+  repositories the first-parent line gave 84 and 86 units, most of it being merges of pull
+  requests. **There is no cap on the units of a repository** (decided by the author, 18 November
+  2026; a cap of 2,000 was first drafted): how large a repository may be is for the sample's
+  criteria to say, on its files and functions, not for a count of commits. The models carry an
+  intercept for the repository, and the number of units each contributes is reported, so a
+  long-lived repository that carries much of a corpus is seen.
+- **Read light.** The tree before a unit is the before versions of the files it changes, not the
+  repository. So the bindings, the bystanders, the later arrivals, and an existing host's own
+  shape (long, cognitive complexity, the class's Gini) are read as on corpus A. The literature's
+  other measures (§4.7a), which need the whole tree, are not; and the landing reading gives the
+  destinations (existing method, new method of an existing class, new class) but not the ranks.
+  CodeTracker is not run; a method is followed by the instrument's chaining of RefactoringMiner's
+  renames and moves.
+- **The issue-linked unit** is not built: a unit records the issues its message names, and the
+  labels of those issues are not yet fetched. Until they are, corpus B is read on the second unit
+  only, and that is said wherever it is reported.
+- **Arms** are sets of units, not of repositories (`runs.yaml`): all, those that declare an agent,
+  or the others, with dates. A repository is measured once, on all its units, so a later arrival
+  counts whichever arm it is in; an arm's rows are the units in it.
+- **The models** are those of §5 with the repository as the chain, no intercept for the unit (a
+  unit is not a problem every repository solves), and the index a unit's place in its
+  repository's units, from 0 to 1.
+- **Two development samples** (seed 4, people's code as of 29 June 2021; seed 5, with declared
+  agent commits) are read to build these steps, as chain 9 is for corpus A. Their repositories are
+  left out of corpora B and C.
+
 Corpus B stays a replication with direction and interval only. It is where the hypotheses meet
 code written by people, which corpus A cannot give.
 
@@ -372,13 +433,16 @@ it wrote.
   sample's derivation. This study reads which commits are declared with the same signatures at
   the sampler's pinned version, and adds none of its own.
 - **The sample** is drawn by `open-source-repository-sampler` without `--as-of`, Java, the same
-  tiers and criteria as corpus B, with `--min-agent-commits 30` and a seed fixed here before the
-  draw: **seed 3**. The criterion was added to the sampler for this study (18 November 2026;
-  built there, not yet released: the sample is drawn with the release that carries it, and that
-  release is pinned here before the draw). Target 30 repositories, with `--max-clones 300`.
-  Declared agent commits may be rare among the repositories the sampler's tiers reach (200 stars
-  and more): if fewer than 10 repositories are usable when the draw stops, the corpus is reported
-  as too small and not read, rather than widened by hand. The derivation reports every
+  tiers and criteria as corpus B (at least 50 functions in at least 15 files; the author's owners
+  excluded), with `--min-agent-commits 30` and a seed fixed here before the draw: **seed
+  `20261119`** (first drafted as seed 3, which had drawn the sample SinewSlim's search was checked
+  on). The criterion was added to the sampler for this study and released in **0.4.0** (18
+  November 2026), the release pinned here (`setup.sh`): the samples are drawn, and declared agent
+  commits read, with it. Target 30 repositories, with `--max-clones 1500`: the development draw
+  found one usable repository in 39 of the mid tier, so 300, as first drafted, would be expected
+  to yield about 8. If fewer than 10 repositories are usable when the draw stops, the corpus is
+  reported as too small and not read, rather than widened by hand. **The target and the number
+  of draws are to be confirmed by the author.** The derivation reports every
   repository drawn, kept and left out.
 - **Two comparisons**, both reported with a stated direction and neither confirmatory:
   - *Within a repository:* declared agent commits against its other commits after 29 June 2021.
@@ -902,7 +966,17 @@ on the place an addition lands in, as it stood at *k* − 1, with the harness's 
   readings of the same thing (the two complexities; weight and concentration), and together could
   not be told apart; so H3 says of each that it does not draw code in, not that each adds nothing
   beyond the others. The block as first registered (S1, S4 and S5 together in one model at the
-  method) is reported. H3 is supported when every shape measure's incidence rate ratio
+  method) is reported.
+  - **The method level is the test** (decided by the author, 18 November 2026): it is where the
+    arms are compared, since a function is OfficeFloor's unit of placement.
+  - **The class measures are tested only where classes can be told apart** (18 November 2026,
+    §9). They enter H3 in an analysis only when later bound arrivals fall in **at least 10
+    distinct classes** (a class counted by its name over all chains) and **no one class holds
+    more than half** of them. Otherwise they are reported, each alone, and H3 is read on the
+    method measures. The petclinic stream sends every rule through one endpoint, so one class
+    there receives nearly all the arrivals and a class measure describes that class over time,
+    not a difference between classes (§6); the ui stream, with many endpoints, is where the class
+    level is expected to be testable. H3 is supported when every shape measure's incidence rate ratio
   has a 90% interval whose upper limit is below 1.25, the upper margin (one-sided, 17 November
   2026, §9; the margin of 0.8 to 1.25 was decided 16 November 2026), per
   standard deviation for continuous measures and present against absent for flags. A null is not
@@ -1317,6 +1391,36 @@ binomial mixed model). These details are fixed with the code before any run is r
   Gini 1.08 [0.83, 1.42]. Long does not vary enough in OfficeFloor. The Gini's interval reaches
   above 1.25, so on this chain H3 is unresolved. Reach: the method's fan-out 4.98 [2.24, 11.1],
   the class's CBO 1.62 [0.69, 3.83]. Nothing in the plan was changed after these were seen.
+- **The class level on the development chain** (18 November 2026; decided by the author **after**
+  H3 was unresolved there on the class's Gini). Of the 77 class and checkpoint rows, 37 are
+  Spring's controller, which holds 638 of the 730 later arrivals (87%); arrivals fall in 5 distinct
+  classes. The controller's Gini rises from 0.20 to 0.45 as `addOwner` grows, and within it the
+  rate of later arrivals falls as the Gini rises (rank correlation −0.51), which is the stream
+  running out; in the mapper and the exception advice it goes the other way (0.53, 0.92). So the
+  Gini's 1.08 [0.83, 1.42] is a blend over four classes and says little. Under the rule of §5 the
+  class measures are not tested on this chain, and H3 there is read on the method measures: not
+  above (cognitive 0.32, cyclomatic 0.35).
+- **What unbound code leaves behind, on the development chain** (17 November 2026; a scratch look
+  per checkpoint, not built). Fields added to classes that existed, per checkpoint: 0.71 in Spring
+  and 0.63 in OfficeFloor where the checkpoint has an unbound landing in an existing class,
+  against 0.35 and 0.06 where it has none; rank correlation of the fields added with the unbound
+  landings in existing classes 0.41 and 0.63, with the bound landings 0.12 and −0.08. Which class
+  received the fields was not looked at.
+- **The history steps on the development repositories** (18 November 2026;
+  `results/analysis/open-source-development/REPORT.md`; descriptive only, and read to see that the
+  steps run, not for what they show). Three repositories, none in corpus B or C: two of people's
+  code as of 29 June 2021 (`felHR85/UsbSerial`, `jmxtrans/jmxtrans`; 84 and 86 units) and one with
+  declared agent commits (`bytechefhq/bytechef`: 1,608 of its 23,215 commits, nearly all Claude's;
+  2,000 units read). This first pass read the first-parent line only, with the cap of 2,000 then
+  drafted. Seen on the two repositories of people's code: H1's slopes 0.66 over all runs, 0.87
+  within a class, 0.26 within a method (the index runs from 0 to 1); H2 1.02 [1.01, 1.04] at the
+  class and 1.42 [1.13, 1.78] at the method; cognitive complexity 1.36 [1.09, 1.70] and the
+  class's Gini 1.26 [1.08, 1.47], both reaching above the margin, where on the paired development
+  chain complexity lay below it; unbound code entering a class that existed 57% in both arms.
+  Finding the one agent repository took 39 draws of the mid tier. The comparison of the arms here
+  is of different repositories of very different length, and is not read. **Decided after this
+  was seen:** every non-merge commit is a unit (the first-parent line was mostly merges), and, by
+  the author, no cap.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
@@ -1464,6 +1568,34 @@ binomial mixed model). These details are fixed with the code before any run is r
    steps are not yet built).
 7. Write up, reporting every hypothesis whichever way it falls.
 
+**Before the tag `plan-v1` is set** (the list as it stood on 18 November 2026; the tag is the
+author's to set, on the plan and code as they then stand, and starts the experiment):
+
+- *To finish:* the development run of the history steps (§3.2) on the three development
+  repositories, with every non-merge commit as a unit, looked at and recorded in §6; then one
+  commit holding everything.
+- *Values confirmed by the author on 18 November 2026:* the class-level rule of H3 (10 distinct
+  classes, §5: petclinic gathers on one endpoint and is not expected to pass it; the ui stream and
+  the open-source samples are where the class level is read); corpus C's bound of 30 declared
+  agent commits (§3.3); the margin of 1.25 and the six measures of H3 (§2); and no cap on a
+  repository's units (§3.2).
+- *Values chosen while drafting and not yet spoken to:* that no class holds more than half of the
+  arrivals (the second half of the class-level rule); corpus B's size (60) and seed (`20261118`);
+  corpus C's seed (`20261119`), its number of draws (1,500) and its stopping rule (fewer than 10
+  usable, §3.3).
+- *Not built, and said so where it matters:* the issue-linked unit of corpus B (§3.2); the ranks
+  of the landing reading on a history; a reading of what unbound code leaves behind per class
+  (the fields it adds to the class it enters, and whether later code is bound to them), which
+  would join H1 and H2 to the landing reading and was looked at only per checkpoint (§6).
+- *Considered and left as a reading:* that shape is a bias on where unbound code is put, not a
+  cause (§5, *Where bound and unbound code lands*). It is not part of H3.
+- *Waiting on data:* Run B's ids and Run C (§3.1a), by dated amendment before their backend Java
+  is read.
+- *Weak points seen on the development chain* (§6): H2 at the method was not estimable on one
+  chain; H1 without constants is nearly flat; the size-or-data reading went against its stated
+  direction; long does not vary in OfficeFloor.
+- *The sampler* is released (0.4.0) and pinned (`setup.sh`).
+
 ## 9. Revisions and amendments
 
 **Before the start.** The experiment starts when the first run named for analysis is read
@@ -1576,6 +1708,10 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 37 | Corpus B extended to H1 and H2 as restated, the landing reading and a weaker reading of shape; a second unit (every small commit that is not a merge). Corpus C added: repositories with declared agent commits, drawn with seed 3, compared within a repository and against corpus B | §3.2, §3.3, §5, §7 | The author's proposal: the hypotheses now need only a history, so they can be read on people's code from before AI assistants and on code an agent declares it wrote. Drafted; neither corpus is built or read |
 | 38 | Corpus C's rule for a declared agent commit is the sampler's own criterion, `--min-agent-commits`, with its built-in signatures | §3.3, `open-source-repository-sampler` | The author's decision: the rule is one other studies will want, and a sampling decision belongs in the sample and its derivation, not in the experiment |
 | 39 | The second novelty check (`LITERATURE.md` §10) taken into the plan: common coupling as the precedent of H1; how a bystander differs from common coupling, over-exposure and LCOM; preferential attachment as the rival reading of H2; Zhou et al. and Chowdhury et al. as the two sides of H3 | §1, §2, §4.3a, §7 | So that what is claimed as new is the per-addition measure and the mechanism, not that shared state grows; and so that the nearest rival readings are stated before the runs are read |
+| 41 | A refactoring hint is kept for any production Java file (a `.java` file outside a test directory), not only one under `src/main/java/` at the repository's root | `refactor.py` | A fault found while building the histories: the test for a production file was the petclinic root, so every RefactoringMiner hint of a ui stack, whose backend is under `server/`, would have been dropped. No ui run had been read |
+| 40 | Corpora B and C built as histories: units, the light reading, arms as sets of units, the repository as the chain, two development samples | §3.2, §3.3, `history.py`, `runs.yaml` | To run H1, H2 and the landing reading on people's code and on declared agent code. The issue-linked unit and the ranks of the landing reading are not built |
+| 42 | H3's class measures are tested only where later arrivals fall in at least 10 distinct classes and no one class holds more than half of them; otherwise reported. The method level is H3's test | §5, `prepare.class_level` | Decided by the author after H3 was unresolved on the class's Gini on the development chain (§6): one class there holds 87% of the arrivals, so a class measure describes that class over time. A rule about the data, applying to all three class measures alike, in place of removing one |
+| 43 | Corpus B is a sample of its own, by the criteria of `long-method-slim-study`'s: as of 1 December 2020, at least 50 functions in 15 files, three tiers, a new seed, 60 repositories. Corpus C takes the same criteria, a new seed and more draws. No cap on a repository's units | §3.2, §3.3, `runs.yaml` | The author's direction: the size of a repository is for the sample's criteria to say, and that study's were set for the same purpose. The first draft's sample had no as-of date, and seed 3 had drawn a sample already read |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

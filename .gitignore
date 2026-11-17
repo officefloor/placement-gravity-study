@@ -13,3 +13,5 @@ data/
 blog/
 lib/pmd/
 lib/node_modules/
+lib/sampler/
+samples/*/.*progress*

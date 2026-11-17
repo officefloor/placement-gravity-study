@@ -4,10 +4,10 @@ Role: **development**. Chains: officefloor 1, spring 1. **Descriptive only.**
 
 | Hypothesis | Verdict | p (Holm) |
 |---|---|---|
-| H1 | descriptive only | 0.003 |
+| H1 | descriptive only | 0.002 |
 | H2 | descriptive only | – |
-| H3 | descriptive only | 0.189 |
-| H4 | descriptive only | 0.003 |
+| H3 | descriptive only | 9.19e-06 |
+| H4 | descriptive only | 0.002 |
 
 ## H1, gravity compounds (methods arm)
 
@@ -45,13 +45,11 @@ Where code was bound to a class or a method (109 of 350 problem and host rows, b
 
 ## H3, shape does not draw code in
 
-- **unresolved** (one-sided: each rate ratio below 1.250); each measure fitted alone at its level, with the bindings and the bystanders in the model, 90% intervals: method measures on intrusion at the method (n = 77), class measures on intrusion at the class, one row per class and checkpoint with the class's size held fixed (n = 77); reported, two-sided (0.800 to 1.250): outside
+- **not above** (one-sided: each rate ratio below 1.250); each measure fitted alone at its level, with the bindings and the bystanders in the model, 90% intervals: method measures on intrusion at the method (n = 77), class measures on intrusion at the class, one row per class and checkpoint with the class's size held fixed (n = 77); reported, two-sided (0.800 to 1.250): outside
   - s4_cognitive (method): 0.321 [0.207, 0.496], one-sided p 1.43e-07 (two-sided TOST p 1.000)
   - m_cyclomatic (method): 0.349 [0.219, 0.555], one-sided p 3.06e-06 (two-sided TOST p 0.998)
-  - c_gini (class): 1.083 [0.829, 1.415], one-sided p 0.189 (two-sided TOST p 0.189)
-  - c_wmc (class): 0.445 [0.164, 1.207], one-sided p 0.044 (two-sided TOST p 0.833)
-  - c_lcom_star (class): 0.903 [0.677, 1.204], one-sided p 0.031 (two-sided TOST p 0.245)
   - Left out by the variation rule: s1_long ({'officefloor': 1, 'spring': 22})
+  - The class measures are not tested here: later arrivals in 5 distinct classes (at least 10 needed), the busiest holding 0.874 of them (at most 0.500). They are reported below, each alone.
 - Reported, the block as first registered, together in one model on method-level intrusion: s4_cognitive 0.393 [0.240, 0.645]; s5_class_gini 0.689 [0.419, 1.132]
 - Reported, that block on class-level intrusion: s4_cognitive 0.955 [0.798, 1.143]; s5_class_gini 1.509 [1.187, 1.920]
 - Reported, that block without the problem terms, the bindings and the bystanders: s4_cognitive 1.661 [1.009, 2.733]; s5_class_gini 0.731 [0.363, 1.473]
@@ -106,6 +104,8 @@ A rank is the place's standing among every candidate of its checkpoint (0.5: no 
 | spring | bound | 89 | 0.674 | 0.326 | 0.000 | 0.803 (n 60) | 0.877 | 0.917 (n 88) | 0.925 | 0.573 | 0.961 |
 | spring | unbound | 85 | 0.024 | 0.776 | 0.200 | 0.646 (n 2) | 0.966 | 0.931 (n 68) | 0.827 | – | -0.166 |
 
+Unbound code entering a class that existed, function arm against methods arm, odds ratio: 0.259 [0.140, 0.480] (shares {'officefloor': 0.509316770186335, 'spring': 0.8}).
+
 Agreement is Spearman's rho, over the places landed in, of the complexity rank with the data-width rank: whether the two kinds of size point to the same places.
 
 ## Reported: the literature's shape measures, each alone
@@ -131,6 +131,8 @@ Later intrusion per standard deviation of the measure (a flag: present against a
 | c_imports | class | import count (PMD) | 77 | 2.406 [1.132, 5.115] | 0.923 | reaches above |
 | c_halstead | class | Halstead 1977, volume | 77 | 0.144 [0.014, 1.522] | 0.066 | reaches above |
 | c_mi (reversed) | class | Maintainability Index | 77 | 0.098 [0.021, 0.452] | 0.003 | below |
+
+**Read the class rows with care.** Later arrivals fall in 5 distinct classes here, and the busiest holds 0.874 of them. A class measure then mostly describes that one class as it changes over the stream, so an association with later arrivals may be coincidental. These rows are not part of H3 in this analysis.
 
 Left out by the variation rule (bound rows flagged or above zero, per arm): s1_long ({'officefloor': 1, 'spring': 22}), m_demeter ({'officefloor': 0, 'spring': 0}), m_duplicated ({'officefloor': 0, 'spring': 4}), c_tcc ({'officefloor': 0, 'spring': 80}), c_god_class ({'officefloor': 6, 'spring': 33}), c_data_class ({'officefloor': 0, 'spring': 0}), c_demeter ({'officefloor': 0, 'spring': 0}), c_duplicated ({'officefloor': 1, 'spring': 73}).
 

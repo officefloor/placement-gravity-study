@@ -48,7 +48,7 @@ SinewSlim analysis plan, and sinew identification (`PLAN.md` §1.1).
 Each step takes `--analysis NAME ...` to run only some analyses of `runs.yaml`. **Until the tag
 `plan-v1` exists, only the development analysis (`pilot`, chain 9) can be read**: steps 2 to 4
 refuse every other. They also refuse while the plan, the registry, the instrument or the analysis
-code has uncommitted changes, and each report lists the registered files changed since the tag. `./pilot.sh` regenerates the pilot report in `results/pilot/`.
+code has uncommitted changes, and each report lists the registered files changed since the tag. `./pilot.sh` regenerates the pilot report in `results/pilot/`: **do not run it** unless that is meant, since `results/pilot/PILOT.md` is the record of the pilot as it was on 15–16 November 2026, with the terms and hypothesis numbers of that day, and the instrument has changed since.
 
 The petclinic chains are read from the harness's local clones (`~/compare/spring`,
 `~/compare/officefloor`) and published in `officefloor/spring-petclinic-rest`; the ui stacks are

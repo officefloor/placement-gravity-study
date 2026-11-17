@@ -34,7 +34,7 @@ import random
 import statistics
 from pathlib import Path
 
-from . import chain, literature, places, readings, runs, wiring
+from . import chain, history, literature, places, readings, runs, wiring
 
 DATA = chain.ROOT / "data" / "analysis"
 SEED = 20261116
@@ -123,7 +123,9 @@ def by_rows(run_rows: list[dict], outcomes: list[dict] | None = None) -> list[di
         o = where.get((r["chain_id"], str(r["cp"]), r.get("type"), r.get("signature")), {})
         cls = o.get("class_identity") or r.get("type", "")
         out.append({"chain_id": r["chain_id"], "arm": r["arm"], "frontend": r.get("frontend", ""),
-                    "cp": int(r["cp"]), "host_new": truth(r["host_new"]),
+                    # on a history the index is the unit's place in the repository, 0 to 1
+                    "cp": float(r["position"]) if r.get("position") not in (None, "") else int(r["cp"]),
+                    "host_new": truth(r["host_new"]),
                     "pulled": int(r["need"]) > 0,
                     "place_class": f"{r['chain_id']}|{cls}",
                     "place_method": f"{r['chain_id']}|{o.get('identity') or (str(r.get('type', '')) + '#' + str(r.get('signature', '')))}",
@@ -238,6 +240,32 @@ def literature_kept(h2: list[dict]) -> tuple[dict, dict]:
     return kept, counts
 
 
+#: A class measure is tested in H3 only where the class level can tell classes apart: later
+#: arrivals in at least MIN_CLASSES distinct classes (by name, over all chains), and no one class
+#: holding more than MAX_CLASS_SHARE of them (PLAN.md §5).
+MIN_CLASSES = 10
+MAX_CLASS_SHARE = 0.5
+
+
+def class_level(h2: list[dict]) -> dict:
+    """Whether the class level varies enough for H3's class measures: the distinct classes that
+    receive later bound arrivals, and the share of those arrivals the busiest class holds. A
+    class is counted by its name over all chains, and its arrivals once per chain and checkpoint."""
+    seen, per = set(), {}
+    for r in h2:
+        key = (r["chain_id"], r["cp"], r.get("class_identity"))
+        if not r["bound"] or r.get("class_identity") is None or key in seen:
+            continue
+        seen.add(key)
+        per[r["class_identity"]] = per.get(r["class_identity"], 0) + r["intrusion_class"]
+    total = sum(per.values())
+    classes = sum(1 for v in per.values() if v > 0)
+    top = (max(per.values()) / total) if total else None
+    return {"classes_with_arrivals": classes, "top_class_share": top,
+            "min_classes": MIN_CLASSES, "max_share": MAX_CLASS_SHARE,
+            "testable": classes >= MIN_CLASSES and top is not None and top <= MAX_CLASS_SHARE}
+
+
 def amount(additions: list[dict], seed: int = SEED, resamples: int = 10_000) -> dict:
     """H4's amount band, read on the **amount added**: each chain's positions at its final
     checkpoint less those of its base (PLAN.md §4.6); the ratio of the function arm's mean to the
@@ -256,7 +284,7 @@ def amount(additions: list[dict], seed: int = SEED, resamples: int = 10_000) -> 
         by_arm.setdefault(arm, []).append(v)
         totals.setdefault(arm, []).append(t)
     m, f = by_arm.get(METHODS_ARM, []), by_arm.get(FUNCTION_ARM, [])
-    if not m or not f:
+    if not m or not f or statistics.fmean(m) == 0:
         return {"ratio": None, "interval": None, "in_band": None, "per_arm": by_arm}
     ratio = statistics.fmean(f) / statistics.fmean(m)
     rng = random.Random(seed)
@@ -295,19 +323,31 @@ def write_csv(path: Path, rows: list[dict]) -> None:
 def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
             out_root: Path = DATA) -> Path:
     name = analysis["name"]
-    hosts = gather(name, "hosts", measured_root)
-    run_rows = gather(name, "runs", measured_root)
+    past = bool(analysis.get("history"))     # corpora B and C: repositories' histories (§3.2, §3.3)
+
+    def table(t: str) -> list[dict]:
+        return history.gather(analysis, t, measured_root) if past else gather(name, t, measured_root)
+
+    hosts = table("hosts")
+    run_rows = table("runs")
     h1 = h1_rows(run_rows, hosts, streamed)
-    additions = gather(name, "additions", measured_root)
-    outcomes = gather(name, "outcomes", measured_root)
+    additions = table("additions")
+    outcomes = table("outcomes")
     h2 = h2_rows(outcomes, hosts, additions, streamed)
     kept, counts = shape_kept(h2)
     sinew, sinew_counts = shape_kept(h2, SINEW_FLAGS)
     lit, lit_counts = literature_kept(h2)
+    at_class = class_level(h2)
     chains: dict[str, set] = {}
     for a in additions:
         chains.setdefault(a["arm"], set()).add(a["chain_id"])
     out = out_root / name
+    landed = table("landings")
+    # unbound code's destination, per landing (the arms' contrast on a history, §3.3)
+    write_csv(out / "landing.csv", [
+        {"chain_id": r["chain_id"], "arm": r["arm"], "cp": r["cp"],
+         "existing_class": r["destination"] != "new class"}
+        for r in landed if "chain_id" in r and not truth(r["bound"])])
     write_csv(out / "h1.csv", h1)
     by = by_rows(run_rows, outcomes)
     write_csv(out / "by.csv", [r for r in by if r["pulled"]])
@@ -317,10 +357,18 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
     write_csv(out / "reopen.csv", again)
     write_csv(out / "h2.csv", h2)
     spec = {"analysis": name, "role": analysis["role"], "seed": SEED, "boot": BOOT,
-            "margin": MARGIN, "methods_arm": METHODS_ARM, "function_arm": FUNCTION_ARM,
+            "margin": MARGIN, "methods_arm": analysis.get("methods_arm", METHODS_ARM),
+            "function_arm": analysis.get("function_arm", FUNCTION_ARM),
+            # a history has no stream: its units are not problems every chain solves, so no model
+            # carries an intercept for them, and the index is the unit's place from 0 to 1
+            "problem_fixed": not past,
             "shape_kept": kept, "shape_counts": {**counts, **sinew_counts}, "sinew_kept": sinew,
             "literature": lit, "literature_counts": lit_counts,
-            "h3_measures": [k for k in H3_MEASURES if k in lit], "h3_all": H3_MEASURES, "reach": REACH, "checkpoints": len(streamed),
+            # H3's measures that vary; its class measures only where the class level does
+            "class_level": at_class,
+            "h3_measures": [k for k in H3_MEASURES if k in lit
+                            and (lit[k]["level"] == "method" or at_class["testable"])],
+            "h3_all": H3_MEASURES, "reach": REACH, "checkpoints": len(streamed),
             "acts": any(r["act"] is not None for r in h1 + h2),
             "frontends": sorted({r["frontend"] for r in h1 if r["frontend"]})}
     conditions = {"chains": {k: len(v) for k, v in chains.items()},
@@ -340,7 +388,7 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
         "bystanders": readings.bystander_summary(by, captured, len(streamed)),
         "reopening": readings.reopening_summary(again),
         "drawn": readings.drawn_summary(h2),
-        "landings": places.summary(gather(name, "landings", measured_root)),
+        "landings": places.summary(landed),
         "own_lines": lost}, indent=1) + "\n")
     (out / "spec.json").write_text(json.dumps(spec, indent=1) + "\n")
     (out / "conditions.json").write_text(json.dumps(conditions, indent=1) + "\n")
@@ -355,10 +403,10 @@ def main() -> None:
     for analysis in reg["analyses"]:
         if a.analysis and analysis["name"] not in a.analysis:
             continue
-        if not (runs.RESULTS / "measure" / analysis["name"]).exists():
+        if not runs.measured(analysis):
             continue
         runs.guard(reg, analysis)
-        out = prepare(analysis, runs.stream(reg, analysis["stream"]))
+        out = prepare(analysis, runs.streamed(reg, analysis))
         print(f"{analysis['name']}: {out}")
 
 

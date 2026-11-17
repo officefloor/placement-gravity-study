@@ -84,6 +84,10 @@ def landing_section(r: dict) -> list[str]:
                      f"{f(x.get('rank_class_cognitive'))} (n {f(x.get('n_rank_class_cognitive'))}) | "
                      f"{f(x.get('rank_class_fields'))} | {f(x.get('agreement_method'))} | "
                      f"{f(x.get('agreement_class'))} |")
+    odds = (r.get("_estimates") or {}).get("unbound_enters_existing_class")
+    if odds:
+        L += ["", f"Unbound code entering a class that existed, function arm against methods arm, odds ratio: "
+              f"{ratio(odds)} (shares {odds.get('share')})."]
     L += ["", "Agreement is Spearman's rho, over the places landed in, of the complexity rank with the "
           "data-width rank: whether the two kinds of size point to the same places."]
     return L
@@ -117,6 +121,13 @@ def literature_section(est: dict, spec: dict) -> list[str]:
             " \u2020" if m.get("at") == "class" and not m.get("class_intercept") else "")
         L.append(f"| {name} | {m.get('at')} | {m.get('source')} | {f(m.get('n'))} | {ratio(m)} | "
                  f"{f(m.get('p_upper'))} | {where} |")
+    at_class = spec.get("class_level") or {}
+    if at_class and not at_class.get("testable"):
+        L += ["", f"**Read the class rows with care.** Later arrivals fall in "
+              f"{f(at_class.get('classes_with_arrivals'))} distinct classes here, and the busiest holds "
+              f"{f(at_class.get('top_class_share'))} of them. A class measure then mostly describes that one "
+              f"class as it changes over the stream, so an association with later arrivals may be "
+              f"coincidental. These rows are not part of H3 in this analysis."]
     if left:
         L += ["", "Left out by the variation rule (bound rows flagged or above zero, per arm): "
               + ", ".join(f"{k} ({counts[k]})" for k in left) + "."]
@@ -238,10 +249,20 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
     for k, m in (b.get("measures") or {}).items():
         L.append(f"  - {k} ({m.get('at', '–')}): {ratio(m)}, one-sided p {f(m.get('p_upper'))} "
                  f"(two-sided TOST p {f(m.get('p_tost'))})")
-    if h3.get("dropped"):
+    # a class measure left out because the class level cannot be tested is named on the next line
+    apart = (spec.get("class_level") or {}).get("testable") is False
+    dropped = [k for k in h3.get("dropped") or [] if not (apart and k.startswith("c_"))]
+    if dropped:
         counts = {**(spec.get("shape_counts") or {}), **(spec.get("literature_counts") or {})}
         L.append("  - Left out by the variation rule: " + ", ".join(
-            f"{k} ({counts.get(k)})" for k in h3["dropped"]))
+            f"{k} ({counts.get(k)})" for k in dropped))
+    at_class = spec.get("class_level") or {}
+    if at_class and not at_class.get("testable"):
+        L.append(f"  - The class measures are not tested here: later arrivals in "
+                 f"{f(at_class.get('classes_with_arrivals'))} distinct classes (at least "
+                 f"{f(at_class.get('min_classes'))} needed), the busiest holding "
+                 f"{f(at_class.get('top_class_share'))} of them (at most {f(at_class.get('max_share'))}). "
+                 f"They are reported below, each alone.")
     sj = rep.get("shape_joint") or {}
     if sj.get("measures"):
         L.append("- Reported, the block as first registered, together in one model on method-level intrusion: "
@@ -308,7 +329,7 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           f"slope {interval((rep.get('H4_without_injected') or {}).get('slope'))}",
           f"- Reported, trajectory of the bindings (arm × checkpoint): {interval(rep.get('H4_trajectory'))}",
           *readings_section(est, readings or {}),
-          *landing_section(readings or {}),
+          *landing_section({**(readings or {}), "_estimates": rep}),
           *literature_section(est, spec),
           "", "## Provenance", "",
           "Checkpoint intercept in the model: " + (", ".join(

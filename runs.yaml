@@ -50,6 +50,50 @@ repos:
     branch: "evolve/{run}/{strategy}/chain{chain}"
     layout: stack
 
+# Corpora B and C (PLAN.md 3.2, 3.3): samples of open-source repositories, drawn by
+# open-source-repository-sampler (`python -m placement_gravity.history sample NAME`) or, with `csv`,
+# drawn by another study and read where it lies. A development sample is read to build the steps;
+# its repositories are left out of every other analysis. `before`: only commits before that day.
+samples:
+  open-source-development:           # people's code, to build the steps on
+    role: development
+    seed: 4
+    tiers: [mid]
+    target: 2
+    as_of: "2021-06-29"
+    min_functions: 50
+    min_files_with_functions: 15
+    min_commits: 300
+    max_clones: 40
+    exclude_owners: [officefloor, sagenschneider]
+  open-source-development-agent:     # declared agent commits, to build the steps on
+    role: development
+    seed: 5
+    tiers: [mid]
+    target: 1
+    min_functions: 50
+    min_files_with_functions: 15
+    min_agent_commits: 30
+    max_clones: 60
+    exclude_owners: [officefloor, sagenschneider]
+  open-source-human:                 # corpus B: the criteria of long-method-slim-study's sample
+    role: secondary                  # (its docs/ANALYSIS_PLAN.md, section 3), a seed nobody has drawn
+    seed: 20261118
+    target: 60
+    as_of: "2020-12-01"              # six months before the month Copilot's preview opened
+    min_functions: 50
+    min_files_with_functions: 15
+    exclude_owners: [officefloor, sagenschneider]
+  open-source-agent:                 # corpus C
+    role: secondary
+    seed: 20261119                   # not 3: seed 3 drew the sample SinewSlim's search was checked on
+    target: 30
+    min_functions: 50
+    min_files_with_functions: 15
+    min_agent_commits: 30
+    max_clones: 1500
+    exclude_owners: [officefloor, sagenschneider]
+
 # Each analysis is read on its own; analyses are never pooled. role: primary | secondary |
 # development (the pilot's chain, readable before registration and never analysed for a verdict).
 analyses:
@@ -132,3 +176,41 @@ analyses:
     sources:
       - {arm: spring, repo: petclinic-spring, run: blind-202608100006, strategy: just-solve}
       - {arm: officefloor, repo: petclinic-officefloor, run: blind-202608100006, strategy: just-solve}
+
+  # Corpora B and C: histories, not paired chains (`history: true`). A source is a sample and the
+  # commits of it that make the arm: all, agent (the commit declares an agent) or other, with dates.
+  - name: open-source-development
+    corpus: open-source
+    role: development
+    history: true
+    methods_arm: human
+    function_arm: agent
+    sources:
+      - {arm: human, sample: open-source-development, commits: all}
+      - {arm: agent, sample: open-source-development-agent, commits: agent}
+  - name: open-source-human            # corpus B by itself: H1, H2, the landing reading
+    corpus: open-source
+    role: secondary
+    history: true
+    methods_arm: human
+    function_arm: agent
+    sources:
+      - {arm: human, sample: open-source-human, commits: all}
+  - name: open-source-agent-within     # corpus C: declared agent commits against the same
+    corpus: open-source                # repositories' other commits since Copilot's preview
+    role: secondary
+    history: true
+    methods_arm: other
+    function_arm: agent
+    sources:
+      - {arm: other, sample: open-source-agent, commits: other, after: "2021-06-29"}
+      - {arm: agent, sample: open-source-agent, commits: agent}
+  - name: open-source-agent-against-human   # corpus C's declared agent commits against corpus B
+    corpus: open-source
+    role: secondary
+    history: true
+    methods_arm: human
+    function_arm: agent
+    sources:
+      - {arm: human, sample: open-source-human, commits: all}
+      - {arm: agent, sample: open-source-agent, commits: agent}

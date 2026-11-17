@@ -49,6 +49,11 @@ def validate(reg: dict) -> None:
     for a in reg["analyses"]:
         if a["role"] not in ("primary", "secondary", "development"):
             raise ValueError(f"{a['name']}: unknown role {a['role']!r}")
+        if a.get("history"):      # corpora B and C: samples of repositories, not paired chains
+            for s in a["sources"]:
+                if s["sample"] not in reg.get("samples", {}):
+                    raise ValueError(f"{a['name']}: unknown sample {s['sample']!r}")
+            continue
         if a["stream"] not in reg["streams"]:
             raise ValueError(f"{a['name']}: unknown stream {a['stream']!r}")
         arms = {s["arm"] for s in a["sources"]}
@@ -95,6 +100,18 @@ def guard(reg: dict, analysis: dict, root: Path = ROOT) -> None:
     if dirty:
         raise SystemExit(f"{analysis['name']}: uncommitted changes to registered files ("
                          + ", ".join(dirty) + "). Commit them as a dated amendment (PLAN.md §9).")
+
+
+def streamed(reg: dict, analysis: dict) -> dict[int, dict]:
+    """The analysis's stream; none for a history (corpora B and C), which declares nothing."""
+    return {} if analysis.get("history") else stream(reg, analysis["stream"])
+
+
+def measured(analysis: dict) -> bool:
+    """Whether step 3 (or, for a history, ``history measure``) has left tables to read."""
+    if analysis.get("history"):
+        return any((RESULTS / "measure" / "_history" / s["sample"]).exists() for s in analysis["sources"])
+    return (RESULTS / "measure" / analysis["name"]).exists()
 
 
 def stream(reg: dict, name: str) -> dict[int, dict]:
@@ -234,7 +251,8 @@ def main() -> None:
         STACKS.write_text(json.dumps(out, indent=1) + "\n")
         print(json.dumps(out, indent=1))
         return
-    chosen = [x for x in reg["analyses"] if not a.analysis or x["name"] in a.analysis]
+    chosen = [x for x in reg["analyses"] if not x.get("history")
+              and (not a.analysis or x["name"] in a.analysis)]
     for analysis in chosen:
         rows = fetch(reg, analysis)
         write_heads(rows)
