@@ -89,6 +89,40 @@ def landing_section(r: dict) -> list[str]:
     return L
 
 
+def literature_section(est: dict, spec: dict) -> list[str]:
+    """The literature's shape measures, each alone, at the method and at the class (PLAN.md §4.7a)."""
+    lit = (est.get("reported") or {}).get("literature_shape") or {}
+    counts = spec.get("literature_counts") or {}
+    left = [k for k in counts if k not in lit]
+    if not lit and not left:
+        return []
+    L = ["", "## Reported: the literature's shape measures, each alone", "",
+         "Later intrusion per standard deviation of the measure (a flag: present against absent), with the "
+         "problem, the bindings and what stood by held fixed. Method measures on intrusion at the method, "
+         "class measures on intrusion at the class, one row per class a checkpoint's bound code went into "
+         f"({f(((est.get('reported') or {}).get('literature_class_rows')))} rows), with the class's size held "
+         "fixed and an intercept for the class (\u2020: refitted without it). Read as H3 is: below 1.25 does "
+         "not draw code in. A measure marked reversed is one where higher is better; its ratio is for the "
+         "worse shape.", "",
+         "| Measure | Level | Source | n | Rate ratio (90% interval) | One-sided p | Against 1.25 |",
+         "|---|---|---|---|---|---|---|"]
+    for k, m in lit.items():
+        if "error" not in m and None in (m.get("irr_lower"), m.get("irr_upper")):
+            m = {**m, "error": "no finite interval"}
+        if "error" in m:
+            L.append(f"| {k} | {m.get('at', '–')} | {m.get('source', '–')} | – | not estimated ({m['error']}) | – | – |")
+            continue
+        where = "above" if m.get("above") else "below" if m["irr_upper"] <= 1.25 else "reaches above"
+        name = k + (" (reversed)" if m.get("reversed") else "") + (
+            " \u2020" if m.get("at") == "class" and not m.get("class_intercept") else "")
+        L.append(f"| {name} | {m.get('at')} | {m.get('source')} | {f(m.get('n'))} | {ratio(m)} | "
+                 f"{f(m.get('p_upper'))} | {where} |")
+    if left:
+        L += ["", "Left out by the variation rule (bound rows flagged or above zero, per arm): "
+              + ", ".join(f"{k} ({counts[k]})" for k in left) + "."]
+    return L
+
+
 def readings_section(est: dict, r: dict) -> list[str]:
     """Choice at a checkpoint, formation and review (PLAN.md §5): reported, not confirmatory."""
     rep = est.get("reported") or {}
@@ -193,24 +227,45 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           f"method {ratio(rep.get('bindings_without_injected_method'))}"]
     h3 = hyp["H3"]
     b = est.get("H3") or {}
-    L += ["", "## H3, shape adds nothing", "",
-          f"- **{h3.get('state', h3.get('verdict'))}**; margin {f((b.get('margin') or [None])[0])} to "
-          f"{f((b.get('margin') or [None, None])[1])}, 90% intervals, method-level intrusion, the bindings and the bystanders in the model "
-          f"(n = {f(b.get('n'))})"]
+    L += ["", "## H3, shape does not draw code in", "",
+          f"- **{h3.get('state', h3.get('verdict'))}** (one-sided: each rate ratio below "
+          f"{f((b.get('margin') or [None, None])[1])}); each measure fitted alone at its level, with the "
+          f"bindings and the bystanders in the model, 90% intervals: method measures on intrusion at the "
+          f"method (n = {f(b.get('n'))}), class measures on intrusion at the class, one row per class and "
+          f"checkpoint with the class's size held fixed (n = {f(b.get('n_class'))}); reported, two-sided "
+          f"({f((b.get('margin') or [None])[0])} to {f((b.get('margin') or [None, None])[1])}): "
+          f"{h3.get('two_sided', '–')}"]
     for k, m in (b.get("measures") or {}).items():
-        L.append(f"  - {k}: {ratio(m)}, TOST p {f(m.get('p_tost'))}")
+        L.append(f"  - {k} ({m.get('at', '–')}): {ratio(m)}, one-sided p {f(m.get('p_upper'))} "
+                 f"(two-sided TOST p {f(m.get('p_tost'))})")
     if h3.get("dropped"):
-        counts = spec.get("shape_counts") or {}
+        counts = {**(spec.get("shape_counts") or {}), **(spec.get("literature_counts") or {})}
         L.append("  - Left out by the variation rule: " + ", ".join(
             f"{k} ({counts.get(k)})" for k in h3["dropped"]))
+    sj = rep.get("shape_joint") or {}
+    if sj.get("measures"):
+        L.append("- Reported, the block as first registered, together in one model on method-level intrusion: "
+                 + "; ".join(f"{k} {ratio(v)}" for k, v in sj["measures"].items()))
     cl = rep.get("H3_class_level") or {}
     if cl:
-        L.append("- Reported, the same on class-level intrusion: "
+        L.append("- Reported, that block on class-level intrusion: "
                  + "; ".join(f"{k} {ratio(v)}" for k, v in cl.items()))
     sw = rep.get("shape_without_problem") or {}
     if sw:
-        L.append("- Reported, shape without the problem terms, the bindings and the bystanders: "
+        L.append("- Reported, that block without the problem terms, the bindings and the bystanders: "
                  + "; ".join(f"{k} {ratio(v)}" for k, v in sw.items()))
+    reach = {k: v for k, v in (rep.get("literature_shape") or {}).items() if k in (spec.get("reach") or [])}
+    if reach:
+        L.append("- Reported, reach (how far a place reaches out; with the sinew measures, predicted above 1): "
+                 + "; ".join(f"{k} {ratio(v)}" for k, v in reach.items()))
+    sn = rep.get("sinew") or {}
+    left = [k for k in ("s2_stuck", "s3_junction") if k not in sn]
+    L.append("- Reported, the sinew measures (data flow, not shape; predicted above 1), later intrusion with "
+             "the bindings and the bystanders in the model: "
+             + ("; ".join(f"{k} at the method {ratio(v.get('method'))}, at the class {ratio(v.get('class'))}"
+                          for k, v in sn.items()) or "none varies enough to be read")
+             + (f"; left out by the variation rule: " + ", ".join(
+                 f"{k} ({(spec.get('shape_counts') or {}).get(k)})" for k in left) if left and sn else ""))
     for j in ("s3_junction", "s3_junction_injection_aware"):
         L.append(f"- Reported, junction × arm ({j}): {ratio(rep.get('junction_x_arm_' + j))}")
     m3 = est.get("H4") or {}
@@ -254,6 +309,7 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           f"- Reported, trajectory of the bindings (arm × checkpoint): {interval(rep.get('H4_trajectory'))}",
           *readings_section(est, readings or {}),
           *landing_section(readings or {}),
+          *literature_section(est, spec),
           "", "## Provenance", "",
           "Checkpoint intercept in the model: " + (", ".join(
               f"{k} {f(v)}" for k, v in (est.get("checkpoint_intercept") or {}).items()) or "–") + ".", "",

@@ -7,8 +7,10 @@
 - **H2** (the methods arm): where code was bound to a class or a method, the rate ratio, per value
   that stood by there, of the later intrusions bound to what stood by, above 1 at the class and at
   the method (one-sided Wald; p = the larger of the two; PLAN.md §4.4).
-- **H3**: every shape measure kept within the equivalence margin by two one-sided tests, on
-  method-level intrusion, with the bindings and the bystanders in the model. p = the largest TOST p.
+- **H3** (one-sided): every shape measure kept shown not to raise later intrusion at its level, the
+  method or the class: its rate ratio below the upper margin (1.25), by a one-sided test, each
+  measure fitted alone with the bindings and the bystanders in the model. p = the largest of those p-values. A measure that lowers intrusion does
+  not count against. The two-sided reading (within 0.8 to 1.25) is reported.
 - **H4**: the function arm's bystanders fewer half-way through the stream, their slope on the
   checkpoint index flatter, and its bound code come back to less, at the class and at the method
   (p = the largest of the four one-sided p-values); the amount within its band; and neither wiring
@@ -16,7 +18,7 @@
 - **Multiplicity**: Holm over H1 to H4 at α = 0.05.
 
 Verdicts: ``supported``; ``not supported``; ``reversed`` (an interval wholly on the wrong side);
-``unresolved`` (H3: an interval reaching outside the margin without lying outside it);
+``unresolved`` (H3: an interval reaching above the upper margin without lying above it);
 ``not testable`` (H3: no shape measure varies); ``descriptive only`` (fewer than 6 chains in an
 arm, or the development analysis).
 """
@@ -27,7 +29,10 @@ import json
 from pathlib import Path
 
 ALPHA = 0.05
-SHAPES = ("s1_long", "s2_stuck", "s3_junction", "s4_cognitive", "s5_class_gini")
+#: H3's measures (PLAN.md §2, §5): at the method, long, cognitive and cyclomatic complexity; at the
+#: class, concentration, WMC and lack of cohesion. Each is fitted alone. Not slimmable and
+#: junction are sinew measures, and fan-out and CBO measures of reach, reported apart.
+SHAPES = ("s1_long", "s4_cognitive", "m_cyclomatic", "c_gini", "c_wmc", "c_lcom_star")
 
 
 def holm(ps: dict[str, float | None]) -> dict[str, float | None]:
@@ -74,15 +79,20 @@ def h3(est: dict) -> dict:
     if not (b.get("testable") and measures):
         return {"p": None, "verdict": "not testable", "state": "not testable", "dropped": dropped,
                 "detail": b}
-    if any(m["outside"] for m in measures.values()):
-        state = "against"           # a shape measure carries information beyond the problem
-    elif all(b["margin"][0] <= m["irr_lower"] and m["irr_upper"] <= b["margin"][1]
-             for m in measures.values()):
-        state = "within"
+    upper = b["margin"][1]
+    if any(m.get("above", m["irr_lower"] > upper) for m in measures.values()):
+        state = "against"           # a shape measure raises later intrusion beyond the margin
+    elif all(m["irr_upper"] <= upper for m in measures.values()):
+        state = "not above"
     else:
         state = "unresolved"
-    return {"p": max(m["p_tost"] for m in measures.values()), "state": state, "dropped": dropped,
-            "conditions_met": state == "within", "detail": b}
+    # reported: the two-sided reading, as H3 stood until 17 November 2026
+    two_sided = ("outside" if any(m.get("outside") for m in measures.values()) else
+                 "within" if all(b["margin"][0] <= m["irr_lower"] and m["irr_upper"] <= upper
+                                 for m in measures.values()) else "unresolved")
+    return {"p": max(m.get("p_upper", m.get("p_tost")) for m in measures.values()), "state": state,
+            "two_sided": two_sided, "dropped": dropped, "conditions_met": state == "not above",
+            "detail": b}
 
 
 def h4(est: dict, cond: dict) -> dict:

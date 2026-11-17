@@ -94,16 +94,32 @@ HOST_COLUMNS = ("s1_long", "s2_stuck", "s2_not_slimmable", "s2_status", "s2_obst
                 "s5_class_gini", "s5_class_positions")
 
 
-def host_shape(host: dict, shaped: dict[tuple[str, str, str, str], dict]) -> dict:
-    """S1 to S5 of an existing host's version at k − 1 (its before path, type and signature)."""
-    none = {c: None for c in HOST_COLUMNS}
+def class_index(methods: list[dict]) -> dict[tuple[str, str], dict]:
+    """(unit, type) -> a shape record of that class, for its class measures."""
+    return {(r["unit"], r["type"]): r for r in methods}
+
+
+def host_shape(host: dict, shaped: dict[tuple[str, str, str, str], dict],
+               classes: dict[tuple[str, str], dict] | None = None) -> dict:
+    """S1 to S5 of an existing host's version at k − 1 (its before path, type and signature), with
+    the literature's method measures (``literature.METHOD``). The literature's class measures
+    (``literature.CLASS``) are those of the host's class at k − 1, also for a new method of a
+    class that existed."""
+    from . import literature
+    none = {c: None for c in HOST_COLUMNS + tuple(literature.METHOD)}
+    unit = f"cp{host['cp']:02d}"
+    c = None if host.get("class_new") else (classes or {}).get(
+        (unit, host.get("before_type") or host["type"]))
+    of_class = {k: (c.get(k) if c else None) for k in literature.CLASS}
+    of_class["c_gini"] = c.get("s5_class_gini") if c else None
+    of_class["c_positions"] = c.get("s5_class_positions") if c else None   # the class's size at k − 1
     if host["host_new"]:
-        return {**none, "shape_found": None}
-    r = shaped.get((f"cp{host['cp']:02d}", host["before_path"], host["before_type"],
+        return {**none, **of_class, "shape_found": None}
+    r = shaped.get((unit, host["before_path"], host["before_type"],
                     host["before_signature"]))
     if r is None:
-        return {**none, "shape_found": False}
-    return {"s1_long": r["s1_long"], "s2_stuck": r["s2_stuck"],
+        return {**none, **of_class, "shape_found": False}
+    return {**{k: r.get(k) for k in literature.METHOD}, **of_class, "s1_long": r["s1_long"], "s2_stuck": r["s2_stuck"],
             "s2_not_slimmable": r["s2_not_slimmable"], "s2_status": r["status"],
             "s2_obstacle": r["obstacle"], "s3_in": r["in"], "s3_out": r["out"], "s3_d": r["s3_d"],
             "s3_junction": r["s3_junction"],

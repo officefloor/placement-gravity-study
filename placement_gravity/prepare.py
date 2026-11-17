@@ -34,7 +34,7 @@ import random
 import statistics
 from pathlib import Path
 
-from . import chain, places, readings, runs, wiring
+from . import chain, literature, places, readings, runs, wiring
 
 DATA = chain.ROOT / "data" / "analysis"
 SEED = 20261116
@@ -44,7 +44,20 @@ MARGIN = [0.8, 1.25]
 AMOUNT_BAND = [0.8, 1.25]
 MIN_FLAGGED = 10
 MIN_CHAINS = 6
-SHAPE_FLAGS = ["s1_long", "s2_stuck", "s3_junction"]
+#: H3's shape measures are the literature's: long, complex, concentrated. The sinew measures (not
+#: slimmable, junction) are the author's own, about data flow; they are read apart (PLAN.md §5).
+SHAPE_FLAGS = ["s1_long"]
+SINEW_FLAGS = ["s2_stuck", "s3_junction"]
+#: The shape measures first registered, read beside the literature's at their level (the class's
+#: Gini as a class measure, ``c_gini``).
+FIRST = {"s1_long": ("method", "flag", "long: 26 or more code lines"),
+         "s4_cognitive": ("method", "level", "Campbell 2018, cognitive complexity"),
+         "c_gini": ("class", "plain", "concentration of the class's positions (Gini)")}
+#: H3's measures (PLAN.md §2, §5): length and complexity at the method; concentration, weight and
+#: lack of cohesion at the class. Each is fitted alone and has to lie below the upper margin.
+H3_MEASURES = ["s1_long", "s4_cognitive", "m_cyclomatic", "c_gini", "c_wmc", "c_lcom_star"]
+#: How far a place reaches out: read with the sinew measures, predicted above 1.
+REACH = ["m_fanout", "c_cbo", "c_fanout"]
 SHAPE_LEVELS = ["s4_cognitive", "s5_class_gini"]
 METHODS_ARM, FUNCTION_ARM = "spring", "officefloor"
 
@@ -178,25 +191,50 @@ def h2_rows(outcomes: list[dict], host_rows: list[dict], additions: list[dict],
             "class_positions": num(h.get("s5_class_positions")),
             "shape_found": truth(h.get("shape_found")),
         }
-        for c in SHAPE_FLAGS + ["s3_junction_injection_aware"]:
+        for c in SHAPE_FLAGS + SINEW_FLAGS + ["s3_junction_injection_aware"]:
             row[c] = truth(h.get(c)) if h.get("shape_found") == "True" else None
+        # the literature's shape measures, of the method (existing hosts) and of its class
+        for c, (_, kind, _) in literature.MEASURES.items():
+            v = h.get(c)
+            row[c] = (None if v in (None, "", "None") else truth(v)) if kind == "flag" else num(v)
+        row["c_positions"] = num(h.get("c_positions"))
+        row["c_gini"] = num(h.get("c_gini"))
+        row["class_identity"] = o.get("class_identity") or o.get("type")
         row["s4_cognitive"] = num(h.get("s4_cognitive"))
         row["s5_class_gini"] = num(h.get("s5_class_gini"))
         out.append(row)
     return out
 
 
-def shape_kept(h2: list[dict]) -> tuple[list[str], dict]:
+def shape_kept(h2: list[dict], measures: list[str] | None = None) -> tuple[list[str], dict]:
     """The variation rule (PLAN.md §5): a shape measure flagged (or, for a level, non-zero) on
     fewer than MIN_FLAGGED existing hosts in any arm leaves the H3 block."""
     rows = [r for r in h2 if not r["host_new"] and r["shape_found"] and r["bound"]]
     arms = sorted({r["arm"] for r in rows})
     counts, kept = {}, []
-    for c in SHAPE_FLAGS + SHAPE_LEVELS:
+    for c in measures or (SHAPE_FLAGS + SHAPE_LEVELS):
         per = {a: sum(1 for r in rows if r["arm"] == a and r[c]) for a in arms}
         counts[c] = per
         if arms and min(per.values()) >= MIN_FLAGGED:
             kept.append(c)
+    return kept, counts
+
+
+def literature_kept(h2: list[dict]) -> tuple[dict, dict]:
+    """The literature's measures that can be read (PLAN.md §4.7a), by the variation rule of H3: a
+    flag set, or a level above zero, on at least MIN_FLAGGED bound rows in every arm. Method
+    measures are read on existing hosts, class measures on hosts of classes that existed."""
+    arms = sorted({r["arm"] for r in h2})
+    kept, counts = {}, {}
+    for c, (level, kind, source) in {**FIRST, **literature.MEASURES}.items():
+        rows = [r for r in h2 if r["bound"] and r.get(c) is not None
+                and (level == "class" or (not r["host_new"] and r["shape_found"]))]
+        per = {a: sum(1 for r in rows if r["arm"] == a and r[c]) for a in arms}
+        varies = len({r[c] for r in rows}) > 1
+        counts[c] = per
+        if arms and varies and min(per.values()) >= MIN_FLAGGED:
+            kept[c] = {"level": level, "kind": kind, "source": source,
+                       "reversed": c in literature.REVERSED}
     return kept, counts
 
 
@@ -264,6 +302,8 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
     outcomes = gather(name, "outcomes", measured_root)
     h2 = h2_rows(outcomes, hosts, additions, streamed)
     kept, counts = shape_kept(h2)
+    sinew, sinew_counts = shape_kept(h2, SINEW_FLAGS)
+    lit, lit_counts = literature_kept(h2)
     chains: dict[str, set] = {}
     for a in additions:
         chains.setdefault(a["arm"], set()).add(a["chain_id"])
@@ -278,7 +318,9 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
     write_csv(out / "h2.csv", h2)
     spec = {"analysis": name, "role": analysis["role"], "seed": SEED, "boot": BOOT,
             "margin": MARGIN, "methods_arm": METHODS_ARM, "function_arm": FUNCTION_ARM,
-            "shape_kept": kept, "shape_counts": counts, "checkpoints": len(streamed),
+            "shape_kept": kept, "shape_counts": {**counts, **sinew_counts}, "sinew_kept": sinew,
+            "literature": lit, "literature_counts": lit_counts,
+            "h3_measures": [k for k in H3_MEASURES if k in lit], "h3_all": H3_MEASURES, "reach": REACH, "checkpoints": len(streamed),
             "acts": any(r["act"] is not None for r in h1 + h2),
             "frontends": sorted({r["frontend"] for r in h1 if r["frontend"]})}
     conditions = {"chains": {k: len(v) for k, v in chains.items()},

@@ -20,8 +20,9 @@ whether the data that stood by there is what later changes are bound to when the
 harnesses, where one checkpoint is one problem.
 
 Shape is read only where the problem is fixed. The measures of solution shape used by the earlier
-studies (long, not slimmable, junction, complexity outlier, concentration) enter as competitors:
-H3 tests whether they predict anything once the problem, the bindings and the bystanders are held fixed. The plan
+studies (long, complexity outlier, concentration) enter as competitors; not slimmable and junction
+are sinew measures of data flow, read apart:
+H3 tests whether any of them draws later code in once the problem, the bindings and the bystanders are held fixed. The plan
 absorbs three drafts that read the same runs: flow-injection containment, the ui harness's
 SinewSlim analysis plan, and sinew identification (`PLAN.md` §1.1).
 
@@ -63,9 +64,10 @@ cloned into `~/placement-gravity-data/`. The streams are read at the commits `ru
 | `placement_gravity/chain.py` | A chain's checkpoints from git, the files of each addition, the wiring. |
 | `placement_gravity/tables.py` | Hosts, runs, additions and outcomes from the instrument's output. |
 | `placement_gravity/lines.py` | A problem's own lines followed from checkpoint to checkpoint: reported for information beside intrusion at the class and the method (PLAN.md §4.4). |
+| `placement_gravity/literature.py` | The literature's shape measures on every method and class (CK, PMD, jscpd, Halstead, Maintainability Index; PLAN.md §4.7a). |
 | `placement_gravity/places.py` | Where bound and unbound code lands among the methods and classes it could have gone to, ranked by complexity and by data width (PLAN.md §5, reported). |
 | `placement_gravity/readings.py` | The reported readings: choice at a checkpoint, formation and review (PLAN.md §5). |
-| `placement_gravity/shape.py` | The shape competitors S1–S5 (PLAN.md §4.7) on each existing host at k − 1, with the complexity-concentration study's cognitive extractor and outlier rule (pinned in `requirements.txt`). |
+| `placement_gravity/shape.py` | The shape measures S1, S4 and S5 of H3 and the sinew measures S2 and S3 (PLAN.md §4.7) on each existing host at k − 1, with the complexity-concentration study's cognitive extractor and outlier rule (pinned in `requirements.txt`). |
 | `runs.yaml` | The runs read: streams pinned per run, repositories, and each analysis with its role. |
 | `placement_gravity/runs.py` | Step 2: the registry, the registration guard, the stacks' roots, fetching and pinning chains. |
 | `placement_gravity/measure.py` | Step 3: the instrument and tables over every pinned chain. |

@@ -6,7 +6,7 @@ Role: **development**. Chains: officefloor 1, spring 1. **Descriptive only.**
 |---|---|---|
 | H1 | descriptive only | 0.003 |
 | H2 | descriptive only | – |
-| H3 | descriptive only | 0.992 |
+| H3 | descriptive only | 0.189 |
 | H4 | descriptive only | 0.003 |
 
 ## H1, gravity compounds (methods arm)
@@ -43,15 +43,20 @@ Where code was bound to a class or a method (109 of 350 problem and host rows, b
 - Reported, per binding, existing hosts only: class 0.916 [0.808, 1.039]; method 0.949 [0.667, 1.350]
 - Reported, per binding, without injected dependencies: class 0.812 [0.696, 0.948]; method 0.922 [0.654, 1.301]
 
-## H3, shape adds nothing
+## H3, shape does not draw code in
 
-- **against**; margin 0.800 to 1.250, 90% intervals, method-level intrusion, the bindings and the bystanders in the model (n = 77)
-  - s3_junction: 0.709 [0.301, 1.672], TOST p 0.592
-  - s4_cognitive: 0.380 [0.230, 0.629], TOST p 0.992
-  - s5_class_gini: 0.677 [0.408, 1.123], TOST p 0.706
-  - Left out by the variation rule: s1_long ({'officefloor': 1, 'spring': 22}), s2_stuck ({'officefloor': 0, 'spring': 0})
-- Reported, the same on class-level intrusion: s3_junction 0.589 [0.400, 0.866]; s4_cognitive 0.855 [0.702, 1.041]; s5_class_gini 1.487 [1.168, 1.891]
-- Reported, shape without the problem terms, the bindings and the bystanders: s3_junction 9.030 [3.632, 22.446]; s4_cognitive 0.948 [0.594, 1.513]; s5_class_gini 0.609 [0.335, 1.107]
+- **unresolved** (one-sided: each rate ratio below 1.250); each measure fitted alone at its level, with the bindings and the bystanders in the model, 90% intervals: method measures on intrusion at the method (n = 77), class measures on intrusion at the class, one row per class and checkpoint with the class's size held fixed (n = 77); reported, two-sided (0.800 to 1.250): outside
+  - s4_cognitive (method): 0.321 [0.207, 0.496], one-sided p 1.43e-07 (two-sided TOST p 1.000)
+  - m_cyclomatic (method): 0.349 [0.219, 0.555], one-sided p 3.06e-06 (two-sided TOST p 0.998)
+  - c_gini (class): 1.083 [0.829, 1.415], one-sided p 0.189 (two-sided TOST p 0.189)
+  - c_wmc (class): 0.445 [0.164, 1.207], one-sided p 0.044 (two-sided TOST p 0.833)
+  - c_lcom_star (class): 0.903 [0.677, 1.204], one-sided p 0.031 (two-sided TOST p 0.245)
+  - Left out by the variation rule: s1_long ({'officefloor': 1, 'spring': 22})
+- Reported, the block as first registered, together in one model on method-level intrusion: s4_cognitive 0.393 [0.240, 0.645]; s5_class_gini 0.689 [0.419, 1.132]
+- Reported, that block on class-level intrusion: s4_cognitive 0.955 [0.798, 1.143]; s5_class_gini 1.509 [1.187, 1.920]
+- Reported, that block without the problem terms, the bindings and the bystanders: s4_cognitive 1.661 [1.009, 2.733]; s5_class_gini 0.731 [0.363, 1.473]
+- Reported, reach (how far a place reaches out; with the sinew measures, predicted above 1): m_fanout 4.977 [2.240, 11.057]; c_cbo 1.622 [0.687, 3.829]; c_fanout 1.622 [0.687, 3.829]
+- Reported, the sinew measures (data flow, not shape; predicted above 1), later intrusion with the bindings and the bystanders in the model: s3_junction at the method 1.732 [0.544, 5.510], at the class 0.611 [0.412, 0.906]; left out by the variation rule: s2_stuck ({'officefloor': 0, 'spring': 0})
 - Reported, junction × arm (s3_junction): 0.411 [0.027, 6.349]
 - Reported, junction × arm (s3_junction_injection_aware): 0.314 [0.020, 4.863]
 
@@ -103,9 +108,35 @@ A rank is the place's standing among every candidate of its checkpoint (0.5: no 
 
 Agreement is Spearman's rho, over the places landed in, of the complexity rank with the data-width rank: whether the two kinds of size point to the same places.
 
+## Reported: the literature's shape measures, each alone
+
+Later intrusion per standard deviation of the measure (a flag: present against absent), with the problem, the bindings and what stood by held fixed. Method measures on intrusion at the method, class measures on intrusion at the class, one row per class a checkpoint's bound code went into (77 rows), with the class's size held fixed and an intercept for the class (†: refitted without it). Read as H3 is: below 1.25 does not draw code in. A measure marked reversed is one where higher is better; its ratio is for the worse shape.
+
+| Measure | Level | Source | n | Rate ratio (90% interval) | One-sided p | Against 1.25 |
+|---|---|---|---|---|---|---|
+| s4_cognitive | method | Campbell 2018, cognitive complexity | 77 | 0.321 [0.207, 0.496] | 1.43e-07 | below |
+| c_gini | class | concentration of the class's positions (Gini) | 77 | 1.083 [0.829, 1.415] | 0.189 | reaches above |
+| m_cyclomatic | method | McCabe 1976 (CK) | 77 | 0.349 [0.219, 0.555] | 3.06e-06 | below |
+| m_npath | method | Nejmeh 1988 (PMD) | 77 | 0.540 [0.346, 0.844] | 0.000987 | below |
+| m_nesting | method | deepest nested block (CK) | 77 | 0.358 [0.253, 0.506] | 1.39e-09 | below |
+| m_fanout | method | fan-out (CK) | 77 | 4.977 [2.240, 11.057] | 0.998 | above |
+| m_halstead | method | Halstead 1977, volume | 77 | 0.866 [0.182, 4.124] | 0.349 | reaches above |
+| m_mi (reversed) | method | Maintainability Index | 77 | 0.020 [0.002, 0.158] | 0.000537 | below |
+| c_wmc | class | Chidamber and Kemerer 1994 (CK) | 77 | 0.445 [0.164, 1.207] | 0.044 | below |
+| c_lcom_star | class | lack of cohesion, normalised (CK) | 77 | 0.903 [0.677, 1.204] | 0.031 | below |
+| c_cbo | class | Chidamber and Kemerer 1994 (CK) | 77 | 1.622 [0.687, 3.829] | 0.691 | reaches above |
+| c_rfc | class | Chidamber and Kemerer 1994 (CK) | 77 | 0.944 [0.407, 2.188] | 0.291 | reaches above |
+| c_dit | class | Chidamber and Kemerer 1994 (CK) | – | not estimated (no finite interval) | – | – |
+| c_fanout | class | fan-out (CK) | 77 | 1.622 [0.687, 3.829] | 0.691 | reaches above |
+| c_imports | class | import count (PMD) | 77 | 2.406 [1.132, 5.115] | 0.923 | reaches above |
+| c_halstead | class | Halstead 1977, volume | 77 | 0.144 [0.014, 1.522] | 0.066 | reaches above |
+| c_mi (reversed) | class | Maintainability Index | 77 | 0.098 [0.021, 0.452] | 0.003 | below |
+
+Left out by the variation rule (bound rows flagged or above zero, per arm): s1_long ({'officefloor': 1, 'spring': 22}), m_demeter ({'officefloor': 0, 'spring': 0}), m_duplicated ({'officefloor': 0, 'spring': 4}), c_tcc ({'officefloor': 0, 'spring': 80}), c_god_class ({'officefloor': 6, 'spring': 33}), c_data_class ({'officefloor': 0, 'spring': 0}), c_demeter ({'officefloor': 0, 'spring': 0}), c_duplicated ({'officefloor': 1, 'spring': 73}).
+
 ## Provenance
 
-Checkpoint intercept in the model: H1 no, H4 no, H2_class yes, H2_method no, H4_intrusion_class no, H4_intrusion_method yes, H3 yes.
+Checkpoint intercept in the model: H1 no, H4 no, H2_class yes, H2_method no, H4_intrusion_class no, H4_intrusion_method yes, shape_joint no.
 
 Versions: {"R": "R version 4.5.2 (2025-10-31)", "glmmTMB": "1.1.14", "TMB": "1.9.19"}. Seed 20261116.
 

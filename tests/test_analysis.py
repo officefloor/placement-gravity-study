@@ -122,8 +122,13 @@ def test_prepare_builds_the_datasets_and_applies_the_rules(tmp_path):
     h2 = list(csv.DictReader((out / "h2.csv").open()))
     assert {r["declared_crossings"] for r in h2 if r["cp"] == "4"} == {"3"}
     spec = json.loads((out / "spec.json").read_text())
-    # s2 never flagged; s3 flagged on 5 hosts per OfficeFloor chain x 6 = 30, kept; s1 kept
-    assert "s2_stuck" not in spec["shape_kept"] and {"s1_long", "s3_junction"} <= set(spec["shape_kept"])
+    # H3's block is the literature's shape measures; the sinew measures are read apart. s2 never
+    # flagged; s3 flagged on 5 hosts per OfficeFloor chain x 6 = 30, kept
+    assert "s1_long" in spec["shape_kept"] and not {"s2_stuck", "s3_junction"} & set(spec["shape_kept"])
+    assert spec["sinew_kept"] == ["s3_junction"]
+    # H3's measures are those of its six that vary; the fixture has no literature measures
+    assert spec["h3_all"] == list(verdict.SHAPES) and "s1_long" in spec["h3_measures"]
+    assert "m_cyclomatic" not in spec["h3_measures"] and spec["reach"] == ["m_fanout", "c_cbo", "c_fanout"]
     assert spec["shape_counts"]["s2_stuck"] == {"officefloor": 0, "spring": 0}
     cond = json.loads((out / "conditions.json").read_text())
     assert cond["chains"] == {"spring": 6, "officefloor": 6} and not cond["descriptive_only"]
@@ -164,8 +169,8 @@ def boot(est, lo, hi, p_g, p_l):
 
 
 def measure(irr, lo, hi, p, outside=False):
-    return {"irr": irr, "irr_lower": lo, "irr_upper": hi, "p_tost": p, "outside": outside,
-            "estimate": 0, "se": 0.1, "lower": 0, "upper": 0}
+    return {"irr": irr, "irr_lower": lo, "irr_upper": hi, "p_upper": p, "p_tost": p, "outside": outside,
+            "above": lo > 1.25, "estimate": 0, "se": 0.1, "lower": 0, "upper": 0}
 
 
 def estimates(**over):
@@ -174,9 +179,9 @@ def estimates(**over):
                 "within_method": boot(0.01, 0.001, 0.02, 0.004, 0.99)},
          "H2": {"n": 100, "class": {"irr": 1.3, "irr_lower": 1.1, "irr_upper": 1.5, "p_greater": 0.001},
                 "method": {"irr": 1.2, "irr_lower": 1.05, "irr_upper": 1.4, "p_greater": 0.004}},
-         "H3": {"testable": True, "margin": [0.8, 1.25], "kept": ["s1_long", "s3_junction"],
+         "H3": {"testable": True, "margin": [0.8, 1.25], "kept": ["s1_long", "s4_cognitive"],
                 "measures": {"s1_long": measure(1.0, 0.9, 1.1, 0.002),
-                             "s3_junction": measure(1.05, 0.95, 1.15, 0.01)}},
+                             "s4_cognitive": measure(1.05, 0.95, 1.15, 0.01)}},
          "H4": {"arm": boot(-0.5, -0.8, -0.2, 0.999, 0.001), "slope": boot(-0.2, -0.3, -0.1, 0.99, 0.002),
                 "intrusion_class": {"irr": 0.4, "irr_lower": 0.3, "irr_upper": 0.6, "p_less": 0.001},
                 "intrusion_method": {"irr": 0.5, "irr_lower": 0.3, "irr_upper": 0.8, "p_less": 0.003}}}
@@ -217,11 +222,23 @@ def test_h2_and_h3_are_decided_apart():
     assert v["H2"]["verdict"] == "supported" and v["H3"]["verdict"] == "unresolved"
 
 
-def test_h3_shape_carrying_information_is_not_supported():
+def test_h3_is_one_sided_a_shape_that_raises_intrusion_counts_against():
     e = estimates()
     e["H3"]["measures"]["s1_long"] = measure(1.6, 1.3, 1.9, 0.99, outside=True)
     v = verdict.decide(e, COND)["hypotheses"]["H3"]
-    assert v["state"] == "against" and v["verdict"] == "not supported"
+    assert v["state"] == "against" and v["verdict"] == "not supported" and v["two_sided"] == "outside"
+
+
+def test_h3_a_shape_that_lowers_intrusion_does_not_count_against():
+    """The development chain's case: complexity at 0.38 [0.23, 0.63]. Below the upper margin, so H3
+    holds; the two-sided reading, reported, says it lies outside."""
+    e = estimates()
+    e["H3"]["measures"]["s1_long"] = measure(0.38, 0.23, 0.63, 0.0001, outside=True)
+    v = verdict.decide(e, COND)["hypotheses"]["H3"]
+    assert v["state"] == "not above" and v["verdict"] == "supported" and v["two_sided"] == "outside"
+    # an interval reaching above the margin is unresolved, not supported
+    e["H3"]["measures"]["s1_long"] = measure(0.9, 0.5, 1.6, 0.2)
+    assert verdict.decide(e, COND)["hypotheses"]["H3"]["verdict"] == "unresolved"
 
 
 def test_h3_without_a_testable_shape_measure_says_so():
@@ -277,12 +294,15 @@ def test_an_error_in_a_model_is_not_estimable():
 # ---------------------------------------------------------------- step 5
 
 def test_the_report_names_every_hypothesis_and_commit():
-    est = {**estimates(), "boot": 1000, "seed": 1, "versions": {"R": "x"}, "reported": {}}
+    est = {**estimates(), "boot": 1000, "seed": 1, "versions": {"R": "x"}, "reported": {
+        "sinew": {"s3_junction": {"method": {"irr": 1.4, "irr_lower": 1.1, "irr_upper": 1.8},
+                                  "class": {"irr": 1.2, "irr_lower": 0.9, "irr_upper": 1.6}}}}}
     ver = verdict.decide(est, COND)
     cond = {**COND, "chains": {"spring": 9, "officefloor": 9}}
     heads = [{"arm": "spring", "run": "r", "chain": 1, "excluded": False, "sha": "a" * 40}]
     md = report.render("petclinic-primary", "primary", est, ver, cond, {"shape_counts": {}}, heads)
     for k in ("H1", "H2", "H3", "H4", "supported", "`aaaaaaaaaaaa`", "s3_junction", "At the class (its fields)", "Within a class",
+              "the sinew measures", "s3_junction at the method 1.400 [1.100, 1.800]",
               "Later intrusion where bound code was placed"):
         assert k in md
     rd = {"choice": {"spring": {"checkpoints": 59, "no_choice": 12, "median_binding_sd": 0.5,

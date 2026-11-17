@@ -31,7 +31,10 @@ h2 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
   cp <- 60 - later
   new <- rbinom(n, 1, 0.4)
   binding <- ifelse(new == 1, rbinom(n, 1, 0.2), binding)      # new hosts have few bindings and are left alone
-  mu <- exp(-3.2 + 0.25 * binding - 0.8 * new + cp_int[cp] + (if (arm == "spring") 0 else -0.9)) * later
+  jn <- as.numeric(seq_len(n) %% 5 < 2)                 # two in five are junctions (no random draw, so
+                                                        # the other simulated effects keep their draws),
+                                                        # followed by 35% more intrusion
+  mu <- exp(-3.2 + log(1.35) * jn + 0.25 * binding - 0.8 * new + cp_int[cp] + (if (arm == "spring") 0 else -0.9)) * later
   # what stood by where the code was placed, and the later intrusions bound to it: 15% more per
   # field of the class, 10% more per value of the method
   byc <- rpois(n, if (arm == "spring") 6 else 1)
@@ -45,13 +48,17 @@ h2 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
              intrusion_class_any = rnbinom(n, size = 2, mu = 4 * mu),
              intrusion_method_any = rnbinom(n, size = 2, mu = 3 * mu), bound = rbinom(n, 1, 0.8) == 1,
              bystanders_class = byc, bystanders_method = bym, class_positions = rpois(n, 60),
+             m_cyclomatic = rpois(n, 3), c_wmc = rpois(n, 30), c_gini = runif(n), c_lcom_star = runif(n),
+             m_fanout = rpois(n, 2), c_god_class = seq_len(n) %% 7 == 0,
+             c_mi = rnorm(n, 80, 10), c_positions = rpois(n, 60) + 1,
+             class_identity = paste0("C", sample(1:12, n, replace = TRUE)),
              drawn_class = rnbinom(n, size = 2, mu = dr * exp(log(1.15) * byc)),
              drawn_method = rnbinom(n, size = 2, mu = dr * exp(log(1.10) * bym)),
              binding = binding, binding_no_param = binding, binding_no_injected = binding, net_added = rpois(n, 4) + 1,
              addition_positions = rpois(n, 8) + 1, declared_crossings = rpois(n, 1),
              pre_positions = rpois(n, 20), host_new = new == 1, shape_found = TRUE,
              s1_long = rbinom(n, 1, 0.3) == 1, s2_stuck = rbinom(n, 1, 0.2) == 1,
-             s3_junction = rbinom(n, 1, 0.4) == 1, s3_junction_injection_aware = rbinom(n, 1, 0.5) == 1,
+             s3_junction = jn == 1, s3_junction_injection_aware = rbinom(n, 1, 0.5) == 1,
              s4_cognitive = rpois(n, 3), s5_class_gini = runif(n))
 }))))
 # bystanders: rising with the checkpoint in the methods arm, low and flat in the function arm;
@@ -92,7 +99,18 @@ write.csv(h2, file.path(dir, "h2.csv"), row.names = FALSE)
 writeLines(jsonlite::toJSON(list(
   analysis = "selftest", role = "development", seed = 20261116, boot = 60, margin = c(0.8, 1.25),
   methods_arm = "spring", function_arm = "officefloor", checkpoints = 60,
-  shape_kept = c("s1_long", "s2_stuck", "s3_junction", "s4_cognitive", "s5_class_gini"),
+  shape_kept = c("s1_long", "s4_cognitive", "s5_class_gini"), sinew_kept = c("s2_stuck", "s3_junction"),
+  h3_measures = c("s1_long", "s4_cognitive", "m_cyclomatic", "c_gini", "c_wmc", "c_lcom_star"),
+  reach = c("m_fanout"),
+  literature = list(s1_long = list(level = "method", kind = "flag", source = "long"),
+                    s4_cognitive = list(level = "method", kind = "level", source = "cognitive"),
+                    c_gini = list(level = "class", kind = "plain", source = "Gini"),
+                    c_lcom_star = list(level = "class", kind = "plain", source = "LCOM*"),
+                    m_fanout = list(level = "method", kind = "level", source = "fan-out"),
+                    m_cyclomatic = list(level = "method", kind = "level", source = "McCabe"),
+                    c_wmc = list(level = "class", kind = "level", source = "CK"),
+                    c_mi = list(level = "class", kind = "plain", source = "MI", reversed = TRUE),
+                    c_god_class = list(level = "class", kind = "flag", source = "Lanza and Marinescu")),
   acts = FALSE, frontends = list()), auto_unbox = TRUE), file.path(dir, "spec.json"))
 
 out <- file.path(dir, "estimates.json")
@@ -132,7 +150,27 @@ for (k in names(e$H3$measures)) {
   m <- e$H3$measures[[k]]
   check(m$irr_lower > 0.5 && m$irr_upper < 2, paste("H3 estimates", k, "near no effect"))
 }
-check(!is.null(e$reported$H3_class_level$s3_junction$irr), "H3's block on class-level intrusion is reported")
+check(all(sapply(e$H3$measures, function(m) m$p_upper <= m$p_tost && !isTRUE(m$above))),
+      "H3's one-sided p is no larger than the two-sided one, and no measure lies above the margin")
+check(!is.null(e$reported$H3_class_level$s4_cognitive$irr), "the first block on class-level intrusion is reported")
+for (k in c("m_cyclomatic", "c_wmc", "c_god_class")) {
+  m <- e$reported$literature_shape[[k]]
+  check(!is.null(m$irr) && m$irr_lower > 0.5 && m$irr_upper < 2,
+        paste("the literature's", k, "simulated unrelated, is reported near no effect"))
+}
+check(e$reported$literature_shape$c_wmc$at == "class", "a class measure is read at the class")
+check(e$reported$literature_class_rows < e$reported$intrusion_rows$bound,
+      "a class measure is read on one row per class and checkpoint")
+check(isTRUE(e$reported$literature_shape$c_mi$reversed), "a measure where higher is better is read reversed")
+check(setequal(names(e$H3$measures), c("s1_long", "s4_cognitive", "m_cyclomatic", "c_gini", "c_wmc", "c_lcom_star")),
+      "H3 is read on its six measures, each alone")
+check(e$H3$measures$c_wmc$at == "class" && e$H3$measures$s4_cognitive$at == "method",
+      "H3's measures are read at their own level")
+check(!is.null(e$reported$shape_joint$measures$s4_cognitive$irr), "the block as first registered is reported")
+check(is.null(e$H3$measures$s3_junction), "the junction is not among H3's shape measures")
+check(e$reported$sinew$s3_junction$method$irr_lower > 1 && e$reported$sinew$s3_junction$class$irr_lower > 1,
+      "the junction, simulated to be followed by more intrusion, is reported as such")
+check(abs(log(e$reported$sinew$s2_stuck$method$irr)) < 0.1, "not slimmable, simulated unrelated, is reported near 1")
 check(e$H4$arm$upper < 0, "H4 recovers the function arm's fewer bystanders half-way through")
 check(e$H4$slope$upper < 0, "H4 recovers their slower growth")
 check(e$H4$centre_checkpoint == 30.5, "H4's checkpoint index is centred at the middle of the stream")

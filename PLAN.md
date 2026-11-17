@@ -141,11 +141,23 @@ Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 Novem
     cross-problem intrusion follows where it was placed. That is kept and reported beside it. It
     was replaced because it is not the number of bindings a problem has that draws later code, but the
     data lying where the problem's code was put.
-- **H3, shape adds nothing.** With the problem held fixed, and the bindings and the bystanders in the
-  model, the shape of the host the addition landed in adds nothing to the intrusion that follows in
-  that method. The
-  shape measures are those of §4.7: long, not slimmable, junction, complexity outlier and
-  concentration. Each one's effect lies within the equivalence margin of §5. This makes confirmatory
+- **H3, shape does not draw code in** (made one-sided 17 November 2026; its measures set 18
+  November 2026, §9). With the problem held fixed, and the bindings and the bystanders in the
+  model, the shape of the place the addition landed in does not raise the intrusion that follows
+  there, at the method or at the class. The shape measures are the literature's (§4.7, §4.7a):
+  - **at the method:** long (S1), cognitive complexity (S4) and cyclomatic complexity;
+  - **at the class:** concentration (the Gini of S5), weight (WMC) and lack of cohesion (LCOM*).
+
+  Not among them: not slimmable and junction (S2, S3), the author's sinew measures of how data
+  flows through a method; and fan-out and CBO, which measure how far a place reaches out and are
+  read with them (§5, *The sinew measures*). Each of H3's measures is fitted by itself, and its
+  effect is shown to lie below the upper margin of §5 (1.25). A shape
+  that is followed by *less* intrusion does not count against: the belief under test is that large
+  and complex code attracts change, and nobody holds that it repels it. Such an effect is reported
+  with its size.
+  - *As it stood until then* (shape adds nothing): each effect within the margin on both sides,
+    0.8 to 1.25. That reading is kept and reported beside it.
+  This makes confirmatory
   the result of Olbrich, Cruzes and Sjøberg (2010): god and brain classes change more and hold
   more defects, but less per line once size is controlled.
   - *H2 and H3 were one hypothesis* (H2a and H2b) until 17 November 2026, supported only if both
@@ -181,9 +193,9 @@ Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 Novem
   to fuller places, not that places fill.
 - H2: later code no more bound to what stood by where more stood by, at the class or at the method.
   The data a place gathers would then be clutter, not pull.
-- H3: any shape measure that still predicts intrusion with the problem, the bindings and the bystanders
-  held fixed.
-  That would mean that shape carries information the problem does not, and it is reported as such.
+- H3: any shape measure followed by more intrusion, beyond the margin, with the problem, the
+  bindings and the bystanders held fixed. That would mean that shape draws code in by itself. A
+  shape measure followed by less is reported, and does not count against.
 - H4: no difference between the arms in bystanders, in their growth or in later intrusion, or an amount
   outside the band (the difference is then a difference of amount, not placement), or a function arm that moves its coupling into the wiring:
   wiring per problem that rises over the run, or one configuration file that holds most of it
@@ -685,6 +697,15 @@ addition lands in, at *k − 1*, before the addition. A new host has none of the
 | S4 | **Complexity outlier:** the host's cognitive complexity, and whether its modified z-score within the checkpoint exceeds 3.5 | the complexity-concentration study |
 | S5 | **Concentration:** the host's size and the Gini coefficient of the class's positions over its methods | §4.2 |
 
+**Two kinds of measure** (17 November 2026, §9). S1, S4 and S5 are shape as the literature reads
+it (length, complexity, the god class's concentration), and are H3's block. S2 and S3 are **sinew
+measures**: whether the data flowing through a method stops it being split, and whether it hands
+on more data than it receives. They are the author's own, from SinewSlim and the flow-injection
+draft, and nothing in the reviewed literature studies them as shape (`LITERATURE.md`; the nearest
+relatives are fan-out and Henry and Kafura's information flow, which count flow between modules).
+They describe data, which is this study's subject, so they are read apart from H3 with their own
+stated direction (§5).
+
 S1 to S4 are read conventionally on both arms, so OfficeFloor's functions are priced as if they
 were ordinary methods; that is conservative towards OfficeFloor.
 
@@ -715,6 +736,38 @@ were ordinary methods; that is conservative towards OfficeFloor.
 not-slimmable methods per passing test and the share of complexity held by junctions. They are
 solution-only readings, kept so that the absorbed drafts' questions get an answer, and so that their
 trajectories can be set beside the per-problem ones.
+
+### 4.7a The literature's shape measures, at the method and at the class
+
+Added 17 November 2026 (§9), to be looked at on the development chain before any of them joins H3.
+The measures are those the petclinic harness already reports for whole systems; here each is read
+on the place an addition lands in, as it stood at *k* − 1, with the harness's tools at its pins.
+
+| Level | Measure | From | Tool |
+|---|---|---|---|
+| Method | Cyclomatic complexity | McCabe 1976 | CK 0.7.0 |
+| Method | NPath complexity | Nejmeh 1988 | PMD 7.27.0 |
+| Method | Deepest nesting | (CK's `maxNestedBlocks`) | CK |
+| Method | Fan-out | (classes the method uses) | CK |
+| Method | Halstead volume | Halstead 1977 | this study, over the method's text |
+| Method | Maintainability Index | Oman and Hagemeister 1992 | from the volume, cyclomatic complexity and lines |
+| Method | Law of Demeter violation (flag) | Lieberherr 1989 | PMD |
+| Method | Holds cloned lines (flag) | | jscpd 5.0.14 |
+| Class | WMC, RFC, DIT, CBO | Chidamber and Kemerer 1994 | CK |
+| Class | LCOM*, TCC | Chidamber and Kemerer; Bieman and Kang 1995 | CK |
+| Class | Fan-out, import count | | CK, PMD |
+| Class | Halstead volume, Maintainability Index | as above | over the class's text |
+| Class | God Class (flag), Data Class (flag) | Lanza and Marinescu 2006 | PMD |
+| Class | Law of Demeter violation (flag), holds cloned lines (flag) | as above | PMD, jscpd |
+
+- A method measure is defined for an existing host. A class measure is that of the host's class at
+  *k* − 1, also for a new method of a class that existed.
+- A tool that does not run leaves its measures empty, never zero. Without npm, jscpd is not
+  installed and the two clone flags are empty.
+- **As built** (`placement_gravity/literature.py`, `tests/test_literature.py`): CK's methods are
+  joined to the instrument's by file and declaration line, PMD's findings by file and line. CK's
+  TCC counts direct field access only. Halstead's operands are identifiers and literals, its
+  operators keywords and symbols, comments left out.
 
 ## 5. Analysis
 
@@ -757,11 +810,22 @@ trajectories can be set beside the per-problem ones.
     arm; and H2 as it stood, the bindings added to the base model on later intrusion, at the class and
     the method, with its own readings (on the problem's own lines, for information; on existing
     hosts only; with bindings to injected dependencies left out).
-- **H3:** the shape block S1 to S5 added to the base model with the bindings and the method's
-  bystanders, on intrusion at the **method**, on existing hosts. It is supported when every shape measure's incidence rate ratio
-  has a 90% interval inside an equivalence margin of 0.8 to 1.25 (decided 16 November 2026), per
+- **H3** (its measures and levels set 18 November 2026, §9): six measures, each fitted **alone**,
+  as *The literature's measures, each alone* below describes. At the **method**, on existing
+  hosts: long, cognitive complexity and cyclomatic complexity, added to the base model with the
+  bindings and the method's bystanders, on intrusion at the method. At the **class**, one row per
+  class and checkpoint with the class's size held fixed: the Gini of the class's positions, WMC
+  and LCOM*, on intrusion at the class. They are fitted one at a time because they are rival
+  readings of the same thing (the two complexities; weight and concentration), and together could
+  not be told apart; so H3 says of each that it does not draw code in, not that each adds nothing
+  beyond the others. The block as first registered (S1, S4 and S5 together in one model at the
+  method) is reported. H3 is supported when every shape measure's incidence rate ratio
+  has a 90% interval whose upper limit is below 1.25, the upper margin (one-sided, 17 November
+  2026, §9; the margin of 0.8 to 1.25 was decided 16 November 2026), per
   standard deviation for continuous measures and present against absent for flags. A null is not
-  taken from a non-significant test. The same block on class-level intrusion is reported.
+  taken from a non-significant test: an interval that reaches above 1.25 is unresolved, and one
+  wholly above it counts against. Reported beside it: the two-sided reading, each interval inside
+  0.8 to 1.25. The same block on class-level intrusion is reported.
   - **How the shape block enters** (decided 16 November 2026). S4 enters as a level, log(1 + cognitive complexity),
     because cognitive complexity is zero-heavy and the outlier flag then marks any control flow
     (the pilot: 45% of Spring's existing hosts); the flag is reported beside it. A shape measure
@@ -771,6 +835,36 @@ trajectories can be set beside the per-problem ones.
   - **Reported beside it:** the shape block in a model *without* the problem terms and pull. This
     shows how much of shape's apparent association comes from leaving the problem out. Each shape
     measure alone, and the change in fit for every block, are also reported.
+  - **The literature's measures, each alone** (reported; 17 November 2026, §9): each measure of
+    §4.7a added by itself, at its own level. A method measure: to the base model with the bindings and
+    what stood by in the method, on intrusion at the method, on existing hosts. A class measure
+    (revised 18 November 2026, §9): on intrusion at the class, with **one row per class a
+    checkpoint's bound code went into** and not one per method; the class's size at *k* − 1 (log of
+    its positions) held fixed in place of the method's; an intercept for the class (dropped, and
+    marked, where the model then gives no standard error); the bindings the most of the
+    checkpoint's hosts in the class, what stood by the least. A measure where higher is the better
+    shape (the Maintainability Index, TCC) is **reversed**, so a ratio above 1 always means the
+    worse shape is followed by more. Per standard deviation (of log(1 + x) for counts, of
+    the value for ratios and the index), or present against absent. Read as H3 is, against the
+    upper margin, with the variation rule. They are fitted one at a time because they measure
+    overlapping things (cyclomatic, cognitive and NPath complexity; WMC and the God Class), and
+    together would not be told apart. **Which of them are H3's** was decided by the author on 18
+    November 2026, after they were seen on the development chain (§6): cyclomatic complexity, WMC
+    and LCOM* join long, cognitive complexity and the class's Gini. NPath and nesting repeat
+    complexity, and Halstead volume and the Maintainability Index are largely size; they stay
+    reported. The detectors (God Class, Data Class), TCC, Law of Demeter and clones are reported
+    where they vary.
+  - **The sinew measures** (reported with a stated direction, not confirmatory; 17 November 2026,
+    §9): S2 and S3 added to the same base model with the bindings and the bystanders, in place of
+    the shape block, on intrusion at the method and at the class. Predicted: each rate ratio above
+    1. A method that data flows out of, or that its data flow holds together, is expected to be
+    come back to more: that is data gravity seen from the method's side, and it would count for the
+    study's claim, not against H3. The variation rule applies to each as it does to the shape
+    measures.
+  - **Reach** (reported with the sinew measures, predicted above 1; 18 November 2026, §9): the
+    method's fan-out and the class's CBO and fan-out, each alone as above. They count what a place
+    reaches out to, which is how data comes to flow through it, and not its size or its tangle.
+    They were placed here after fan-out was seen above the margin on the development chain (§6).
   - **Junction × arm (secondary, corpus A):** the S3 junction flag, the arm and their interaction,
     added to the model with pull. It asks whether a junction is followed by the same intrusion in
     both arms. In OfficeFloor a function is a starting point: a junction there hands its values on
@@ -899,16 +993,17 @@ binomial mixed model). These details are fixed with the code before any run is r
   crossings (the checkpoints it mutates or crosses), log(1 + host positions), whether the host is
   new, the act (the ui stream only; petclinic has no
   acts), the arm and, where present, the front end. **H2** is read on every bound problem and host of the methods arm,
-  with a one-sided Wald test at each level; **H3** on existing hosts with their shape at k − 1, by two one-sided
-  Wald tests per shape measure (90% intervals). S4 enters as log(1 + cognitive complexity) and S5
+  with a one-sided Wald test at each level; **H3** on existing hosts with their shape at k − 1, by one
+  one-sided Wald test per shape measure against the upper margin (90% intervals; the two one-sided
+  tests of the two-sided reading are reported). S4 enters as log(1 + cognitive complexity) and S5
   as the class Gini, both standardised; S1 to S3 as 0/1.
 - **The p-value of each hypothesis** for Holm is the larger of its parts: H1, of its three slopes
   (over all runs, within a class, within a method);
-  H2, of the class level and the method level; H3, of every shape measure's TOST; H4, of the arm
+  H2, of the class level and the method level; H3, of every shape measure's one-sided test; H4, of the arm
   term, the interaction and the arm's rate ratio in intrusion at the class and at the method. A hypothesis is supported when its Holm-adjusted p (over the
   four) is at most 0.05 **and** its conditions hold (H4: the amount in its band and neither wiring
   condition against). The verdicts are supported, not supported, reversed (an interval wholly on
-  the wrong side), unresolved (H3: an interval reaching outside the margin), not testable (H3: no
+  the wrong side), unresolved (H3: an interval reaching above the upper margin), not testable (H3: no
   shape measure varies) or descriptive only.
 - **The revisions of 16 November 2026** (§9) are built: the checkpoint intercept, the centred host
   size, the new-host term and the lagged formation term in `analysis/analyse.R` (its self-test
@@ -1091,6 +1186,50 @@ binomial mixed model). These details are fixed with the code before any run is r
   landings); Spring had 2 unbound landings into existing methods. The two ranks agree over Spring's
   bound landings at the class (rho 0.96) and less elsewhere (0.26 to 0.77). Nothing in the plan was
   changed after these were seen.
+- **H3 made one-sided** (17 November 2026, decided by the author **after** the figures above). On
+  the development chain the two-sided H3 was against on cognitive complexity, 0.38 [0.23, 0.63]:
+  among Spring's methods the long, flat `addOwner` (25 bound placements, 33 positions, complexity
+  5.5) received 35 later arrivals per 100 checkpoints, and small branching helpers almost none.
+  Under the one-sided form that interval lies below 1.25. The junction (upper limit 1.67) reaches
+  above it, so on this chain H3 would be unresolved, not supported.
+- **The sinew measures taken out of H3** (17 November 2026, decided by the author **after** the
+  one-sided H3 was run on the development chain). There the junction, 0.71 [0.30, 1.67], was the
+  one measure that left H3 unresolved; without it the remaining measures, complexity and the class
+  Gini, both lie below 1.25 (long does not vary enough in OfficeFloor, not slimmable in neither).
+  The junction's estimate on this chain is below 1, against the direction now stated for it.
+- **The literature's measures, each alone, on the development chain** (17 November 2026; one chain
+  per arm, descriptive only, `results/analysis/pilot/REPORT.md`). With the junction out, H3's block
+  read not above: complexity 0.39 [0.24, 0.65], the class Gini 0.69 [0.42, 1.13]; the junction as a
+  sinew measure 1.73 [0.54, 5.51] at the method and 0.61 [0.41, 0.91] at the class. Each new
+  measure alone (90% intervals):
+  - *At the method* (77 existing hosts): cyclomatic 0.35 [0.22, 0.56], NPath 0.54 [0.35, 0.84],
+    nesting 0.36 [0.25, 0.51], all below; fan-out 4.98 [2.24, 11.1], above; Halstead volume 0.87
+    [0.18, 4.12], reaching above; the Maintainability Index 51 [6.3, 414], where a higher index is
+    a more maintainable method, so this too says the simpler methods are come back to.
+  - *At the class* (108 rows): WMC 2.61 [2.18, 3.11], LCOM* 1.64 [1.31, 2.06], CBO 4.73
+    [3.55, 6.30], RFC 5.30 [3.36, 8.35], imports 3.72 [2.83, 4.88], Halstead volume 5.08
+    [3.58, 7.21], all above; the Maintainability Index 0.31 [0.23, 0.42], the less maintainable
+    class come back to more. DIT gave no standard error.
+  - *Not readable:* Law of Demeter, cloned lines, TCC, God Class and Data Class did not vary
+    enough in the function arm (the God Class flag: 33 bound rows in Spring, 6 in OfficeFloor).
+  - *How far this can be read:* the class-level model does not hold the class's size fixed, and
+    most of Spring's rows are in one class, the controller, sharing one value and one outcome, so
+    those intervals are far too narrow and every class measure there is largely "the controller".
+  The class-level model was revised after these were seen (§9, row 35).
+- **The class measures with the class's size held fixed** (18 November 2026; the same chain, the
+  model of §5 as revised: 77 rows, one per class and checkpoint, an intercept for the class). WMC
+  0.44 [0.16, 1.21] and LCOM* 0.90 [0.68, 1.20], below the margin; the Maintainability Index,
+  reversed, 0.10 [0.02, 0.45], below; RFC 0.94 [0.41, 2.19], CBO and fan-out 1.62 [0.69, 3.83],
+  imports 2.41 [1.13, 5.12] and Halstead volume 0.14 [0.01, 1.52], reaching above; none wholly
+  above. DIT gave no finite interval. The method's index, reversed, 0.02 [0.002, 0.16]. So on this
+  chain the class measures' ratios of the first table were the class's size and the repeated rows.
+  Nothing in the plan was changed after these were seen.
+- **H3 with its measures as set on 18 November 2026, on the development chain** (one chain per
+  arm, descriptive only). Each alone: cognitive complexity 0.32 [0.21, 0.50] and cyclomatic 0.35
+  [0.22, 0.56] at the method; at the class WMC 0.44 [0.16, 1.21], LCOM* 0.90 [0.68, 1.20] and the
+  Gini 1.08 [0.83, 1.42]. Long does not vary enough in OfficeFloor. The Gini's interval reaches
+  above 1.25, so on this chain H3 is unresolved. Reach: the method's fan-out 4.98 [2.24, 11.1],
+  the class's CBO 1.62 [0.69, 3.83]. Nothing in the plan was changed after these were seen.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
@@ -1100,8 +1239,11 @@ binomial mixed model). These details are fixed with the code before any run is r
   injection rule (§5) is added. None of their measures was computed on any run.
 - **Expectation.** The author expects H1, H2 and H4 to hold; of H2's two levels the method is the
   harder to show, because few later arrivals at a method are bound to what stood by. The author also expects H3 to hold:
-  that shape outside the problem carries no information beyond it. H3 is the hypothesis this
-  expectation could most bias, which is why its criterion is an equivalence margin fixed here. The
+  that shape outside the problem draws nothing in by itself, and that where it seems to, it is a
+  bias in where unbound code is put (§5, *Where bound and unbound code lands*), not a cause. H3 is
+  the hypothesis this expectation could most bias, which is why its criterion is a margin fixed
+  here; and it was made one-sided after the development chain went against the two-sided form
+  (below). The
   author expects OfficeFloor's junctions to stay contained to their injection point (the junction ×
   arm reading of §5); that reading's direction is stated here, before any intrusion is computed by
   junction.
@@ -1176,8 +1318,22 @@ binomial mixed model). These details are fixed with the code before any run is r
   checkpoint, one problem; one stream for both arms). It does not measure how hard a problem is,
   beyond the addition's size and its declared crossings. In corpus B a commit is not one problem,
   so H3 is not read there.
-- **Power for H3.** An equivalence test needs more data than a difference test. If the intervals
-  are too wide to fall inside the margin, H3 is reported as unresolved, not as supported.
+- **Power for H3.** A test against a margin needs more data than a difference test. If an
+  interval is too wide to fall below the upper margin, H3 is reported as unresolved, not as
+  supported.
+- **H3's measures were chosen on the development chain.** Of the literature's measures, those
+  taken into H3 are ones that lay below the margin there, or reached above it only at the class
+  (§6); the one measure wholly above it, the method's fan-out, was put with the sinew measures,
+  with CBO, as reach. The reasons given do not rest on the results (the first are the literature's
+  usual shape measures; the second count what a place reaches out to), but the order is as stated.
+  The measures left out of H3 are all reported, so a reader can read H3 with any of them put back.
+- **The junction left H3 after it had left H3 unresolved on the development chain** (§6). The
+  reason given is that it is not a shape measure of the literature, and that reason does not rest
+  on the result; but the order is as stated, and on that chain H3 reads better without it.
+- **H3 was made one-sided after the development chain failed the two-sided form.** There, more
+  complex methods were followed by less intrusion (§6), which "adds nothing" does not allow and
+  "does not draw in" does. The one-sided claim is the weaker one. The two-sided reading and every
+  effect's size are reported, so a shape that goes with less intrusion is not hidden.
 
 ## 8. Order of work
 
@@ -1310,9 +1466,14 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 29 | A reported reading with a stated direction, size or data: both arms pooled, later intrusion on what stood by with the size of the place held fixed | §2, §5 | The author's claim that size attracts only as a proxy for the data gathered. Not a hypothesis: within the methods arm the two are nearly one variable (§6), and the pooled form leans on the arm contrast |
 
 | 31 | A reported reading: where bound and unbound code lands among the methods and classes it could have gone to, ranked by complexity and by data width; the instrument counts each method's locals | §5, `places.py`, `Pull.java` | The author's question for H3: whether shape influences choice shows in the code that nothing bound to a place. H3 is unchanged until this has been looked at |
+| 32 | H3 is one-sided: each shape measure's rate ratio shown below the upper margin, 1.25. The two-sided reading (0.8 to 1.25) is reported | §2, §5, `analyse.R`, `verdict.py` | Decided by the author after the development chain went against the two-sided form in the direction of less intrusion (§6, §7). The claim disputed in the literature is that shape attracts change, which is one-sided |
+| 33 | H3's block is the literature's shape measures, S1, S4 and S5. Not slimmable and junction (S2, S3) are sinew measures, read apart with a stated direction (above 1) | §2, §4.7, §5 | Decided by the author: they are the author's own concepts, about data flow, not shape the literature has studied; a junction that attracts would be evidence for data gravity, not against "shape does not draw code in". Made after the junction left H3 unresolved on the development chain (§6, §7) |
+| 34 | The literature's shape measures at the method and at the class (cyclomatic, NPath, nesting, fan-out, Halstead, Maintainability Index, Law of Demeter, clones; WMC, RFC, DIT, CBO, LCOM*, TCC, God Class, Data Class), each read alone | §4.7a, §5, `literature.py`, `setup.sh` | The author's request: to see how the measures the petclinic harness reports go on the development chain, at both levels, before choosing which join H3 |
+| 35 | The literature's class measures are read on one row per class and checkpoint, with the class's size held fixed and an intercept for the class; the Maintainability Index and TCC are read reversed | §5, `analyse.R` | On the development chain every class measure came out above the margin (§6), in a model without the class's size, with most of Spring's rows in one class sharing one value and one outcome; and the index's ratio read the wrong way up |
+| 36 | H3's measures: at the method, long, cognitive and cyclomatic complexity; at the class, the Gini, WMC and LCOM*. Each fitted alone at its level; the block as first registered (S1, S4, S5 together at the method) is reported. Fan-out and CBO are read with the sinew measures as reach, predicted above 1 | §2, §5, `prepare.py`, `analyse.R`, `verdict.py` | Decided by the author on the recommendation made after the measures were seen on the development chain (§6, §7): the usual shape measures of the literature at both levels; reach is not shape |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
-The directions of H3 and H4, the thresholds, the equivalence margin, the amount band, the wiring
+The direction of H4, the thresholds, the margin's values, the amount band, the wiring
 conditions, the runs read and the Holm correction over four hypotheses are unchanged. The author
 confirmed row 22 on 17 November 2026: H4's condition is the arm's rate ratio in intrusion, and the
 count of places reopened is reported.

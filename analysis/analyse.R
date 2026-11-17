@@ -20,7 +20,7 @@
 # there, at the class and at the method it was placed in, offset by the log of the later
 # checkpoints; Wald intervals. H2, in the methods arm: the later intrusions bound to what stood by
 # at the placement, on the number that stood by (the rate ratio per bystander). H3: the shape
-# measures' equivalence, on later intrusion at the method, with the bindings and the bystanders in the
+# measures (long, complexity, concentration) shown not to raise it (one-sided, below the upper margin), on later intrusion at the method, with the bindings and the bystanders in the
 # model. H4 also reads the arm's rate ratio in later intrusion, without either in the model.
 # The bindings' rate ratio in later intrusion (H2 until 17 November 2026) is reported.
 # Every model carries random intercepts for the chain and for the checkpoint: a checkpoint is one
@@ -74,7 +74,9 @@ wald <- function(fit, term, level = 0.95) {
        p_greater = pnorm(est / se, lower.tail = FALSE), p_less = pnorm(est / se))
 }
 
-# Two one-sided tests that exp(estimate) lies within the margin; the 90% interval is reported.
+# H3 is one-sided: the test that exp(estimate) lies below the upper margin (p_upper), with the 90%
+# interval, whose upper limit is that test at 5%. `above` marks an interval wholly above the margin.
+# The two one-sided tests that it lies within the margin on both sides (p_tost, outside) are reported.
 tost <- function(fit, term, margin) {
   w <- wald(fit, term, 0.90)
   if (!is.null(w$error)) return(w)
@@ -83,6 +85,7 @@ tost <- function(fit, term, margin) {
   p_lo <- pnorm((w$estimate - lo) / w$se, lower.tail = FALSE)  # H0: effect <= lower margin
   p_hi <- pnorm((w$estimate - hi) / w$se)                     # H0: effect >= upper margin
   c(w, list(irr = exp(w$estimate), irr_lower = exp(w$lower), irr_upper = exp(w$upper),
+            p_upper = p_hi, above = exp(w$lower) > margin[2],
             p_tost = max(p_lo, p_hi),
             outside = exp(w$upper) < margin[1] || exp(w$lower) > margin[2]))
 }
@@ -419,10 +422,12 @@ if (!is.null(h2)) {
   for (c in c("s1_long", "s2_stuck", "s3_junction", "s3_junction_injection_aware")) {
     ex[[c]] <- as.numeric(as.logical(ex[[c]]))
   }
+  ex_raw <- ex   # before the joint block standardises its levels in place
   if ("s4_cognitive" %in% spec$shape_kept) ex$s4_cognitive <- as.numeric(scale(log1p(ex$s4_cognitive)))
   if ("s5_class_gini" %in% spec$shape_kept) ex$s5_class_gini <- as.numeric(scale(ex$s5_class_gini))
   kept <- spec$shape_kept
-  res$H3 <- list(n = nrow(ex), kept = kept, testable = length(kept) > 0, margin = spec$margin)
+  # the shape block as first registered, the measures together in one model (reported)
+  res$reported$shape_joint <- list(n = nrow(ex), kept = kept)
   for (lev in c("class", "method")) {
     res$reported[[paste0("bindings_existing_hosts_", lev)]] <-
       irr(wald(fit_cp(base(ex, paste0("intrusion_", lev), "binding + "), ex, nb)$fit, "binding"))
@@ -430,8 +435,8 @@ if (!is.null(h2)) {
   if (length(kept) > 0) {
     shape_block <- paste0("binding + bystanders_method + ", paste(kept, collapse = " + "), " + ")
     m3s <- fit_cp(base(ex, "intrusion_method", shape_block), ex, nb)
-    note("H3", m3s)
-    res$H3$measures <- setNames(lapply(kept, function(k) tost(m3s$fit, k, spec$margin)), kept)
+    note("shape_joint", m3s)
+    res$reported$shape_joint$measures <- setNames(lapply(kept, function(k) tost(m3s$fit, k, spec$margin)), kept)
     # the same block on class-level intrusion (reported)
     m3c <- fit_cp(base(ex, "intrusion_class", sub("bystanders_method", "bystanders_class", shape_block)), ex, nb)
     res$reported$H3_class_level <- setNames(lapply(kept, function(k) tost(m3c$fit, k, spec$margin)), kept)
@@ -443,6 +448,79 @@ if (!is.null(h2)) {
                              " + offset(log_later) + (1 | chain_id)"))
     fitsh <- fit_or_error(glmmTMB(fsh, data = ex, family = nb))
     res$reported$shape_without_problem <- setNames(lapply(kept, function(k) irr(wald(fitsh, k))), kept)
+  }
+
+  # The literature's shape measures (reported): each one alone, at its own level. Read as H3 is:
+  # the rate ratio against the upper margin, per standard deviation or present against absent; a
+  # measure where higher is better (the Maintainability Index, TCC) is reversed, so that above 1
+  # always means the worse shape is followed by more.
+  # A method measure: added to the base model with the bindings and what stood by in the method,
+  # on later intrusion at the method, existing hosts.
+  # A class measure: one row per class a checkpoint's bound code went into (not one per method),
+  # on later intrusion at the class, with the class's size at k - 1 held fixed and an intercept for
+  # the class; the bindings are the most of its hosts, what stood by the least.
+  lit <- spec$literature
+  if (length(lit) > 0) {
+    cl <- h2[!is.na(h2$c_positions), ]
+    if (nrow(cl) > 0) {
+      cl$place <- paste(cl$chain_id, cl$class_identity, sep = "|")
+      key <- paste(cl$place, cl$cp)
+      cl$binding <- ave(cl$binding, key, FUN = max)
+      cl$bystanders_class <- ave(cl$bystanders_class, key, FUN = min)
+      cl <- cl[!duplicated(key), ]
+      cl$log_class <- log1p(cl$c_positions)
+    }
+    class_base <- function(d, lead, place = TRUE) {
+      paste0("intrusion_class ~ ", lead, "log_size + declared_crossings + log_class",
+             if (isTRUE(spec$acts) && length(unique(d$act)) > 1) " + act" else "",
+             if (multi(as.character(d$arm))) " + arm" else "",
+             if (multi(d$frontend)) " + frontend" else "",
+             " + offset(log_later)", if (place) " + (1 | place)" else "")
+    }
+    res$reported$literature_class_rows <- nrow(cl)
+    res$reported$literature_shape <- setNames(lapply(names(lit), function(k) {
+      info <- lit[[k]]
+      d <- if (info$level == "method") ex_raw else cl
+      d <- d[!is.na(d[[k]]), ]
+      d$x <- if (info$kind == "flag") as.numeric(as.logical(d[[k]])) else
+        if (info$kind == "plain") as.numeric(scale(d[[k]])) else as.numeric(scale(log1p(d[[k]])))
+      if (isTRUE(info$reversed)) d$x <- -d$x
+      if (nrow(d) < 3 || !all(is.finite(d$x)) || sd(d$x) == 0)
+        return(list(error = "does not vary", at = info$level, source = info$source))
+      place <- TRUE
+      if (info$level == "method") {
+        f <- fit_cp(base(d, "intrusion_method", "binding + bystanders_method + x + "), d, nb)$fit
+      } else {
+        f <- fit_cp(class_base(d, "binding + bystanders_class + x + "), d, nb)$fit
+        if (!is.null(wald(f, "x")$error)) {   # refitted without the class's intercept
+          place <- FALSE
+          f <- fit_cp(class_base(d, "binding + bystanders_class + x + ", FALSE), d, nb)$fit
+        }
+      }
+      c(tost(f, "x", spec$margin), list(n = nrow(d), at = info$level, kind = info$kind,
+                                         source = info$source, reversed = isTRUE(info$reversed),
+                                         class_intercept = info$level == "class" && place))
+    }), names(lit))
+  }
+
+  # H3: its measures are among those above, each fitted alone at its level (spec$h3_measures: the
+  # ones that vary; length and complexity at the method; concentration, weight and lack of cohesion
+  # at the class). Each has to lie below the upper margin.
+  h3k <- spec$h3_measures
+  res$H3 <- list(n = nrow(ex), n_class = res$reported$literature_class_rows, kept = h3k,
+                 testable = length(h3k) > 0, margin = spec$margin)
+  if (length(h3k) > 0) res$H3$measures <- res$reported$literature_shape[h3k]
+
+  # The sinew measures (reported, predicted above 1): not slimmable and junction are measures of
+  # data flow, not of shape, so they are read apart from H3: each one's rate ratio in later
+  # intrusion, with the bindings and what stood by in the model, at the method and at the class.
+  sinew <- spec$sinew_kept
+  if (length(sinew) > 0) {
+    block <- paste0("binding + bystanders_method + ", paste(sinew, collapse = " + "), " + ")
+    ms <- fit_cp(base(ex, "intrusion_method", block), ex, nb)$fit
+    mc <- fit_cp(base(ex, "intrusion_class", sub("bystanders_method", "bystanders_class", block)), ex, nb)$fit
+    res$reported$sinew <- setNames(lapply(sinew, function(k)
+      list(method = irr(wald(ms, k)), class = irr(wald(mc, k)))), sinew)
   }
 
   # junction x arm (secondary): conventional and injection-aware junctions

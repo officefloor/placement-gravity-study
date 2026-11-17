@@ -11,3 +11,5 @@ results/measure/
 data/
 # blog drafts, published on blog.officefloor.net, not kept in the repository
 blog/
+lib/pmd/
+lib/node_modules/

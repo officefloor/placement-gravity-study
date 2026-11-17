@@ -218,6 +218,8 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path, java_src: str = 
     shaped = shape.run(work / "shape.tsv", work / "shape.jsonl")
     trees = {line.split("\t")[0]: Path(line.split("\t")[1]) for line in shapes}
     methods = shape.complete(shaped, trees)
+    from . import literature
+    literature.attach(methods, trees)   # the literature's shape measures, per method and class
     records = [json.loads(l) for l in (work / "pull.jsonl").read_text().splitlines() if l]
     amount = {r["unit"]: r for r in
               (json.loads(l) for l in (work / "amount.jsonl").read_text().splitlines() if l)}

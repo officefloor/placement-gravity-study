@@ -96,6 +96,7 @@ def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
     host also carries S1 to S5 of its version at k − 1 (PLAN.md §4.7, ``shape.host_shape``)."""
     from . import shape
     shaped = shape.index(measured.get("shape", []))
+    in_class = shape.class_index(measured.get("shape", []))
     rows = []
     for r in _hosts(measured):
         moved = r["moved_rm"] + r["moved_text"]
@@ -132,7 +133,7 @@ def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
             **standing(runs),
         })
         if shaped:
-            rows[-1].update(shape.host_shape(rows[-1], shaped))
+            rows[-1].update(shape.host_shape(rows[-1], shaped, in_class))
     return rows
 
 
