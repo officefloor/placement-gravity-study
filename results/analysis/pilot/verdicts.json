@@ -7,21 +7,12 @@
    "reversed": false,
    "conditions_met": true,
    "detail": {
-    "n_runs": 74,
+    "n_runs": 91,
     "n_chains": 1,
-    "log_host": {
-     "estimate": 0.0303307029217156,
-     "lower": 0.0303307029217156,
-     "upper": 0.0303307029217156,
-     "p_greater": 0.000999000999000999,
-     "p_less": 1,
-     "refits": 1000,
-     "failed": 0
-    },
     "cp": {
-     "estimate": 0.00637714024970428,
-     "lower": 0.00637714024970428,
-     "upper": 0.00637714024970428,
+     "estimate": 0.0145329706361441,
+     "lower": 0.0145329706361441,
+     "upper": 0.0145329706361441,
      "p_greater": 0.000999000999000999,
      "p_less": 1,
      "refits": 1000,
@@ -114,36 +105,35 @@
      }
     }
    },
-   "p_holm": 1.0,
+   "p_holm": 0.945001087395809,
    "verdict": "descriptive only"
   },
   "H3": {
-   "p": 1,
+   "p": 0.000999000999000999,
    "reversed": false,
    "amount_in_band": true,
    "wiring_against": false,
-   "conditions_met": false,
+   "conditions_met": true,
    "detail": {
     "model": {
-     "n_runs": 135,
+     "n_runs": 147,
      "n_chains": 2,
-     "centre_log_host": 1.9819697746118,
-     "centre_positions": 7.25702361660817,
+     "centre_checkpoint": 30.5,
      "arm": {
-      "estimate": -0.403895361932231,
-      "lower": -0.403895361932236,
-      "upper": -0.403895361932236,
+      "estimate": -1.58559659787378,
+      "lower": -1.58559659787377,
+      "upper": -1.58559659787377,
       "p_greater": 1,
       "p_less": 0.000999000999000999,
       "refits": 1000,
       "failed": 0
      },
      "slope": {
-      "estimate": 0.0457061458716684,
-      "lower": 0.0457061458716651,
-      "upper": 0.0457061458716651,
-      "p_greater": 0.000999000999000999,
-      "p_less": 1,
+      "estimate": -0.0173295333670116,
+      "lower": -0.0173295333670119,
+      "upper": -0.0173295333670119,
+      "p_greater": 1,
+      "p_less": 0.000999000999000999,
       "refits": 1000,
       "failed": 0
      }
@@ -179,7 +169,7 @@
      "concentration_against": false
     }
    },
-   "p_holm": 1.0,
+   "p_holm": 0.002997002997002997,
    "verdict": "descriptive only"
   }
  }

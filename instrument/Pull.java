@@ -95,7 +95,7 @@ import net.officefloor.sinewslim.javaparser.ParsedFile;
 public final class Pull {
 
 	/** Bump whenever a field's meaning changes. */
-	static final int VERSION = 6;
+	static final int VERSION = 8;
 
 	/** A removed position's text must be at least this long to mark an added one as moved. */
 	static final int MOVED_MIN_CHARS = 12;
@@ -155,7 +155,12 @@ public final class Pull {
 
 	/** A type: its fields, the names of its methods, and which of its fields hold injected dependencies. */
 	record T(String file, String name, int origLine, Set<String> fields, Set<String> utilities, Set<String> methods,
-			Set<String> injected) {
+			Set<String> injected, Set<String> constants) {
+
+		/** The fields the class holds: state, injected dependencies and constants (not utilities). */
+		int held() {
+			return fields.size();
+		}
 	}
 
 	/** A method as measured, on the printed source. */
@@ -230,6 +235,20 @@ public final class Pull {
 			matchTypes();
 			matchMethods();
 			diff();
+			// accretion (PLAN.md 4.3a): the fields an addition leaves in a class that already existed
+			for (T t : typesAfter) {
+				T b = typeMatch.get(t);
+				if (b == null) {
+					continue;
+				}
+				int added = 0;
+				for (String f : t.fields) {
+					added += !b.fields.contains(f) ? 1 : 0;
+				}
+				out.add("{\"v\":" + VERSION + ",\"kind\":\"class\",\"unit\":" + q(unit) + ",\"path\":" + q(t.file)
+						+ ",\"type\":" + q(t.name) + ",\"held_before\":" + b.held() + ",\"held_after\":" + t.held()
+						+ ",\"fields_added\":" + added + "}");
+			}
 			for (M b : before) {
 				if (!match.containsValue(b)) {
 					out.add(removedHost(unit, b));
@@ -466,6 +485,8 @@ public final class Pull {
 			}
 			boolean[] organisation = organisation(m, preFields);
 			Set<String> values = isNew ? Set.of() : methodValues(m, b, a, ren);
+			Set<String> preConstants = renamed(bt == null ? Set.of() : bt.constants, ren);
+			Set<String> preAll = isNew ? Set.of() : methodValues(m, b, a, ren, true);
 			Set<String> ownVars = new HashSet<>();
 			for (Var v : m.unit.facts().vars()) {
 				if (v.kind() != Var.Kind.FIELD) {
@@ -553,6 +574,34 @@ public final class Pull {
 				// references that resolve to nothing seen: inherited members, static imports
 				Set<String> un = unresolved(m, from, to, ownVars, knownNames, knownMethods);
 				Seam seam = index.seam(m.lines[from], m.lines[to]);
+				// bystanders (PLAN.md 4.3a): the pre-existing values visible where the run starts, and
+				// those its lines use. Method values: parameters, injected or not, and locals declared
+				// before the run in a scope that encloses it. Fields: state, injected, constants.
+				Set<String> visM = visibleValues(m, preAll, m.lines[from]);
+				Set<String> needM = new TreeSet<>(), needF = new TreeSet<>();
+				for (Node n : m.node.findAll(Node.class)) {
+					int line = n.getBegin().map(p -> p.line).orElse(-1);
+					if (line < m.lines[from] || line > m.lines[to]) {
+						continue;
+					}
+					if (n instanceof NameExpr ne) {
+						String x = ne.getNameAsString();
+						if (visM.contains(x)) {
+							needM.add(x);
+						} else if (!ownVars.contains(x) && preFields.contains(x)) {
+							needF.add(x);
+						}
+					} else if (n instanceof FieldAccessExpr fa && fa.getScope() instanceof ThisExpr
+							&& preFields.contains(fa.getNameAsString())) {
+						needF.add(fa.getNameAsString());
+					}
+				}
+				int[] vis = new int[3], need = new int[3]; // 0 state, 1 injected, 2 constant
+				for (String f : preFields) {
+					int k = preConstants.contains(f) ? 2 : preInjected.contains(f) ? 1 : 0;
+					vis[k]++;
+					need[k] += needF.contains(f) ? 1 : 0;
+				}
 				if (r > 0) {
 					s.append(',');
 				}
@@ -575,6 +624,10 @@ public final class Pull {
 				s.append(",\"tok_tie_method\":").append(km.size());
 				s.append(",\"tok_tie_class\":").append(kf.size() + kc.size());
 				s.append(",\"unresolved\":").append(strs(un));
+				s.append(",\"vis_method\":").append(strs(visM)).append(",\"need_method\":").append(strs(needM));
+				s.append(",\"vis_fields\":[").append(vis[0]).append(',').append(vis[1]).append(',').append(vis[2]);
+				s.append("],\"need_fields\":[").append(need[0]).append(',').append(need[1]).append(',')
+						.append(need[2]).append(']');
 				s.append('}');
 			}
 			s.append(']');
@@ -587,10 +640,39 @@ public final class Pull {
 
 		/**
 		 * Organisation lines: in a constructor, a statement that only assigns one of its parameters to a
-		 * field ({@code this.repo = repo;}), the wiring of an injected dependency.
+		 * field ({@code this.repo = repo;}), the wiring of an injected dependency; and the one statement
+		 * of a plain accessor, a method whose whole body returns a field of its class or assigns one of
+		 * its parameters to one. A plain accessor exposes the field and holds no logic; one that does
+		 * anything more is logic.
 		 */
 		static boolean[] organisation(M m, Set<String> preFields) {
 			boolean[] out = new boolean[m.lines.length];
+			if (m.node instanceof MethodDeclaration md && md.getBody().isPresent()
+					&& md.getBody().get().getStatements().size() == 1 && m.owner != null) {
+				com.github.javaparser.ast.stmt.Statement st = md.getBody().get().getStatement(0);
+				Set<String> params = params(m);
+				boolean accessor = false;
+				if (st instanceof com.github.javaparser.ast.stmt.ReturnStmt rs && rs.getExpression().isPresent()) {
+					Expression e = rs.getExpression().get();
+					accessor = e instanceof NameExpr n && !params.contains(n.getNameAsString())
+							&& m.owner.fields.contains(n.getNameAsString())
+							|| e instanceof FieldAccessExpr fa && fa.getScope() instanceof ThisExpr
+									&& m.owner.fields.contains(fa.getNameAsString());
+				} else if (st instanceof com.github.javaparser.ast.stmt.ExpressionStmt es
+						&& es.getExpression() instanceof com.github.javaparser.ast.expr.AssignExpr ae
+						&& ae.getOperator() == com.github.javaparser.ast.expr.AssignExpr.Operator.ASSIGN
+						&& ae.getValue() instanceof NameExpr v && params.contains(v.getNameAsString())) {
+					accessor = ae.getTarget() instanceof FieldAccessExpr fa && fa.getScope() instanceof ThisExpr
+							&& m.owner.fields.contains(fa.getNameAsString())
+							|| ae.getTarget() instanceof NameExpr t && !params.contains(t.getNameAsString())
+									&& m.owner.fields.contains(t.getNameAsString());
+				}
+				int i = Arrays.binarySearch(m.lines, st.getBegin().map(p -> p.line).orElse(-1));
+				if (accessor && i >= 0) {
+					out[i] = true;
+				}
+				return out;
+			}
 			if (!(m.node instanceof com.github.javaparser.ast.body.ConstructorDeclaration cd)) {
 				return out;
 			}
@@ -660,6 +742,11 @@ public final class Pull {
 		 * injected ones) and locals whose declaration is not itself added. Renames are followed.
 		 */
 		Set<String> methodValues(M m, M b, boolean[] added, Map<String, String> ren) {
+			return methodValues(m, b, added, ren, false);
+		}
+
+		/** With keepInjected, injected parameters are kept: what is visible is read alike in both arms. */
+		Set<String> methodValues(M m, M b, boolean[] added, Map<String, String> ren, boolean keepInjected) {
 			Set<String> declared = params(m), declaredBefore = renamed(params(b), ren);
 			Set<String> was = new HashSet<>();
 			for (Var v : b.unit.facts().vars()) {
@@ -677,7 +764,7 @@ public final class Pull {
 				if (param != declaredBefore.contains(v.name())) {
 					continue; // became a parameter or stopped being one: not the same value
 				}
-				if (param && injectedHere) {
+				if (param && injectedHere && !keepInjected) {
 					continue; // injected: a function anywhere could declare it
 				}
 				if (!param && added != null) {
@@ -687,6 +774,37 @@ public final class Pull {
 					}
 				}
 				out.add(v.name());
+			}
+			return out;
+		}
+
+		/**
+		 * The pre-existing method values visible at a printed line: the parameters, and the locals
+		 * declared before it whose scope (the nearest enclosing block, loop, try, switch entry or lambda)
+		 * encloses it. A local declared inside an earlier block is not visible after the block.
+		 */
+		static Set<String> visibleValues(M m, Set<String> pre, int line) {
+			Set<String> out = new TreeSet<>(params(m));
+			out.retainAll(pre);
+			for (com.github.javaparser.ast.body.VariableDeclarator vd : m.node
+					.findAll(com.github.javaparser.ast.body.VariableDeclarator.class)) {
+				String n = vd.getNameAsString();
+				if (!pre.contains(n) || vd.getBegin().map(p -> p.line).orElse(Integer.MAX_VALUE) >= line) {
+					continue;
+				}
+				Node sc = vd.getParentNode().orElse(null);
+				while (sc != null && !(sc instanceof com.github.javaparser.ast.stmt.BlockStmt
+						|| sc instanceof com.github.javaparser.ast.stmt.ForStmt
+						|| sc instanceof com.github.javaparser.ast.stmt.ForEachStmt
+						|| sc instanceof com.github.javaparser.ast.stmt.TryStmt
+						|| sc instanceof com.github.javaparser.ast.stmt.SwitchEntry
+						|| sc instanceof com.github.javaparser.ast.expr.LambdaExpr)) {
+					sc = sc.getParentNode().orElse(null);
+				}
+				if (sc != null && sc.getBegin().isPresent() && sc.getBegin().get().line <= line
+						&& line <= sc.getEnd().get().line) {
+					out.add(n);
+				}
 			}
 			return out;
 		}
@@ -1059,6 +1177,7 @@ public final class Pull {
 						+ ",\"obstacle\":" + (obstacle == null ? "null" : q(obstacle))
 						+ ",\"injected\":" + injected + ",\"in\":" + in + ",\"in_injection_aware\":" + inAware
 						+ ",\"out\":" + passed + ",\"calls\":" + calls
+						+ ",\"class_held\":" + (m.owner == null ? 0 : m.owner.held())
 						+ "}");
 			}
 		}
@@ -1122,15 +1241,23 @@ public final class Pull {
 		for (int i = 0; i < ptypes.size(); i++) {
 			TypeDeclaration<?> t = ptypes.get(i);
 			Set<String> fields = new HashSet<>(), utilities = new HashSet<>(), methods = new HashSet<>();
+			Set<String> constants = new HashSet<>();
 			for (FieldDeclaration fd : t.getFields()) {
 				// a class utility (a logger) is not a tie: any class can declare its own
 				fd.getVariables().forEach(v -> (utility(v) ? utilities : fields).add(v.getNameAsString()));
+				if (fd.isStatic() && fd.isFinal()) {
+					fd.getVariables().forEach(v -> {
+						if (!utility(v)) {
+							constants.add(v.getNameAsString());
+						}
+					});
+				}
 			}
 			for (MethodDeclaration md : t.getMethods()) {
 				methods.add(md.getNameAsString());
 			}
 			int oline = i < otypes.size() ? ((Node) otypes.get(i)).getBegin().map(p -> p.line).orElse(0) : 0;
-			T tt = new T(rel, qualifiedName(t), oline, fields, utilities, methods, injectedFields(t));
+			T tt = new T(rel, qualifiedName(t), oline, fields, utilities, methods, injectedFields(t), constants);
 			typeOf.put(t, tt);
 			types.add(tt);
 		}

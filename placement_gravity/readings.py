@@ -219,3 +219,28 @@ def review(primary_runs: list[dict], primary_additions: list[dict], reviewed_add
                     "rho": est, "interval": interval,
                     "against": (est is not None and est >= 0)}
     return out
+
+
+# ---- bystanders: the description beside H1 and H3 ----
+
+def bystander_summary(by: list[dict], captured: list[dict], checkpoints: int) -> dict:
+    """Per arm: the share of runs that need nothing that was there (free: not pulled anywhere), and
+    for the runs that do, the needed values and the bystanders per run (PLAN.md §4.3a), over the
+    whole stream and over its thirds, at method and class level; and accretion, the fields an
+    addition leaves in classes that already existed."""
+    out = {}
+    for arm in sorted({r["arm"] for r in by}):
+        every = [r for r in by if r["arm"] == arm]
+        rows = [r for r in every if r["pulled"]]
+        mean = lambda xs, k: statistics.fmean(x[k] for x in xs) if xs else None
+        thirds = []
+        for i in range(3):
+            lo, hi = i * checkpoints / 3, (i + 1) * checkpoints / 3
+            thirds.append(mean([r for r in rows if lo < r["cp"] <= hi], "bystanders") if checkpoints else None)
+        adds = [c for c in captured if c["arm"] == arm]
+        out[arm] = {"runs": len(every), "pulled": len(rows), "share_free": 1 - len(rows) / len(every),
+                    "need": mean(rows, "need"), "bystanders": mean(rows, "bystanders"),
+                    "by_method": mean(rows, "by_method"), "by_class": mean(rows, "by_class"),
+                    "without_constants": mean(rows, "bystanders_no_constants"), "thirds": thirds,
+                    "fields_added_per_addition": mean(adds, "fields_added")}
+    return out

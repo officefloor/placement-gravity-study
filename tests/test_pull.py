@@ -33,6 +33,8 @@ def measure(tmp, cases, hints):
     for l in (tmp / "o.jsonl").read_text().splitlines():
         r = json.loads(l)
         assert r["kind"] != "problem", r
+        if r["kind"] == "class":      # per-class accretion records (tests/test_bystanders.py)
+            continue
         out[(r["unit"], r["name"])] = r
     return out
 

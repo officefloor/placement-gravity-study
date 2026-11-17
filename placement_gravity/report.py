@@ -36,6 +36,19 @@ def ratio(e: dict | None) -> str:
     return interval(e, "irr", "irr_lower", "irr_upper")
 
 
+def bystander_lines(r: dict) -> list[str]:
+    """The description beside H1: needed values and bystanders per run, per arm (PLAN.md §4.3a)."""
+    L = []
+    for arm, x in (r.get("bystanders") or {}).items():
+        L.append(f"- Reported, {arm}: {f(x.get('pulled'))} of {f(x.get('runs'))} runs need a pre-existing "
+                 f"value ({f(x.get('share_free'))} free); per such run, needed {f(x.get('need'))}, bystanders "
+                 f"{f(x.get('bystanders'))} (method {f(x.get('by_method'))}, class {f(x.get('by_class'))}; "
+                 f"without constants {f(x.get('without_constants'))}); over the thirds of the stream "
+                 + ", ".join(f(t) for t in x.get("thirds") or []) + f"; fields left behind per addition "
+                 f"{f(x.get('fields_added_per_addition'))}")
+    return L
+
+
 def readings_section(est: dict, r: dict) -> list[str]:
     """Choice at a checkpoint, formation and review (PLAN.md §5): reported, not confirmatory."""
     rep = est.get("reported") or {}
@@ -48,6 +61,10 @@ def readings_section(est: dict, r: dict) -> list[str]:
     for arm in sorted(k[len("formation_lagged_"):] for k in rep if k.startswith("formation_lagged_")):
         L.append(f"- Formation, lagged, {arm}: ties now on the chain's mean ties so far "
                  f"{interval(rep['formation_lagged_' + arm])} (predicted above 0 in the methods arm)")
+    for arm in sorted(k[len("capture_"):] for k in rep if k.startswith("capture_")):
+        L.append(f"- Capture, {arm}: share of the addition landing in existing hosts on the fields held "
+                 f"by the chain's heaviest class {interval(rep['capture_' + arm])} (predicted above 0 in "
+                 f"the methods arm)")
     for arm, x in (r.get("formation_end") or {}).items():
         L.append(f"- Formation, where it ends, {arm}: Spearman's rho of early ties with the largest "
                  f"method's share {f(x.get('rho'))} {x.get('interval') or '[no interval]'} over "
@@ -76,14 +93,24 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
     for k, v in hyp.items():
         L.append(f"| {k} | {v['verdict']} | {f(v.get('p_holm'))} |")
     h1 = est.get("H1") or {}
+    lv = rep.get("H1_levels") or {}
+    t1 = rep.get("H1_ties") or {}
     L += ["", "## H1, gravity compounds (methods arm)", "",
-          f"Runs {f(h1.get('n_runs'))} over {f(h1.get('n_chains'))} chains; slopes of log(1 + ties), "
-          f"cluster-bootstrap 95% intervals ({est.get('boot')} refits).", "",
-          f"- On log(host positions): {interval(h1.get('log_host'))}",
-          f"- On the checkpoint index: {interval(h1.get('cp'))}",
-          f"- Reported, the function arm: on host size {interval((rep.get('H1_function_arm') or {}).get('log_host'))}",
-          f"- Reported, class level (methods arm): on class size {interval((rep.get('H1_class_level') or {}).get('log_class'))}",
-          f"- Reported, without injected dependencies: on host size {interval((rep.get('H1_without_injected') or {}).get('log_host'))}; "
+          f"Runs that need a pre-existing value {f(h1.get('n_runs'))} over {f(h1.get('n_chains'))} "
+          f"chains; the slope of log(1 + bystanders) on the checkpoint index, cluster-bootstrap 95% interval "
+          f"({est.get('boot')} refits).", "",
+          f"- **Bystanders on the checkpoint index: {interval(h1.get('cp'))}**",
+          f"- Reported, method bystanders {interval(lv.get('method'))}; class bystanders "
+          f"{interval(lv.get('class'))}",
+          f"- Reported, without injected dependencies {interval(lv.get('without_injected'))}; without "
+          f"constants {interval(lv.get('without_constants'))}",
+          f"- Reported, the function arm's slope: {interval(lv.get('function_arm'))}",
+          *bystander_lines(readings or {}),
+          f"- Reported, H1 as first registered (ties of runs into existing methods): on log(host "
+          f"positions) {interval(t1.get('log_host'))}; on the checkpoint index {interval(t1.get('cp'))}",
+          f"- Reported, ties in the function arm: on host size {interval((rep.get('H1_function_arm') or {}).get('log_host'))}",
+          f"- Reported, ties at class level (methods arm): on class size {interval((rep.get('H1_class_level') or {}).get('log_class'))}",
+          f"- Reported, ties without injected dependencies: on host size {interval((rep.get('H1_without_injected') or {}).get('log_host'))}; "
           f"class level on class size {interval((rep.get('H1_class_level_without_injected') or {}).get('log_class'))}"]
     h2 = hyp["H2"]
     a = (h2.get("detail") or {}).get("H2a") or {}
@@ -113,10 +140,19 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
     amt = cond.get("amount") or {}
     w = (cond.get("wiring") or {}).get("verdict") or {}
     L += ["", "## H3, function injection keeps the space open", "",
-          f"- Function arm's ties (arm term, at a host of {f(m3.get('centre_positions'), 1)} positions, "
-          f"the centre): {interval(m3.get('arm'))}",
-          f"- Its slope on host size (interaction): {interval(m3.get('slope'))}",
-          "- Reported, the arm difference at a host of " + "; ".join(
+          f"- **Function arm's bystanders (arm term, at checkpoint {f(m3.get('centre_checkpoint'), 1)}, "
+          f"the middle of the stream): {interval(m3.get('arm'))}**",
+          f"- **Their slope on the checkpoint index (interaction): {interval(m3.get('slope'))}**",
+          f"- Reported, bystanders without injected dependencies: arm "
+          f"{interval((rep.get('H3_bystanders_without_injected') or {}).get('arm'))}, slope "
+          f"{interval((rep.get('H3_bystanders_without_injected') or {}).get('slope'))}",
+          f"- Reported, the needed values, function arm against methods arm: {interval(rep.get('needed_arm'))} "
+          f"(expected about 0: the same stream)",
+          f"- Reported, H3 as first registered (ties): arm at a host of "
+          f"{f((rep.get('H3_ties') or {}).get('centre_positions'), 1)} positions "
+          f"{interval((rep.get('H3_ties') or {}).get('arm'))}; slope on host size "
+          f"{interval((rep.get('H3_ties') or {}).get('slope'))}",
+          "- Reported, the arm difference in ties at a host of " + "; ".join(
               f"{k} positions {interval(v)}" for k, v in (rep.get("H3_arm_at") or {}).items()),
           f"- Amount added since the base, function arm / methods arm at the final checkpoint: "
           f"{f(amt.get('ratio'))} "
@@ -127,11 +163,11 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           f"against: {f(w.get('growth_against'))}",
           f"- Wiring concentration: largest file {f(w.get('largest_share'))}, against: "
           f"{f(w.get('concentration_against'))}",
-          f"- Reported, without parameter ties: arm {interval((rep.get('H3_without_parameters') or {}).get('arm'))}, "
+          f"- Reported, ties without parameters: arm {interval((rep.get('H3_without_parameters') or {}).get('arm'))}, "
           f"slope {interval((rep.get('H3_without_parameters') or {}).get('slope'))}",
-          f"- Reported, without injected dependencies: arm {interval((rep.get('H3_without_injected') or {}).get('arm'))}, "
+          f"- Reported, ties without injected dependencies: arm {interval((rep.get('H3_without_injected') or {}).get('arm'))}, "
           f"slope {interval((rep.get('H3_without_injected') or {}).get('slope'))}",
-          f"- Reported, trajectory (arm × checkpoint): {interval(rep.get('H3_trajectory'))}",
+          f"- Reported, trajectory of the ties (arm × checkpoint): {interval(rep.get('H3_trajectory'))}",
           *readings_section(est, readings or {}),
           "", "## Provenance", "",
           "Checkpoint intercept in the model: " + (", ".join(

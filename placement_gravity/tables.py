@@ -167,8 +167,27 @@ def run_rows(arm: str, chain: str, measured: dict) -> list[dict]:
                 "tie_method_values": " ".join(x["tie_method"]),
                 "tie_class_values": " ".join(x["tie_field"] + [m + "()" for m in x["tie_class_method"]]),
                 "utility_values": " ".join(x["utility"]),
+                **bystanders(x),
             })
     return rows
+
+
+def bystanders(run: dict) -> dict:
+    """§4.3a for one run: the pre-existing values visible where it starts, split into those its
+    lines use (``need``) and those they do not (``bystanders``). Method values are parameters,
+    injected or not, and locals in scope; class fields are state, injected dependencies and
+    constants (a constant is not to be duplicated, so code that needs it comes to it). The
+    bystanders count only where the run needs something that was there (``need`` > 0): a run that
+    needs nothing was not pulled to its place."""
+    vis_m, need_m = len(run.get("vis_method", [])), len(run.get("need_method", []))
+    vis_f, need_f = run.get("vis_fields", [0, 0, 0]), run.get("need_fields", [0, 0, 0])
+    by_method = vis_m - need_m
+    by_state, by_injected, by_constant = (v - n for v, n in zip(vis_f, need_f))
+    return {"need": need_m + sum(need_f), "need_constants": need_f[2],
+            "by_method": by_method, "by_class": by_state + by_injected + by_constant,
+            "bystanders": by_method + by_state + by_injected + by_constant,
+            "bystanders_no_injected": by_method + by_state + by_constant,
+            "bystanders_no_constants": by_method + by_state + by_injected}
 
 
 def class_rows(arm: str, chain: str, hosts: list[dict], measured: dict) -> list[dict]:
@@ -201,6 +220,13 @@ def addition_rows(arm: str, chain: str, measured: dict, hosts: list[dict],
             problems[r["unit"]] = problems.get(r["unit"], 0) + 1
     refs = {f["unit"]: len(f["refactorings"]) for f in measured.get("refactorings", [])}
     base = (measured["amount"].get("base") or {}).get("positions", 0)
+    # accretion and the heaviest class at k - 1 (PLAN.md 4.3a)
+    left, heaviest = {}, {}
+    for r in measured["records"]:
+        if r["kind"] == "class":
+            left[r["unit"]] = left.get(r["unit"], 0) + r["fields_added"]
+    for r in measured.get("shape", []):
+        heaviest[r["unit"]] = max(heaviest.get(r["unit"], 0), r.get("class_held", 0))
     rows = []
     for c in measured["checkpoints"]:
         cp, unit = c["cp"], f"cp{c['cp']:02d}"
@@ -230,6 +256,7 @@ def addition_rows(arm: str, chain: str, measured: dict, hosts: list[dict],
             "amount_base": base,
             "amount_added": measured["amount"][unit]["positions"] - base,
             "amount_largest": measured["amount"][unit].get("largest"),
+            "fields_added": left.get(unit, 0), "heaviest_class": heaviest.get(unit, 0),
             "wiring_nodes_added": w["after"]["nodes"] - w["before"]["nodes"],
             "wiring_edges_added": w["after"]["edges"] - w["before"]["edges"],
             "wiring_files": w["after"]["files"], "wiring_edges": w["after"]["edges"],

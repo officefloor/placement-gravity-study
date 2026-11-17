@@ -27,7 +27,7 @@ def records(tmp_path_factory):
 
 
 def test_the_instrument_gives_the_line_facts(records):
-    r = next(r for r in records if r["unit"] == "cp01")
+    r = next(r for r in records if r["unit"] == "cp01" and r["kind"] == "host")
     # v1: the first line and the return are kept; three logic lines are added between them
     assert r["pair"] == [0, -1, -1, -1, 1] and r["kinds"] == [-1, 0, 0, 0, -1]
     assert len(r["hash"]) == 5 and len(r["before_hash"]) == 2

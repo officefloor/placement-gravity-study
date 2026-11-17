@@ -1,14 +1,14 @@
 """Step 4, the decision: each hypothesis's verdict from the R estimates and the conditions
 (PLAN.md §2, §5). Every decision rule of the study is here.
 
-- **H1** (the methods arm): both slopes, on host size and on the checkpoint index, above 0.
-  p = the larger of the two one-sided bootstrap p-values.
+- **H1** (the methods arm): the slope of the bystanders (PLAN.md §4.3a) on the checkpoint index
+  above 0. p = its one-sided bootstrap p-value.
 - **H2**: H2a (the rate ratio per tie above 1, one-sided Wald) and H2b (every shape measure kept
   within the equivalence bound by two one-sided tests). p = the larger of H2a's p and the largest
   TOST p. With no shape measure testable, H2 is read on H2a alone and says so.
-- **H3**: the function arm's ties lower and its slope on host size flatter (both one-sided
-  bootstrap p-values; p = the larger), the amount within its band, and neither wiring condition
-  against.
+- **H3**: the function arm's bystanders fewer half-way through the stream and their slope on the
+  checkpoint index flatter (both one-sided bootstrap p-values; p = the larger), the amount within
+  its band, and neither wiring condition against.
 - **Multiplicity**: Holm over H1, H2 and H3 at α = 0.05.
 
 Verdicts: ``supported``; ``not supported``; ``reversed`` (an interval wholly on the wrong side);
@@ -42,12 +42,11 @@ def _ok(x: dict | None) -> bool:
 
 def h1(est: dict) -> dict:
     x = est.get("H1") or {}
-    a, b = x.get("log_host"), x.get("cp")
-    if not (_ok(a) and _ok(b)):
+    b = x.get("cp")
+    if not _ok(b):
         return {"p": None, "verdict": "not estimable", "detail": x}
-    reversed_ = a["upper"] < 0 or b["upper"] < 0
-    return {"p": max(a["p_greater"], b["p_greater"]), "reversed": reversed_,
-            "conditions_met": a["lower"] > 0 and b["lower"] > 0, "detail": x}
+    return {"p": b["p_greater"], "reversed": b["upper"] < 0,
+            "conditions_met": b["lower"] > 0, "detail": x}
 
 
 def h2(est: dict) -> dict:

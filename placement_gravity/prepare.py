@@ -4,9 +4,15 @@
 
 Writes data/analysis/<name>/:
 
-- ``h1.csv``: one row per run of added logic into an existing method (H1, H3), with its ties and
-  its host's size before the addition. New methods are left out: a new host has no prior size, so
-  including them would make "more ties in bigger hosts" true by construction.
+- ``by.csv``: one row per run of added logic that needs at least one pre-existing value, in new
+  hosts and existing ones (H1, H3), with its bystanders (PLAN.md §4.3a): the pre-existing values
+  visible where it starts that it does not use.
+- ``capture.csv``: one row per addition, with the share of its positions landing in existing hosts
+  and the fields held by the chain's heaviest class at k − 1 (the capture reading).
+- ``h1.csv``: one row per run of added logic into an existing method, with its ties and its host's
+  size before the addition (H1 and H3 as first registered, reported; the lagged formation term).
+  New methods are left out: a new host has no prior size, so including them would make "more ties
+  in bigger hosts" true by construction.
 - ``h2.csv``: one row per problem and host its code went into (H2, the junction × arm reading),
   with later intrusion, the problem's size and declared crossings, the host's size and its shape at
   k − 1.
@@ -85,6 +91,36 @@ def h1_rows(run_rows: list[dict], host_rows: list[dict], streamed: dict) -> list
             # the chain's mean ties per run over its earlier checkpoints (formation, PLAN.md 5)
             "prior_tie_mean": prior.get((r["chain_id"], cp)),
         })
+    return out
+
+
+def by_rows(run_rows: list[dict]) -> list[dict]:
+    """Every run of added logic (moved code left out) with its bystanders. ``pulled`` marks the
+    runs that need at least one pre-existing value: H1 and H3 are read on those."""
+    out = []
+    for r in run_rows:
+        if truth(r.get("replacement")) or r.get("bystanders") in (None, ""):
+            continue
+        out.append({"chain_id": r["chain_id"], "arm": r["arm"], "frontend": r.get("frontend", ""),
+                    "cp": int(r["cp"]), "host_new": truth(r["host_new"]),
+                    "pulled": int(r["need"]) > 0,
+                    **{k: int(r[k]) for k in ("bystanders", "by_method", "by_class",
+                                               "bystanders_no_injected", "bystanders_no_constants",
+                                               "need")}})
+    return out
+
+
+def capture_rows(additions: list[dict]) -> list[dict]:
+    """Per addition: the share of its positions landing in existing hosts, and the fields (state,
+    injected dependencies and constants) of the chain's heaviest class at k − 1."""
+    out = []
+    for a in additions:
+        if a.get("share_in_existing") in (None, "", "None") or a.get("heaviest_class") in (None, ""):
+            continue
+        out.append({"chain_id": a["chain_id"], "arm": a["arm"], "frontend": a.get("frontend", ""),
+                    "cp": int(a["cp"]), "share_in_existing": float(a["share_in_existing"]),
+                    "heaviest_class": int(a["heaviest_class"]),
+                    "fields_added": int(a.get("fields_added") or 0)})
     return out
 
 
@@ -203,10 +239,14 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
         chains.setdefault(a["arm"], set()).add(a["chain_id"])
     out = out_root / name
     write_csv(out / "h1.csv", h1)
+    by = by_rows(run_rows)
+    write_csv(out / "by.csv", [r for r in by if r["pulled"]])
+    captured = capture_rows(additions)
+    write_csv(out / "capture.csv", captured)
     write_csv(out / "h2.csv", h2)
     spec = {"analysis": name, "role": analysis["role"], "seed": SEED, "boot": BOOT,
             "bound": BOUND, "methods_arm": METHODS_ARM, "function_arm": FUNCTION_ARM,
-            "shape_kept": kept, "shape_counts": counts,
+            "shape_kept": kept, "shape_counts": counts, "checkpoints": len(streamed),
             "acts": any(r["act"] is not None for r in h1 + h2),
             "frontends": sorted({r["frontend"] for r in h1 if r["frontend"]})}
     conditions = {"chains": {k: len(v) for k, v in chains.items()},
@@ -223,6 +263,7 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
     (out / "readings.json").write_text(json.dumps({
         "choice": readings.choice_summary(chosen),
         "formation_end": readings.formation_end(run_rows, additions, len(streamed)) if streamed else {},
+        "bystanders": readings.bystander_summary(by, captured, len(streamed)),
         "own_lines": lost}, indent=1) + "\n")
     (out / "spec.json").write_text(json.dumps(spec, indent=1) + "\n")
     (out / "conditions.json").write_text(json.dumps(conditions, indent=1) + "\n")

@@ -21,7 +21,7 @@ from . import chain, crosscheck, lines, runs, shape, tables
 OUT = runs.RESULTS / "measure"
 WORK = chain.ROOT / ".tmp" / "measure"
 #: Bump when a table's meaning changes, so measured chains are redone.
-MEASURE_VERSION = 3
+MEASURE_VERSION = 5
 
 
 def write(path: Path, rows: list[dict]) -> None:

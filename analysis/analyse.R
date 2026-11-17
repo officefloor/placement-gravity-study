@@ -8,10 +8,12 @@
 # and the conditions that are not models (the amount band, the wiring) are applied by
 # placement_gravity/verdict.py, so every decision rule sits in one place.
 #
-# H1 and H3: a Gaussian mixed model of log(1 + ties) per run of added logic into an existing
-# method. Their intervals are a cluster bootstrap: chains resampled with replacement within arm,
-# the model refitted (spec$boot refits, spec$seed). In H3 the host size is centred, so the arm term
-# is the difference between the arms at a typical host.
+# H1 and H3: a Gaussian mixed model of log(1 + bystanders) per run of added logic (by.csv) on the
+# checkpoint index: its slope in the methods arm (H1), and the arm term and the arm's interaction
+# with the checkpoint (H3), the checkpoint index centred at the middle of the stream so that the arm
+# term is the difference half-way through. Their intervals are a cluster bootstrap: chains
+# resampled with replacement within arm, the model refitted (spec$boot refits, spec$seed).
+# H1 and H3 as first registered, on the ties of runs into existing methods (h1.csv), are reported.
 # H2: a negative binomial (nbinom2) mixed model of later intrusion on the problem's own lines, per
 # problem and host, offset by the log of the later checkpoints; Wald intervals.
 # Every model carries random intercepts for the chain and for the checkpoint: a checkpoint is one
@@ -36,6 +38,8 @@ read <- function(f) {
   read.csv(p, stringsAsFactors = FALSE)
 }
 h1 <- read("h1.csv")
+by <- read("by.csv")
+cap <- read("capture.csv")
 h2 <- read("h2.csv")
 set.seed(spec$seed)
 
@@ -157,16 +161,10 @@ if (!is.null(h1)) {
   h1$arm <- as_arm(h1$arm)
   fe_terms <- if (multi(h1$frontend)) " + frontend" else ""
 
-  # H1: the methods arm
+  # H1 as first registered (reported): ties on host size and the checkpoint, the methods arm
   d1 <- h1[h1$arm == spec$methods_arm, ]
-  m1 <- fit_cp("y ~ log_host + cp", d1, gaussian())
-  note("H1", m1)
-  fit1 <- m1$fit
-  b1 <- if (inherits(fit1, "fit_error")) NULL else
-    cluster_boot(m1$data, m1$formula, gaussian(), c("log_host", "cp"), spec$boot)
-  res$H1 <- list(n_runs = nrow(d1), n_chains = length(unique(d1$chain_id)),
-                 log_host = if (is.null(b1)) list(error = fit1$msg) else boot_summary(fit1, b1, "log_host"),
-                 cp = if (is.null(b1)) list(error = fit1$msg) else boot_summary(fit1, b1, "cp"))
+  fit1 <- fit_cp("y ~ log_host + cp", d1, gaussian())$fit
+  res$reported$H1_ties <- list(n_runs = nrow(d1), log_host = wald(fit1, "log_host"), cp = wald(fit1, "cp"))
 
   # H1 read in the function arm, and at class level in the methods arm (reported)
   dF <- h1[h1$arm == spec$function_arm, ]
@@ -197,22 +195,16 @@ if (!is.null(h1)) {
       c(wald(ml$fit, "prior_tie_mean"), list(n = nrow(dl), checkpoint_intercept = ml$cp))
   }
 
-  # H3: the arms against each other in the H1 model, the host size centred so that the arm term is
-  # the difference at a typical host (uncentred it is the difference at a host of one position)
+  # H3 as first registered (reported): the arms against each other on the ties, the host size centred
+  # so that the arm term is the difference at a typical host
   d3 <- h1[h1$arm %in% c(spec$methods_arm, spec$function_arm), ]
   d3$arm <- droplevels(d3$arm)
   centre <- mean(d3$log_host)
   d3$log_host_c <- d3$log_host - centre
   inter <- paste0("log_host_c:", FARM)
-  m3 <- fit_cp(paste0("y ~ log_host_c * arm + cp", fe_terms), d3, gaussian())
-  note("H3", m3)
-  fit3 <- m3$fit
-  b3 <- if (inherits(fit3, "fit_error")) NULL else
-    cluster_boot(m3$data, m3$formula, gaussian(), c(FARM, inter), spec$boot)
-  res$H3 <- list(n_runs = nrow(d3), n_chains = length(unique(d3$chain_id)),
-                 centre_log_host = centre, centre_positions = exp(centre),
-                 arm = if (is.null(b3)) list(error = fit3$msg) else boot_summary(fit3, b3, FARM),
-                 slope = if (is.null(b3)) list(error = fit3$msg) else boot_summary(fit3, b3, inter))
+  fit3 <- fit_cp(paste0("y ~ log_host_c * arm + cp", fe_terms), d3, gaussian())$fit
+  res$reported$H3_ties <- list(n_runs = nrow(d3), centre_positions = exp(centre),
+                               arm = wald(fit3, FARM), slope = wald(fit3, inter))
   # the arm difference at hosts of 10, 25 and 50 positions (reported)
   res$reported$H3_arm_at <- setNames(lapply(c(10, 25, 50), function(x)
     combo(fit3, setNames(c(1, log(x) - centre), c(FARM, inter)))), c("10", "25", "50"))
@@ -225,6 +217,69 @@ if (!is.null(h1)) {
   # the trajectory: the arm's interaction with the checkpoint index
   fit3t <- fit_cp(paste0("y ~ log_host_c * arm + cp * arm", fe_terms), d3, gaussian())$fit
   res$reported$H3_trajectory <- wald(fit3t, paste0(FARM, ":cp"))
+}
+
+# ---------------------------------------------------------------- H1 and H3: bystanders
+
+if (!is.null(by)) {
+  by$arm <- as_arm(by$arm)
+  by$y <- log1p(by$bystanders)
+  mid <- if (!is.null(spec$checkpoints) && spec$checkpoints > 0) (spec$checkpoints + 1) / 2 else
+    mean(range(by$cp))
+  by$cp_c <- by$cp - mid
+  fe_by <- if (multi(by$frontend)) " + frontend" else ""
+
+  # H1: bystanders rise with the checkpoint index in the methods arm
+  dm <- by[by$arm == spec$methods_arm, ]
+  mb1 <- fit_cp("y ~ cp", dm, gaussian())
+  note("H1", mb1)
+  bb1 <- if (inherits(mb1$fit, "fit_error")) NULL else
+    cluster_boot(mb1$data, mb1$formula, gaussian(), "cp", spec$boot)
+  res$H1 <- list(n_runs = nrow(dm), n_chains = length(unique(dm$chain_id)),
+                 cp = if (is.null(bb1)) list(error = mb1$fit$msg) else boot_summary(mb1$fit, bb1, "cp"))
+  # the same slope at each level, without injected dependencies, without constants, and in the
+  # function arm (reported)
+  slope_of <- function(d, col) {
+    d$yy <- log1p(d[[col]])
+    wald(fit_cp("yy ~ cp", d, gaussian())$fit, "cp")
+  }
+  res$reported$H1_levels <- list(
+    method = slope_of(dm, "by_method"), class = slope_of(dm, "by_class"),
+    without_injected = slope_of(dm, "bystanders_no_injected"),
+    without_constants = slope_of(dm, "bystanders_no_constants"),
+    function_arm = slope_of(by[by$arm == spec$function_arm, ], "bystanders"))
+
+  # H3: the function arm has fewer bystanders half-way through, and they grow more slowly
+  db <- by[by$arm %in% c(spec$methods_arm, spec$function_arm), ]
+  db$arm <- droplevels(db$arm)
+  interb <- paste0("cp_c:", FARM)
+  mb3 <- fit_cp(paste0("y ~ cp_c * arm", fe_by), db, gaussian())
+  note("H3", mb3)
+  bb3 <- if (inherits(mb3$fit, "fit_error")) NULL else
+    cluster_boot(mb3$data, mb3$formula, gaussian(), c(FARM, interb), spec$boot)
+  res$H3 <- list(n_runs = nrow(db), n_chains = length(unique(db$chain_id)), centre_checkpoint = mid,
+                 arm = if (is.null(bb3)) list(error = mb3$fit$msg) else boot_summary(mb3$fit, bb3, FARM),
+                 slope = if (is.null(bb3)) list(error = mb3$fit$msg) else boot_summary(mb3$fit, bb3, interb))
+  db$yn <- log1p(db$bystanders_no_injected)
+  fitbn <- fit_cp(paste0("yn ~ cp_c * arm", fe_by), db, gaussian())$fit
+  res$reported$H3_bystanders_without_injected <- list(arm = wald(fitbn, FARM), slope = wald(fitbn, interb))
+  # the needed values: the same stream, so the arms are expected to need the same
+  db$need_y <- log1p(db$need)
+  res$reported$needed_arm <- wald(fit_cp(paste0("need_y ~ arm", fe_by), db, gaussian())$fit, FARM)
+}
+
+# Capture (reported): for the same problem, is a chain whose heaviest class holds more more likely
+# to place the addition in an existing host? Per arm.
+if (!is.null(cap)) {
+  cap$log_heaviest <- log1p(cap$heaviest_class)
+  for (a in c(spec$methods_arm, spec$function_arm)) {
+    dcap <- cap[cap$arm == a, ]
+    mc <- if (nrow(dcap) > 0 && length(unique(dcap$log_heaviest)) > 1)
+      fit_cp("share_in_existing ~ log_heaviest", dcap, gaussian()) else
+      list(fit = structure(list(msg = "no variation"), class = "fit_error"), cp = FALSE)
+    res$reported[[paste0("capture_", a)]] <-
+      c(wald(mc$fit, "log_heaviest"), list(n = nrow(dcap), checkpoint_intercept = mc$cp))
+  }
 }
 
 # ---------------------------------------------------------------- H2

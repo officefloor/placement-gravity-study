@@ -125,6 +125,7 @@ def test_prepare_builds_the_datasets_and_applies_the_rules(tmp_path):
     assert abs(cond["amount"]["ratio"] - (922 / 1022)) < 1e-9 and cond["amount"]["in_band"]
     assert {"prior_tie_mean", "tie"} <= set(h1[0]) and {"intrusion", "intrusion_host", "own_lines"} <= set(h2[0])
     assert (out / "readings.json").exists()
+    assert (out / "by.csv").exists() and (out / "capture.csv").exists()
     assert cond["wiring"]["verdict"]["concentration_against"] is False
 
 
@@ -154,7 +155,7 @@ def measure(irr, lo, hi, p, outside=False):
 
 
 def estimates(**over):
-    e = {"H1": {"log_host": boot(0.3, 0.1, 0.5, 0.001, 0.999), "cp": boot(0.01, 0.002, 0.02, 0.004, 0.99)},
+    e = {"H1": {"cp": boot(0.01, 0.002, 0.02, 0.004, 0.99)},
          "H2a": {"irr": 1.3, "irr_lower": 1.1, "irr_upper": 1.5, "p_greater": 0.001, "n": 100},
          "H2b": {"testable": True, "bound": [0.8, 1.25], "kept": ["s1_long", "s3_junction"],
                  "measures": {"s1_long": measure(1.0, 0.9, 1.1, 0.002),
@@ -204,10 +205,10 @@ def test_h3_fails_on_the_amount_or_the_wiring():
 
 
 def test_reversed_and_holm_failures():
-    e = estimates(H1={"log_host": boot(-0.3, -0.5, -0.1, 0.999, 0.001), "cp": boot(0.01, 0.002, 0.02, 0.004, 0.99)})
+    e = estimates(H1={"cp": boot(-0.01, -0.02, -0.002, 0.999, 0.001)})
     assert verdict.decide(e, COND)["hypotheses"]["H1"]["verdict"] == "reversed"
     # each interval clears 0, but p = 0.03 for all three: Holm makes them 0.09
-    e = estimates(H1={"log_host": boot(0.3, 0.01, 0.5, 0.03, 0.97), "cp": boot(0.01, 0.001, 0.02, 0.03, 0.97)},
+    e = estimates(H1={"cp": boot(0.01, 0.001, 0.02, 0.03, 0.97)},
                   H3={"arm": boot(-0.5, -0.8, -0.01, 0.97, 0.03), "slope": boot(-0.2, -0.3, -0.01, 0.97, 0.03)})
     e["H2a"]["p_greater"] = 0.03
     v = verdict.decide(e, COND)["hypotheses"]
@@ -220,7 +221,7 @@ def test_descriptive_only_decides_nothing():
 
 
 def test_an_error_in_a_model_is_not_estimable():
-    v = verdict.decide(estimates(H1={"log_host": {"error": "no fit"}, "cp": {"error": "no fit"}}), COND)
+    v = verdict.decide(estimates(H1={"cp": {"error": "no fit"}}), COND)
     assert v["hypotheses"]["H1"]["verdict"] == "not estimable"
 
 

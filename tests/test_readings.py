@@ -82,3 +82,24 @@ def test_the_amount_is_read_on_what_was_added():
     a = prepare.amount(adds, resamples=200)
     assert a["ratio"] == pytest.approx(510 / 500) and a["in_band"]            # the amount added
     assert a["ratio_total"] == pytest.approx(1210 / 1400)                     # the totals, beside it
+
+
+def test_bystanders_are_gathered_per_run_and_summarised():
+    def r(arm, cp, by, need, replacement=False, new=False):
+        return {"chain_id": f"{arm}/c", "arm": arm, "cp": cp, "host_new": str(new), "need": need,
+                "replacement": str(replacement), "bystanders": by, "by_method": 1, "by_class": by - 1,
+                "bystanders_no_injected": by, "bystanders_no_constants": by - 1}
+    rows = [r("spring", 1, 4, 1), r("spring", 3, 10, 2, new=True), r("spring", 3, 99, 9, replacement=True),
+            r("officefloor", 2, 1, 1)]
+    rows.append(r("spring", 2, 50, 0))                        # needs nothing that was there: free
+    by = prepare.by_rows(rows)
+    assert len(by) == 4 and by[1]["host_new"] is True         # moved code is left out; new hosts stay
+    cap = prepare.capture_rows([{"chain_id": "spring/c", "arm": "spring", "cp": 1, "share_in_existing": "0.5",
+                                 "heaviest_class": "6", "fields_added": "2"},
+                                {"chain_id": "spring/c", "arm": "spring", "cp": 2, "share_in_existing": "",
+                                 "heaviest_class": "6", "fields_added": "0"}])
+    assert len(cap) == 1                                      # an empty addition has no share to read
+    s = readings.bystander_summary(by, cap, 3)
+    assert s["spring"]["bystanders"] == 7 and s["spring"]["thirds"] == [4, None, 10]   # the free run apart
+    assert s["spring"]["pulled"] == 2 and s["spring"]["share_free"] == pytest.approx(1 / 3)
+    assert s["spring"]["fields_added_per_addition"] == 2 and s["officefloor"]["need"] == 1

@@ -11,6 +11,8 @@ is cohesive with that problem, and measures how that code was placed:
 - how far it is dispersed;
 - its **pull**: how much pre-existing host state it had to read or write. Pull separates a
   **forced** placement (gravity) from a **chosen** one.
+- its **bystanders**: what else was there with the data it needed. The data a problem needs is
+  the problem's; what surrounds that data, and grows, is the gravity (H1, H3).
 
 It then follows each problem forward to see whether forced placements are what tangle later
 changes. The primary data is the paired Spring and OfficeFloor change streams of the degradation
@@ -53,7 +55,7 @@ cloned into `~/placement-gravity-data/`. The streams are read at the commits `ru
 
 | Code | |
 |---|---|
-| `instrument/Pull.java` | The instrument: per addition, hosts, runs and their ties (method and class), birth ties, moved code; the amount; with `--shape`, every method of a tree as the earlier studies read it (SinewSlim's length and assessment, junction counts). |
+| `instrument/Pull.java` | The instrument: per addition, hosts, runs and their ties (method and class), their bystanders (the pre-existing values visible where a run lands that it does not use, PLAN.md §4.3a), birth ties, moved code; the amount; with `--shape`, every method of a tree as the earlier studies read it (SinewSlim's length and assessment, junction counts). |
 | `refactor/` | RefactoringMiner 3.0.4 at each commit (`Refactorings.java`) and CodeTracker 2.6 histories (`Histories.java`), built by Maven. |
 | `placement_gravity/refactor.py` | RefactoringMiner's findings as the instrument's hints: renames, matches, moved code. |
 | `placement_gravity/crosscheck.py` | CodeTracker against the instrument's following of hosts. |
