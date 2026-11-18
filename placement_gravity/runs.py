@@ -53,6 +53,9 @@ def validate(reg: dict) -> None:
             for s in a["sources"]:
                 if s["sample"] not in reg.get("samples", {}):
                     raise ValueError(f"{a['name']}: unknown sample {s['sample']!r}")
+                spec = reg["samples"][s["sample"]]
+                if spec.get("max_units") and spec["role"] != "development":
+                    raise ValueError(f"{s['sample']}: only a development sample may cap its units")
             continue
         if a["stream"] not in reg["streams"]:
             raise ValueError(f"{a['name']}: unknown stream {a['stream']!r}")

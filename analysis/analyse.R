@@ -344,13 +344,38 @@ if (!is.null(h2)) {
   }
   nb <- nbinom2()
 
-  # H2: data draws code in. In the methods arm, per problem and host whose code was bound there:
-  # the later intrusions bound to a value that stood by at the placement, on the number that stood
-  # by, at the class (its fields) and at the method (its values).
-  drawn <- function(d, lev, term = paste0("bystanders_", lev)) {
+  # H2 (since 19 November 2026): a core draws code in. In the methods arm, per problem and host
+  # whose code was bound there, the values of the place are of two kinds: the core, the values the
+  # code was bound to, and the periphery, the rest the place then held (what stood by and what the
+  # change introduced). Each kind with at least one value is a record: the later intrusions' uses
+  # of its values, offset by the later checkpoints and by the number of values, so the count is a
+  # rate per value. H2 is the rate ratio of the core to the periphery.
+  core_long <- function(d, lev) {
+    parts <- lapply(c("core", "periphery"), function(kind) {
+      n <- d[[paste0(kind, "_", lev)]]
+      x <- d[!is.na(n) & n > 0, ]
+      if (nrow(x) == 0) return(NULL)
+      x$uses <- x[[paste0("uses_", kind, "_", lev)]]
+      x$core <- as.numeric(kind == "core")
+      x$log_later <- log(x$later_checkpoints) + log(x[[paste0(kind, "_", lev)]])
+      x
+    })
+    do.call(rbind, parts)
+  }
+  cored <- function(d, lev) {
+    if (!paste0("core_", lev) %in% names(d)) return(list(fit = structure(
+      list(msg = "core and periphery not measured"), class = "fit_error"), cp = FALSE, n = 0))
+    long <- core_long(d, lev)
+    if (is.null(long) || length(unique(long$core)) < 2 || sum(long$uses) == 0) return(list(fit = structure(
+      list(msg = "no core and periphery to compare"), class = "fit_error"), cp = FALSE, n = 0))
+    c(fit_cp(base(long, "uses", "core + "), long, nb), list(n = nrow(long)))
+  }
+  # H2 until 19 November 2026 (reported): the later intrusions bound to a value that stood by at
+  # the placement, on the number that stood by, at the class (its fields) and at the method.
+  drawn <- function(d, lev, term = paste0("bystanders_", lev), response = paste0("drawn_", lev)) {
     if (nrow(d) == 0 || length(unique(d[[term]])) < 2) return(list(fit = structure(
       list(msg = "the bystanders do not vary"), class = "fit_error"), cp = FALSE))
-    fit_cp(base(d, paste0("drawn_", lev), paste0(term, " + ")), d, nb)
+    fit_cp(base(d, response, paste0(term, " + ")), d, nb)
   }
   h2$log_by_class <- log1p(h2$bystanders_class)
   h2$log_by_method <- log1p(h2$bystanders_method)
@@ -359,12 +384,25 @@ if (!is.null(h2)) {
   res$H2 <- list(n = nrow(hm))
   for (lev in c("class", "method")) {
     term <- paste0("bystanders_", lev)
+    mk <- cored(hm, lev)
+    note(paste0("H2_", lev), mk)
+    res$H2[[lev]] <- c(irr(wald(mk$fit, "core")), list(records = mk$n))
+    res$reported[[paste0("H2_core_function_arm_", lev)]] <- irr(wald(cored(hf, lev)$fit, "core"))
     md <- drawn(hm, lev)
-    note(paste0("H2_", lev), md)
-    res$H2[[lev]] <- irr(wald(md$fit, term))
+    res$reported[[paste0("H2_bystanders_", lev)]] <- irr(wald(md$fit, term))
     # reported: per doubling-like step, log(1 + bystanders); and the function arm
     res$reported[[paste0("H2_log_", lev)]] <- wald(drawn(hm, lev, paste0("log_by_", lev))$fit, paste0("log_by_", lev))
     res$reported[[paste0("H2_function_arm_", lev)]] <- irr(wald(drawn(hf, lev)$fit, term))
+    # reported (PLAN.md 4.3b): with what the change introduced there counted beside what stood by.
+    # The later intrusions bound to either, on the number of both; a new method's own values are
+    # then data it holds for later code, and it is no longer a row that can only read nought.
+    left <- paste0("left_", lev)
+    if (left %in% names(hm)) {
+      res$reported[[paste0("H2_left_", lev)]] <-
+        irr(wald(drawn(hm, lev, left, paste0("drawn_", lev, "_left"))$fit, left))
+      res$reported[[paste0("H2_left_function_arm_", lev)]] <-
+        irr(wald(drawn(hf, lev, left, paste0("drawn_", lev, "_left"))$fit, left))
+    }
   }
   # H2 until 17 November 2026 (reported): the bindings and later intrusion, at the class and at the
   # method, every bound problem and host. The problem's own lines are for information.
@@ -403,6 +441,15 @@ if (!is.null(h2)) {
       ma <- fit_cp(base(h2, paste0("intrusion_", lev)), h2, nb)
       note(paste0("H4_intrusion_", lev), ma)
       res$H4[[paste0("intrusion_", lev)]] <- irr(wald(ma$fit, FARM))
+      # reported beside it: how much a core value is come back to, function arm against methods
+      # arm. The core's records of both arms (PLAN.md 4.4), uses per value; both arms solve the
+      # same problems, so a core that is only the problems' shared data would be used alike.
+      long <- if (paste0("core_", lev) %in% names(h2)) core_long(h2, lev) else NULL
+      long <- if (is.null(long)) NULL else long[long$core == 1, ]
+      res$reported[[paste0("core_reuse_", lev)]] <-
+        if (is.null(long) || !multi(as.character(long$arm)) || sum(long$uses) == 0)
+          list(error = "no core in both arms to compare") else
+          c(irr(wald(fit_cp(base(long, "uses"), long, nb)$fit, FARM)), list(records = nrow(long)))
     }
   }
   # any later change, bound or not (as first built), reported

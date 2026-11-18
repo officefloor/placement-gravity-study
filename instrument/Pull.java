@@ -95,7 +95,7 @@ import net.officefloor.sinewslim.javaparser.ParsedFile;
 public final class Pull {
 
 	/** Bump whenever a field's meaning changes. */
-	static final int VERSION = 10;
+	static final int VERSION = 11;
 
 	/** A removed position's text must be at least this long to mark an added one as moved. */
 	static final int MOVED_MIN_CHARS = 12;
@@ -241,13 +241,12 @@ public final class Pull {
 				if (b == null) {
 					continue;
 				}
-				int added = 0;
-				for (String f : t.fields) {
-					added += !b.fields.contains(f) ? 1 : 0;
-				}
+				// by name: these are the fields the change introduces to the class (PLAN.md 4.3b)
+				Set<String> added = new TreeSet<>(t.fields);
+				added.removeAll(b.fields);
 				out.add("{\"v\":" + VERSION + ",\"kind\":\"class\",\"unit\":" + q(unit) + ",\"path\":" + q(t.file)
 						+ ",\"type\":" + q(t.name) + ",\"held_before\":" + b.held() + ",\"held_after\":" + t.held()
-						+ ",\"fields_added\":" + added + "}");
+						+ ",\"fields_added\":" + added.size() + ",\"fields_added_names\":" + strs(added) + "}");
 			}
 			for (M b : before) {
 				if (!match.containsValue(b)) {
@@ -515,6 +514,11 @@ public final class Pull {
 			s.append(",\"moved_text\":").append(nMovedText);
 			s.append(",\"removed\":").append(removed);
 			s.append(",\"params\":").append(paramCount(m.signature));
+			// introduced (PLAN.md 4.3b): the parameters and locals the method has after the change that
+			// were not there before it. All of a new method's values are introduced.
+			Set<String> introduced = new TreeSet<>(ownVars);
+			introduced.removeAll(preAll);
+			s.append(",\"introduced_method\":").append(strs(introduced));
 
 			// runs of added logic: added positions that are neither moved nor organisation
 			int nOrganisation = 0;

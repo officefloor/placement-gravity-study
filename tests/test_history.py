@@ -110,3 +110,38 @@ def test_the_registry_declares_the_samples_and_their_analyses():
             "open-source-development"} <= names
     cmd = history.sample_command("open-source-agent", reg["samples"]["open-source-agent"])
     assert cmd[cmd.index("--min-agent-commits") + 1] == "30" and cmd[cmd.index("--seed") + 1] == "20261119"
+
+
+def test_repositories_are_dealt_to_workers_largest_first_and_in_turn():
+    rows = [{"full_name": f"o/r{i}", "nloc": str(n)} for i, n in enumerate([10, 900, 50, 700, 30, 20, 800])]
+    parts = history.shards(rows, 3)
+    assert [[r["nloc"] for r in p] for p in parts] == [["900", "50", "10"], ["800", "30"], ["700", "20"]]
+    assert history.shards(rows[:2], 8) == [[rows[1]], [rows[0]]]      # no empty worker
+
+
+def test_each_worker_gets_its_share_of_the_memory():
+    assert history.heap_mb(8, 14000) == 1225          # 70% of the machine, in eight parts
+    assert history.heap_mb(1, 14000) == 9800
+    assert history.heap_mb(64, 4000) == 512           # never below what the instrument starts with
+
+
+def test_what_is_pending_is_usable_java_not_excluded_and_not_yet_read(tmp_path, monkeypatch):
+    monkeypatch.setattr(history, "OUT", tmp_path / "out")
+    sample = tmp_path / "s.csv"
+    sample.write_text("full_name,status,language,nloc\no/a,usable,java,5\no/b,excluded,java,5\n"
+                      "o/c,usable,kotlin,5\no/d,usable,java,9\no/e,usable,java,1\n")
+    spec = {"csv": str(sample)}
+    assert [r["full_name"] for r in history.pending("s", spec, excluded={"o/e"})] == ["o/a", "o/d"]
+    done = tmp_path / "out" / "s" / "o__a"
+    done.mkdir(parents=True)
+    (done / "meta.json").write_text("{}")
+    assert [r["full_name"] for r in history.pending("s", spec)] == ["o/d", "o/e"]
+    assert len(history.pending("s", spec, force=True)) == 3
+
+
+def test_only_a_development_sample_may_cap_its_units():
+    reg = runs.load()
+    assert reg["samples"]["open-source-development-agent"]["max_units"] == 300
+    reg["samples"]["open-source-agent"]["max_units"] = 300
+    with pytest.raises(ValueError, match="only a development sample"):
+        runs.validate(reg)

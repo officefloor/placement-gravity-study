@@ -20,6 +20,7 @@ class Owners {
             throw new IllegalArgumentException(reason);
         }
         repo.check(name);
+        int checked = name.length();
         int extra = 2;
         return total + extra;
     }

@@ -12,12 +12,18 @@ is cohesive with that problem, and measures how that code was placed:
 - its **pull**: how much pre-existing host state it had to read or write. Pull separates a
   **forced** placement (gravity) from a **chosen** one.
 - its **bystanders**: what else was there with the data it needed. The data a problem needs is
-  the problem's; what surrounds that data, and grows, is the gravity (H1, H4), and what later code
-  is then bound to (H2).
+  the problem's; what surrounds that data, and grows, is the gravity (H1, H4). Later code is
+  expected to come for the few values earlier code was bound to, the place's core, and not for
+  the rest (H2).
+- what it **introduced**: the parameters and locals it adds to a method and the fields it adds
+  to a class. They were not there before, so they are neither needed nor bystanding for this
+  change; they are what it leaves for the next (reported, PLAN.md §4.3b).
 
 It then follows each problem forward, in the class and the method its code was placed in, to see
-whether the data that stood by there is what later changes are bound to when they come back. The primary data is the paired Spring and OfficeFloor change streams of the degradation
-harnesses, where one checkpoint is one problem.
+whether the data that stood by there is what later changes are bound to when they come back. The confirmatory data is the paired Spring and OfficeFloor change streams of the degradation
+harnesses, where one checkpoint is one problem. The ui runs (many endpoints, 250 checkpoints) are
+the primary test; the petclinic runs, which put every rule on one endpoint, are replications read
+first.
 
 Shape is read only where the problem is fixed. The measures of solution shape used by the earlier
 studies (long, complexity outlier, concentration) enter as competitors; not slimmable and junction
@@ -57,7 +63,7 @@ cloned into `~/placement-gravity-data/`. The streams are read at the commits `ru
 
 | Code | |
 |---|---|
-| `instrument/Pull.java` | The instrument: per addition, hosts, runs and their bindings (method and class), their bystanders (the pre-existing values visible where a run lands that it does not use, PLAN.md §4.3a), birth bindings, moved code; the amount; with `--shape`, every method of a tree as the earlier studies read it (SinewSlim's length and assessment, junction counts). |
+| `instrument/Pull.java` | The instrument: per addition, hosts, runs and their bindings (method and class), their bystanders (the pre-existing values visible where a run lands that it does not use, PLAN.md §4.3a), the values it introduces (§4.3b), birth bindings, moved code; the amount; with `--shape`, every method of a tree as the earlier studies read it (SinewSlim's length and assessment, junction counts). |
 | `refactor/` | RefactoringMiner 3.0.4 at each commit (`Refactorings.java`) and CodeTracker 2.6 histories (`Histories.java`), built by Maven. |
 | `placement_gravity/refactor.py` | RefactoringMiner's findings as the instrument's hints: renames, matches, moved code. |
 | `placement_gravity/crosscheck.py` | CodeTracker against the instrument's following of hosts. |

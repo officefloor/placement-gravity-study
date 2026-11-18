@@ -11,7 +11,7 @@
     "H1": false,
     "H4": false,
     "H2_class": true,
-    "H2_method": false,
+    "H2_method": true,
     "H4_intrusion_class": false,
     "H4_intrusion_method": true,
     "shape_joint": false
@@ -360,6 +360,21 @@
       "all": 350,
       "bound": 109
     },
+    "H2_core_function_arm_class": {
+      "error": "standard error not computed: core"
+    },
+    "H2_bystanders_class": {
+      "estimate": 0.0946431444800598,
+      "se": 0.0292104220260187,
+      "lower": 0.0373917693358477,
+      "upper": 0.151894519624272,
+      "level": 0.95,
+      "p_greater": 0.000597549691634284,
+      "p_less": 0.999402450308366,
+      "irr": 1.09926650580377,
+      "irr_lower": 1.03809963678837,
+      "irr_upper": 1.16403744684903
+    },
     "H2_log_class": {
       "estimate": 1.04218314577139,
       "se": 0.22915523819133,
@@ -381,11 +396,65 @@
       "irr_lower": 4.53279999013116e-99,
       "irr_upper": 1.44926924589198e+122
     },
+    "H2_left_class": {
+      "estimate": 0.0869001852695904,
+      "se": 0.0281133289178828,
+      "lower": 0.0317990731050117,
+      "upper": 0.142001297434169,
+      "level": 0.95,
+      "p_greater": 0.000997192894686873,
+      "p_less": 0.999002807105313,
+      "irr": 1.0907877975944,
+      "irr_lower": 1.03231006560956,
+      "irr_upper": 1.1525781439303
+    },
+    "H2_left_function_arm_class": {
+      "estimate": 1.88413013614518,
+      "se": 1.08856476187014,
+      "lower": -0.249417591959713,
+      "upper": 4.01767786425008,
+      "level": 0.95,
+      "p_greater": 0.0417402589410243,
+      "p_less": 0.958259741058976,
+      "irr": 6.58062770145435,
+      "irr_lower": 0.779254495019166,
+      "irr_upper": 55.5719103604058
+    },
+    "H2_core_function_arm_method": {
+      "estimate": 1.45306301297178,
+      "se": 1.11870882180314,
+      "lower": -0.739565986949604,
+      "upper": 3.64569201289316,
+      "level": 0.95,
+      "p_greater": 0.0969934011355662,
+      "p_less": 0.903006598864434,
+      "irr": 4.27619250903653,
+      "irr_lower": 0.477321034129734,
+      "irr_upper": 38.3092741925345
+    },
+    "H2_bystanders_method": {
+      "error": "standard error not computed: bystanders_method"
+    },
     "H2_log_method": {
       "error": "standard error not computed: log_by_method"
     },
     "H2_function_arm_method": {
       "error": "standard error not computed: bystanders_method"
+    },
+    "H2_left_method": {
+      "estimate": -0.0863500028486176,
+      "se": 0.117014837674756,
+      "lower": -0.31569487034794,
+      "upper": 0.142994864650704,
+      "level": 0.95,
+      "p_greater": 0.76972473569729,
+      "p_less": 0.23027526430271,
+      "irr": 0.917273126822354,
+      "irr_lower": 0.729281941766651,
+      "irr_upper": 1.1537238768757
+    },
+    "H2_left_function_arm_method": {
+      "error": "standard error not computed: left_method"
     },
     "bindings_intrusion_class": {
       "estimate": -0.116237404179681,
@@ -1276,19 +1345,30 @@
   "H2": {
     "n": 83,
     "class": {
-      "estimate": 0.0946431444800598,
-      "se": 0.0292104220260187,
-      "lower": 0.0373917693358477,
-      "upper": 0.151894519624272,
+      "estimate": 2.10870150076344,
+      "se": 0.188578386744603,
+      "lower": 1.73909465448136,
+      "upper": 2.47830834704553,
       "level": 0.95,
-      "p_greater": 0.000597549691634284,
-      "p_less": 0.999402450308366,
-      "irr": 1.09926650580377,
-      "irr_lower": 1.03809963678837,
-      "irr_upper": 1.16403744684903
+      "p_greater": 2.49488733110502e-29,
+      "p_less": 1,
+      "irr": 8.23753790028774,
+      "irr_lower": 5.69218769254684,
+      "irr_upper": 11.9210810190828,
+      "records": 113
     },
     "method": {
-      "error": "standard error not computed: bystanders_method"
+      "estimate": 3.00907551321051,
+      "se": 0.274216045137953,
+      "lower": 2.47162194075711,
+      "upper": 3.5465290856639,
+      "level": 0.95,
+      "p_greater": 2.56601241844689e-28,
+      "p_less": 1,
+      "irr": 20.268653158921,
+      "irr_lower": 11.8416377190617,
+      "irr_upper": 34.6926929047437,
+      "records": 130
     }
   },
   "H3": {

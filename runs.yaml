@@ -70,6 +70,8 @@ samples:
     role: development
     seed: 5
     tiers: [mid]
+    max_units: 300                   # the newest 300 units only: enough to try the steps on a
+                                     # repository of 23,000 commits, which whole takes most of a day
     target: 1
     min_functions: 50
     min_files_with_functions: 15
@@ -79,7 +81,7 @@ samples:
   open-source-human:                 # corpus B: the criteria of long-method-slim-study's sample
     role: secondary                  # (its docs/ANALYSIS_PLAN.md, section 3), a seed nobody has drawn
     seed: 20261118
-    target: 60
+    target: 300
     as_of: "2020-12-01"              # six months before the month Copilot's preview opened
     min_functions: 50
     min_files_with_functions: 15
@@ -87,19 +89,19 @@ samples:
   open-source-agent:                 # corpus C
     role: secondary
     seed: 20261119                   # not 3: seed 3 drew the sample SinewSlim's search was checked on
-    target: 30
+    target: 100
     min_functions: 50
     min_files_with_functions: 15
     min_agent_commits: 30
-    max_clones: 1500
+    max_clones: 6000
     exclude_owners: [officefloor, sagenschneider]
 
 # Each analysis is read on its own; analyses are never pooled. role: primary | secondary |
 # development (the pilot's chain, readable before registration and never analysed for a verdict).
 analyses:
-  - name: petclinic-primary
-    corpus: petclinic
-    role: primary
+  - name: petclinic-just-solve-202608100006   # until 18 November 2026 "petclinic-primary": the
+    corpus: petclinic                         # ui runs are the primary test (PLAN.md 3.1)
+    role: secondary
     stream: petclinic
     exclude_chains: [9]          # the pilot's development chain
     sources:
@@ -131,7 +133,7 @@ analyses:
     corpus: petclinic
     role: secondary
     stream: petclinic
-    review_against: petclinic-primary   # the review reading (PLAN.md 5): set against just-solve
+    review_against: petclinic-just-solve-202608100006   # the review reading (PLAN.md 5): set against just-solve
     sources:
       - {arm: spring, repo: petclinic-spring, run: blind-202609290948, strategy: reviewed}
       - {arm: officefloor, repo: petclinic-officefloor, run: blind-202609290948, strategy: reviewed}

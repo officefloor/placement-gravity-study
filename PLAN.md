@@ -51,13 +51,19 @@ This study turns the question round:
   needs. Those are its **bystanders** (§4.3a). A scope that keeps what each problem leaves behind
   grows heavier, and the next problem that needs any one of its values lands beside all of them.
   That growth is the gravity.
+- **Core and periphery** (stated 19 November 2026, §9). The last sentence was the reading until
+  then. On the development chain the data that gathers is mostly not what later code comes for
+  (§6): later code comes for a few values that code there was already bound to, the place's
+  **core**, and the rest, the **periphery**, is what it then has to sit beside. So the pull is
+  the core's (H2), the growth is the periphery's and is its cost (H1), and a form that hands each
+  function its own data forms no core (H4).
 
 That shared data gathers faster than code is known in aggregate: across versions of the Linux
 kernel, common coupling to global data grew far faster than the code did (Schach et al. 2002; Yu
 et al. 2004), and files with more references to global data changed more (Selby et al. 2007).
 Those are counts over a whole system or file. This study reads the same thing where one problem's
 code lands: what was already visible there, split into what the code used and what it did not
-(§4.3a), and whether what stood by is what later code is bound to (H2).
+(§4.3a), and which of the two later code is then bound to (H2).
 
 Following problems over time has precedents. Passos et al. (2015; 2018) follow each Linux
 feature's scattering over eight years. Bouwers, van Deursen and Visser (2014) classify each
@@ -72,8 +78,8 @@ dragging the rest along (Parnas 1972). Which is better depends on how the proble
 together, and that is only known afterwards. What can be measured at the time of each change is
 whether the placement was **chosen** or **forced**. The claim under test is that forced
 placement, not concentration as such, is what does the harm. As the hypotheses now stand (§2, §9),
-the part of that claim tested is the mechanism: a place gathers data (H1), and the data it has
-gathered is what later code is bound to (H2). The study measures what is drawn in, not the harm
+the part of that claim tested is the mechanism: a place gathers data (H1), and later code comes
+there for the few values earlier code was bound to, its core, not for the rest that gathered (H2). The study measures what is drawn in, not the harm
 done.
 
 **The problem has to be held fixed.** The earlier studies, like most of the code-smell literature,
@@ -128,15 +134,19 @@ harness's to do, not this plan's.
   ones, how far is it dispersed, and how large were the hosts it landed in?
 - **Q2 (gravity).** How strongly does each addition depend on state that already existed in its
   host (its **pull**, §4)? Does pull grow as hosts grow and the system ages?
-- **Q3 (consequence).** Where a problem's code was bound to a place, is the data that lay there
-  what later changes to *other* problems are bound to when they arrive? (As first asked: are forced
+- **Q3 (consequence).** Where a problem's code was bound to a place, which of the data there are
+  later changes to *other* problems bound to when they arrive: the values it was bound to, or the
+  rest that lay there? (As first asked: are forced
   placements followed by more tangling than chosen placements of the same size? Reported.)
 - **Q4 (form).** For the same stream of problems, is pull lower and flatter under function
   injection than under methods, while the amount stays about the same?
 
 Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 November 2026).
 
-- **H1, gravity compounds** (restated 17 November 2026, twice, §9). In the methods arm, the
+- **H1, the periphery grows** (restated 17 November 2026, twice; renamed 19 November 2026, §9).
+  Until then it was called *gravity compounds*: its test is unchanged, its reading is not. What
+  rises is mostly periphery (H2): not what draws code to a place, but what code drawn there has
+  to sit beside, the cost of the core. In the methods arm, the
   bystanders of an addition (§4.3a) rise with the checkpoint index (positive slope, 95% interval
   above 0). They rise over all additions, and **within a place**: among the additions that go into
   one class, the later ones find more of the class's data standing by, and likewise within one
@@ -145,13 +155,23 @@ Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 Novem
     index. That is kept and reported beside it. It was replaced because the bindings an addition has
     are largely the data its problem needs, and because nearly every Spring run into an existing
     method already has one (the ceiling the pilot found).
-- **H2, data draws code in** (restated 17 November 2026, §9). In the methods arm, where an
-  addition was bound to a **class** or a **method**: the more data stood by there when it was
-  placed, the more later code for other problems arrives there **bound to that data** (§4.4).
-  Holding the problem fixed (its checkpoint, the addition's size and the earlier rules it declares
-  it crosses) and the host's size, the rate ratio per value that stood by is above 1, at the class
-  and at the method. With H1 this is the loop: a place gathers data, and the data it has gathered
-  is what the next code is bound to.
+- **H2, a core draws code in** (restated 19 November 2026, §9). In the methods arm, where an
+  addition was bound to a **class** or a **method**, the data of that place is of two kinds
+  (§4.4): its **core**, the values the addition was bound to, and its **periphery**, the rest the
+  place then held: what stood by (§4.3a) and what the addition introduced (§4.3b). Later code for
+  other problems comes there **for the core**. Holding the problem fixed (its checkpoint, the
+  addition's size and the earlier rules it declares it crosses) and the host's size, later
+  intrusions use a core value more than they use a periphery value: the rate ratio per value is
+  above 1, at the class and at the method. With H1: a place gathers data, but what gathers is
+  mostly periphery; what the next code is bound to is the few values code there was already
+  bound to.
+  - *As it stood from 17 to 19 November 2026* (data draws code in): the more data stood by, the
+    more later code arrives bound to that data, as a rate ratio per value that stood by above 1.
+    That is kept and reported beside it. It was replaced because it says uptake is in proportion
+    to the amount of data, and its own failure case is later code coming for the same few values
+    however many more had gathered. On the development chain that is what was seen (§6): most
+    bound uses went to a few values that were there from the start, and what changes introduced
+    was hardly ever used again.
   - *As it stood until then* (forcing does the harm): the more bindings an addition has, the more
     cross-problem intrusion follows where it was placed. That is kept and reported beside it. It
     was replaced because it is not the number of bindings a problem has that draws later code, but the
@@ -182,7 +202,9 @@ Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 Novem
   - *H2 and H3 were one hypothesis* (H2a and H2b) until 17 November 2026, supported only if both
     held (§9). They are now decided apart: one is a difference to be shown, the other an
     equivalence, and the second should not decide the first.
-- **H4, function injection keeps the space open** (restated 17 November 2026, §9). On the same
+- **H4, function injection forms no core** (restated 17 November 2026; renamed 19 November 2026,
+  §9, from *keeps the space open*; its test is unchanged). Each function is handed its own data,
+  so no place holds values that every later problem has to come to. On the same
   stream, the function arm's bystanders are fewer, and their slope on the checkpoint index is
   flatter, than the methods arm's; and its bound code is **come back to less**, at the class and at
   the method (§4.4). (*As first registered:* its bindings are lower and their slope on host size
@@ -190,6 +212,12 @@ Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 Novem
   (positions, tokens) of the function arm lies within 0.8 to 1.25 times the methods arm's, the
   band the flow-injection draft took from the conservation study's spread. The coupling that
   leaves the scopes appears as wiring (§4.5) and is reported, not hidden.
+  - *Reported beside it* (19 November 2026): how much a core value is come back to, function arm
+    against methods arm (§5). It is where the arms differ most on the development chain (§6), and
+    both arms solve the same problems, so a core that was only the problems' shared data would be
+    used alike in both. It is not a condition of H4: few of the function arm's rows have a core
+    at the class (one on the development chain), so as a condition it would often not be
+    estimable.
 - **Q1 is descriptive.** Its expected baseline (Steidl and Deissenboeck 2015) is that most
   growth is new methods. So the share of additions that land in an existing host is reported as
   found, with no direction predicted.
@@ -208,10 +236,10 @@ Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 Novem
 
 - H1: no slope, or a negative one, over all additions or within a class or a method. The
   surroundings of a problem's data would then be a constant cost of the form, not something that
-  grows: no gravity. A rise over all additions with none within a place would mean that code moves
+  grows. A rise over all additions with none within a place would mean that code moves
   to fuller places, not that places fill.
-- H2: later code no more bound to what stood by where more stood by, at the class or at the method.
-  The data a place gathers would then be clutter, not pull.
+- H2: later code using a periphery value as much as a core value, at the class or at the method.
+  The data of a place would then be taken up alike, and the place would have no core.
 - H3: any shape measure followed by more intrusion, beyond the margin, with the problem, the
   bindings and the bystanders held fixed. That would mean that shape draws code in by itself. A
   shape measure followed by less is reported, and does not count against.
@@ -224,7 +252,27 @@ Every one of these outcomes is reported whichever way it points.
 
 ## 3. Data
 
-### 3.1 Corpus A: the paired streams (primary, confirmatory)
+### 3.1 Corpus A: the paired streams (confirmatory)
+
+**The ui runs are the primary test** (decided by the author, 18 November 2026, §9). The verdicts
+on H1 to H4 that the study reports as its test are those of the ui analysis (§3.1a): Spring
+against OfficeFloor over its Runs A and B. The petclinic runs are **secondary**: read first,
+because they exist, each as a replication with its own verdicts, and none of them the study's
+test.
+
+- *Why.* The petclinic stream sends every rule through one endpoint, `POST /api/owners`. So one
+  handler method and one controller class receive nearly everything, in every chain: the method
+  level of H2 rests on a single method per chain, and the class level cannot tell classes apart
+  (§6). That is a property of the stream, and it makes petclinic a weak test of exactly the
+  levels the hypotheses are about. The ui stream has many endpoints and 250 checkpoints.
+- *What had been seen.* This was decided after the development chain of petclinic showed H2 at
+  the method resting on one method, and H3's class measures untestable there (§6). No ui run's
+  backend Java had been read. So the choice of the primary corpus was made knowing how the
+  weaker one looks, and not knowing how the primary one does.
+- *What it costs.* The primary test waits on Run B (§3.1a). With Run A alone the arm cannot be
+  told from the front end, so nothing confirmatory can be read until both runs are complete.
+- *As first registered:* the petclinic run `blind-202608100006/just-solve` was the primary, and
+  the ui runs a second corpus read after it.
 
 The petclinic degradation harness (`spring-petclinic-rest-long-degradation-test`) grows one
 application through a fixed stream of plain-English change requests, under a Spring
@@ -234,7 +282,7 @@ runs are published as `evolve/<run>/<strategy>/<arm>/chain<n>` branches of
 `ui-long-degradation-test` runs (250 checkpoints; Spring and OfficeFloor backends) are added
 once they exist.
 
-Why this corpus comes first:
+Why the paired streams are the confirmatory corpus:
 
 - **One checkpoint is one new problem.** The cohesion assumption holds by construction, and the
   problem of tangled commits (Herzig and Zeller 2013) does not arise. The exception is
@@ -248,10 +296,11 @@ Why this corpus comes first:
 
 **Runs read** (decided 16 November 2026):
 
-- **Primary:** `blind-202608100006/just-solve`, both arms, chains 1 to 8 and 10. Chain 9 is the
-  pilot's development data and is excluded.
-- **Secondary, each read on its own as a replication, never pooled with the primary or with each
-  other:** the other strategies, `blind-202609010045/impact_gated`,
+- **The first of the petclinic runs** (secondary since 18 November 2026; until then the
+  primary): `blind-202608100006/just-solve`, both arms, chains 1 to 8 and 10. Chain 9 is the
+  pilot's development data and is excluded. The review reading (§5) is still set against it.
+- **The other petclinic runs, each read on its own as a replication, never pooled with it or with
+  each other:** the other strategies, `blind-202609010045/impact_gated`,
   `blind-202609031757/impact_gated`, `blind-202609160027/cohesion-prompt` and
   `blind-202609290948/reviewed`, and the earlier just-solve runs, `202608011310`,
   `full-202608102319` and `202608081920`. A different instruction to the agent is a different
@@ -263,7 +312,7 @@ Why this corpus comes first:
 Each is analysed on its own and the two are compared by direction and interval, so that no
 estimate mixes solutions to different problems.
 
-### 3.1a Corpus A2: the ui-long-degradation runs (after the petclinic corpus)
+### 3.1a Corpus A2: the ui-long-degradation runs (the primary test)
 
 The ui-long-degradation harness grows OfficeHQ through 250 checkpoints, ten chains per stack, on
 one stream, agent and harness commit across its runs. Its plan freezes these at a tagged commit so
@@ -294,7 +343,8 @@ end's production Java of the four stacks of its Runs A and B, a front end × bac
   which gives the declared crossings of §4.4. They are read from the stream's
   `acceptance/DENSITY.md` at the tag `run-a` (§4.4, *As built*).
 
-**Order.** The petclinic corpus (§3.1) is analysed first; the ui runs follow once Run B is complete.
+**Order.** The petclinic corpus (§3.1), secondary, is analysed first, because its runs exist; the
+ui runs, the primary test, follow once Run B is complete.
 
 **Condition.** `just-solve` only.
 
@@ -370,8 +420,11 @@ repository of corpus B or C is read:
 - **The sample of corpus B** follows the criteria of `long-method-slim-study`'s sample (its
   `docs/ANALYSIS_PLAN.md`, §3; looked at on 18 November 2026 at the author's direction), which
   were set for the same purpose, code that people wrote:
-  - **As of 1 December 2020** (`--as-of`): six months before the month GitHub Copilot's preview
-    opened (29 June 2021). Only repositories created before that date are in the frame; each is
+  - **As of 1 December 2020** (`--as-of`; confirmed by the author, 18 November 2026: the same
+    date as that study, for its reason). GitHub Copilot's technical preview opened on 29 June
+    2021; 1 June 2021 is before it, and this date is six months before that again, so that no code
+    in the sample was written with AI code generation. Only repositories created before that date
+    are in the frame; each is
     pinned to its newest commit before it and judged by the criteria there. So every unit is
     from before the date, and no date is applied to the units.
   - **Frame:** Java, the three tiers of attention (over 5,000 stars; 1,000 to 5,000; 200 to
@@ -382,9 +435,11 @@ repository of corpus B or C is read:
   - **Seed `20261118`**, one nobody has drawn (that study's own sample, seed `20261101`, has been
     read for its measures; seed 2 and seed 3 drew samples other studies have read). The first
     sample drawn with it is used.
-  - **Size: 60 usable repositories**, 20 a tier. That study drew 580, but it parsed each
-    repository once; this one reads every commit of each, and the largest development repository
-    took most of an hour for 2,000 commits. **To be confirmed by the author.**
+  - **Size: 300 usable repositories**, 100 a tier (decided by the author, 18 November 2026; 60
+    was first drafted). The repository is what the intervals are taken over, so their width is set
+    by this number. That study drew 580, but it parsed each repository once; this one reads every
+    commit of each (the development repositories took 0.3 to 1.3 seconds a unit), which is why the
+    reading is done several repositories at a time (below).
   - The first draft's sample (seed 2) had been drawn without a date: its pins are recent, its
     frame holds repositories created since, and its criteria describe today's code.
 - **A unit** is a commit that is not a merge and changes between 1 and 200 lines of production
@@ -412,6 +467,15 @@ repository of corpus B or C is read:
 - **The models** are those of §5 with the repository as the chain, no intercept for the unit (a
   unit is not a problem every repository solves), and the index a unit's place in its
   repository's units, from 0 to 1.
+- **Read several at a time** (`history.measure_sample`, 18 November 2026). The repositories of a
+  sample are dealt to eight workers, the largest first and in turn, and each worker's Java
+  processes are held to an equal part of 70% of the machine's memory. A repository that fails in
+  that pass, for want of memory or for any other reason, is read again afterwards alone, with the
+  memory undivided. One that still fails is listed (`failed.txt`), counted in the report and not
+  read; it is not replaced. A repository's tables are whole or absent, so an interrupted run is
+  resumed by running it again. The order of reading does not enter any measure.
+- **A development sample may cap its units** (`max_units` in `runs.yaml`; refused for any other
+  sample): the agent development repository is read on its newest 300.
 - **Two development samples** (seed 4, people's code as of 29 June 2021; seed 5, with declared
   agent commits) are read to build these steps, as chain 9 is for corpus A. Their repositories are
   left out of corpora B and C.
@@ -438,11 +502,11 @@ it wrote.
   `20261119`** (first drafted as seed 3, which had drawn the sample SinewSlim's search was checked
   on). The criterion was added to the sampler for this study and released in **0.4.0** (18
   November 2026), the release pinned here (`setup.sh`): the samples are drawn, and declared agent
-  commits read, with it. Target 30 repositories, with `--max-clones 1500`: the development draw
-  found one usable repository in 39 of the mid tier, so 300, as first drafted, would be expected
-  to yield about 8. If fewer than 10 repositories are usable when the draw stops, the corpus is
-  reported as too small and not read, rather than widened by hand. **The target and the number
-  of draws are to be confirmed by the author.** The derivation reports every
+  commits read, with it. **Target 100 repositories, with `--max-clones 6000`** (decided by the
+  author, 18 November 2026; 30 and 300 were first drafted): the development draw found one usable
+  repository in 39 of the mid tier, so the corpus is bounded by how many such repositories there
+  are, not by the cost of reading them. If fewer than 10 repositories are usable when the draw
+  stops, the corpus is reported as too small and not read, rather than widened by hand. The derivation reports every
   repository drawn, kept and left out.
 - **Two comparisons**, both reported with a stated direction and neither confirmatory:
   - *Within a repository:* declared agent commits against its other commits after 29 June 2021.
@@ -618,7 +682,8 @@ its class's fields.
 **Two links, reported** (not confirmatory):
 
 - **Accretion:** per addition and arm, the fields it adds to classes that already existed. This is
-  the mass an addition leaves behind.
+  the mass an addition leaves behind. Since 19 November 2026 it is the class's half of what a
+  change **introduces** (§4.3b); the method's half is the parameters and locals it adds.
 - **Capture:** for the same problem, is a chain whose heaviest class holds more more likely to
   place the addition in an existing host? Per addition, the share of its positions landing in
   existing hosts, on the fields (of all three kinds) of the chain's heaviest class at *k* − 1, with
@@ -644,6 +709,60 @@ check, `LITERATURE.md` §10):
   there, and what later additions then use is H2's outcome. A class can have many bystanders for
   every addition and yet a low LCOM*, if its methods share a few fields among many; and H3 is
   read with the bystanders in the model, so LCOM* is asked what it adds to them.
+
+### 4.3b Introduced (reported), the third kind of value
+
+Added 19 November 2026 (§9; decided by the author). A value at the place a change lands in is one
+of three kinds:
+
+- **Needed:** it was there before the change, and the change uses it. This is what binds (§4.3).
+- **Bystanding:** it was there before the change, visible, and the change does not use it (§4.3a).
+- **Introduced:** it was not there before. The change adds it.
+
+**What is introduced.**
+
+- **At the method:** the parameters and locals the method has after the change that it did not
+  have before it. Every value of a new method is introduced.
+- **At the class:** the fields (state, injected dependencies and constants; not utilities) the
+  checkpoint adds to the class. This is accretion (§4.3a), now by name. As there, it is read on
+  classes that existed: code in a new class is never bound, so a new class's fields do not enter
+  the rows H2 is read on.
+
+**Why it is counted.** A new method has no values from before, so nothing stands by in it, and by
+the definition of §4.4 nothing can later be drawn in by what stood by: at the method its row reads
+nought and nought, whatever happens to it afterwards. But the method's parameters bring data onto
+the control flow, the strongest grade of pull (§4.3), and its locals hold what it worked out. That
+is mass the change leaves in the place. By the rule of §4.5 it is mass and not yet pull: it pulls
+when a later change has to be placed with it. From the second arrival on that is already read,
+because what one change introduced stands by for the next change placed there. What was not read
+is the first return, and how much each change leaves.
+
+**What it is not.** An introduced value is not a bystander of the change that introduces it: that
+change normally uses it. And a parameter or local is visible only in its own method, public or
+not, so it does not stand by for code in the class's other methods. Fields are what stand by
+across a class.
+
+**Reported, and no part of a hypothesis:**
+
+- per addition and arm, the method values introduced, beside the fields left behind (§4.3a);
+- per bound problem and host, how many values were introduced at the class and at the method, and
+  how many of the later intrusions there are bound to one of them;
+- **H2 read again on what the change left in the place**: what stood by and what was introduced,
+  together. The outcome is the later intrusions bound to either; the predictor is the number of
+  both; the model is H2's (§5). A new method is then a row with data in it.
+
+When this was added H2's predictor was what stood by, and the reading above was its wider form.
+The wider count is closer to "how much data the place holds", which on the development chain
+goes with the place's size (§6). **Later the same day H2 was restated** (§2, §4.4): what a change
+introduces is now, with what stood by, the periphery of H2.
+
+**As built** (`Pull.java` version 11, `tables.host_rows`, `tables.outcome_rows`,
+`tests/test_bystanders.py`, `tests/test_stream.py`, 19 November 2026): values are matched by name.
+A method's introduced values are those it has after the change less its pre-existing ones as
+§4.3a reads them, so a local whose declaration line the change edits counts as introduced, as it
+does not count as pre-existing there. A field renamed by the change counts as introduced, as it
+always has in accretion. A later intrusion is bound to an introduced value when its own bound code
+in that method, or that class, uses it.
 
 ### 4.4 Consequence (Q3)
 
@@ -736,8 +855,7 @@ accessor, binds nothing: it is the problem's data growing, the same in both arms
   is removed; which checkpoints are bound there is the instrument's reading.
 - **Own lines:** as above; reported for information, and not part of any hypothesis.
 - At each level the same three-way split applies: declared, crossed, or intrusion.
-- **H2** is read at the class and at the method, and needs both (below, *Drawn in by what stood
-  by*). **H3** is read at the method, since S1 to S4 are measures of the method; the same block at
+- **H2** is read at the class and at the method, and needs both (below, *Core and periphery*). **H3** is read at the method, since S1 to S4 are measures of the method; the same block at
   the class is reported.
 - **H4's condition:** for the same problems, the function arm's bound code is come back to less than
   the methods arm's, at the class and at the method.
@@ -745,8 +863,34 @@ accessor, binds nothing: it is the problem's data growing, the same in both arms
 - Problems placed in one class or method share its later changes, so their counts are not
   independent of each other. The checkpoint's and the chain's intercepts do not remove that (§7).
 
-**Drawn in by what stood by (H2)** (decided by the author, 17 November 2026, §9). H2 is not about
-how many bindings a problem has. It is about the data that lay where the problem's code was put, and
+**Core and periphery (H2)** (decided by the author, 19 November 2026, §9). The author's picture:
+a place has a few key values that everything hangs off, and many more that pass through it and
+are not come back to; of those, one or two become key and most do not. The author called them
+sinews and veins. This plan says **core** and **periphery**, because *sinew* already names the
+measures of §4.7. For a problem *p* and a host its bound code went into, at each level:
+
+- **The core:** the pre-existing values *p*'s code there was bound to. At the method, the
+  parameters and locals it used; at the class, the fields it used. (A class's other methods bind
+  code too, §4.3, but they are not values and are not counted here.)
+- **The periphery:** the rest of the data the place held once *p*'s code was in it: what stood by
+  (§4.3a) and what *p* introduced (§4.3b).
+- **A use:** a later intrusion, as defined above (bound there; neither declared nor crossing),
+  whose code in that method, or that class, uses one of those values. Each value used counts, so
+  an intrusion that uses two core values is two uses of the core.
+- **The outcome of H2** is the uses per value: of the core, and of the periphery. Its test is
+  their ratio (§5).
+- **A kind with no values gives no record.** A new method had nothing to be bound to, so it has
+  no core at the method and is read there on its periphery only; a method whose added code used
+  everything visible and introduced nothing has no periphery. Neither can read nought by
+  definition, which the form of 17 November could (§7).
+- **The core is relative to the problem.** A value is core for the problems bound to it. That
+  one value is core for many problems is what H2 finds, if it holds; it is not assumed.
+- **Reported beside it** (§5): how the bound uses of a place's values are spread over them; how
+  much goes to values that were there before the first checkpoint; and how many of the values
+  the changes introduced are ever used by later bound code.
+
+**Drawn in by what stood by** (H2 from 17 to 19 November 2026; reported. Decided by the author,
+17 November 2026, §9). That form of H2 is not about how many bindings a problem has. It is about the data that lay where the problem's code was put, and
 whether that data is what later code is bound to. For a problem *p* and a host its bound code went
 into:
 
@@ -758,10 +902,14 @@ into:
   crossing), whose code in that class, or that method, **uses** one of the values that stood by for
   *p*. A value added after *p* was placed did not stand by for *p*; a value *p* itself used did not
   stand by.
-- **The outcome of H2** is the number of such later intrusions, at the class and at the method; its
+- **Its outcome** is the number of such later intrusions, at the class and at the method; its
   predictor is the number of values that stood by at that level.
 - **Reported beside it:** per arm, how many of the later intrusions are bound to something that
   stood by, and the mean number that stood by.
+- **Reported beside it, with what was introduced** (19 November 2026, §4.3b): the same outcome and
+  predictor widened to what the change left in the place, what stood by and what it introduced
+  there. A new method has nothing standing by, so under H2 as it is its row at the method can
+  only read nought; under this reading its own parameters and locals count.
 - **This is opportunity, and is meant to be.** A place where nothing stood by cannot draw anything
   by what stood by, so some rise is given by construction. The hypothesis is the mechanism: that
   data left in a place is taken up by the code that comes next, in proportion to how much is there,
@@ -943,18 +1091,30 @@ on the place an addition lands in, as it stood at *k* − 1, with the harness's 
     and H1 as first registered, log(1 + bindings) on
     log(host positions) and the checkpoint index, on runs into existing methods.
 - **The base model of H2 and H3:** a negative binomial model, per problem and host whose code was
-  bound there (§4.4), of later intrusion (H3, H4) or of the later intrusions bound to what stood by
-  (H2). It holds the problem fixed: the checkpoint's intercept, the addition's size, its declared
+  bound there (§4.4), of later intrusion (H3, H4), of the later intrusions' uses of the core and
+  of the periphery (H2), or of the later intrusions bound to what stood by (H2 as it stood). It holds the problem fixed: the checkpoint's intercept, the addition's size, its declared
   crossings, host size, whether the host is new, and act. A new host has almost no bindings and a
   different later life from an existing one (on the development chain, Spring's new hosts averaged
   0.31 bindings and existing ones 1.81), so without the new-host term that contrast alone could carry
   a difference. Host size also stands for the plain fact that a longer method has more values in it.
-- **H2** (restated 17 November 2026, §9): in the methods arm, the number of values that stood by
-  (§4.4) added to the base model, on the later intrusions bound to what stood by: the class's fields
-  at the **class**, the method's values at the **method**. It is supported when the incidence rate
-  ratio per value that stood by has a 95% interval above 1 at both levels.
-  - **Reported beside it:** the same on log(1 + the number that stood by); the same in the function
-    arm; and H2 as it stood, the bindings added to the base model on later intrusion, at the class and
+- **H2** (restated 19 November 2026, §9): in the methods arm, at the **class** (its fields) and at
+  the **method** (its values), each bound problem and host gives up to two records (§4.4): one
+  for its core and one for its periphery, where it has at least one value of that kind. The
+  outcome is the later intrusions' uses of the values of that kind; the offset is the log of the
+  later checkpoints plus the log of the number of values of that kind, so the model is of uses
+  per value; the term is whether the record is the core's, added to the base model. It is
+  supported when the incidence rate ratio of the core to the periphery has a 95% interval above 1
+  at both levels.
+  - **Reported beside it:** the same ratio in the function arm, where each function is handed its
+    own data and little core is expected to form; and per arm, pooled over places, the share of
+    bound uses that go to each chain's three most used values, the share that go to values no
+    checkpoint introduced, and the share of introduced values that later bound code uses.
+  - **Reported, H2 as it stood from 17 to 19 November 2026:** the number of values that stood by
+    (§4.4) added to the base model, on the later intrusions bound to what stood by, as a rate
+    ratio per value that stood by, at the class and at the method. With it: the same on
+    log(1 + the number that stood by); the same in the function
+    arm; the same with what the change introduced counted beside what stood by (§4.3b: the later
+    intrusions bound to either, per value of both, in each arm); and H2 as it stood, the bindings added to the base model on later intrusion, at the class and
     the method, with its own readings (on the problem's own lines, for information; on existing
     hosts only; with bindings to injected dependencies left out).
 - **H3** (its measures and levels set 18 November 2026, §9): six measures, each fitted **alone**,
@@ -1038,6 +1198,10 @@ on the place an addition lands in, as it stood at *k* − 1, with the harness's 
   - **Come back to less** (17 November 2026, §4.4): the arm term of the base model of H2 and H3,
     without the bindings (the arm itself changes them), on intrusion at the class and at the method.
     The function arm's rate ratio has to have a 95% interval below 1 at both levels.
+  - **Reported, how much a core value is come back to** (19 November 2026): the core's records of
+    H2 (§4.4), both arms, in the base model with the arm term, at the class and at the method; the
+    function arm's rate ratio per core value, with its interval. With it, per arm, the uses of
+    core and of periphery values per 100 values and later checkpoints. Predicted below 1.
   - **Reported:** reopening per checkpoint (§4.4), a Poisson mixed model on the arm, for the
     classes and for the classes with the wiring files.
   - **Reported beside it:** H4 as first registered, on the bindings: the arm term and its interaction
@@ -1073,7 +1237,7 @@ on the place an addition lands in, as it stood at *k* − 1, with the harness's 
   - Both are observational: a chain is not assigned its early placements. They show whether the
     path exists, not that the early placement caused the later one.
 - **Review** (reported with a stated direction, not confirmatory; added 16 November 2026, §9). The
-  `reviewed` run (`blind-202609290948`) is set against the primary just-solve run, per arm. This is
+  `reviewed` run (`blind-202609290948`) is set against the petclinic just-solve run `blind-202608100006`, per arm. This is
   the one reading that sets two conditions side by side; neither run's hypothesis tests are pooled.
   - Per checkpoint *k*: *T* is the mean bindings per run of the just-solve chains; *D* is the absolute
     difference between the two conditions in the share of the addition's positions that land in
@@ -1139,8 +1303,8 @@ on the place an addition lands in, as it stood at *k* − 1, with the harness's 
 `placement_gravity/verdict.py`, 16 November 2026; R chosen by the author for glmmTMB's negative
 binomial mixed model). These details are fixed with the code before any run is read:
 
-- **Each analysis is read on its own** (`runs.yaml`): the petclinic primary, each petclinic
-  secondary, and the ui primary. An analysis with fewer than 6 chains in an arm is descriptive only.
+- **Each analysis is read on its own** (`runs.yaml`): the ui primary, which is the study's test,
+  and each petclinic analysis, a replication. An analysis with fewer than 6 chains in an arm is descriptive only.
 - **H1 and H4** are fitted on runs of added logic into **existing** methods: a new method has no
   prior size, so including new methods would make "more bindings in bigger hosts" true by
   construction. Gaussian mixed models of log(1 + bindings) on log(host positions) and the checkpoint
@@ -1197,7 +1361,22 @@ binomial mixed model). These details are fixed with the code before any run is r
   (`verdict.py`: H1 on its three slopes, H2 on the bystanders' rate ratio at both levels).
   - *H1 within a place* has the same bootstrap as H1 (chains resampled, 1,000 refits); a place is a
     class, or a method, of one chain.
-  - *H2* is refused as not estimable at a level where the number that stood by does not vary.
+  - *H2 as it then stood* is refused as not estimable at a level where the number that stood by
+    does not vary.
+- **H2 as restated on 19 November 2026** is built: the core and the periphery of each bound row
+  and the later intrusions' uses of each, value by value (`tables.outcome_rows`,
+  `tests/test_stream.py`); the two records per row and the model (`analysis/analyse.R`, whose
+  self-test simulates a core used three times as much per value and recovers it); the spread of
+  bound uses over values (`readings.core_summary`). The verdict's rule is unchanged: the ratio's
+  interval above 1 at both levels (`verdict.py`). A level with no record of one kind, or no use
+  at all, is reported as not estimable. The two records of one row share its later arrivals, and
+  the model carries no term for the row (§7).
+- **Introduced** (§4.3b, 19 November 2026) is built: the instrument names the values a change adds
+  to a method and the fields it adds to a class (`Pull.java` version 11); each host and outcome
+  row carries them, with the later intrusions bound to one (`tables.py`); `h2.csv` carries the
+  counts (`prepare.py`); the reading of H2 on what stood by and what was introduced is in
+  `analysis/analyse.R` (`H2_left_class`, `H2_left_method`; its self-test simulates and recovers
+  it). It enters no verdict.
 
 ## 6. What was known when this was written
 
@@ -1421,6 +1600,68 @@ binomial mixed model). These details are fixed with the code before any run is r
   is of different repositories of very different length, and is not read. **Decided after this
   was seen:** every non-merge commit is a unit (the first-parent line was mostly merges), and, by
   the author, no cap.
+- **The development repositories again, with every non-merge commit a unit** (18 November 2026;
+  the report regenerated; descriptive only). The two of people's code gave 227 and 422 units
+  (84 and 86 on the first-parent line). The agent repository has 7,794 units; read whole it was
+  on course for half a day, nearly all of it RefactoringMiner at about five seconds a commit, so
+  it was stopped and a development sample was allowed a cap: its newest 300 units, read in 27
+  minutes. Seen on the two repositories of people's code: H1's slopes 0.51, 0.99 within a class
+  and 0.39 within a method; H2 1.06 [1.05, 1.07] at the class, and at the method no standard
+  error this time; cognitive complexity 1.10 [0.98, 1.23] and the class's Gini 1.09 [1.03, 1.15],
+  both now below the margin, where the first-parent pass had them reaching above it. So on three
+  repositories these readings move with which commits are read, and nothing is to be taken from
+  them but that the steps run. The reading eight at a time, and the pass alone after a failure,
+  were tried on the same repositories (the workers starved of memory: both failed, both were then
+  read alone, with the same units).
+- **Nothing standing by at the method, on the development chain** (19 November 2026; looked at
+  in the prepared table and in a scratch refit, **before introduced was decided**). Of Spring's 89
+  bound rows, 45 have nothing standing by at the method and so no later intrusion bound to it: 29
+  are new methods, bound to the class (15 by a field only, mostly the injected `clinicService`; 9
+  by a call to another of its methods only; 4 by both, of the 28 in the pilot's host table), and
+  16 are small existing methods (3 to 11 positions) whose added code used all there was. The 13
+  rows with any such intrusion (43 in all) appear to be one method, `addOwner`. A plain negative
+  binomial refit of H2 at the method, without random intercepts and so not the model of §5, gave
+  0.94 [0.70, 1.26] on all 83 rows, the same on the 55 existing methods, and 0.95 [0.72, 1.25] on
+  the 40 rows where something stood by. The new methods had 4 later bound arrivals between them,
+  the existing ones 288.
+- **Introduced, on the development chain** (19 November 2026, as built,
+  `results/analysis/pilot/REPORT.md`; one chain per arm, descriptive only). Method values
+  introduced per addition: 5.1 in Spring, 6.5 in OfficeFloor. Per bound row in Spring, 1.8 method
+  values and 0.35 fields introduced; in OfficeFloor 1.3 and 0.10. **Later code is hardly ever
+  bound to them:** in Spring 2 of 292 later intrusions at the method and 3 of 1,056 at the class
+  use an introduced value (43 and 449 use one that stood by); in OfficeFloor none of 3 and none of
+  26. Spring's 29 new methods introduced 102 values, and one later intrusion used one. H2 read on
+  what stood by and what was introduced together: 1.09 [1.03, 1.15] at the class, beside 1.10
+  [1.04, 1.16] on what stood by alone; 0.92 [0.73, 1.15] at the method, where H2 itself still
+  gives no standard error. So on this chain what a change introduces is not what later code comes
+  for, and counting it does not change the class reading or lift the method reading above 1.
+  Nothing in the plan was changed after these were seen.
+- **How bound uses are spread over values, on the development chain** (19 November 2026; a
+  scratch count from the measured tables, **before H2 was restated**, since built as
+  `readings.core_summary` with the same figures). In Spring, at the class: 37 bound uses of 11
+  fields, 78% of them to three fields and 86% to fields that were there before the first
+  checkpoint (`clinicService` alone 22); of 35 fields the changes introduced, 5 were used by later
+  bound code. At the method: 86 uses of 44 values, 36% to three (`owner` in `addOwner` 18), 48% to
+  values from before the first checkpoint; of 315 introduced, 27 used later. In OfficeFloor: 2
+  uses at the class; at the method 57 uses of 45 values, none used more than twice, 11% to the
+  three most used; of 361 introduced, 31 used later. The petclinic chain starts from a converted
+  application, so its early values predate the stream.
+- **H2 as restated, on the development chain** (19 November 2026, as built,
+  `results/analysis/pilot/REPORT.md`; one chain per arm, descriptive only; **its direction had
+  been seen in the count above before it was written**). In Spring, of 83 bound rows, 31 have a
+  core at the class and 51 at the method; 82 and 79 have a periphery. Uses per 100 values and
+  later checkpoints: at the class 20.6 of the core against 3.7 of the periphery (190 uses of 34
+  core values, 528 of 631 periphery values); at the method 10.1 against 0.5 (185 of 75, 45 of
+  335). H2's rate ratio of core to periphery: 8.2 [5.7, 11.9] at the class and 20.3 [11.8, 34.7]
+  at the method, both models with the checkpoint intercept; the method level is estimable, which
+  it was not under the form of 17 November. In OfficeFloor the values code was bound to are
+  hardly come back to: at the method 0.40 per 100 for the core and 0.08 for the periphery (4 uses
+  of 45 core values), ratio 4.3 [0.5, 38]; at the class one row has a core and the ratio is not
+  estimable. So on this chain the arms differ less in whether a core value is used more than a
+  periphery one than in how much any value is come back to at all: Spring's core values about 25
+  times as much as OfficeFloor's at the method. H2 as it stood: 1.10 [1.04, 1.16] at the class,
+  no standard error at the method, as before. Nothing in the plan was changed after these were
+  seen.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
@@ -1474,15 +1715,47 @@ binomial mixed model). These details are fixed with the code before any run is r
   by, with the place's size held fixed; and the size-or-data reading (§5) asks which of the two
   later arrivals follow. On the development chain that reading went to size (§6), so on that
   chain attachment to size is not ruled out.
-- **H2 is opportunity by construction.** Where nothing stood by, nothing can be drawn by what
-  stood by, so part of H2's rate ratio is given. It tests that accumulated data is taken up in
-  proportion to its amount; it does not show that the later code could not have gone elsewhere
+- **The core is partly the problem's.** Problems of one stream need much of the same data (every
+  petclinic rule is about the owner), so a value many problems are bound to may be core because
+  of the problems, not the place. Three things bear on it: declared and crossing checkpoints are
+  left out of H2's uses; the function arm solves the same problems and is read beside it; and the
+  ui stream has many endpoints. It is still not ruled out within one arm.
+- **H2 as restated compares two kinds of value, and they differ in more than kind.** A core value
+  was by definition useful to one problem already. That later problems use it more than a value
+  nobody had used is likely, and H2 says how much more, not that it could have been otherwise.
+- **Two records of one row are not independent.** The core's and the periphery's records share
+  the row's later arrivals, and the model has no term for the row. With the shared counts within
+  a class (below) this makes H2's interval too narrow.
+- **H2 as it stood (reported) is opportunity by construction.** Where nothing stood by, nothing
+  can be drawn by what stood by, so part of that rate ratio is given. It tests that accumulated
+  data is taken up in proportion to its amount; it does not show that the later code could not have gone elsewhere
   (that is the choice and review readings), nor that it preferred this data to other data.
-- **H1 and H2 overlap.** A place where data gathers (H1) and a place whose data is used by what
-  comes next (H2) are two views of one loop, and the same busy class carries both. They are not
-  independent tests, and Holm treats them as if they could be.
+- **At the method, half the rows of H2 as it stood could only read nought.** A new method has
+  nothing standing by, and neither has a small method whose added code uses all there is; with
+  nothing standing by, nothing can be drawn by it. On the development chain that is 45 of
+  Spring's 89 bound rows (§6). H2 as restated on 19 November 2026 does not have this: a kind with
+  no values gives no record (§4.4), so a new method is read on its periphery, and a row bound
+  only to its class has no core at the method.
+- **H1 within a method starts from nought.** A method has no bystanders at the checkpoint that
+  creates it, and later code placed in it sees the values it was created with. Part of the slope
+  within a method is therefore given by a method being new once. That is a place gathering data,
+  which is the claim, but it is not evidence beyond the definition.
+- **H1 and H2 overlap.** A place where data gathers (H1) and a place whose core is used by what
+  comes next (H2) are read on the same busy class. They are not independent tests, and Holm
+  treats them as if they could be.
+- **H1 and H2 no longer make one loop.** Until 19 November 2026 they did: a place gathers data,
+  and the gathered data binds the next code. As restated, H2 says the next code comes for a few
+  core values and not for what gathered. H1's rise is then mostly periphery: what code has to sit
+  beside, a cost of the place, and not what draws code to it. H1 was renamed to say so (§2); its
+  test was left as it is, so H1 by itself no longer shows a pull, only a cost that grows.
+- **H1's periphery is not H2's.** H1 counts bystanders, the pre-existing values a run does not
+  use. H2's periphery adds what the change introduced. H1 was not changed to count introduced
+  values: they are not there when the code arrives, so the code does not sit beside them.
 - **H2 was shaped on the development chain** (§6), as H1 and H4 were: its restatement followed a
   first look at the measure there, and its direction was seen on that chain before it was written.
+  That is so of both restatements. The second, to core and periphery, was made after the first
+  had come out below 1 at the method on that chain and after the spread of uses over values had
+  been seen there; it turns what was the first form's failure case into the claim.
 - **Values are matched by name.** A renamed field is lost between a placement and a later use, and
   a new local with an old name is counted as the old value. The first lowers H2's count, the second
   raises it at the method.
@@ -1579,18 +1852,34 @@ author's to set, on the plan and code as they then stand, and starts the experim
   the open-source samples are where the class level is read); corpus C's bound of 30 declared
   agent commits (§3.3); the margin of 1.25 and the six measures of H3 (§2); and no cap on a
   repository's units (§3.2).
+- *Also confirmed by the author on 18 November 2026:* corpus B's size (300) and corpus C's (100,
+  of up to 6,000 drawn), both being reported and not confirmatory.
+- *Also confirmed:* the as-of date of corpus B, 1 December 2020, as `long-method-slim-study`'s
+  and for its reason (§3.2).
 - *Values chosen while drafting and not yet spoken to:* that no class holds more than half of the
-  arrivals (the second half of the class-level rule); corpus B's size (60) and seed (`20261118`);
-  corpus C's seed (`20261119`), its number of draws (1,500) and its stopping rule (fewer than 10
-  usable, §3.3).
+  arrivals (the second half of the class-level rule); corpus B's seed (`20261118`); corpus C's
+  seed (`20261119`) and its stopping rule (fewer than 10 usable, §3.3).
 - *Not built, and said so where it matters:* the issue-linked unit of corpus B (§3.2); the ranks
   of the landing reading on a history; a reading of what unbound code leaves behind per class
   (the fields it adds to the class it enters, and whether later code is bound to them), which
   would join H1 and H2 to the landing reading and was looked at only per checkpoint (§6).
+- *Raised on 19 November 2026 and overtaken:* whether H2 at the method is read only on rows
+  where something stood by, and whether a row is followed at the method only when its code is
+  bound to the method's own values. H2 as restated that day gives no record for a kind with no
+  values (§4.4), which does both.
+- *Chosen while drafting H2's restatement and not yet spoken to:* that the core of a row is what
+  its own code was bound to (and not a list of a place's most used values, which would need a
+  threshold); that uses are counted value by value; that the two records of a row are fitted
+  without a term for the row; and that a class's other methods, which bind code, are not core values.
+- *Decided by the author on 19 November 2026, on the drafter's suggestion:* the four tests stand
+  as they are; H1 is renamed *the periphery grows* and H4 *function injection forms no core*; how
+  much a core value is come back to is reported per arm beside H4 and is not a condition of it;
+  H2 takes no threshold above 1.
 - *Considered and left as a reading:* that shape is a bias on where unbound code is put, not a
   cause (§5, *Where bound and unbound code lands*). It is not part of H3.
 - *Waiting on data:* Run B's ids and Run C (§3.1a), by dated amendment before their backend Java
-  is read.
+  is read. Since the ui runs are the primary test (§3.1), **the study's verdicts wait on Run B**:
+  Run A alone cannot tell the arm from the front end.
 - *Weak points seen on the development chain* (§6): H2 at the method was not estimable on one
   chain; H1 without constants is nearly flat; the size-or-data reading went against its stated
   direction; long does not vary in OfficeFloor.
@@ -1712,6 +2001,11 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 40 | Corpora B and C built as histories: units, the light reading, arms as sets of units, the repository as the chain, two development samples | §3.2, §3.3, `history.py`, `runs.yaml` | To run H1, H2 and the landing reading on people's code and on declared agent code. The issue-linked unit and the ranks of the landing reading are not built |
 | 42 | H3's class measures are tested only where later arrivals fall in at least 10 distinct classes and no one class holds more than half of them; otherwise reported. The method level is H3's test | §5, `prepare.class_level` | Decided by the author after H3 was unresolved on the class's Gini on the development chain (§6): one class there holds 87% of the arrivals, so a class measure describes that class over time. A rule about the data, applying to all three class measures alike, in place of removing one |
 | 43 | Corpus B is a sample of its own, by the criteria of `long-method-slim-study`'s: as of 1 December 2020, at least 50 functions in 15 files, three tiers, a new seed, 60 repositories. Corpus C takes the same criteria, a new seed and more draws. No cap on a repository's units | §3.2, §3.3, `runs.yaml` | The author's direction: the size of a repository is for the sample's criteria to say, and that study's were set for the same purpose. The first draft's sample had no as-of date, and seed 3 had drawn a sample already read |
+| 44 | Corpus B 300 repositories, corpus C 100 of up to 6,000 drawn; the histories read eight repositories at a time, each worker held to its share of the memory, and whatever fails read again alone | §3.2, §3.3, `history.py`, `runs.yaml` | Decided by the author: the corpora are reported, and 60 and 30 were too few to report on; reading in parallel makes the larger samples affordable, and the pass alone is for a repository too large for a worker's share |
+| 45 | The ui runs are the primary test; every petclinic run is secondary, a replication read first. The analysis `petclinic-primary` is renamed `petclinic-just-solve-202608100006` | §3.1, §3.1a, `runs.yaml` | Decided by the author: petclinic puts every rule on one endpoint, so its handler and controller receive nearly everything and the method and class levels are weakly tested there. Made after that was seen on petclinic's development chain (§6) and before any ui backend Java was read |
+| 46 | A third kind of value, **introduced**, beside needed and bystanding: the parameters and locals a change adds to a method and the fields it adds to a class. Reported per addition and per bound row, and H2 is read again on what stood by and what was introduced together. H2 is unchanged | §4.3b, §4.4, §5, `Pull.java`, `tables.py`, `analyse.R` | Decided by the author on 19 November 2026, after seeing on the development chain that half of Spring's bound rows have nothing standing by at the method, most of them new methods (§6, §7). The author's argument: a new method brings parameters onto the control flow, so it adds data for later code to be bound to, and added fields are the same thing at the class |
+| 47 | H2 restated: a core draws code in. Later intrusions use the values a problem's code was bound to (the core) more, per value, than the rest the place held (the periphery: what stood by and what was introduced); the rate ratio above 1 at the class and at the method. H2 as it stood (per value that stood by) is reported | §1, §2, §4.4, §5, §7, `tables.py`, `analyse.R`, `readings.py` | Decided by the author on 19 November 2026, after the development chain showed bound uses going to a few values there from the start and introduced values hardly ever used again (§6): a few key values everything hangs off, and many that pass through. The operational form is the drafter's and is listed in §8 for the author |
+| 48 | H1 renamed *the periphery grows* and H4 *function injection forms no core*; their tests unchanged. Reported beside H4: how much a core value is come back to, function arm against methods arm | §1, §2, §5, §7, `analyse.R`, `readings.py`, `report.py` | Decided by the author on 19 November 2026 on the drafter's suggestion, after H2 as restated had been run on the development chain (§6): with a core that draws code in, H1's rise is the cost of the core and not the pull, and the arms differ most in how much a core value is come back to. Not made a condition of H4 because the function arm has few rows with a core at the class |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

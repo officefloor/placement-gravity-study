@@ -45,7 +45,9 @@ def bystander_lines(r: dict) -> list[str]:
                  f"{f(x.get('bystanders'))} (method {f(x.get('by_method'))}, class {f(x.get('by_class'))}; "
                  f"without constants {f(x.get('without_constants'))}); over the thirds of the stream "
                  + ", ".join(f(t) for t in x.get("thirds") or []) + f"; fields left behind per addition "
-                 f"{f(x.get('fields_added_per_addition'))}")
+                 f"{f(x.get('fields_added_per_addition'))}"
+                 + (f"; method values introduced per addition {f(x.get('method_values_added_per_addition'))}"
+                    if x.get("method_values_added_per_addition") is not None else ""))
     return L
 
 
@@ -61,6 +63,44 @@ def drawn_lines(r: dict) -> list[str]:
                  f"stood by, {f(c['drawn'])} of {f(c['later'])} later intrusions bound to one of them "
                  f"({f(c['share'])}); at the method {f(m['bystanders'])} values stood by, {f(m['drawn'])} of "
                  f"{f(m['later'])} ({f(m['share'])})")
+        if "introduced" in c:
+            L.append(f"- Reported, {arm}, introduced there by the change: at the class {f(c['introduced'])} "
+                     f"fields, {f(c['drawn_introduced'])} of {f(c['later'])} later intrusions bound to one of "
+                     f"them ({f(c['share_introduced'])}), to one that stood by or was introduced "
+                     f"{f(c['drawn_left'])} ({f(c['share_left'])}); at the method {f(m['introduced'])} values, "
+                     f"{f(m['drawn_introduced'])} of {f(m['later'])} ({f(m['share_introduced'])}), to either "
+                     f"{f(m['drawn_left'])} ({f(m['share_left'])})")
+    return L
+
+
+def reuse_lines(r: dict) -> list[str]:
+    """Beside H4: uses of core and periphery values per 100 values and later checkpoints, per arm."""
+    L = []
+    for arm, x in (r.get("core_reuse") or {}).items():
+        parts = []
+        for lev in ("class", "method"):
+            c, p = x.get(f"core_{lev}"), x.get(f"periphery_{lev}")
+            if c and p:
+                parts.append(f"at the {lev} core {f(c['per_100'])} ({f(c['uses'])} uses of {f(c['values'])} "
+                             f"values in {f(c['records'])} rows), periphery {f(p['per_100'])}")
+        if parts:
+            L.append(f"- Reported, {arm}, uses per 100 values and later checkpoints: " + "; ".join(parts))
+    return L
+
+
+def core_lines(r: dict) -> list[str]:
+    """The description beside H2: how the bound uses of a place's values are spread over them, and
+    how many of the values the changes introduced are used again (PLAN.md §5)."""
+    L = []
+    for arm, x in (r.get("core") or {}).items():
+        c, m = x["class"], x["method"]
+        L.append(f"- Reported, {arm}, how bound uses are spread: at the class {f(c['uses'])} uses of "
+                 f"{f(c['values_used'])} fields, {f(c['top3_share'])} to a chain's three most used, "
+                 f"{f(c['from_start'])} to fields no checkpoint introduced; of {f(c['introduced'])} fields "
+                 f"introduced, {f(c['promoted'])} used by later bound code ({f(c['promoted_share'])}); at the "
+                 f"method {f(m['uses'])} uses of {f(m['values_used'])} values, {f(m['top3_share'])} to the "
+                 f"three most used, {f(m['from_start'])} to values no checkpoint introduced; of "
+                 f"{f(m['introduced'])} introduced, {f(m['promoted'])} used later ({f(m['promoted_share'])})")
     return L
 
 
@@ -189,7 +229,7 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
     h1 = est.get("H1") or {}
     lv = rep.get("H1_levels") or {}
     t1 = rep.get("H1_bindings") or {}
-    L += ["", "## H1, gravity compounds (methods arm)", "",
+    L += ["", "## H1, the periphery grows (methods arm)", "",
           f"Runs that need a pre-existing value {f(h1.get('n_runs'))} over {f(h1.get('n_chains'))} "
           f"chains; the slope of log(1 + bystanders) on the checkpoint index, cluster-bootstrap 95% interval "
           f"({est.get('boot')} refits).", "",
@@ -215,18 +255,29 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           f"class level on class size {interval((rep.get('H1_class_level_without_injected') or {}).get('log_class'))}"]
     e2 = est.get("H2") or {}
     rows_ = rep.get("intrusion_rows") or {}
-    L += ["", "## H2, data draws code in (methods arm)", "",
+    L += ["", "## H2, a core draws code in (methods arm)", "",
           f"Where code was bound to a class or a method ({f(rows_.get('bound'))} of {f(rows_.get('all'))} "
-          f"problem and host rows, both arms; {f(e2.get('n'))} in the methods arm): the later intrusions "
-          f"there that are bound to a value which stood by at the placement, as a rate ratio per value "
-          f"that stood by.", "",
+          f"problem and host rows, both arms; {f(e2.get('n'))} in the methods arm): the later intrusions' "
+          f"uses of the values that code was bound to (the core) against their uses of the rest the "
+          f"place held, what stood by and what the change introduced (the periphery), as a rate ratio "
+          f"per value.", "",
           f"- **At the class (its fields): {ratio(e2.get('class'))}**",
           f"- **At the method (its values): {ratio(e2.get('method'))}**",
+          f"- Reported, the function arm: class {ratio(rep.get('H2_core_function_arm_class'))}; method "
+          f"{ratio(rep.get('H2_core_function_arm_method'))}",
+          *core_lines(readings or {}),
+          f"- Reported, H2 as it stood until 19 November 2026 (later intrusions bound to what stood by, per "
+          f"value that stood by): class {ratio(rep.get('H2_bystanders_class'))}; method "
+          f"{ratio(rep.get('H2_bystanders_method'))}",
           *drawn_lines(readings or {}),
           f"- Reported, on log(1 + bystanders): class {interval(rep.get('H2_log_class'))}; method "
           f"{interval(rep.get('H2_log_method'))}",
-          f"- Reported, the function arm: class {ratio(rep.get('H2_function_arm_class'))}; method "
+          f"- Reported, per value that stood by, the function arm: class {ratio(rep.get('H2_function_arm_class'))}; method "
           f"{ratio(rep.get('H2_function_arm_method'))}",
+          f"- Reported, with what the change introduced counted beside what stood by (later intrusions "
+          f"bound to either, per value of both): class {ratio(rep.get('H2_left_class'))}; method "
+          f"{ratio(rep.get('H2_left_method'))}; in the function arm, class "
+          f"{ratio(rep.get('H2_left_function_arm_class'))}; method {ratio(rep.get('H2_left_function_arm_method'))}",
           f"- Reported, H2 as it stood until 17 November 2026 (later intrusion per binding): class "
           f"{ratio(rep.get('bindings_intrusion_class'))}; method {ratio(rep.get('bindings_intrusion_method'))}",
           f"- For information, the same on the problem's own lines: {ratio(rep.get('bindings_lines'))}",
@@ -293,12 +344,15 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
     rs = (readings or {}).get("reopening") or {}
     amt = cond.get("amount") or {}
     w = (cond.get("wiring") or {}).get("verdict") or {}
-    L += ["", "## H4, function injection keeps the space open", "",
+    L += ["", "## H4, function injection forms no core", "",
           f"- **Function arm's bystanders (arm term, at checkpoint {f(m3.get('centre_checkpoint'), 1)}, "
           f"the middle of the stream): {interval(m3.get('arm'))}**",
           f"- **Their slope on the checkpoint index (interaction): {interval(m3.get('slope'))}**",
           f"- **Later intrusion where bound code was placed, function arm / methods arm: at the class "
           f"{ratio(m3.get('intrusion_class'))}; at the method {ratio(m3.get('intrusion_method'))}**",
+          f"- Reported, how much a core value is come back to, function arm / methods arm: at the class "
+          f"{ratio(rep.get('core_reuse_class'))}; at the method {ratio(rep.get('core_reuse_method'))}",
+          *reuse_lines(readings or {}),
           *[f"- Reported, {arm}: per checkpoint, classes its bound code goes back into {f(x.get('classes'))}, "
             f"wiring files changed again {f(x.get('wiring'))}" for arm, x in rs.items()],
           f"- Reported, reopening, function arm / methods arm: classes {ratio(rep.get('reopen_classes'))}; "

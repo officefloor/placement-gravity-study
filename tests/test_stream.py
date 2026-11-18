@@ -91,6 +91,55 @@ def test_later_code_bound_to_what_stood_by_is_drawn_in():
     assert {(r["cp"], r["name"]): r for r in tables.outcome_rows("x", "c", unbound, {})}[(3, "f")]["drawn_method"] == 0
 
 
+def test_later_code_bound_to_what_a_change_introduced():
+    """Introduced (PLAN.md 4.3b): cp3 adds a method f to A, with a parameter `city`, and a field
+    `cap` to A. It used `repo` and left `LIMIT` standing by. cp5 comes back to f and uses `city`;
+    cp7 goes to another method of A and uses `cap`; cp8 uses `LIMIT`."""
+    host = {"type": "A", "name": "f", "before_type": "A", "before_name": "f", "removed": 0,
+            "replacement": False, "pre_positions": 5, "binding_method": 0, "binding_class": 1, "binding": 1,
+            "net_added": 2, "host_new": False, "need_class_values": "", "by_class_values": "",
+            "need_method_values": "", "by_method_values": ""}
+    hosts = [{**host, "cp": 3, "host_new": True, "before_type": None, "before_name": None,
+              "need_class_values": "repo", "by_class_values": "LIMIT",
+              "introduced_method_values": "city n", "introduced_class_values": "cap"},
+             {**host, "cp": 5, "need_method_values": "city"},
+             {**host, "cp": 7, "name": "g", "before_name": "g", "need_class_values": "cap"},
+             {**host, "cp": 8, "name": "g", "before_name": "g", "need_class_values": "LIMIT"}]
+    r = {(r["cp"], r["name"]): r for r in tables.outcome_rows("x", "c", hosts, {})}[(3, "f")]
+    # a new method: nothing stood by in it, so by what stood by it can only read nought
+    assert (r["bystanders_method"], r["drawn_method"]) == (0, 0)
+    assert (r["introduced_method"], r["drawn_method_introduced"]) == (2, 1)          # cp5, for city
+    assert (r["left_method"], r["drawn_method_left"]) == (2, 1)
+    assert (r["introduced_class"], r["drawn_class_introduced"]) == (1, 1)            # cp7, for cap
+    assert (r["bystanders_class"], r["drawn_class"]) == (1, 1)                       # cp8, for LIMIT
+    assert (r["left_class"], r["drawn_class_left"], r["intrusion_class"]) == (2, 2, 3)
+    # core and periphery (H2): cp3 was bound to `repo` (its core at the class); LIMIT and cap are
+    # the periphery there. None of the later code uses repo; one use each of cap and LIMIT.
+    assert (r["core_class"], r["uses_core_class"]) == (1, 0)
+    assert (r["periphery_class"], r["uses_periphery_class"]) == (2, 2)
+    # a new method has no core of its own: nothing was there to be bound to
+    assert (r["core_method"], r["periphery_method"], r["uses_periphery_method"]) == (0, 2, 1)
+
+
+def test_the_core_is_what_code_was_bound_to_and_uses_are_counted_per_value():
+    """cp3's code in A.f was bound to `id` and `owner` (its core) and left `flag` standing by. cp5
+    comes back and uses id and owner (two uses of the core); cp6 uses flag; cp7 mutates cp3's rule,
+    so its use of id is declared and does not count."""
+    host = {"type": "A", "name": "f", "before_type": "A", "before_name": "f", "removed": 0,
+            "replacement": False, "pre_positions": 5, "binding_method": 1, "binding_class": 0, "binding": 1,
+            "net_added": 2, "host_new": False, "need_class_values": "", "by_class_values": "",
+            "need_method_values": "", "by_method_values": ""}
+    hosts = [{**host, "cp": 3, "need_method_values": "id owner", "by_method_values": "flag"},
+             {**host, "cp": 5, "need_method_values": "id owner"},
+             {**host, "cp": 6, "need_method_values": "flag"},
+             {**host, "cp": 7, "need_method_values": "id"}]
+    streamed = {7: {"mutates": [3], "crosses": []}}
+    r = {r["cp"]: r for r in tables.outcome_rows("x", "c", hosts, streamed)}[3]
+    assert (r["core_method"], r["periphery_method"]) == (2, 1)
+    assert (r["uses_core_method"], r["uses_periphery_method"]) == (2, 1)
+    assert r["intrusion_method"] == 2
+
+
 def test_what_stood_by_is_read_over_the_runs_of_one_host():
     runs = [{"vis_method": ["a", "b"], "need_method": ["a"], "need_field_names": [], "by_field_names": ["X", "Y"]},
             {"vis_method": ["a", "b", "c"], "need_method": ["b"], "need_field_names": ["X"], "by_field_names": ["Y"]}]

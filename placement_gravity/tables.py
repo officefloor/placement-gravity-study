@@ -97,6 +97,9 @@ def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
     from . import shape
     shaped = shape.index(measured.get("shape", []))
     in_class = shape.class_index(measured.get("shape", []))
+    # the fields each checkpoint introduces to a class that existed (PLAN.md 4.3b)
+    fields_in = {(r["unit"], r["path"], r["type"]): r.get("fields_added_names", [])
+                 for r in measured["records"] if r["kind"] == "class"}
     rows = []
     for r in _hosts(measured):
         moved = r["moved_rm"] + r["moved_text"]
@@ -131,6 +134,10 @@ def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
             "binding_class_values": " ".join(tf + [m + "()" for m in tc]),
             "params": r["params"],
             **standing(runs),
+            # introduced (PLAN.md 4.3b): the values the change adds to the method, and the fields its
+            # checkpoint adds to the class
+            "introduced_method_values": " ".join(sorted(r.get("introduced_method", []))),
+            "introduced_class_values": " ".join(sorted(fields_in.get((r["unit"], r["path"], r["type"]), []))),
         })
         if shaped:
             rows[-1].update(shape.host_shape(rows[-1], shaped, in_class))
@@ -277,6 +284,8 @@ def addition_rows(arm: str, chain: str, measured: dict, hosts: list[dict],
             "amount_added": measured["amount"][unit]["positions"] - base,
             "amount_largest": measured["amount"][unit].get("largest"),
             "fields_added": left.get(unit, 0), "heaviest_class": heaviest.get(unit, 0),
+            # the parameters and locals the addition introduces to the methods it adds logic to
+            "method_values_added": sum(len(h.get("introduced_method_values", "").split()) for h in hs),
             "reopened_classes": again.get(cp, {}).get("reopened_classes", 0),
             "reopened_wiring": again.get(cp, {}).get("reopened_wiring", 0),
             "reopened": sum(again.get(cp, {}).values()),
@@ -329,7 +338,20 @@ def outcome_rows(arm: str, chain: str, hosts: list[dict], streamed: dict[int, di
     **Drawn in by what stood by** (H2): ``bystanders_class`` and ``bystanders_method`` are the
     pre-existing fields of the class and values of the method that stood by when the problem's code
     was placed in this host (``standing``); ``drawn_class`` and ``drawn_method`` count the later
-    intrusions whose bound code there uses one of them."""
+    intrusions whose bound code there uses one of them.
+
+    **Introduced** (PLAN.md §4.3b, reported): ``introduced_class`` and ``introduced_method`` are
+    the fields the problem's checkpoint added to the class and the parameters and locals it added
+    to the method; ``drawn_*_introduced`` count the later intrusions whose bound code there uses
+    one of them. ``left_*`` is what stood by and what was introduced together, and
+    ``drawn_*_left`` the later intrusions bound to either.
+
+    **Core and periphery** (H2 since 19 November 2026, PLAN.md §4.4): for this problem and host the
+    **core** is the pre-existing values its code was bound to there (``core_*``: the method's
+    values it used, the class's fields it used) and the **periphery** is the rest of what the
+    place then held (``periphery_*``: what stood by and what it introduced). ``uses_core_*`` and
+    ``uses_periphery_*`` count, over the later intrusions, each use of one of those values: a
+    later intrusion that uses two core values counts twice, so each is a count per value."""
     own = identities(hosts)
     ct_identity = (ct or {}).get("ct_identity", {})
     ct_touched = (ct or {}).get("ct_touched", {})
@@ -400,6 +422,23 @@ def outcome_rows(arm: str, chain: str, hosts: list[dict], streamed: dict[int, di
         stood_m, stood_c = set(h.get("by_method_values", "").split()), set(h.get("by_class_values", "").split())
         drawn_m = split([j for j in later if uses_m.get((i, j), set()) & stood_m], k)[2]
         drawn_c = split([j for j in later_class if uses_c.get((c, j), set()) & stood_c], k)[2]
+        # introduced by this change: the values it added to the method and the fields its checkpoint
+        # added to the class; and the later bound arrivals that use one of them
+        new_m = set(h.get("introduced_method_values", "").split())
+        new_c = set(h.get("introduced_class_values", "").split())
+        intro_m = split([j for j in later if uses_m.get((i, j), set()) & new_m], k)[2]
+        intro_c = split([j for j in later_class if uses_c.get((c, j), set()) & new_c], k)[2]
+        left_m = split([j for j in later if uses_m.get((i, j), set()) & (stood_m | new_m)], k)[2]
+        left_c = split([j for j in later_class if uses_c.get((c, j), set()) & (stood_c | new_c)], k)[2]
+        # core and periphery (H2): the values this code was bound to, and the rest the place held;
+        # each later intrusion's uses of them, value by value
+        core_m, core_c = set(h.get("need_method_values", "").split()), set(h.get("need_class_values", "").split())
+        peri_m, peri_c = (stood_m | new_m) - core_m, (stood_c | new_c) - core_c
+        intr_m = [j for j in later if k not in streamed.get(j, {}).get("mutates", [])
+                  and k not in streamed.get(j, {}).get("crosses", [])]
+        intr_c = [j for j in later_class if k not in streamed.get(j, {}).get("mutates", [])
+                  and k not in streamed.get(j, {}).get("crosses", [])]
+        count = lambda js, uses, key, values: sum(len(uses.get((key, j), set()) & values) for j in js)
         mine = {"own_lines": None, "own_present": None, "own_lost": None, "own_touches": None,
                "own_declared": None, "own_crossed": None, "intrusion_lines": None}
         if followed is not None:
@@ -424,6 +463,16 @@ def outcome_rows(arm: str, chain: str, hosts: list[dict], streamed: dict[int, di
             "intrusion_class_any": any_c, "intrusion_method_any": any_m,
             "bystanders_class": len(stood_c), "bystanders_method": len(stood_m),
             "drawn_class": drawn_c, "drawn_method": drawn_m,
+            "introduced_class": len(new_c), "introduced_method": len(new_m),
+            "drawn_class_introduced": intro_c, "drawn_method_introduced": intro_m,
+            "left_class": len(stood_c | new_c), "left_method": len(stood_m | new_m),
+            "drawn_class_left": left_c, "drawn_method_left": left_m,
+            "core_class": len(core_c), "core_method": len(core_m),
+            "periphery_class": len(peri_c), "periphery_method": len(peri_m),
+            "uses_core_class": count(intr_c, uses_c, c, core_c),
+            "uses_core_method": count(intr_m, uses_m, i, core_m),
+            "uses_periphery_class": count(intr_c, uses_c, c, peri_c),
+            "uses_periphery_method": count(intr_m, uses_m, i, peri_m),
             **mine,
             "intrusion_per_100": (100 * ci / (last - k)) if last > k else None,
         })

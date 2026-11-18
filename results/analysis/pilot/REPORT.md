@@ -5,7 +5,7 @@ Role: **development**. Chains: officefloor 1, spring 1. **Descriptive only.**
 | Hypothesis | Verdict | p (Holm) |
 |---|---|---|
 | H1 | descriptive only | 0.002 |
-| H2 | descriptive only | – |
+| H2 | descriptive only | 1.03e-27 |
 | H3 | descriptive only | 9.19e-06 |
 | H4 | descriptive only | 0.002 |
 
@@ -20,23 +20,30 @@ Runs that need a pre-existing value 91 over 1 chains; the slope of log(1 + bysta
 - Reported, method bystanders 0.004 [-0.006, 0.013]; class bystanders 0.016 [0.010, 0.022]
 - Reported, without injected dependencies 0.024 [0.016, 0.031]; without constants 0.003 [-0.005, 0.012]
 - Reported, the function arm's slope: -0.000263 [-0.011, 0.010]
-- Reported, officefloor: 56 of 168 runs need a pre-existing value (0.667 free); per such run, needed 1.554, bystanders 1.179 (method 0.929, class 0.250; without constants 1.036); over the thirds of the stream 1.455, 0.889, 1.167; fields left behind per addition 0.455
-- Reported, spring: 91 of 162 runs need a pre-existing value (0.438 free); per such run, needed 1.407, bystanders 10.890 (method 2.582, class 8.308; without constants 5.934); over the thirds of the stream 5.917, 10.172, 14.579; fields left behind per addition 0.610
+- Reported, officefloor: 56 of 168 runs need a pre-existing value (0.667 free); per such run, needed 1.554, bystanders 1.179 (method 0.929, class 0.250; without constants 1.036); over the thirds of the stream 1.455, 0.889, 1.167; fields left behind per addition 0.455; method values introduced per addition 6.491
+- Reported, spring: 91 of 162 runs need a pre-existing value (0.438 free); per such run, needed 1.407, bystanders 10.890 (method 2.582, class 8.308; without constants 5.934); over the thirds of the stream 5.917, 10.172, 14.579; fields left behind per addition 0.610; method values introduced per addition 5.085
 - Reported, H1 as first registered (bindings of runs into existing methods): on log(host positions) 0.030 [-0.042, 0.103]; on the checkpoint index 0.006 [0.002, 0.011]
 - Reported, bindings in the function arm: on host size 0.098 [-0.084, 0.279]
 - Reported, bindings at class level (methods arm): on class size -0.010 [-0.119, 0.100]
 - Reported, bindings without injected dependencies: on host size 0.080 [-0.000316, 0.160]; class level on class size -0.040 [-0.125, 0.045]
 
-## H2, data draws code in (methods arm)
+## H2, a core draws code in (methods arm)
 
-Where code was bound to a class or a method (109 of 350 problem and host rows, both arms; 83 in the methods arm): the later intrusions there that are bound to a value which stood by at the placement, as a rate ratio per value that stood by.
+Where code was bound to a class or a method (109 of 350 problem and host rows, both arms; 83 in the methods arm): the later intrusions' uses of the values that code was bound to (the core) against their uses of the rest the place held, what stood by and what the change introduced (the periphery), as a rate ratio per value.
 
-- **At the class (its fields): 1.099 [1.038, 1.164]**
-- **At the method (its values): not estimated (standard error not computed: bystanders_method)**
+- **At the class (its fields): 8.238 [5.692, 11.921]**
+- **At the method (its values): 20.269 [11.842, 34.693]**
+- Reported, the function arm: class not estimated (standard error not computed: core); method 4.276 [0.477, 38.309]
+- Reported, officefloor, how bound uses are spread: at the class 2 uses of 2 fields, 1.000 to a chain's three most used, 0.500 to fields no checkpoint introduced; of 24 fields introduced, 1 used by later bound code (0.042); at the method 57 uses of 45 values, 0.105 to the three most used, 0.298 to values no checkpoint introduced; of 361 introduced, 31 used later (0.086)
+- Reported, spring, how bound uses are spread: at the class 37 uses of 11 fields, 0.784 to a chain's three most used, 0.865 to fields no checkpoint introduced; of 35 fields introduced, 5 used by later bound code (0.143); at the method 86 uses of 44 values, 0.360 to the three most used, 0.477 to values no checkpoint introduced; of 315 introduced, 27 used later (0.086)
+- Reported, H2 as it stood until 19 November 2026 (later intrusions bound to what stood by, per value that stood by): class 1.099 [1.038, 1.164]; method not estimated (standard error not computed: bystanders_method)
 - Reported, officefloor: 31 bound rows; at the class 0.548 fields stood by, 3 of 26 later intrusions bound to one of them (0.115); at the method 0.903 values stood by, 1 of 3 (0.333)
+- Reported, officefloor, introduced there by the change: at the class 0.097 fields, 0 of 26 later intrusions bound to one of them (0.000), to one that stood by or was introduced 3 (0.115); at the method 1.258 values, 0 of 3 (0.000), to either 1 (0.333)
 - Reported, spring: 89 bound rows; at the class 7.472 fields stood by, 449 of 1056 later intrusions bound to one of them (0.425); at the method 2.236 values stood by, 43 of 292 (0.147)
+- Reported, spring, introduced there by the change: at the class 0.348 fields, 3 of 1056 later intrusions bound to one of them (0.003), to one that stood by or was introduced 451 (0.427); at the method 1.787 values, 2 of 292 (0.007), to either 45 (0.154)
 - Reported, on log(1 + bystanders): class 1.042 [0.593, 1.491]; method not estimated (standard error not computed: log_by_method)
-- Reported, the function arm: class 810508952663.495 [4.53e-99, 144926924589198000744940790788170766801987441848091268080083565762570760781355119429063249789257857706815653466801541480448.000]; method not estimated (standard error not computed: bystanders_method)
+- Reported, per value that stood by, the function arm: class 810508952663.495 [4.53e-99, 144926924589198000744940790788170766801987441848091268080083565762570760781355119429063249789257857706815653466801541480448.000]; method not estimated (standard error not computed: bystanders_method)
+- Reported, with what the change introduced counted beside what stood by (later intrusions bound to either, per value of both): class 1.091 [1.032, 1.153]; method 0.917 [0.729, 1.154]; in the function arm, class 6.581 [0.779, 55.572]; method not estimated (standard error not computed: left_method)
 - Reported, H2 as it stood until 17 November 2026 (later intrusion per binding): class 0.890 [0.745, 1.064]; method 0.853 [0.607, 1.199]
 - For information, the same on the problem's own lines: not estimated (standard error not computed: binding)
 - Reported, per binding, any later change, bound or not: class 0.857 [0.717, 1.023]; method 0.748 [0.524, 1.067]
@@ -138,7 +145,7 @@ Left out by the variation rule (bound rows flagged or above zero, per arm): s1_l
 
 ## Provenance
 
-Checkpoint intercept in the model: H1 no, H4 no, H2_class yes, H2_method no, H4_intrusion_class no, H4_intrusion_method yes, shape_joint no.
+Checkpoint intercept in the model: H1 no, H4 no, H2_class yes, H2_method yes, H4_intrusion_class no, H4_intrusion_method yes, shape_joint no.
 
 Versions: {"R": "R version 4.5.2 (2025-10-31)", "glmmTMB": "1.1.14", "TMB": "1.9.19"}. Seed 20261116.
 

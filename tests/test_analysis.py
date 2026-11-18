@@ -16,8 +16,8 @@ from placement_gravity import prepare, report, runs, verdict
 def test_the_registry_names_every_analysis_with_its_stream():
     reg = runs.load()
     names = {a["name"] for a in reg["analyses"]}
-    assert {"petclinic-primary", "ui-primary", "pilot"} <= names
-    primary = next(a for a in reg["analyses"] if a["name"] == "petclinic-primary")
+    assert {"petclinic-just-solve-202608100006", "ui-primary", "pilot"} <= names
+    primary = next(a for a in reg["analyses"] if a["name"] == "petclinic-just-solve-202608100006")
     assert primary["exclude_chains"] == [9] and primary["stream"] == "petclinic"
     old = next(a for a in reg["analyses"] if a["name"] == "petclinic-just-solve-202608011310")
     assert old["stream"] == "petclinic-20"   # the run made on the 20-checkpoint stream

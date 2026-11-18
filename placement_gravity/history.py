@@ -213,19 +213,111 @@ def sample_path(name: str, spec: dict) -> Path:
     return Path(spec["csv"]).expanduser() if spec.get("csv") else SAMPLES / name
 
 
-def measure_sample(name: str, spec: dict, force: bool = False, excluded: set[str] = frozenset()) -> None:
-    """Every usable repository of a sample: the sampler clones it deep at its pinned commit, this
-    module measures it (``history repo``), and the sampler deletes the clone. The clone is whole:
-    the sampler's ``--only`` holds file contents at the pinned commit alone, and a history needs
-    every commit's. ``excluded`` repositories (those of a development sample) are not read."""
-    (OUT / name).mkdir(parents=True, exist_ok=True)
-    (OUT / name / "excluded.txt").write_text("\n".join(sorted(excluded)) + "\n")
-    cmd = [str(SAMPLER / "open-source-repository-sampler"), "run", str(sample_path(name, spec)),
-           "--deep", "--langs", "java", "--work-dir", str(WORK / "clones"),
-           "--run-log", str(OUT / name / "run-log.jsonl"), "--",
+#: Repositories read at once. Each worker's Java processes are held to a share of the machine's
+#: memory; a repository that fails in the parallel pass, for want of memory or anything else, is
+#: read again alone with the memory undivided.
+WORKERS = 8
+MEMORY_SHARE = 0.7
+
+
+def machine_memory_mb() -> int:
+    try:
+        return os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES") // (1024 * 1024)
+    except (ValueError, OSError):
+        return 8192
+
+
+def heap_mb(workers: int, total_mb: int | None = None) -> int:
+    """The Java heap each of ``workers`` gets: an equal part of MEMORY_SHARE of the machine, and
+    at least 512 MB."""
+    total = total_mb if total_mb is not None else machine_memory_mb()
+    return max(512, int(total * MEMORY_SHARE / max(workers, 1)))
+
+
+def pending(name: str, spec: dict, force: bool = False, excluded: set[str] = frozenset()) -> list[dict]:
+    """The usable Java repositories of a sample still to read: not excluded, and (unless
+    ``force``) without tables yet."""
+    path = sample_path(name, spec)
+    path = path / "open-source-repository-sample.csv" if path.is_dir() else path
+    rows = [r for r in _read(path) if r.get("status") == "usable" and r.get("language") == "java"
+            and r["full_name"] not in excluded]
+    return [r for r in rows
+            if force or not (OUT / name / r["full_name"].replace("/", "__") / "meta.json").exists()]
+
+
+def shards(rows: list[dict], workers: int) -> list[list[dict]]:
+    """The repositories dealt out to the workers, the largest first and in turn, so that no worker
+    holds all the large ones."""
+    ordered = sorted(rows, key=lambda r: (-int(r.get("nloc") or 0), r["full_name"]))
+    parts = [ordered[i::workers] for i in range(workers)]
+    return [p for p in parts if p]
+
+
+def _write_rows(path: Path, rows: list[dict]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(rows[0]), lineterminator="\n")
+        w.writeheader()
+        w.writerows(rows)
+
+
+def _run(name: str, rows_csv: Path, tag: str, heap: int | None, force: bool) -> subprocess.Popen:
+    """The sampler's `run` over one list of repositories: it clones each whole at its pinned
+    commit, this module measures it (``history repo``), and the sampler deletes the clone. The
+    clone is whole: the sampler's ``--only`` holds file contents at the pinned commit alone, and a
+    history needs every commit's."""
+    cmd = [str(SAMPLER / "open-source-repository-sampler"), "run", str(rows_csv),
+           "--deep", "--langs", "java", "--work-dir", str(WORK / "clones" / tag),
+           "--run-log", str(OUT / name / "logs" / f"{tag}.jsonl"), "--",
            sys.executable, "-m", "placement_gravity.history", "repo", "--path", "{path}",
            "--name", "{full_name}", "--sample", name] + (["--force"] if force else [])
-    subprocess.run(cmd, check=False, cwd=chain.ROOT)
+    env = dict(os.environ)
+    if heap:      # every Java process the worker starts (the instrument, RefactoringMiner)
+        env["JAVA_TOOL_OPTIONS"] = (env.get("JAVA_TOOL_OPTIONS", "") + f" -Xmx{heap}m").strip()
+    (OUT / name / "logs").mkdir(parents=True, exist_ok=True)
+    out = (OUT / name / "logs" / f"{tag}.out").open("w")
+    return subprocess.Popen(cmd, cwd=chain.ROOT, env=env, stdout=out, stderr=subprocess.STDOUT)
+
+
+def measure_sample(name: str, spec: dict, force: bool = False, excluded: set[str] = frozenset(),
+                   workers: int = WORKERS) -> dict:
+    """Every usable repository of a sample, read ``workers`` at a time, each worker's Java held to
+    its share of the memory (``heap_mb``). Whatever fails in that pass (a repository too large
+    for its share, or anything else) is then read again one at a time, with the memory undivided.
+    What still fails is listed in ``failed.txt`` and reported. ``excluded`` repositories (those of
+    a development sample) are not read. Returns the counts."""
+    (OUT / name).mkdir(parents=True, exist_ok=True)
+    (OUT / name / "excluded.txt").write_text("\n".join(sorted(excluded)) + "\n")
+    todo = pending(name, spec, force, excluded)
+    counts = {"to_read": len(todo), "workers": 0, "heap_mb": None, "retried_alone": 0, "failed": 0}
+    if not todo:
+        return counts
+    # which repositories are read is decided here, by the tables present; the sampler's own logs
+    # of an earlier run would have it skip a repository it once finished
+    for old in (OUT / name / "logs").glob("*.jsonl") if (OUT / name / "logs").exists() else []:
+        old.unlink()
+    parts = shards(todo, max(1, min(workers, len(todo))))
+    counts["workers"], counts["heap_mb"] = len(parts), heap_mb(len(parts)) if len(parts) > 1 else None
+    procs = []
+    for k, part in enumerate(parts):
+        rows_csv = OUT / name / "logs" / f"part{k:02d}.csv"
+        _write_rows(rows_csv, part)
+        procs.append(_run(name, rows_csv, f"part{k:02d}", counts["heap_mb"], force))
+    for p in procs:
+        p.wait()
+    # the sequential pass: what the parallel pass left unread, alone and with all the memory
+    left = pending(name, spec, False, excluded)
+    if left and len(parts) > 1:
+        counts["retried_alone"] = len(left)
+        rows_csv = OUT / name / "logs" / "alone.csv"
+        _write_rows(rows_csv, left)
+        (OUT / name / "logs" / "alone.jsonl").unlink(missing_ok=True)
+        _run(name, rows_csv, "alone", None, False).wait()
+        left = pending(name, spec, False, excluded)
+    counts["failed"] = len(left)
+    (OUT / name / "failed.txt").write_text("".join(r["full_name"] + "\n" for r in left))
+    (OUT / name / "run.json").write_text(json.dumps(counts, indent=1) + "\n")
+    return counts
 
 
 def development_repositories(reg: dict) -> set[str]:
@@ -248,6 +340,8 @@ def main() -> None:
     m = sub.add_parser("measure")
     m.add_argument("--analysis", nargs="*")
     m.add_argument("--force", action="store_true")
+    m.add_argument("--workers", type=int, default=WORKERS,
+                   help=f"repositories read at once (default {WORKERS}); 1 reads them one at a time")
     r = sub.add_parser("repo")          # one cloned repository; called by the sampler's `run`
     r.add_argument("--path", required=True)
     r.add_argument("--name", required=True)
@@ -262,7 +356,9 @@ def main() -> None:
         if a.name in (skip.read_text().split() if skip.exists() else []):
             return
         if a.force or not (out / "meta.json").exists():
-            measure_repo(Path(a.path), out, a.name, before=spec.get("before"))
+            (out / "meta.json").unlink(missing_ok=True)     # tables are whole or absent
+            measure_repo(Path(a.path), out, a.name, before=spec.get("before"),
+                         max_units=spec.get("max_units") or MAX_UNITS)
         return
     if a.cmd == "sample":
         spec = reg["samples"][a.name]
@@ -278,9 +374,9 @@ def main() -> None:
         for source in analysis["sources"]:
             spec = reg["samples"][source["sample"]]
             if source["sample"] not in done and sample_path(source["sample"], spec).exists():
-                measure_sample(source["sample"], spec, a.force, skip)
+                counts = measure_sample(source["sample"], spec, a.force, skip, a.workers)
                 done.add(source["sample"])
-                print(f"{analysis['name']}: {source['sample']}")
+                print(f"{analysis['name']}: {source['sample']} {counts}")
 
 
 if __name__ == "__main__":

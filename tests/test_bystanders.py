@@ -63,3 +63,19 @@ def test_a_plain_accessor_is_organisation_not_logic(records):
 def test_the_field_an_addition_leaves_behind(records):
     c = next(r for r in records if r["kind"] == "class")
     assert c["held_before"] == 4 and c["held_after"] == 5 and c["fields_added"] == 1   # constants held too
+
+
+def test_what_a_change_introduces(records):
+    """Introduced (PLAN.md 4.3b): the values a change adds to a method and the fields it adds to a
+    class. They were not there before, so they are neither needed nor standing by for this change."""
+    hosts = {r["name"]: r for r in records if r["kind"] == "host"}
+    assert hosts["create"]["introduced_method"] == ["checked"]     # an existing method gains a local
+    assert hosts["helper"]["introduced_method"] == ["count"]       # all of a new method's values
+    [x] = hosts["create"]["runs"]
+    assert "checked" not in x["vis_method"]
+    c = next(r for r in records if r["kind"] == "class")
+    assert c["fields_added_names"] == ["audited"]
+    measured = {"records": records}
+    rows = {h["name"]: h for h in tables.host_rows("spring", "c", measured)}
+    assert rows["create"]["introduced_method_values"] == "checked"
+    assert rows["create"]["introduced_class_values"] == "audited"

@@ -54,6 +54,15 @@ h2 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
              class_identity = paste0("C", sample(1:12, n, replace = TRUE)),
              drawn_class = rnbinom(n, size = 2, mu = dr * exp(log(1.15) * byc)),
              drawn_method = rnbinom(n, size = 2, mu = dr * exp(log(1.10) * bym)),
+             left_class = byc + 1, left_method = bym + 2,
+             core_class = 1 + (seq_len(n) %% 2), core_method = seq_len(n) %% 3,
+             periphery_class = byc + 1, periphery_method = bym + 2,
+             uses_core_class = rnbinom(n, size = 2, mu = dr * 3 * (1 + (seq_len(n) %% 2))),
+             uses_core_method = rnbinom(n, size = 2, mu = dr * 3 * (seq_len(n) %% 3)),
+             uses_periphery_class = rnbinom(n, size = 2, mu = dr * (byc + 1)),
+             uses_periphery_method = rnbinom(n, size = 2, mu = dr * (bym + 2)),
+             drawn_class_left = rnbinom(n, size = 2, mu = dr * exp(log(1.15) * (byc + 1))),
+             drawn_method_left = rnbinom(n, size = 2, mu = dr * exp(log(1.10) * (bym + 2))),
              binding = binding, binding_no_param = binding, binding_no_injected = binding, net_added = rpois(n, 4) + 1,
              addition_positions = rpois(n, 8) + 1, declared_crossings = rpois(n, 1),
              pre_positions = rpois(n, 20), host_new = new == 1, shape_found = TRUE,
@@ -128,12 +137,21 @@ check(e$H1$cp$lower > 0, "H1 recovers bystanders rising with the checkpoint in t
 check(e$H1$cp$lower < 0.02 && 0.02 < e$H1$cp$upper + 0.01, "H1's slope is near the simulated one")
 check(e$H1$within_class$lower > 0 && e$H1$within_method$lower > 0,
       "H1 recovers bystanders rising within a class and within a method")
+check(e$reported$H2_left_class$irr_lower > 1 && e$reported$H2_left_method$irr_lower > 1,
+      "the reading with what was introduced beside what stood by is estimated at both levels")
+check(!is.null(e$reported$core_reuse_class$irr) && !is.null(e$reported$core_reuse_method$irr),
+      "how much a core value is come back to is compared between the arms")
 check(e$H1$within_class$places == 48, "H1 within a class is read on the classes with runs at two checkpoints")
 for (lev in c("class", "method")) {
   m <- e$H2[[lev]]
   true <- if (lev == "class") 1.15 else 1.10
-  check(m$irr_lower > 1, paste("H2 recovers later code bound to what stood by, at the", lev, "level"))
-  check(abs(log(m$irr) - log(true)) < 0.05, paste("H2's ratio is within 5% of the true one,", lev))
+  check(m$irr_lower > 1 && m$irr_lower < 3 && 3 < m$irr_upper,
+        paste("H2 recovers the core used three times as much per value as the periphery, at the", lev, "level"))
+  check(e$reported[[paste0("H2_bystanders_", lev)]]$irr_lower > 1,
+        paste("H2 as it stood (later code bound to what stood by) is still estimated, at the", lev, "level"))
+  check(abs(log(e$reported[[paste0("H2_bystanders_", lev)]]$irr) - log(true)) < 0.05,
+        paste("the ratio per value that stood by is within 5% of the true one,", lev))
+  check(abs(log(m$irr) - log(3)) < 0.15, paste("H2's ratio is near the true one,", lev))
   check(!is.null(e$reported[[paste0("H2_function_arm_", lev)]]$irr), paste("H2 in the function arm is reported,", lev))
   t <- e$reported[[paste0("bindings_intrusion_", lev)]]
   check(abs(log(t$irr) - 0.25) < 0.05, paste("the bindings' ratio in later intrusion is reported, near the true one,", lev))

@@ -17,7 +17,7 @@ Writes data/analysis/<name>/:
   wiring files it changes again (reported).
 - ``h2.csv``: one row per problem and host its code went into (H2, H3, H4, the junction × arm
   reading), with what stood by there, the later intrusion at the class and the method, how much of
-  it is bound to what stood by, the problem's own lines, the problem's size and declared crossings,
+  it is bound to what stood by, what the change introduced there (§4.3b), the problem's own lines, the problem's size and declared crossings,
   the host's size and its shape at k − 1.
 - ``spec.json``: what the R models need (seed, resamples, the equivalence margin, the shape measures
   kept by the variation rule, whether the stream has acts).
@@ -145,7 +145,8 @@ def capture_rows(additions: list[dict]) -> list[dict]:
         out.append({"chain_id": a["chain_id"], "arm": a["arm"], "frontend": a.get("frontend", ""),
                     "cp": int(a["cp"]), "share_in_existing": float(a["share_in_existing"]),
                     "heaviest_class": int(a["heaviest_class"]),
-                    "fields_added": int(a.get("fields_added") or 0)})
+                    "fields_added": int(a.get("fields_added") or 0),
+                    "method_values_added": int(a.get("method_values_added") or 0)})
     return out
 
 
@@ -181,6 +182,14 @@ def h2_rows(outcomes: list[dict], host_rows: list[dict], additions: list[dict],
             "bystanders_class": int(o.get("bystanders_class") or 0),
             "bystanders_method": int(o.get("bystanders_method") or 0),
             "drawn_class": int(o.get("drawn_class") or 0), "drawn_method": int(o.get("drawn_method") or 0),
+            # reported (PLAN.md 4.3b): what the change introduced there, what it left (stood by and
+            # introduced together), and the later intrusions bound to each
+            **{k: int(o.get(k) or 0) for lev in ("class", "method")
+               for k in (f"introduced_{lev}", f"drawn_{lev}_introduced", f"left_{lev}", f"drawn_{lev}_left")},
+            # H2 (PLAN.md 4.4): the values the code was bound to there (core), the rest the place
+            # held (periphery), and the later intrusions' uses of each, value by value
+            **{k: int(o.get(k) or 0) for lev in ("class", "method")
+               for k in (f"core_{lev}", f"periphery_{lev}", f"uses_core_{lev}", f"uses_periphery_{lev}")},
             "own_lines": num(o.get("own_lines")), "own_lost": num(o.get("own_lost")),
             "later_checkpoints": int(o["later_checkpoints"]),
             "binding": int(o["binding"]), "binding_no_param": int(h.get("binding_no_param", o["binding"])),
@@ -388,6 +397,8 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
         "bystanders": readings.bystander_summary(by, captured, len(streamed)),
         "reopening": readings.reopening_summary(again),
         "drawn": readings.drawn_summary(h2),
+        "core": readings.core_summary(hosts),
+        "core_reuse": readings.core_reuse(h2),
         "landings": places.summary(landed),
         "own_lines": lost}, indent=1) + "\n")
     (out / "spec.json").write_text(json.dumps(spec, indent=1) + "\n")

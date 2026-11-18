@@ -45,27 +45,40 @@
    "verdict": "descriptive only"
   },
   "H2": {
-   "p": null,
-   "verdict": "descriptive only",
+   "p": 2.56601241844689e-28,
+   "reversed": false,
+   "conditions_met": true,
    "detail": {
     "n": 83,
     "class": {
-     "estimate": 0.0946431444800598,
-     "se": 0.0292104220260187,
-     "lower": 0.0373917693358477,
-     "upper": 0.151894519624272,
+     "estimate": 2.10870150076344,
+     "se": 0.188578386744603,
+     "lower": 1.73909465448136,
+     "upper": 2.47830834704553,
      "level": 0.95,
-     "p_greater": 0.000597549691634284,
-     "p_less": 0.999402450308366,
-     "irr": 1.09926650580377,
-     "irr_lower": 1.03809963678837,
-     "irr_upper": 1.16403744684903
+     "p_greater": 2.49488733110502e-29,
+     "p_less": 1,
+     "irr": 8.23753790028774,
+     "irr_lower": 5.69218769254684,
+     "irr_upper": 11.9210810190828,
+     "records": 113
     },
     "method": {
-     "error": "standard error not computed: bystanders_method"
+     "estimate": 3.00907551321051,
+     "se": 0.274216045137953,
+     "lower": 2.47162194075711,
+     "upper": 3.5465290856639,
+     "level": 0.95,
+     "p_greater": 2.56601241844689e-28,
+     "p_less": 1,
+     "irr": 20.268653158921,
+     "irr_lower": 11.8416377190617,
+     "irr_upper": 34.6926929047437,
+     "records": 130
     }
    },
-   "p_holm": null
+   "p_holm": 1.026404967378756e-27,
+   "verdict": "descriptive only"
   },
   "H3": {
    "p": 3.06447511767692e-06,

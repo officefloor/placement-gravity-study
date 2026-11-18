@@ -242,7 +242,9 @@ def bystander_summary(by: list[dict], captured: list[dict], checkpoints: int) ->
                     "need": mean(rows, "need"), "bystanders": mean(rows, "bystanders"),
                     "by_method": mean(rows, "by_method"), "by_class": mean(rows, "by_class"),
                     "without_constants": mean(rows, "bystanders_no_constants"), "thirds": thirds,
-                    "fields_added_per_addition": mean(adds, "fields_added")}
+                    "fields_added_per_addition": mean(adds, "fields_added"),
+                    "method_values_added_per_addition": mean(
+                        [a for a in adds if "method_values_added" in a], "method_values_added")}
     return out
 
 
@@ -259,7 +261,8 @@ def reopening_summary(rows: list[dict]) -> dict:
 def drawn_summary(h2: list[dict]) -> dict:
     """Per arm, over the problem and host rows whose code was bound there (PLAN.md §4.4, H2): what
     stood by at the placement, the later intrusions there, and how many of them are bound to
-    something that stood by, at the class and at the method."""
+    something that stood by, at the class and at the method; and the same for what the change
+    introduced there, and for either (§4.3b)."""
     out = {}
     for arm in sorted({r["arm"] for r in h2}):
         rows = [r for r in h2 if r["arm"] == arm and r["bound"]]
@@ -272,5 +275,78 @@ def drawn_summary(h2: list[dict]) -> dict:
             drawn = sum(r[f"drawn_{lev}"] for r in rows)
             x[lev] = {"bystanders": statistics.fmean(r[f"bystanders_{lev}"] for r in rows),
                       "later": later, "drawn": drawn, "share": (drawn / later) if later else None}
+            if f"introduced_{lev}" in rows[0]:      # what the change introduced there (§4.3b)
+                took = sum(r[f"drawn_{lev}_introduced"] for r in rows)
+                either = sum(r[f"drawn_{lev}_left"] for r in rows)
+                x[lev].update({"introduced": statistics.fmean(r[f"introduced_{lev}"] for r in rows),
+                               "drawn_introduced": took,
+                               "share_introduced": (took / later) if later else None,
+                               "drawn_left": either, "share_left": (either / later) if later else None})
+        out[arm] = x
+    return out
+
+
+def core_reuse(h2: list[dict]) -> dict:
+    """Per arm and level, over the bound rows (PLAN.md §5, reported beside H4): the later
+    intrusions' uses of core values and of periphery values, per 100 values and later checkpoints."""
+    out = {}
+    for arm in sorted({r["arm"] for r in h2}):
+        rows = [r for r in h2 if r["arm"] == arm and r["bound"] and r["later_checkpoints"] > 0]
+        x = {}
+        for lev in ("class", "method"):
+            if not rows or f"core_{lev}" not in rows[0]:
+                continue
+            for kind in ("core", "periphery"):
+                at_risk = sum(r[f"{kind}_{lev}"] * r["later_checkpoints"] for r in rows)
+                uses = sum(r[f"uses_{kind}_{lev}"] for r in rows)
+                x[f"{kind}_{lev}"] = {"records": sum(1 for r in rows if r[f"{kind}_{lev}"] > 0),
+                                      "values": sum(r[f"{kind}_{lev}"] for r in rows), "uses": uses,
+                                      "per_100": (100 * uses / at_risk) if at_risk else None}
+        out[arm] = x
+    return out
+
+
+def core_summary(hosts: list[dict]) -> dict:
+    """Per arm, over the hosts whose added code is bound there (PLAN.md §5, *Core and periphery*):
+    how the bound uses of a place's pre-existing values are spread over those values, at the class
+    (its fields) and at the method (its parameters and locals). ``top3_share`` is the share of all
+    uses that go to the three most used values of each chain; ``from_start`` the share of uses that go to values no checkpoint of the chain
+    introduced; ``introduced`` the values the chain's changes introduced, and ``promoted`` those
+    of them that bound code of a later checkpoint uses."""
+    truth = lambda x: str(x) == "True"
+    out = {}
+    for arm in sorted({h["arm"] for h in hosts}):
+        mine = [h for h in hosts if h["arm"] == arm]
+        if not mine or "introduced_method_values" not in mine[0]:
+            continue
+        x = {}
+        for lev, col, new in (("class", "need_class_values", "introduced_class_values"),
+                              ("method", "need_method_values", "introduced_method_values")):
+            place = (lambda h: (h.get("chain_id", h.get("chain")), h["type"])) if lev == "class" else \
+                (lambda h: (h.get("chain_id", h.get("chain")), h["type"], h["name"]))
+            born: dict[tuple, int] = {}
+            for h in sorted(mine, key=lambda h: int(h["cp"])):
+                for v in (h.get(new) or "").split():
+                    born.setdefault((place(h), v), int(h["cp"]))
+            uses: dict[tuple, int] = {}
+            later: set[tuple] = set()
+            for h in mine:
+                if int(h["binding"]) < 1 or int(h["net_added"]) <= 0 or truth(h.get("replacement")):
+                    continue
+                for v in set((h.get(col) or "").split()):
+                    key = (place(h), v)
+                    uses[key] = uses.get(key, 0) + 1
+                    if key in born and int(h["cp"]) > born[key]:
+                        later.add(key)
+            total = sum(uses.values())
+            per_chain: dict[str, list[int]] = {}
+            for (p, _), n in uses.items():
+                per_chain.setdefault(p[0], []).append(n)
+            top3 = sum(sum(sorted(ns, reverse=True)[:3]) for ns in per_chain.values())
+            x[lev] = {"values_used": len(uses), "uses": total,
+                      "top3_share": (top3 / total) if total else None,
+                      "from_start": (sum(n for k, n in uses.items() if k not in born) / total) if total else None,
+                      "introduced": len(born), "promoted": len(later),
+                      "promoted_share": (len(later) / len(born)) if born else None}
         out[arm] = x
     return out
