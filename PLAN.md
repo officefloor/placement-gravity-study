@@ -1847,6 +1847,15 @@ author's to set, on the plan and code as they then stand, and starts the experim
 - *To finish:* the development run of the history steps (§3.2) on the three development
   repositories, with every non-merge commit as a unit, looked at and recorded in §6; then one
   commit holding everything.
+- *To finish, left on 19 November 2026:* the development chain's models and report were not run
+  again after H1 and H4 were renamed and the core reuse reading was added (the run was stopped;
+  the code, its tests and the self-test are in place). To do: `./step4_analyse.sh --analysis
+  pilot`, then `./step5_report.sh` (about ten minutes, nothing to measure again), and the core
+  reuse figures recorded in §6. Until then `results/analysis/pilot/REPORT.md` has H2 as restated
+  but the old titles of H1 and H4. An instrument change needs `MEASURE_VERSION`
+  (`placement_gravity/measure.py`) raised, or step 3 keeps the earlier measurements.
+- *Not chased:* the pilot's host table gives 28 bound new methods in Spring where the prepared
+  table gives 29 (§6).
 - *Values confirmed by the author on 18 November 2026:* the class-level rule of H3 (10 distinct
   classes, §5: petclinic gathers on one endpoint and is not expected to pass it; the ui stream and
   the open-source samples are where the class level is read); corpus C's bound of 30 declared
