@@ -151,6 +151,10 @@ Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 Novem
   above 0). They rise over all additions, and **within a place**: among the additions that go into
   one class, the later ones find more of the class's data standing by, and likewise within one
   method. The place itself gathers data; the rise is not code moving to places that hold more.
+  - *Constants count* (decided 17 November 2026; the reason the author's, 19 November 2026). A
+    constant left in a class binds code to that class, and is typically why code is put there; it
+    belongs in a file of its own that any place can use. So a constant gathering in a class is part
+    of what H1 predicts, and H1 read without constants is a reading, not a test of it.
   - *As first registered:* the addition's bindings rise with its host's size and with the checkpoint
     index. That is kept and reported beside it. It was replaced because the bindings an addition has
     are largely the data its problem needs, and because nearly every Spring run into an existing
@@ -218,6 +222,20 @@ Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 Novem
     used alike in both. It is not a condition of H4: few of the function arm's rows have a core
     at the class (one on the development chain), so as a condition it would often not be
     estimable.
+- **H5, choice narrows** (added 19 November 2026, §9; the author's). In the methods arm, a bound
+  addition's **alternatives**, the other places in the code before its checkpoint that hold what
+  its code was bound to (§4.2a), do not rise as the stream goes on: they stay as they are or fall.
+  The author's expectation is that it is always the same place, or that places get restricted over
+  time, especially at the class; there may be choice early and less later. One-sided, as H3: the
+  ratio of the alternatives at the end of the stream to those at its start is shown below the
+  upper margin (1.25), at the class and at the method. A flat count passes; a fall is reported
+  with its size and does not count against. H5 is decided apart from H2: H2 is about what later
+  code comes back to a place for (binding), H5 about whether the placement had anywhere else to
+  go. It is the plan's title read directly: *whether it had a choice*.
+  - *Reported beside it:* the share of placements with no alternative (forced), per arm and third
+    of the stream; the function arm's ratio, and the arms' contrast (its injected parameters are
+    not bindings, so its alternatives are expected to stay open); the alternatives themselves, by
+    name, for each row.
 - **Q1 is descriptive.** Its expected baseline (Steidl and Deissenboeck 2015) is that most
   growth is new methods. So the share of additions that land in an existing host is reported as
   found, with no direction predicted.
@@ -247,6 +265,9 @@ Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 Novem
   outside the band (the difference is then a difference of amount, not placement), or a function arm that moves its coupling into the wiring:
   wiring per problem that rises over the run, or one configuration file that holds most of it
   (§4.5).
+- H5: alternatives that widen over the stream, beyond the margin, at the class or at the method:
+  code would then find more places to go as the system grows, and placement would loosen, not
+  narrow.
 
 Every one of these outcomes is reported whichever way it points.
 
@@ -560,6 +581,34 @@ runs, each run being contiguous positions of one host.
 - **Host size:** the host's positions at *k − 1* (0 for a new host).
 - **Interleaving:** the number of runs per host. An addition split across a host's statements
   is placed against the host's order.
+
+### 4.2a Choice (H5): the other places that could have held the code
+
+Added 19 November 2026 (§9). For each bound addition to a host (§4.3), at each level where its code
+was bound, the **alternatives** are the other places in the code **before its checkpoint** (the
+tree at *k − 1*, every production Java file) that hold what the code was bound to:
+
+- **At the class:** another class that holds injected dependencies of every type the code used
+  from its own class (decided by the author: *the same injected dependency*). Code bound to anything
+  else of its class (its state, a constant, one of its methods) has no other class holding that
+  value, so its alternatives are none: such a placement is forced at the class.
+- **At the method:** another method with a parameter or local of each declared type of the
+  method's values the code used (decided by the author: *the type*). Generic arguments are kept
+  (`List<Owner>` is not `List<Pet>`). A value with no declared type (`var`, an untyped lambda
+  parameter) is left out of the match and counted. Common types (`String`, `int`) will give
+  alternatives that are not real; most reuse is expected to be of domain types specific to the
+  request, or at least common to it.
+- **Recorded, not only counted:** each row keeps its alternatives by name (`choice_*_places`).
+  Some will be in other REST endpoints, where the code's own control flow does not reach, so the
+  control flow binds them too. If types do not separate the places, a refinement by control flow
+  is applied after the analysis and recorded as such (§9), not before.
+- **Forced:** a row with no alternative.
+- **Where read:** corpus A, whose instrument reads the whole tree before each checkpoint
+  (`Pull --places`). A history (corpora B and C) is read light, without the whole tree, so H5 is
+  not read there (§7).
+
+As built: `instrument/Pull.java` (the declared types of each method's values and of each class's
+fields; `--places`, the places of a tree), `tables.choice`, `prepare.h5_rows` (`h5.csv`).
 
 ### 4.3 Bindings (Q2), the measure of gravitation
 
@@ -876,14 +925,23 @@ are not come back to; of those, one or two become key and most do not. The autho
 sinews and veins. This plan says **core** and **periphery**, because *sinew* already names the
 measures of §4.7. For a problem *p* and a host its bound code went into, at each level:
 
-- **The core:** the pre-existing values *p*'s code there was bound to. At the method, the
-  parameters and locals it used; at the class, the fields it used. (A class's other methods bind
-  code too, §4.3, but they are not values and are not counted here.)
+- **The core:** the pre-existing values *p*'s code there was bound to (the binding measure). At the
+  method, the parameters and locals it used; at the class, the fields it used **and the class's
+  methods it called** (decided by the author, 19 November 2026: a method of the class returns a
+  value or does a necessary bound piece of work, so a call to one is a core value).
 - **The periphery:** the rest of the data the place held once *p*'s code was in it: what stood by
-  (§4.3a) and what *p* introduced (§4.3b).
+  (§4.3a) and what *p* introduced (§4.3b); at the class also the class's methods *p*'s code did not
+  call and those its checkpoint added (so that core and periphery are alike in kind; H1's
+  bystanders stay fields only).
 - **A use:** a later intrusion, as defined above (bound there; neither declared nor crossing),
-  whose code in that method, or that class, uses one of those values. Each value used counts, so
-  an intrusion that uses two core values is two uses of the core.
+  whose code in that method, or that class, uses one of those values. **A value counts once**, not
+  each time it is used. **At the class, each method the later change's bound code is in is scored
+  on its own** and the counts summed (decided by the author, 19 November 2026): a later change that
+  edits two methods of the class and adds a third is three scores. Until then the class's methods
+  were pooled and a value used in two of them counted once. Reported beside it: the class on its
+  fields only, as until 19 November 2026.
+- **The core's width** (reported): its number of values per row, per arm and over the thirds of
+  the stream, the width of the sinew.
 - **The outcome of H2** is the uses per value: of the core, and of the periphery. Its test is
   their ratio (§5).
 - **A kind with no values gives no record.** A new method had nothing to be bound to, so it has
@@ -1303,8 +1361,18 @@ on the place an addition lands in, as it stood at *k* − 1, with the harness's 
   §3.3 are the same models with a term for the declared agent commit (within a repository) or for
   the corpus (between them), and the destination of unbound code as a binomial model on the same
   term.
-- **Multiplicity:** H1–H4 are four confirmatory tests at α = 0.05 each, Holm-corrected. All
-  else is descriptive.
+- **H5** (19 November 2026): per bound host and level, its alternatives (§4.2a) as a negative
+  binomial (nbinom2) mixed model on the checkpoint index scaled from 0 (the first checkpoint) to 1
+  (the last), with the chain's intercept, in the methods arm: exp(slope) is the ratio of the end
+  of the stream to its start. One-sided against the upper margin (1.25), 90% interval, at the class
+  and at the method, each needed; p is the larger of the two. A level where every placement was
+  forced (no alternative anywhere) cannot rise, cannot be fitted, and passes with p 0. Reported:
+  the share forced and the mean alternatives per arm and third; the function arm's ratio; the arm
+  × index interaction's arm term; the share of class rows bound to the class's own values; the
+  method values of no declared type. The verdicts are as H3's (unresolved: reaching above the
+  margin without lying above it).
+- **Multiplicity:** H1–H5 are five confirmatory tests at α = 0.05 each, Holm-corrected (four until
+  19 November 2026). All else is descriptive.
 
 **As built** (`analysis/analyse.R` with glmmTMB, `placement_gravity/prepare.py` and
 `placement_gravity/verdict.py`, 16 November 2026; R chosen by the author for glmmTMB's negative
@@ -1332,10 +1400,11 @@ binomial mixed model). These details are fixed with the code before any run is r
 - **The p-value of each hypothesis** for Holm is the larger of its parts: H1, of its three slopes
   (over all runs, within a class, within a method);
   H2, of the class level and the method level; H3, of every shape measure's one-sided test; H4, of the arm
-  term, the interaction and the arm's rate ratio in intrusion at the class and at the method. A hypothesis is supported when its Holm-adjusted p (over the
-  four) is at most 0.05 **and** its conditions hold (H4: the amount in its band and neither wiring
+  term, the interaction and the arm's rate ratio in intrusion at the class and at the method; H5, of
+  the class level and the method level. A hypothesis is supported when its Holm-adjusted p (over the
+  five) is at most 0.05 **and** its conditions hold (H4: the amount in its band and neither wiring
   condition against). The verdicts are supported, not supported, reversed (an interval wholly on
-  the wrong side), unresolved (H3: an interval reaching above the upper margin), not testable (H3: no
+  the wrong side), unresolved (H3 and H5: an interval reaching above the upper margin), not testable (H3: no
   shape measure varies) or descriptive only.
 - **The revisions of 16 November 2026** (§9) are built: the checkpoint intercept, the centred host
   size, the new-host term and the lagged formation term in `analysis/analyse.R` (its self-test
@@ -1684,6 +1753,20 @@ binomial mixed model). These details are fixed with the code before any run is r
   0.43] at the method, amount 1.076 in the band, largest wiring file 0.16. Size or data still
   against its direction (0.88 per value that stood by at the class, size 3.05). Nothing in the
   plan was changed after these were seen.
+- **H5 and the H2 of 19 November 2026 (evening), on the development chain** (as built; measured
+  again at `MEASURE_VERSION` 18; one chain per arm, descriptive only). H2 with the class's called
+  methods as core values and each later method scored on its own: 17.5 [11.9, 25.6] at the class
+  (8.5 [5.8, 12.5] on the fields only), 20.3 at the method as before. The core's width at the class
+  in Spring 1.1, 1.25 and 2 values a row over the thirds of the stream (OfficeFloor about 1). **H5
+  at the class went the predicted way:** the alternatives' ratio end to start 0.16 [0.03, 0.92];
+  in Spring 54% of class rows forced (bound to the class's own state, constants or methods), the
+  mean alternatives 3.5, 3.2, 1.3 over the thirds; OfficeFloor 90% forced at the class. **H5 at the
+  method went against it:** 2.5 [0.9, 7.1], about 20 alternatives a row in Spring and 40 in
+  OfficeFloor, rising with the code base. A scratch split (by the bound values' names) shows the
+  rise in rows bound to domain types (`Owner`, its DTOs: 10, 15, 23 over the thirds in Spring) as
+  well as in those bound to `String`s: types do not separate the places at the method. Every new
+  method that handles an owner counts as an alternative, whether or not the request's control
+  flow reaches it. This is the case §4.2a foresaw (a refinement by control flow); not yet decided.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
@@ -1707,6 +1790,14 @@ binomial mixed model). These details are fixed with the code before any run is r
   reported; corpus B is drawn by an independent sampler.
 
 ## 7. Threats
+
+- **H5's alternatives are found by type** (§4.2a). A common type (`String`, `int`, `Long`) at the
+  method makes places look like alternatives that the code's control flow could never reach, which
+  biases the count up; a constant or state of the class makes the class forced by definition, which
+  biases it down. Neither should change with the checkpoint by itself, and H5 is about the trend,
+  but a stream that comes to use more common types would read as choice widening. The alternatives
+  are kept by name for that check. H5 is read on corpus A only: a history is read without its whole
+  tree.
 
 - **Agent-written code (corpus A).** Placement by an agent may not be placement by people.
   Corpus B is the check, which is why it is drawn pre-AI. There is a specific reason for concern:
@@ -1897,62 +1988,27 @@ author's to set, on the plan and code as they then stand, and starts the experim
   `open-source-human-confirm`, `history.chosen`, `history.sample_excluded`, two tests). Corpus C
   stays as it is: its own seed (`20261119`), target 100, read only if at least 10 are usable; no
   second set.
-- **Decided by the author on 19 November 2026 (evening), NOT YET DRAFTED OR BUILT** (the session
-  stopped here; this is the resume point):
-  - *H2 is about binding only.* The core of a row stays what its own code used (the binding
-    measure).
-  - *A later intrusion counts a value once*, not each time it uses it. The code already does
-    (`tables.outcome_rows`: per checkpoint the set of values used).
-  - *A later change's methods are scored separately at the class*: where a later change edits two
-    methods of the class and adds a third, each method's distinct core and periphery values are
-    counted on its own and summed. The code now pools them (`uses_c` is one set per class and
-    checkpoint, so a value used in two methods counts once). To change in `tables.outcome_rows`.
-    (A problem's own code is already one row per method it went into.)
-  - *Calling another method of the class is a core value*: a method of the class that the code
-    calls returns a value or does a bound piece of work. The instrument must then name the
-    class's pre-existing methods called (it counts them, `binding_class_method`, but lists only
-    fields as values). Open, the drafter's question: the class's methods not called (and those
-    the change adds) then belong to the periphery, so that core and periphery are alike in kind;
-    H1's bystanders stay fields only.
-  - *Open, the author's question on the fit:* "is the fitting trying to average the methods to
-    find consistency between them? I would be looking at counts only, particularly for the core,
-    as we are looking at sinew width." The drafter's answer, to give: the model is already a
-    count model. It pools the uses of every row's core and of every row's periphery, each
-    against its number of values and later checkpoints, with the problem terms; it does not
-    compare methods with each other, and has no term per row. What is to be decided: whether H2
-    stays a rate per value, or is read on counts per row (the core's uses against the
-    periphery's, unscaled), and whether the core's width (its number of values) is reported per
-    row and over the stream.
-  - *H1 counts constants* (as decided 17 November 2026), now with the author's reason: a
-    constant in a class binds code to that class and is typically why code is put there; it
-    belongs in a reusable file, and leaving it in the class is the pull. So H1 without constants
-    is a reading, not a weakness of H1. To add to §2 and §4.3a.
-  - **A new hypothesis, H5, choice narrows** (separate from H2, which stays on binding; Holm then
-    over five). At each bound addition, count the places in the code at that checkpoint where
-    every pre-existing value its code was bound to is also available; one place means the
-    placement was forced. The author expects some choice early and less as the stream goes on,
-    especially at the class. Measured:
-    - *at the class*, by the same injected dependency (its type) held by another class;
-    - *at the method*, by the type of each bound parameter or local, among another method's
-      parameters and locals. Common types will give false alternatives; most reuse is expected to
-      be of domain types specific to the request.
-    - *The alternatives are recorded*, not only counted, since some will be in other REST
-      endpoints, where the control flow would bind them too. If types do not separate the
-      places, a control-flow refinement is applied after the analysis, recorded as such.
-    - *Its direction* (the author, 19 November 2026, later): the alternatives may stay flat or
-      fall, but should not rise. "It is always the same place, or places get restricted over
-      time"; an increase is unlikely. So H5 is one-sided, a "not above" like H3: what counts
-      against it is choice that widens as the stream goes on. Drafter's proposal, not yet put to
-      the author: the rate ratio of the alternatives over the whole stream (last checkpoint
-      against first) shown below the margin of 1.25, as H3's (so a flat trend can pass), with the
-      slope and its sign reported; a fall is reported with its size and does not count against.
-    - Still to settle (drafter to propose): the test's form (as just proposed, or on the share
-      forced); class and method both, or the class as the test and the
-      method reported; how a class's own state, constants and methods count (held by no other
-      class, so binding to them leaves one place); the function arm (its injected parameters are
-      not bindings) as H5's contrast or as part of H4.
-  - *The tag stays unset* (the author: "still to hold off, as I want to think about H2 in terms
-    of placement choice").
+- *Decided by the author on 19 November 2026 (evening), drafted and built the same day* (§2, §4.2a,
+  §4.4, §5, §7, §9 rows 49 to 53):
+  - H2 is about binding only; the core is what a row's own code used; a value counts once; at the
+    class each method of a later change is scored on its own; a call to a class's method is a core
+    value (and its uncalled and added methods periphery: the drafter's choice, not yet spoken to).
+  - H1 counts constants, with the author's reason.
+  - **H5, choice narrows**, one-sided as H3 (the author agreed the margin, 1.25, on the
+    drafter's proposal): alternatives at the class by injected dependency type, at the method by
+    the types of the bound values, recorded by name; corpus A only.
+  - *Chosen while drafting and not yet spoken to:* a level where every placement was forced passes
+    H5 with p 0; H5 needs both levels; the model has the chain's intercept and no checkpoint
+    intercept (the index is the term); a value of no declared type is left out of the match.
+- *Open, the author's question on H2's fit* ("is the fitting trying to average the methods to find
+  consistency between them? I would be looking at counts only, particularly for the core, as we
+  are looking at sinew width"). The drafter's answer: the model is a count model. It pools the uses
+  of every row's core and of every row's periphery, each against its number of values and later
+  checkpoints, with the problem terms; it does not compare methods with each other and has no term
+  per row. H2 stays a rate per value until the author decides otherwise; the core's width is now
+  reported per row, per arm and over the stream (§4.4).
+- *The tag stays unset* (the author, 19 November 2026: "still to hold off, as I want to think about
+  H2 in terms of placement choice"; H5 now carries choice).
 - *Not built, and said so where it matters:* the issue-linked unit of corpus B (§3.2); the ranks
   of the landing reading on a history; a reading of what unbound code leaves behind per class
   (the fields it adds to the class it enters, and whether later code is bound to them), which
@@ -2100,6 +2156,11 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 46 | A third kind of value, **introduced**, beside needed and bystanding: the parameters and locals a change adds to a method and the fields it adds to a class. Reported per addition and per bound row, and H2 is read again on what stood by and what was introduced together. H2 is unchanged | §4.3b, §4.4, §5, `Pull.java`, `tables.py`, `analyse.R` | Decided by the author on 19 November 2026, after seeing on the development chain that half of Spring's bound rows have nothing standing by at the method, most of them new methods (§6, §7). The author's argument: a new method brings parameters onto the control flow, so it adds data for later code to be bound to, and added fields are the same thing at the class |
 | 47 | H2 restated: a core draws code in. Later intrusions use the values a problem's code was bound to (the core) more, per value, than the rest the place held (the periphery: what stood by and what was introduced); the rate ratio above 1 at the class and at the method. H2 as it stood (per value that stood by) is reported | §1, §2, §4.4, §5, §7, `tables.py`, `analyse.R`, `readings.py` | Decided by the author on 19 November 2026, after the development chain showed bound uses going to a few values there from the start and introduced values hardly ever used again (§6): a few key values everything hangs off, and many that pass through. The operational form is the drafter's and is listed in §8 for the author |
 | 48 | H1 renamed *the periphery grows* and H4 *function injection forms no core*; their tests unchanged. Reported beside H4: how much a core value is come back to, function arm against methods arm | §1, §2, §5, §7, `analyse.R`, `readings.py`, `report.py` | Decided by the author on 19 November 2026 on the drafter's suggestion, after H2 as restated had been run on the development chain (§6): with a core that draws code in, H1's rise is the cost of the core and not the pull, and the arms differ most in how much a core value is come back to. Not made a condition of H4 because the function arm has few rows with a core at the class |
+| 49 | Corpus B is two sets of 300: `long-method-slim-study`'s own sample (seed `20261101`, the first 100 usable of each tier in draw order) and a confirming set (seed `20261118`) without its repositories | §3.2, `runs.yaml`, `history.chosen`, `history.sample_excluded` | Decided by the author on 19 November 2026: one set shared with that study, one new to confirm it. Corpus C unchanged (its own seed, 100, read only if at least 10 are usable) |
+| 50 | H2 at the class: each method a later change's bound code is in is scored on its own (a value once per method); a call to a class's method is a core value, its uncalled and added methods periphery. The class on its fields only is reported | §2, §4.4, `tables.outcome_rows`, `Pull.java` (the class's methods before and added) | Decided by the author on 19 November 2026 ("H2 is all about binding"); the periphery's methods the drafter's choice, for like with like |
+| 51 | H1 counts constants, now with the author's reason: a constant in a class binds code to it and belongs in a file of its own | §2 | Decided 17 November 2026; reason given 19 November 2026, so H1 without constants is a reading |
+| 52 | H5, choice narrows: a bound addition's alternatives (other places holding what it was bound to, by injected dependency type at the class and by value type at the method) do not rise over the stream; one-sided below 1.25 at the class and at the method; Holm over five | §2, §4.2a, §5, §7, `Pull.java --places`, `tables.choice`, `prepare.h5_rows`, `analyse.R`, `verdict.h5`, `report.py` | The author's, 19 November 2026: "always the same place, or places get restricted over time"; kept apart from H2, which stays on binding. Its margin the drafter's proposal, agreed by the author |
+| 53 | The core's width (values per row) reported per arm and over the stream | §4.4, `analyse.R`, `report.py` | The author's question on H2's fit ("counts only, particularly for the core, as we are looking at sinew width"); H2's test unchanged until the author decides |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

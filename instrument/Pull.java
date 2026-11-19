@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -95,7 +96,7 @@ import net.officefloor.sinewslim.javaparser.ParsedFile;
 public final class Pull {
 
 	/** Bump whenever a field's meaning changes. */
-	static final int VERSION = 11;
+	static final int VERSION = 12;
 
 	/** A removed position's text must be at least this long to mark an added one as moved. */
 	static final int MOVED_MIN_CHARS = 12;
@@ -109,6 +110,10 @@ public final class Pull {
 		}
 		if (args[0].equals("--shape")) {
 			shape(Path.of(args[1]), Path.of(args[2]));
+			return;
+		}
+		if (args[0].equals("--places")) {
+			places(Path.of(args[1]), Path.of(args[2]));
 			return;
 		}
 		if (args[0].equals("--methods")) {
@@ -155,7 +160,7 @@ public final class Pull {
 
 	/** A type: its fields, the names of its methods, and which of its fields hold injected dependencies. */
 	record T(String file, String name, int origLine, Set<String> fields, Set<String> utilities, Set<String> methods,
-			Set<String> injected, Set<String> constants) {
+			Set<String> injected, Set<String> constants, Map<String, String> fieldTypes) {
 
 		/** The fields the class holds: state, injected dependencies and constants (not utilities). */
 		int held() {
@@ -514,6 +519,16 @@ public final class Pull {
 			s.append(",\"moved_text\":").append(nMovedText);
 			s.append(",\"removed\":").append(removed);
 			s.append(",\"params\":").append(paramCount(m.signature));
+			// choice (H5, PLAN.md 4.2a): the declared type of each of the method's parameters and locals,
+			// and of each field of its class, so that the places holding the same types can be found
+			s.append(",\"var_types\":").append(typeMap(varTypes(m.node)));
+			s.append(",\"field_types\":").append(typeMap(m.owner == null ? Map.of() : m.owner.fieldTypes));
+			// core and periphery at the class (H2): the class's methods that were there before the change
+			// (a call to one is a core value) and those the change added to it
+			s.append(",\"class_methods_pre\":").append(strs(new TreeSet<>(preMethods)));
+			Set<String> methodsAdded = new TreeSet<>(m.owner == null ? Set.of() : m.owner.methods);
+			methodsAdded.removeAll(bt == null ? Set.of() : bt.methods);
+			s.append(",\"class_methods_added\":").append(strs(methodsAdded));
 			// introduced (PLAN.md 4.3b): the parameters and locals the method has after the change that
 			// were not there before it. All of a new method's values are introduced.
 			Set<String> introduced = new TreeSet<>(ownVars);
@@ -1090,6 +1105,81 @@ public final class Pull {
 	}
 
 	// ----------------------------------------------------------------------------------------
+	// choice (H5, PLAN.md 4.2a): the places of a tree, by the types they hold
+	// ----------------------------------------------------------------------------------------
+
+	/** A type as written, without spaces (generic arguments kept: List<Owner> is not List<Pet>). */
+	static String typeText(com.github.javaparser.ast.type.Type t) {
+		return t.asString().replaceAll("\\s+", "");
+	}
+
+	/** The declared type of each parameter and local of a method (a lambda's untyped parameters are left
+	 * out; a local declared {@code var} has the type "var"). */
+	static Map<String, String> varTypes(Node callable) {
+		Map<String, String> out = new TreeMap<>();
+		for (com.github.javaparser.ast.body.Parameter p : callable.findAll(com.github.javaparser.ast.body.Parameter.class)) {
+			if (!(p.getType() instanceof com.github.javaparser.ast.type.UnknownType)) {
+				out.putIfAbsent(p.getNameAsString(), typeText(p.getType()));
+			}
+		}
+		for (com.github.javaparser.ast.body.VariableDeclarator v : callable
+				.findAll(com.github.javaparser.ast.body.VariableDeclarator.class)) {
+			if (v.getParentNode().filter(n -> n instanceof FieldDeclaration).isEmpty()) {
+				out.putIfAbsent(v.getNameAsString(), typeText(v.getType()));
+			}
+		}
+		return out;
+	}
+
+	static String typeMap(Map<String, String> m) {
+		StringBuilder s = new StringBuilder("{");
+		for (Map.Entry<String, String> e : new TreeMap<>(m).entrySet()) {
+			s.append(s.length() > 1 ? "," : "").append(q(e.getKey())).append(':').append(q(e.getValue()));
+		}
+		return s.append('}').toString();
+	}
+
+	/**
+	 * For each line {@code unit<TAB>dir}, one record of the places of every .java file under dir: each
+	 * class with the types of its injected dependencies, and each method with the types of its
+	 * parameters and locals. H5 counts, for a bound addition, the other places that hold the same types.
+	 */
+	static void places(Path listing, Path out) throws IOException {
+		try (BufferedWriter w = Files.newBufferedWriter(out, StandardCharsets.UTF_8)) {
+			for (String[] r : rows(listing)) {
+				Path root = Path.of(r[1]);
+				StringBuilder classes = new StringBuilder(), methods = new StringBuilder();
+				List<String> problems = new ArrayList<>();
+				try (var files = Files.walk(root)) {
+					for (Path p : files.filter(x -> x.toString().endsWith(".java")).sorted().toList()) {
+						F f = file(root.relativize(p).toString(), p, problems, r[0]);
+						if (f == null) {
+							continue;
+						}
+						for (T t : f.types()) {
+							Set<String> types = new TreeSet<>();
+							t.injected().forEach(x -> {
+								if (t.fieldTypes().containsKey(x)) {
+									types.add(t.fieldTypes().get(x));
+								}
+							});
+							classes.append(classes.length() > 0 ? "," : "").append("{\"name\":").append(q(t.name()))
+									.append(",\"injected_types\":").append(strs(types)).append('}');
+						}
+						for (M m : f.methods()) {
+							methods.append(methods.length() > 0 ? "," : "").append("{\"type\":").append(q(m.type()))
+									.append(",\"signature\":").append(q(m.signature())).append(",\"types\":")
+									.append(strs(new TreeSet<>(varTypes(m.node()).values()))).append('}');
+						}
+					}
+				}
+				w.write("{\"unit\":" + q(r[0]) + ",\"classes\":[" + classes + "],\"methods\":[" + methods
+						+ "],\"problems\":" + problems.size() + "}\n");
+			}
+		}
+	}
+
+	// ----------------------------------------------------------------------------------------
 	// shape (PLAN.md §4.7): every method of a tree, as the earlier studies read it
 	// ----------------------------------------------------------------------------------------
 
@@ -1259,7 +1349,9 @@ public final class Pull {
 			TypeDeclaration<?> t = ptypes.get(i);
 			Set<String> fields = new HashSet<>(), utilities = new HashSet<>(), methods = new HashSet<>();
 			Set<String> constants = new HashSet<>();
+			Map<String, String> fieldTypes = new HashMap<>();
 			for (FieldDeclaration fd : t.getFields()) {
+				fd.getVariables().forEach(v -> fieldTypes.put(v.getNameAsString(), typeText(v.getType())));
 				// a class utility (a logger) is not a binding: any class can declare its own
 				fd.getVariables().forEach(v -> (utility(v) ? utilities : fields).add(v.getNameAsString()));
 				if (fd.isStatic() && fd.isFinal()) {
@@ -1274,7 +1366,8 @@ public final class Pull {
 				methods.add(md.getNameAsString());
 			}
 			int oline = i < otypes.size() ? ((Node) otypes.get(i)).getBegin().map(p -> p.line).orElse(0) : 0;
-			T tt = new T(rel, qualifiedName(t), oline, fields, utilities, methods, injectedFields(t), constants);
+			T tt = new T(rel, qualifiedName(t), oline, fields, utilities, methods, injectedFields(t), constants,
+					fieldTypes);
 			typeOf.put(t, tt);
 			types.add(tt);
 		}

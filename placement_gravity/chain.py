@@ -232,6 +232,16 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path, java_src: str = 
                     str(work / "hints.tsv"), str(work / "pull.jsonl")], check=True)
     subprocess.run(["java", "-cp", CLASSPATH, "Pull", "--amount", str(work / "amount.tsv"),
                     str(work / "amount.jsonl")], check=True)
+    # choice (H5, PLAN.md 4.2a): the places of the tree before each checkpoint, by the types they
+    # hold. A history is read light, without the whole tree, so it has none.
+    places = {}
+    if not light:
+        (work / "places.tsv").write_text("\n".join(f"{line.split(chr(9))[0]}\t{line.split(chr(9))[1]}"
+                                                   for line in shapes) + "\n")
+        subprocess.run(["java", "-cp", CLASSPATH, "Pull", "--places", str(work / "places.tsv"),
+                        str(work / "places.jsonl")], check=True)
+        places = {r["unit"]: r for r in (json.loads(l) for l in
+                                         (work / "places.jsonl").read_text().splitlines() if l)}
     (work / "shape.tsv").write_text("\n".join(shapes) + "\n")
     shaped = shape.run(work / "shape.tsv", work / "shape.jsonl")
     trees = {line.split("\t")[0]: Path(line.split("\t")[1]) for line in shapes}
@@ -247,4 +257,4 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path, java_src: str = 
     return {"checkpoints": [c.__dict__ for c in cps], "records": records, "amount": amount,
             "wiring": wires, "wiring_changes": wire_changes, "refactorings": found, "hints": len(hint_lines),
             "shape": methods, "shape_problems": [r for r in shaped if r["kind"] == "problem"],
-            "hints_unmatched": unmatched}
+            "hints_unmatched": unmatched, "places": places}

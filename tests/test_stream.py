@@ -145,3 +145,44 @@ def test_what_stood_by_is_read_over_the_runs_of_one_host():
             {"vis_method": ["a", "b", "c"], "need_method": ["b"], "need_field_names": ["X"], "by_field_names": ["Y"]}]
     assert tables.standing(runs) == {"need_method_values": "a b", "by_method_values": "c",
                                      "need_class_values": "X", "by_class_values": "Y"}
+
+
+def test_at_the_class_each_later_method_is_scored_on_its_own_and_called_methods_are_values():
+    """cp3's code in A.f was bound to the field `repo` and called A's method `check` (its core at
+    the class); A also had `audit`, not called (periphery). cp5 changes two methods of A, g and h,
+    both using `repo`, and h calls `audit`: two uses of the core (one per method) and one of the
+    periphery. Until 19 November 2026 the two methods were pooled and `repo` counted once."""
+    host = {"type": "A", "name": "f", "before_type": "A", "before_name": "f", "removed": 0,
+            "replacement": False, "pre_positions": 5, "binding_method": 0, "binding_class": 1, "binding": 1,
+            "net_added": 2, "host_new": False, "need_class_values": "", "by_class_values": "",
+            "need_method_values": "", "by_method_values": "",
+            "class_methods_pre": "check() audit()", "class_methods_added": "", "called_class_methods": ""}
+    hosts = [{**host, "cp": 3, "need_class_values": "repo", "called_class_methods": "check()"},
+             {**host, "cp": 5, "name": "g", "before_name": "g", "need_class_values": "repo"},
+             {**host, "cp": 5, "name": "h", "before_name": "h", "need_class_values": "repo",
+              "called_class_methods": "audit()"}]
+    r = {(r["cp"], r["name"]): r for r in tables.outcome_rows("x", "c", hosts, {})}[(3, "f")]
+    assert (r["core_class"], r["uses_core_class"]) == (2, 2)
+    assert (r["periphery_class"], r["uses_periphery_class"]) == (1, 1)
+    assert (r["core_class_fields"], r["uses_core_class_fields"], r["periphery_class_fields"]) == (1, 2, 0)
+
+
+def test_choice_counts_the_other_places_holding_the_same_types():
+    places = {"cp04": {"classes": [{"name": "OwnerController", "injected_types": ["ClinicService"]},
+                                   {"name": "VetController", "injected_types": ["ClinicService", "Mapper"]},
+                                   {"name": "PetController", "injected_types": ["Mapper"]}],
+                       "methods": [{"type": "OwnerController", "signature": "add(Owner)", "types": ["Owner"]},
+                                   {"type": "OwnerController", "signature": "edit(Owner,int)", "types": ["Owner", "int"]},
+                                   {"type": "VetController", "signature": "list()", "types": ["List<Vet>"]}]}}
+    r = {"unit": "cp04", "type": "OwnerController", "before_type": "OwnerController",
+         "before_signature": "add(Owner)", "host_new": False,
+         "var_types": {"owner": "Owner", "x": "var"}, "field_types": {"clinicService": "ClinicService",
+                                                                       "LIMIT": "int"}}
+    c = tables.choice(r, ["owner", "x"], ["clinicService"], ["clinicService"], [], places)
+    assert (c["choice_class"], c["choice_class_places"], c["choice_class_own"]) == (1, "VetController", False)
+    assert (c["choice_method"], c["choice_method_places"], c["choice_method_untyped"]) == (1, "OwnerController#edit(Owner,int)", 1)
+    # bound to a constant of its own class: no other class holds it
+    c = tables.choice(r, [], ["clinicService", "LIMIT"], ["clinicService"], [], places)
+    assert (c["choice_class"], c["choice_class_own"], c["choice_method"]) == (0, True, None)
+    # a history has no places: nothing is counted
+    assert tables.choice(r, ["owner"], [], [], [], {})["choice_method"] is None

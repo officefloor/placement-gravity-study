@@ -41,7 +41,7 @@
      "checkpoint_intercept": false
     }
    },
-   "p_holm": 0.001998001998001998,
+   "p_holm": 0.002997002997002997,
    "verdict": "descriptive only"
   },
   "H2": {
@@ -51,17 +51,17 @@
    "detail": {
     "n": 83,
     "class": {
-     "estimate": 2.10870150076344,
-     "se": 0.188578386744603,
-     "lower": 1.73909465448136,
-     "upper": 2.47830834704553,
+     "estimate": 2.86014690603825,
+     "se": 0.194256406180042,
+     "lower": 2.47941134615918,
+     "upper": 3.24088246591731,
      "level": 0.95,
-     "p_greater": 2.49488733110502e-29,
+     "p_greater": 2.27511682797598e-49,
      "p_less": 1,
-     "irr": 8.23753790028774,
-     "irr_lower": 5.69218769254684,
-     "irr_upper": 11.9210810190828,
-     "records": 113
+     "irr": 17.4640923287552,
+     "irr_lower": 11.9342372151831,
+     "irr_upper": 25.5562643316039,
+     "records": 127
     },
     "method": {
      "estimate": 3.00907551321051,
@@ -77,7 +77,7 @@
      "records": 130
     }
    },
-   "p_holm": 1.026404967378756e-27,
+   "p_holm": 1.283006209223445e-27,
    "verdict": "descriptive only"
   },
   "H3": {
@@ -150,7 +150,7 @@
      }
     }
    },
-   "p_holm": 9.19342535303076e-06,
+   "p_holm": 1.225790047070768e-05,
    "verdict": "descriptive only"
   },
   "H4": {
@@ -238,7 +238,61 @@
      "concentration_against": false
     }
    },
-   "p_holm": 0.001998001998001998,
+   "p_holm": 0.002997002997002997,
+   "verdict": "descriptive only"
+  },
+  "H5": {
+   "p": 0.865106051113045,
+   "state": "unresolved",
+   "levels": {
+    "class": "not above",
+    "method": "unresolved"
+   },
+   "reversed": false,
+   "conditions_met": false,
+   "detail": {
+    "margin": [
+     0.8,
+     1.25
+    ],
+    "class": {
+     "estimate": -1.81874982256589,
+     "se": 1.05271026268885,
+     "lower": -3.55030411627868,
+     "upper": -0.0871955288531008,
+     "level": 0.9,
+     "p_greater": 0.957977480342957,
+     "p_less": 0.0420225196570425,
+     "irr": 0.162228438542781,
+     "irr_lower": 0.0287159053519105,
+     "irr_upper": 0.916497876333822,
+     "p_upper": 0.0262108939584391,
+     "above": false,
+     "p_tost": 0.935203987343024,
+     "outside": false,
+     "n": 48,
+     "all_forced": false
+    },
+    "method": {
+     "estimate": 0.919056601054052,
+     "se": 0.630612417559834,
+     "lower": -0.118208521169876,
+     "upper": 1.95632172327798,
+     "level": 0.9,
+     "p_greater": 0.0725025471379572,
+     "p_less": 0.927497452862043,
+     "irr": 2.50692424431249,
+     "irr_lower": 0.888510759993451,
+     "irr_upper": 7.07326174279315,
+     "p_upper": 0.865106051113045,
+     "above": false,
+     "p_tost": 0.865106051113045,
+     "outside": false,
+     "n": 56,
+     "all_forced": false
+    }
+   },
+   "p_holm": 0.865106051113045,
    "verdict": "descriptive only"
   }
  }

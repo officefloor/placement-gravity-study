@@ -91,6 +91,44 @@ def _hosts(measured: dict):
     return [r for r in measured["records"] if r["kind"] == "host"]
 
 
+def _type(t: str | None) -> str:
+    return (t or "").replace("$", ".")
+
+
+def choice(r: dict, tm: list[str], tf: list[str], ti: list[str], tc: list[str], places: dict | None) -> dict:
+    """Choice (H5, PLAN.md 4.2a): the other places in the tree before the checkpoint that hold what
+    this host's code was bound to. At the class: the other classes holding injected dependencies of
+    every type the code used; code bound to anything else of its class (its state, a constant, a
+    method) has no other class, so none. At the method: the other methods with a parameter or local
+    of every type of the method's values the code used (a value of no declared type, ``var`` or an
+    untyped lambda parameter, is left out of the match and counted). None where the code is not
+    bound at that level, or the tree's places were not read (a history)."""
+    out = {"choice_class": None, "choice_class_own": None, "choice_class_places": "",
+           "choice_method": None, "choice_method_untyped": None, "choice_method_places": ""}
+    index = (places or {}).get(r["unit"])
+    if index is None:
+        return out
+    vt, ft = r.get("var_types", {}), r.get("field_types", {})
+    if tf or tc:
+        own = bool(set(tf) - set(ti) or tc)
+        need = {ft[f] for f in ti if f in ft}
+        here = _type(r.get("before_type") or r["type"])
+        alt = [] if own or not need else sorted(
+            c["name"] for c in index["classes"]
+            if _type(c["name"]) != here and need <= set(c["injected_types"]))
+        out.update({"choice_class": len(alt), "choice_class_own": own, "choice_class_places": " ".join(alt)})
+    if tm and not r["host_new"]:
+        typed = {vt[v] for v in tm if vt.get(v, "var") != "var"}
+        untyped = sum(1 for v in tm if vt.get(v, "var") == "var")
+        here = (_type(r.get("before_type")), r.get("before_signature"))
+        alt = [] if not typed else sorted(
+            f"{m['type']}#{m['signature']}" for m in index["methods"]
+            if (_type(m["type"]), m["signature"]) != here and typed <= set(m["types"]))
+        out.update({"choice_method": len(alt) if typed else None, "choice_method_untyped": untyped,
+                    "choice_method_places": " ".join(alt)})
+    return out
+
+
 def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
     """One row per host and addition. With ``measured["shape"]`` (chain.measure), an existing
     host also carries S1 to S5 of its version at k − 1 (PLAN.md §4.7, ``shape.host_shape``)."""
@@ -138,6 +176,12 @@ def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
             # checkpoint adds to the class
             "introduced_method_values": " ".join(sorted(r.get("introduced_method", []))),
             "introduced_class_values": " ".join(sorted(fields_in.get((r["unit"], r["path"], r["type"]), []))),
+            # core and periphery at the class (H2): the class's methods there before the change, and
+            # those it added, as values "name()"
+            "class_methods_pre": " ".join(m + "()" for m in r.get("class_methods_pre", [])),
+            "class_methods_added": " ".join(m + "()" for m in r.get("class_methods_added", [])),
+            "called_class_methods": " ".join(m + "()" for m in tc),
+            **choice(r, tm, tf, ti, tc, measured.get("places")),
         })
         if shaped:
             rows[-1].update(shape.host_shape(rows[-1], shaped, in_class))
@@ -350,8 +394,10 @@ def outcome_rows(arm: str, chain: str, hosts: list[dict], streamed: dict[int, di
     **core** is the pre-existing values its code was bound to there (``core_*``: the method's
     values it used, the class's fields it used) and the **periphery** is the rest of what the
     place then held (``periphery_*``: what stood by and what it introduced). ``uses_core_*`` and
-    ``uses_periphery_*`` count, over the later intrusions, each use of one of those values: a
-    later intrusion that uses two core values counts twice, so each is a count per value."""
+    ``uses_periphery_*`` count, over the later intrusions, each value of those it uses, once
+    (19 November 2026): at the class, each method the later change's bound code is in is scored on
+    its own and the counts summed, and the class's methods are values too (a call to one that was
+    there is a core value; those not called, and those added, are periphery)."""
     own = identities(hosts)
     ct_identity = (ct or {}).get("ct_identity", {})
     ct_touched = (ct or {}).get("ct_touched", {})
@@ -391,11 +437,16 @@ def outcome_rows(arm: str, chain: str, hosts: list[dict], streamed: dict[int, di
     # what stood by?)
     uses_m: dict[tuple[str, int], set[str]] = {}
     uses_c: dict[tuple[str, int], set[str]] = {}
+    # H2 at the class (19 November 2026): each method a later change's bound code is in is scored
+    # on its own, a value counted once per method; the class's methods it calls are values too
+    uses_c_hosts: dict[tuple[str, int], list[set[str]]] = {}
     for h in hosts:
         if is_bound(h):
             uses_m.setdefault((ident(h), h["cp"]), set()).update(h.get("need_method_values", "").split())
             uses_c.setdefault((cls[(h["cp"], h["type"])], h["cp"]), set()).update(
                 h.get("need_class_values", "").split())
+            uses_c_hosts.setdefault((cls[(h["cp"], h["type"])], h["cp"]), []).append(
+                set(h.get("need_class_values", "").split()) | set(h.get("called_class_methods", "").split()))
     last = max((h["cp"] for h in hosts), default=0)
 
     def split(js: list[int], k: int) -> tuple[int, int, int]:
@@ -432,13 +483,20 @@ def outcome_rows(arm: str, chain: str, hosts: list[dict], streamed: dict[int, di
         left_c = split([j for j in later_class if uses_c.get((c, j), set()) & (stood_c | new_c)], k)[2]
         # core and periphery (H2): the values this code was bound to, and the rest the place held;
         # each later intrusion's uses of them, value by value
-        core_m, core_c = set(h.get("need_method_values", "").split()), set(h.get("need_class_values", "").split())
-        peri_m, peri_c = (stood_m | new_m) - core_m, (stood_c | new_c) - core_c
+        core_m = set(h.get("need_method_values", "").split())
+        core_f = set(h.get("need_class_values", "").split())
+        called = set(h.get("called_class_methods", "").split())
+        core_c = core_f | called
+        methods_there = (set(h.get("class_methods_pre", "").split()) - called) \
+            | set(h.get("class_methods_added", "").split())
+        peri_m, peri_f = (stood_m | new_m) - core_m, (stood_c | new_c) - core_f
+        peri_c = (peri_f | methods_there) - core_c
         intr_m = [j for j in later if k not in streamed.get(j, {}).get("mutates", [])
                   and k not in streamed.get(j, {}).get("crosses", [])]
         intr_c = [j for j in later_class if k not in streamed.get(j, {}).get("mutates", [])
                   and k not in streamed.get(j, {}).get("crosses", [])]
         count = lambda js, uses, key, values: sum(len(uses.get((key, j), set()) & values) for j in js)
+        count_c = lambda js, values: sum(len(u & values) for j in js for u in uses_c_hosts.get((c, j), []))
         mine = {"own_lines": None, "own_present": None, "own_lost": None, "own_touches": None,
                "own_declared": None, "own_crossed": None, "intrusion_lines": None}
         if followed is not None:
@@ -469,9 +527,14 @@ def outcome_rows(arm: str, chain: str, hosts: list[dict], streamed: dict[int, di
             "drawn_class_left": left_c, "drawn_method_left": left_m,
             "core_class": len(core_c), "core_method": len(core_m),
             "periphery_class": len(peri_c), "periphery_method": len(peri_m),
-            "uses_core_class": count(intr_c, uses_c, c, core_c),
+            "uses_core_class": count_c(intr_c, core_c),
             "uses_core_method": count(intr_m, uses_m, i, core_m),
-            "uses_periphery_class": count(intr_c, uses_c, c, peri_c),
+            "uses_periphery_class": count_c(intr_c, peri_c),
+            # reported: the class's fields only, as until 19 November 2026 (methods not values),
+            # each later method still scored on its own
+            "core_class_fields": len(core_f), "periphery_class_fields": len(peri_f),
+            "uses_core_class_fields": count_c(intr_c, core_f),
+            "uses_periphery_class_fields": count_c(intr_c, peri_f),
             "uses_periphery_method": count(intr_m, uses_m, i, peri_m),
             **mine,
             "intrusion_per_100": (100 * ci / (last - k)) if last > k else None,

@@ -4,10 +4,11 @@ Role: **development**. Chains: officefloor 1, spring 1. **Descriptive only.**
 
 | Hypothesis | Verdict | p (Holm) |
 |---|---|---|
-| H1 | descriptive only | 0.002 |
-| H2 | descriptive only | 1.03e-27 |
-| H3 | descriptive only | 9.19e-06 |
-| H4 | descriptive only | 0.002 |
+| H1 | descriptive only | 0.003 |
+| H2 | descriptive only | 1.28e-27 |
+| H3 | descriptive only | 1.23e-05 |
+| H4 | descriptive only | 0.003 |
+| H5 | descriptive only | 0.865 |
 
 ## H1, the periphery grows (methods arm)
 
@@ -29,13 +30,18 @@ Runs that need a pre-existing value 91 over 1 chains; the slope of log(1 + bysta
 
 ## H2, a core draws code in (methods arm)
 
-Where code was bound to a class or a method (109 of 350 problem and host rows, both arms; 83 in the methods arm): the later intrusions' uses of the values that code was bound to (the core) against their uses of the rest the place held, what stood by and what the change introduced (the periphery), as a rate ratio per value.
+Where code was bound to a class or a method (109 of 350 problem and host rows, both arms; 83 in the methods arm): the later intrusions' uses of the values that code was bound to (the core) against their uses of the rest the place held, what stood by and what the change introduced (the periphery), as a rate ratio per value. A later change counts each value once in each method its bound code is in.
 
-- **At the class (its fields): 8.238 [5.692, 11.921]**
+- **At the class (its fields and the methods it calls): 17.464 [11.934, 25.556]**
 - **At the method (its values): 20.269 [11.842, 34.693]**
-- Reported, the function arm: class not estimated (standard error not computed: core); method 4.276 [0.477, 38.309]
+- Reported, the function arm: class 1.180 [0.135, 10.332]; method 4.276 [0.477, 38.309]
 - Reported, officefloor, how bound uses are spread: at the class 2 uses of 2 fields, 1.000 to a chain's three most used, 0.500 to fields no checkpoint introduced; of 24 fields introduced, 1 used by later bound code (0.042); at the method 57 uses of 45 values, 0.105 to the three most used, 0.298 to values no checkpoint introduced; of 361 introduced, 31 used later (0.086)
 - Reported, spring, how bound uses are spread: at the class 37 uses of 11 fields, 0.784 to a chain's three most used, 0.865 to fields no checkpoint introduced; of 35 fields introduced, 5 used by later bound code (0.143); at the method 86 uses of 44 values, 0.360 to the three most used, 0.477 to values no checkpoint introduced; of 315 introduced, 27 used later (0.086)
+- Reported, at the class on its fields only (as until 19 November 2026): 8.539 [5.848, 12.468]
+- Reported, officefloor, the core's width at the class: 1.111 values a row (median 1, 9 rows); over the thirds of the stream 1, 1, 1.200
+- Reported, spring, the core's width at the class: 1.318 values a row (median 1, 44 rows); over the thirds of the stream 1.100, 1.250, 2
+- Reported, officefloor, the core's width at the method: 2.045 values a row (median 2, 22 rows); over the thirds of the stream 3, 2.167, 1.667
+- Reported, spring, the core's width at the method: 1.471 values a row (median 1, 51 rows); over the thirds of the stream 1.176, 1.450, 1.857
 - Reported, H2 as it stood until 19 November 2026 (later intrusions bound to what stood by, per value that stood by): class 1.099 [1.038, 1.164]; method not estimated (standard error not computed: bystanders_method)
 - Reported, officefloor: 31 bound rows; at the class 0.548 fields stood by, 3 of 26 later intrusions bound to one of them (0.115); at the method 0.903 values stood by, 1 of 3 (0.333)
 - Reported, officefloor, introduced there by the change: at the class 0.097 fields, 0 of 26 later intrusions bound to one of them (0.000), to one that stood by or was introduced 3 (0.115); at the method 1.258 values, 0 of 3 (0.000), to either 1 (0.333)
@@ -70,9 +76,9 @@ Where code was bound to a class or a method (109 of 350 problem and host rows, b
 - **Function arm's bystanders (arm term, at checkpoint 30.5, the middle of the stream): -1.586 [-1.586, -1.586]**
 - **Their slope on the checkpoint index (interaction): -0.017 [-0.017, -0.017]**
 - **Later intrusion where bound code was placed, function arm / methods arm: at the class 0.162 [0.098, 0.268]; at the method 0.110 [0.029, 0.426]**
-- Reported, how much a core value is come back to, function arm / methods arm: at the class 4.92e-09 [0, –]; at the method 0.088 [0.024, 0.316]
-- Reported, officefloor, uses per 100 values and later checkpoints: at the class core 0.000 (0 uses of 1 values in 1 rows), periphery 1.935; at the method core 0.395 (4 uses of 45 values in 22 rows), periphery 0.084
-- Reported, spring, uses per 100 values and later checkpoints: at the class core 20.563 (190 uses of 34 values in 31 rows), periphery 3.692; at the method core 10.126 (185 uses of 75 values in 51 rows), periphery 0.496
+- Reported, how much a core value is come back to, function arm / methods arm: at the class 0.053 [0.006, 0.457]; at the method 0.088 [0.024, 0.316]
+- Reported, officefloor, uses per 100 values and later checkpoints: at the class core 0.621 (1 uses of 10 values in 9 rows), periphery 0.761; at the method core 0.395 (4 uses of 45 values in 22 rows), periphery 0.084
+- Reported, spring, uses per 100 values and later checkpoints: at the class core 13.677 (228 uses of 58 values in 44 rows), periphery 1.184; at the method core 10.126 (185 uses of 75 values in 51 rows), periphery 0.496
 - Reported, officefloor: per checkpoint, classes its bound code goes back into 0.233, wiring files changed again 0.450
 - Reported, spring: per checkpoint, classes its bound code goes back into 0.883, wiring files changed again 0.000
 - Reported, reopening, function arm / methods arm: classes 0.264 [0.147, 0.476]; with wiring files 0.774 [0.515, 1.163]
@@ -87,6 +93,21 @@ Where code was bound to a class or a method (109 of 350 problem and host rows, b
 - Reported, bindings without parameters: arm -0.201 [-0.365, -0.036], slope 0.029 [-0.126, 0.184]
 - Reported, bindings without injected dependencies: arm -0.295 [-0.454, -0.137], slope -0.021 [-0.193, 0.151]
 - Reported, trajectory of the bindings (arm × checkpoint): 0.0007 [-0.007, 0.009]
+
+## H5, choice narrows (methods arm)
+
+Per bound addition, the other places in the code before its checkpoint that hold what its code was bound to: at the class, another class holding injected dependencies of the same types (code bound to the class's own state, constants or methods has none); at the method, another method with a parameter or local of each type. The ratio of the alternatives at the end of the stream to its start, 90% interval, one-sided below 1.250.
+
+- **unresolved**
+- **At the class: 0.162 [0.029, 0.916]** (n = 48; one-sided p 0.026)
+- Reported, methods arm at the class: 48 rows, 0.542 forced, 2.583 alternatives a row; over the thirds, forced 0.500, 0.333, 0.722; alternatives 3.500, 3.167, 1.278
+- Reported, function arm at the class: 10 rows, 0.900 forced, 0.100 alternatives a row; over the thirds, forced 1, 1, 0.857; alternatives 0, 0, 0.143
+- Reported, the function arm's ratio at the class: 22.363 [4.55e-05, 10984478.990]; function arm / methods arm: 0.000765 [3.43e-10, 1702.055]
+- **At the method: 2.507 [0.889, 7.073]** (n = 56; one-sided p 0.865)
+- Reported, methods arm at the method: 56 rows, 0.089 forced, 20.446 alternatives a row; over the thirds, forced 0.077, 0.050, 0.130; alternatives 14.923, 17.250, 26.348
+- Reported, function arm at the method: 27 rows, 0.074 forced, 39.926 alternatives a row; over the thirds, forced 0, 0, 0.111; alternatives 23.500, 33.400, 45.389
+- Reported, the function arm's ratio at the method: 2.504 [0.506, 12.384]; function arm / methods arm: 1.692 [0.335, 8.534]
+- Reported, class rows bound to the class's own state, constants or methods: 0.542; method values of no declared type left out of the match: 0
 
 ## Reported readings: choice, formation, review
 

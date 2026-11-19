@@ -36,6 +36,52 @@ def ratio(e: dict | None) -> str:
     return interval(e, "irr", "irr_lower", "irr_upper")
 
 
+def width_lines(rep: dict) -> list[str]:
+    """Beside H2: the core's width, its number of values per row, per arm and over the thirds."""
+    L = []
+    for lev in ("class", "method"):
+        for arm, w in (rep.get(f"H2_core_width_{lev}") or {}).items():
+            th = w.get("thirds") or {}
+            L.append(f"- Reported, {arm}, the core's width at the {lev}: {f(w.get('mean'))} values a row "
+                     f"(median {f(w.get('median'))}, {f(w.get('rows'))} rows); over the thirds of the stream "
+                     + ", ".join(f(th.get(k)) for k in ("1", "2", "3")))
+    return L
+
+
+def h5_section(est: dict, hyp: dict, rep: dict) -> list[str]:
+    """H5, choice narrows (PLAN.md §2, §4.2a, §5)."""
+    b = est.get("H5") or {}
+    h = hyp.get("H5") or {}
+    L = ["", "## H5, choice narrows (methods arm)", "",
+         "Per bound addition, the other places in the code before its checkpoint that hold what its code "
+         "was bound to: at the class, another class holding injected dependencies of the same types (code "
+         "bound to the class's own state, constants or methods has none); at the method, another method "
+         "with a parameter or local of each type. The ratio of the alternatives at the end of the stream "
+         f"to its start, 90% interval, one-sided below {f((b.get('margin') or [None, None])[1])}.", "",
+         f"- **{h.get('state', h.get('verdict', '–'))}**"]
+    for lev in ("class", "method"):
+        x = b.get(lev) or {}
+        if x.get("all_forced"):
+            L.append(f"- **At the {lev}: every placement forced** ({f(x.get('n'))} rows; no alternative anywhere)")
+        else:
+            L.append(f"- **At the {lev}: {ratio(x)}** (n = {f(x.get('n'))}"
+                     + (f"; one-sided p {f(x.get('p_upper'))}" if "p_upper" in x else "") + ")")
+        for arm, sp in (rep.get(f"H5_spread_{lev}") or {}).items():
+            if not sp:
+                continue
+            tf, ta = sp.get("thirds_forced") or {}, sp.get("thirds_alternatives") or {}
+            L.append(f"- Reported, {arm} arm at the {lev}: {f(sp.get('rows'))} rows, {f(sp.get('forced'))} forced, "
+                     f"{f(sp.get('mean_alternatives'))} alternatives a row; over the thirds, forced "
+                     + ", ".join(f(tf.get(k)) for k in ("1", "2", "3")) + "; alternatives "
+                     + ", ".join(f(ta.get(k)) for k in ("1", "2", "3")))
+        L.append(f"- Reported, the function arm's ratio at the {lev}: {ratio(rep.get(f'H5_function_arm_{lev}'))}; "
+                 f"function arm / methods arm: {ratio(rep.get(f'H5_arm_{lev}'))}")
+    L.append(f"- Reported, class rows bound to the class's own state, constants or methods: "
+             f"{f(rep.get('H5_class_own'))}; method values of no declared type left out of the match: "
+             f"{f(rep.get('H5_method_untyped'))}")
+    return L
+
+
 def bystander_lines(r: dict) -> list[str]:
     """The description beside H1: needed values and bystanders per run, per arm (PLAN.md §4.3a)."""
     L = []
@@ -260,12 +306,15 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           f"problem and host rows, both arms; {f(e2.get('n'))} in the methods arm): the later intrusions' "
           f"uses of the values that code was bound to (the core) against their uses of the rest the "
           f"place held, what stood by and what the change introduced (the periphery), as a rate ratio "
-          f"per value.", "",
-          f"- **At the class (its fields): {ratio(e2.get('class'))}**",
+          f"per value. A later change counts each value once in each method its bound code is in.", "",
+          f"- **At the class (its fields and the methods it calls): {ratio(e2.get('class'))}**",
           f"- **At the method (its values): {ratio(e2.get('method'))}**",
           f"- Reported, the function arm: class {ratio(rep.get('H2_core_function_arm_class'))}; method "
           f"{ratio(rep.get('H2_core_function_arm_method'))}",
           *core_lines(readings or {}),
+          f"- Reported, at the class on its fields only (as until 19 November 2026): "
+          f"{ratio(rep.get('H2_class_fields'))}",
+          *width_lines(rep),
           f"- Reported, H2 as it stood until 19 November 2026 (later intrusions bound to what stood by, per "
           f"value that stood by): class {ratio(rep.get('H2_bystanders_class'))}; method "
           f"{ratio(rep.get('H2_bystanders_method'))}",
@@ -382,6 +431,7 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           f"- Reported, bindings without injected dependencies: arm {interval((rep.get('H4_without_injected') or {}).get('arm'))}, "
           f"slope {interval((rep.get('H4_without_injected') or {}).get('slope'))}",
           f"- Reported, trajectory of the bindings (arm × checkpoint): {interval(rep.get('H4_trajectory'))}",
+          *h5_section(est, hyp, rep),
           *readings_section(est, readings or {}),
           *landing_section({**(readings or {}), "_estimates": rep}),
           *literature_section(est, spec),
@@ -404,7 +454,7 @@ def main() -> None:
     heads = runs.read_heads()
     tag = reg["registration_tag"]
     drift = runs.drift(tag) if runs.registered(tag) else None
-    index = ["# Results", "", "| Analysis | Role | H1 | H2 | H3 | H4 |", "|---|---|---|---|---|---|"]
+    index = ["# Results", "", "| Analysis | Role | H1 | H2 | H3 | H4 | H5 |", "|---|---|---|---|---|---|---|"]
     for analysis in reg["analyses"]:
         name = analysis["name"]
         d = OUT / name
@@ -420,7 +470,8 @@ def main() -> None:
         (d / "REPORT.md").write_text(render(name, analysis["role"], est, ver, cond, spec, mine, drift, rd))
         hy = ver["hypotheses"]
         index.append(f"| [{name}]({name}/REPORT.md) | {analysis['role']} | {hy['H1']['verdict']} "
-                     f"| {hy['H2']['verdict']} | {hy['H3']['verdict']} | {hy['H4']['verdict']} |")
+                     f"| {hy['H2']['verdict']} | {hy['H3']['verdict']} | {hy['H4']['verdict']} "
+                     f"| {hy.get('H5', {}).get('verdict', '–')} |")
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "REPORT.md").write_text("\n".join(index) + "\n")
     print((OUT / "REPORT.md").read_text())

@@ -110,6 +110,30 @@ def h1_rows(run_rows: list[dict], host_rows: list[dict], streamed: dict) -> list
     return out
 
 
+def h5_rows(host_rows: list[dict], streamed: dict) -> list[dict]:
+    """Choice (H5, PLAN.md 4.2a): one row per bound host and level (class, method) where the
+    alternatives were counted: the other places in the tree before the checkpoint that hold what the
+    code was bound to there. None on a history, whose whole tree is not read."""
+    out = []
+    for h in host_rows:
+        if truth(h.get("replacement")):
+            continue
+        cp = int(h["cp"])
+        for level in ("class", "method"):
+            n = num(h.get(f"choice_{level}"))
+            if n is None:
+                continue
+            out.append({
+                "chain_id": h["chain_id"], "arm": h["arm"], "frontend": h.get("frontend", ""),
+                "cp": cp, "act": streamed.get(cp, {}).get("act"), "level": level,
+                "alternatives": int(n), "forced": int(n) == 0,
+                "own": truth(h.get("choice_class_own")) if level == "class" else None,
+                "untyped": int(num(h.get("choice_method_untyped"), 0)) if level == "method" else None,
+                "places": h.get(f"choice_{level}_places", ""),
+            })
+    return out
+
+
 def by_rows(run_rows: list[dict], outcomes: list[dict] | None = None) -> list[dict]:
     """Every run of added logic (moved code left out) with its bystanders. ``pulled`` marks the
     runs that need at least one pre-existing value: H1 and H4 are read on those. ``place_class``
@@ -190,6 +214,9 @@ def h2_rows(outcomes: list[dict], host_rows: list[dict], additions: list[dict],
             # held (periphery), and the later intrusions' uses of each, value by value
             **{k: int(o.get(k) or 0) for lev in ("class", "method")
                for k in (f"core_{lev}", f"periphery_{lev}", f"uses_core_{lev}", f"uses_periphery_{lev}")},
+            # reported: H2 at the class on its fields only, as until 19 November 2026
+            **{k: int(o.get(k) or 0) for k in ("core_class_fields", "periphery_class_fields",
+                                               "uses_core_class_fields", "uses_periphery_class_fields")},
             "own_lines": num(o.get("own_lines")), "own_lost": num(o.get("own_lost")),
             "later_checkpoints": int(o["later_checkpoints"]),
             "binding": int(o["binding"]), "binding_no_param": int(h.get("binding_no_param", o["binding"])),
@@ -365,6 +392,7 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
     again = reopen_rows(additions)
     write_csv(out / "reopen.csv", again)
     write_csv(out / "h2.csv", h2)
+    write_csv(out / "h5.csv", h5_rows(hosts, streamed))
     spec = {"analysis": name, "role": analysis["role"], "seed": SEED, "boot": BOOT,
             "margin": MARGIN, "methods_arm": analysis.get("methods_arm", METHODS_ARM),
             "function_arm": analysis.get("function_arm", FUNCTION_ARM),

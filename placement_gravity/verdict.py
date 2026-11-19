@@ -15,7 +15,12 @@
   checkpoint index flatter, and its bound code come back to less, at the class and at the method
   (p = the largest of the four one-sided p-values); the amount within its band; and neither wiring
   condition against.
-- **Multiplicity**: Holm over H1 to H4 at α = 0.05.
+- **H5** (one-sided, as H3; 19 November 2026): in the methods arm, the alternatives a bound
+  addition had (other places holding what its code was bound to) do not rise over the stream: the
+  ratio of the end of the stream to its start shown below the upper margin (1.25), at the class and
+  at the method. A level where every placement was forced (no alternative anywhere) cannot rise and
+  passes, with p 0. p = the larger of the two.
+- **Multiplicity**: Holm over H1 to H5 at α = 0.05.
 
 Verdicts: ``supported``; ``not supported``; ``reversed`` (an interval wholly on the wrong side);
 ``unresolved`` (H3: an interval reaching above the upper margin without lying above it);
@@ -112,8 +117,29 @@ def h4(est: dict, cond: dict) -> dict:
             "detail": {"model": x, "amount": amount, "wiring": w}}
 
 
+def h5(est: dict) -> dict:
+    x = est.get("H5") or {}
+    states, ps = {}, []
+    for lev in ("class", "method"):
+        b = x.get(lev) or {}
+        if b.get("all_forced"):
+            states[lev], p = "not above", 0.0
+        elif not _ok(b) or "irr_upper" not in b:
+            return {"p": None, "verdict": "not estimable", "detail": x}
+        else:
+            upper = x["margin"][1]
+            states[lev] = ("against" if b["irr_lower"] > upper else
+                           "not above" if b["irr_upper"] <= upper else "unresolved")
+            p = b["p_upper"]
+        ps.append(p)
+    state = ("against" if "against" in states.values() else
+             "not above" if all(v == "not above" for v in states.values()) else "unresolved")
+    return {"p": max(ps), "state": state, "levels": states, "reversed": state == "against",
+            "conditions_met": state == "not above", "detail": x}
+
+
 def decide(est: dict, cond: dict) -> dict:
-    parts = {"H1": h1(est), "H2": h2(est), "H3": h3(est), "H4": h4(est, cond)}
+    parts = {"H1": h1(est), "H2": h2(est), "H3": h3(est), "H4": h4(est, cond), "H5": h5(est)}
     adjusted = holm({k: v["p"] for k, v in parts.items()})
     for k, v in parts.items():
         v["p_holm"] = adjusted[k]
@@ -125,7 +151,7 @@ def decide(est: dict, cond: dict) -> dict:
             v["verdict"] = "supported"
         elif v.get("reversed"):
             v["verdict"] = "reversed"
-        elif k == "H3" and v.get("state") == "unresolved":
+        elif k in ("H3", "H5") and v.get("state") == "unresolved":
             v["verdict"] = "unresolved"
         else:
             v["verdict"] = "not supported"

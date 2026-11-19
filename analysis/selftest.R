@@ -61,6 +61,9 @@ h2 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
              uses_core_method = rnbinom(n, size = 2, mu = dr * 3 * (seq_len(n) %% 3)),
              uses_periphery_class = rnbinom(n, size = 2, mu = dr * (byc + 1)),
              uses_periphery_method = rnbinom(n, size = 2, mu = dr * (bym + 2)),
+             core_class_fields = rep(1, n), periphery_class_fields = byc + 1,
+             uses_core_class_fields = rnbinom(n, size = 2, mu = dr * 3),
+             uses_periphery_class_fields = rnbinom(n, size = 2, mu = dr * (byc + 1)),
              drawn_class_left = rnbinom(n, size = 2, mu = dr * exp(log(1.15) * (byc + 1))),
              drawn_method_left = rnbinom(n, size = 2, mu = dr * exp(log(1.10) * (bym + 2))),
              binding = binding, binding_no_param = binding, binding_no_injected = binding, net_added = rpois(n, 4) + 1,
@@ -105,6 +108,18 @@ write.csv(by, file.path(dir, "by.csv"), row.names = FALSE)
 write.csv(cap, file.path(dir, "capture.csv"), row.names = FALSE)
 write.csv(h1, file.path(dir, "h1.csv"), row.names = FALSE)
 write.csv(h2, file.path(dir, "h2.csv"), row.names = FALSE)
+# choice (H5): the methods arm's alternatives fall to about a third over the stream; the function
+# arm's stay where they are
+h5 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
+  n <- 120
+  cp <- sample(1:60, n, replace = TRUE)
+  mu <- if (arm == "spring") 3 * exp(log(1 / 3) * (cp - 1) / 59) else rep(4, n)
+  a <- rnbinom(n, size = 4, mu = mu)
+  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = cp, act = NA,
+             level = sample(c("class", "method"), n, replace = TRUE), alternatives = a, forced = a == 0,
+             own = rbinom(n, 1, 0.3) == 1, untyped = rpois(n, 0.1), places = "")
+}))))
+write.csv(h5, file.path(dir, "h5.csv"), row.names = FALSE)
 writeLines(jsonlite::toJSON(list(
   analysis = "selftest", role = "development", seed = 20261116, boot = 60, margin = c(0.8, 1.25),
   methods_arm = "spring", function_arm = "officefloor", checkpoints = 60,
@@ -216,4 +231,14 @@ check(!is.null(e$reported$H1_class_level_without_injected$log_class$estimate),
       "class-level H1 (bindings) without injected dependencies is estimated")
 check(!is.null(e$reported$H4_without_injected$slope$estimate), "H4 (bindings) without injected dependencies is estimated")
 check(!is.null(e$reported$bindings_without_injected_class$irr), "H2 without injected dependencies is estimated")
+for (lev in c("class", "method")) {
+  x <- e$H5[[lev]]
+  check(!is.null(x$irr) && x$irr_upper < 1.25 && abs(log(x$irr) - log(1 / 3)) < 0.3,
+        paste("H5 recovers the falling alternatives, below the margin, at the", lev))
+  check(abs(log(e$reported[[paste0("H5_function_arm_", lev)]]$irr)) < 0.3,
+        paste("the function arm's flat alternatives are reported, at the", lev))
+  check(!is.null(e$reported[[paste0("H5_spread_", lev)]]$methods$forced), paste("the share forced is reported,", lev))
+  check(length(e$reported[[paste0("H2_core_width_", lev)]]) > 0, paste("the core's width is reported,", lev))
+}
+check(!is.null(e$reported$H2_class_fields$irr), "H2 at the class on its fields only is reported")
 cat("analysis/analyse.R self-test passed\n")

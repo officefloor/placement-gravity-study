@@ -388,6 +388,18 @@ if (!is.null(h2)) {
     note(paste0("H2_", lev), mk)
     res$H2[[lev]] <- c(irr(wald(mk$fit, "core")), list(records = mk$n))
     res$reported[[paste0("H2_core_function_arm_", lev)]] <- irr(wald(cored(hf, lev)$fit, "core"))
+    # reported: the core's width, its number of values per row (the sinew's width), per arm and over
+    # the thirds of the stream
+    width <- list()
+    for (a in unique(as.character(h2$arm))) {
+      w <- h2[as.character(h2$arm) == a & h2[[paste0("core_", lev)]] > 0, ]
+      if (nrow(w) == 0) next
+      third <- cut(w$cp, breaks = c(-Inf, quantile(h2$cp, c(1/3, 2/3)), Inf), labels = FALSE)
+      width[[a]] <- list(rows = nrow(w), mean = mean(w[[paste0("core_", lev)]]),
+                         median = median(w[[paste0("core_", lev)]]),
+                         thirds = as.list(tapply(w[[paste0("core_", lev)]], factor(third, levels = 1:3), mean)))
+    }
+    res$reported[[paste0("H2_core_width_", lev)]] <- width
     md <- drawn(hm, lev)
     res$reported[[paste0("H2_bystanders_", lev)]] <- irr(wald(md$fit, term))
     # reported: per doubling-like step, log(1 + bystanders); and the function arm
@@ -403,6 +415,11 @@ if (!is.null(h2)) {
       res$reported[[paste0("H2_left_function_arm_", lev)]] <-
         irr(wald(drawn(hf, lev, left, paste0("drawn_", lev, "_left"))$fit, left))
     }
+  }
+  # reported: H2 at the class on its fields only (the class's methods not values), as it stood
+  # until 19 November 2026, each later method still scored on its own
+  if ("core_class_fields" %in% names(hm)) {
+    res$reported$H2_class_fields <- irr(wald(cored(hm, "class_fields")$fit, "core"))
   }
   # H2 until 17 November 2026 (reported): the bindings and later intrusion, at the class and at the
   # method, every bound problem and host. The problem's own lines are for information.
@@ -581,6 +598,49 @@ if (!is.null(h2)) {
     }
     fj <- sub(" + arm", "", base(ex, "intrusion_method", paste0("binding + bystanders_method + ", j, " * arm + ")), fixed = TRUE)
     res$reported[[paste0("junction_x_arm_", j)]] <- irr(wald(fit_cp(fj, ex, nb)$fit, paste0(j, ":", FARM)))
+  }
+}
+
+# ---------------------------------------------------------------- H5: choice narrows
+# Per bound host and level, the other places in the tree before the checkpoint that hold what the
+# code was bound to there (PLAN.md 4.2a). In the methods arm, a negative binomial model of that count
+# on the checkpoint index scaled from 0 (the first checkpoint) to 1 (the last), with the chain's
+# intercept: exp(slope) is the ratio of the alternatives at the end of the stream to those at its
+# start. H5 is one-sided, as H3: shown below the upper margin (1.25) at the class and at the method,
+# so a flat or falling count passes; a fall is reported with its size. The share forced (no other
+# place) is reported per arm and third; the function arm's slope and the arms' contrast too.
+h5 <- read("h5.csv")
+if (!is.null(h5) && nrow(h5) > 0) {
+  h5$arm <- as_arm(h5$arm)
+  span <- max(spec$checkpoints - 1, 1)
+  h5$x <- if (isFALSE(spec$problem_fixed)) h5$cp else (h5$cp - 1) / span
+  res$H5 <- list(margin = spec$margin)
+  fit5 <- function(d) {
+    if (nrow(d) < 3 || length(unique(d$cp)) < 2) return(structure(list(msg = "too few rows"), class = "fit_error"))
+    if (all(d$alternatives == 0)) return(structure(list(msg = "every placement forced"), class = "fit_error"))
+    fe <- if (multi(d$frontend)) " + frontend" else ""
+    fit_or_error(glmmTMB(as.formula(paste0("alternatives ~ x", fe, " + (1 | chain_id)")), data = d, family = nbinom2()))
+  }
+  for (lev in c("class", "method")) {
+    d <- h5[h5$level == lev, ]
+    dm <- d[d$arm == spec$methods_arm, ]
+    df <- d[d$arm == spec$function_arm, ]
+    forced <- function(x) if (nrow(x) == 0) NULL else list(rows = nrow(x), forced = mean(as.logical(x$forced)),
+      mean_alternatives = mean(x$alternatives),
+      thirds_forced = as.list(tapply(as.logical(x$forced), factor(cut(x$x, c(-Inf, 1/3, 2/3, Inf), labels = FALSE), levels = 1:3), mean)),
+      thirds_alternatives = as.list(tapply(x$alternatives, factor(cut(x$x, c(-Inf, 1/3, 2/3, Inf), labels = FALSE), levels = 1:3), mean)))
+    fm <- fit5(dm)
+    res$H5[[lev]] <- c(tost(fm, "x", spec$margin), list(n = nrow(dm)),
+                       if (inherits(fm, "fit_error")) list(note = fm$msg) else list(),
+                       list(all_forced = nrow(dm) > 0 && all(dm$alternatives == 0)))
+    res$reported[[paste0("H5_function_arm_", lev)]] <- irr(wald(fit5(df), "x"))
+    res$reported[[paste0("H5_spread_", lev)]] <- list(methods = forced(dm), "function" = forced(df))
+    if (multi(as.character(d$arm)) && !all(d$alternatives == 0)) {
+      fa <- fit_or_error(glmmTMB(alternatives ~ x * arm + (1 | chain_id), data = d, family = nbinom2()))
+      res$reported[[paste0("H5_arm_", lev)]] <- irr(wald(fa, FARM))
+    }
+    if (lev == "class") res$reported$H5_class_own <- mean(as.logical(dm$own), na.rm = TRUE)
+    if (lev == "method") res$reported$H5_method_untyped <- sum(dm$untyped, na.rm = TRUE)
   }
 }
 

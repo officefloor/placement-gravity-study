@@ -29,11 +29,12 @@ Runs that need a pre-existing value 1181 over 2 chains; the slope of log(1 + bys
 
 ## H2, a core draws code in (methods arm)
 
-Where code was bound to a class or a method (1077 of 1788 problem and host rows, both arms; 1036 in the methods arm): the later intrusions' uses of the values that code was bound to (the core) against their uses of the rest the place held, what stood by and what the change introduced (the periphery), as a rate ratio per value.
+Where code was bound to a class or a method (1077 of 1788 problem and host rows, both arms; 1036 in the methods arm): the later intrusions' uses of the values that code was bound to (the core) against their uses of the rest the place held, what stood by and what the change introduced (the periphery), as a rate ratio per value. A later change counts each value once in each method its bound code is in.
 
-- **At the class (its fields): 1.061 [1.053, 1.069]**
+- **At the class (its fields and the methods it calls): 1.061 [1.053, 1.069]**
 - **At the method (its values): not estimated (standard error not computed: bystanders_method)**
 - Reported, the function arm: class not estimated (no data); method not estimated (no data)
+- Reported, at the class on its fields only (as until 19 November 2026): not estimated (no data)
 - Reported, H2 as it stood until 19 November 2026 (later intrusions bound to what stood by, per value that stood by): class not estimated (no data); method not estimated (no data)
 - Reported, agent: 41 bound rows; at the class 6.098 fields stood by, 13 of 29 later intrusions bound to one of them (0.448); at the method 0.878 values stood by, 0 of 4 (0.000)
 - Reported, human: 1038 bound rows; at the class 10.418 fields stood by, 2029 of 6229 later intrusions bound to one of them (0.326); at the method 1.650 values stood by, 266 of 1092 (0.244)
@@ -79,6 +80,17 @@ Where code was bound to a class or a method (1077 of 1788 problem and host rows,
 - Reported, bindings without parameters: arm 0.087 [-0.093, 0.267], slope -0.195 [-0.343, -0.047]
 - Reported, bindings without injected dependencies: arm 0.081 [-0.158, 0.320], slope -0.127 [-0.278, 0.025]
 - Reported, trajectory of the bindings (arm × checkpoint): 0.003 [-0.003, 0.008]
+
+## H5, choice narrows (methods arm)
+
+Per bound addition, the other places in the code before its checkpoint that hold what its code was bound to: at the class, another class holding injected dependencies of the same types (code bound to the class's own state, constants or methods has none); at the method, another method with a parameter or local of each type. The ratio of the alternatives at the end of the stream to its start, 90% interval, one-sided below –.
+
+- **–**
+- **At the class: not estimated (no data)** (n = –)
+- Reported, the function arm's ratio at the class: not estimated (no data); function arm / methods arm: not estimated (no data)
+- **At the method: not estimated (no data)** (n = –)
+- Reported, the function arm's ratio at the method: not estimated (no data); function arm / methods arm: not estimated (no data)
+- Reported, class rows bound to the class's own state, constants or methods: –; method values of no declared type left out of the match: –
 
 ## Reported readings: choice, formation, review
 

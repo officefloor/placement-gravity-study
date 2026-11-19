@@ -317,7 +317,7 @@ def test_the_report_names_every_hypothesis_and_commit():
     cond = {**COND, "chains": {"spring": 9, "officefloor": 9}}
     heads = [{"arm": "spring", "run": "r", "chain": 1, "excluded": False, "sha": "a" * 40}]
     md = report.render("petclinic-primary", "primary", est, ver, cond, {"shape_counts": {}}, heads)
-    for k in ("H1", "H2", "H3", "H4", "supported", "`aaaaaaaaaaaa`", "s3_junction", "At the class (its fields)", "Within a class",
+    for k in ("H1", "H2", "H3", "H4", "supported", "`aaaaaaaaaaaa`", "s3_junction", "At the class (its fields and the methods it calls)", "H5, choice narrows", "Within a class",
               "the sinew measures", "s3_junction at the method 1.400 [1.100, 1.800]",
               "Later intrusion where bound code was placed"):
         assert k in md
@@ -332,3 +332,31 @@ def test_the_report_names_every_hypothesis_and_commit():
     for k in ("12 of 59 checkpoints left no choice", "Review against petclinic-primary", "`PLAN.md`",
               "own lines", "400 of 900 later intrusions bound to one of them"):
         assert k in md
+
+
+def h5_levels(c, m):
+    return {"H5": {"margin": [0.8, 1.25], "class": c, "method": m}}
+
+
+def test_h5_choice_that_does_not_rise_is_supported_and_one_that_widens_is_against():
+    flat = {"irr": 0.9, "irr_lower": 0.7, "irr_upper": 1.1, "p_upper": 0.01}
+    v = verdict.decide(estimates(**h5_levels(flat, flat)), COND)["hypotheses"]["H5"]
+    assert (v["state"], v["verdict"]) == ("not above", "supported")
+    rising = {"irr": 2.0, "irr_lower": 1.5, "irr_upper": 2.6, "p_upper": 0.99}
+    v = verdict.decide(estimates(**h5_levels(flat, rising)), COND)["hypotheses"]["H5"]
+    assert (v["state"], v["verdict"]) == ("against", "reversed")
+    wide = {"irr": 1.0, "irr_lower": 0.6, "irr_upper": 1.6, "p_upper": 0.3}
+    assert verdict.decide(estimates(**h5_levels(flat, wide)), COND)["hypotheses"]["H5"]["verdict"] == "unresolved"
+
+
+def test_h5_a_level_where_every_placement_was_forced_cannot_rise():
+    flat = {"irr": 0.9, "irr_lower": 0.7, "irr_upper": 1.1, "p_upper": 0.01}
+    v = verdict.decide(estimates(**h5_levels({"error": "every placement forced", "all_forced": True}, flat)),
+                       COND)["hypotheses"]["H5"]
+    assert v["levels"]["class"] == "not above" and v["verdict"] == "supported"
+
+
+def test_holm_runs_over_five():
+    flat = {"irr": 0.9, "irr_lower": 0.7, "irr_upper": 1.1, "p_upper": 0.011}
+    v = verdict.decide(estimates(**h5_levels(flat, flat)), COND)["hypotheses"]
+    assert len(v) == 5 and v["H5"]["p_holm"] >= 0.011
