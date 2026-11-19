@@ -432,9 +432,16 @@ repository of corpus B or C is read:
   - **Criteria:** at least 50 functions in at least 15 files with a function, at the pin;
     repositories owned by `officefloor` or `sagenschneider` excluded. These say how large a
     repository must be; there is no criterion on its commits and no cap on its units.
-  - **Seed `20261118`**, one nobody has drawn (that study's own sample, seed `20261101`, has been
-    read for its measures; seed 2 and seed 3 drew samples other studies have read). The first
-    sample drawn with it is used.
+  - **Two sets, each of 300** (decided by the author, 19 November 2026; until then one set, seed
+    `20261118`):
+    - *The first set* is `long-method-slim-study`'s own sample (seed `20261101`, sampler 0.3.0,
+      580 usable), read where it lies: the first 100 usable repositories of each tier in the order
+      of the draw. It ties the two studies to the same repositories. That sample has been read
+      for that study's measures (width, slimming), never for these (§7).
+    - *The confirming set* is drawn with seed `20261118`, one nobody has drawn, by the same
+      criteria, leaving out the first set's repositories: drawn with room (450) and the first 100
+      usable of each tier kept. Its readings are to agree with the first set's.
+    (Seed 2 and seed 3 drew samples other studies have read.)
   - **Size: 300 usable repositories**, 100 a tier (decided by the author, 18 November 2026; 60
     was first drafted). The repository is what the intervals are taken over, so their width is set
     by this number. That study drew 580, but it parsed each repository once; this one reads every
@@ -1884,11 +1891,61 @@ author's to set, on the plan and code as they then stand, and starts the experim
   and for its reason (§3.2).
 - *Confirmed by the author on 19 November 2026:* that no class holds more than half of the
   arrivals (the second half of the class-level rule of H3).
-- *Values chosen while drafting and not yet spoken to:* corpus B's seed (`20261118`); corpus C's
-  seed (`20261119`) and its stopping rule (fewer than 10 usable, §3.3). The author's direction on
-  19 November 2026, not yet drafted: corpus B to be drawn with `long-method-slim-study`'s seed and
-  with a new seed for a second set of repositories that confirms it; corpus C its own seed, and
-  more than 10 repositories.
+- *Decided by the author on 19 November 2026 (evening), and built:* corpus B is two sets of 300,
+  `long-method-slim-study`'s sample (seed `20261101`) and a confirming set (seed `20261118`)
+  without its repositories (§3.2; `runs.yaml` `open-source-human` and
+  `open-source-human-confirm`, `history.chosen`, `history.sample_excluded`, two tests). Corpus C
+  stays as it is: its own seed (`20261119`), target 100, read only if at least 10 are usable; no
+  second set.
+- **Decided by the author on 19 November 2026 (evening), NOT YET DRAFTED OR BUILT** (the session
+  stopped here; this is the resume point):
+  - *H2 is about binding only.* The core of a row stays what its own code used (the binding
+    measure).
+  - *A later intrusion counts a value once*, not each time it uses it. The code already does
+    (`tables.outcome_rows`: per checkpoint the set of values used).
+  - *A later change's methods are scored separately at the class*: where a later change edits two
+    methods of the class and adds a third, each method's distinct core and periphery values are
+    counted on its own and summed. The code now pools them (`uses_c` is one set per class and
+    checkpoint, so a value used in two methods counts once). To change in `tables.outcome_rows`.
+    (A problem's own code is already one row per method it went into.)
+  - *Calling another method of the class is a core value*: a method of the class that the code
+    calls returns a value or does a bound piece of work. The instrument must then name the
+    class's pre-existing methods called (it counts them, `binding_class_method`, but lists only
+    fields as values). Open, the drafter's question: the class's methods not called (and those
+    the change adds) then belong to the periphery, so that core and periphery are alike in kind;
+    H1's bystanders stay fields only.
+  - *Open, the author's question on the fit:* "is the fitting trying to average the methods to
+    find consistency between them? I would be looking at counts only, particularly for the core,
+    as we are looking at sinew width." The drafter's answer, to give: the model is already a
+    count model. It pools the uses of every row's core and of every row's periphery, each
+    against its number of values and later checkpoints, with the problem terms; it does not
+    compare methods with each other, and has no term per row. What is to be decided: whether H2
+    stays a rate per value, or is read on counts per row (the core's uses against the
+    periphery's, unscaled), and whether the core's width (its number of values) is reported per
+    row and over the stream.
+  - *H1 counts constants* (as decided 17 November 2026), now with the author's reason: a
+    constant in a class binds code to that class and is typically why code is put there; it
+    belongs in a reusable file, and leaving it in the class is the pull. So H1 without constants
+    is a reading, not a weakness of H1. To add to §2 and §4.3a.
+  - **A new hypothesis, H5, choice narrows** (separate from H2, which stays on binding; Holm then
+    over five). At each bound addition, count the places in the code at that checkpoint where
+    every pre-existing value its code was bound to is also available; one place means the
+    placement was forced. The author expects some choice early and less as the stream goes on,
+    especially at the class. Measured:
+    - *at the class*, by the same injected dependency (its type) held by another class;
+    - *at the method*, by the type of each bound parameter or local, among another method's
+      parameters and locals. Common types will give false alternatives; most reuse is expected to
+      be of domain types specific to the request.
+    - *The alternatives are recorded*, not only counted, since some will be in other REST
+      endpoints, where the control flow would bind them too. If types do not separate the
+      places, a control-flow refinement is applied after the analysis, recorded as such.
+    - Still to settle (drafter to propose): the test (slope of the alternatives on the checkpoint
+      index, or of the share forced); class and method both, or the class as the test and the
+      method reported; how a class's own state, constants and methods count (held by no other
+      class, so binding to them leaves one place); the function arm (its injected parameters are
+      not bindings) as H5's contrast or as part of H4.
+  - *The tag stays unset* (the author: "still to hold off, as I want to think about H2 in terms
+    of placement choice").
 - *Not built, and said so where it matters:* the issue-linked unit of corpus B (§3.2); the ranks
   of the landing reading on a history; a reading of what unbound code leaves behind per class
   (the fields it adds to the class it enters, and whether later code is bound to them), which

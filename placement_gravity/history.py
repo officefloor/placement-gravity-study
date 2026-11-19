@@ -234,13 +234,39 @@ def heap_mb(workers: int, total_mb: int | None = None) -> int:
     return max(512, int(total * MEMORY_SHARE / max(workers, 1)))
 
 
-def pending(name: str, spec: dict, force: bool = False, excluded: set[str] = frozenset()) -> list[dict]:
-    """The usable Java repositories of a sample still to read: not excluded, and (unless
-    ``force``) without tables yet."""
+def chosen(name: str, spec: dict, excluded: set[str] = frozenset()) -> list[dict]:
+    """The usable Java repositories of a sample that are read: not excluded and, where the sample
+    sets ``per_tier``, the first that many of each tier in the order of the draw (PLAN.md 3.2:
+    corpus B's first set is the first 100 a tier of long-method-slim-study's sample)."""
     path = sample_path(name, spec)
     path = path / "open-source-repository-sample.csv" if path.is_dir() else path
     rows = [r for r in _read(path) if r.get("status") == "usable" and r.get("language") == "java"
             and r["full_name"] not in excluded]
+    if spec.get("per_tier"):
+        rows.sort(key=lambda r: int(r.get("draw") or 0))
+        seen: dict[str, int] = {}
+        kept = []
+        for r in rows:
+            seen[r.get("tier", "")] = seen.get(r.get("tier", ""), 0) + 1
+            if seen[r.get("tier", "")] <= spec["per_tier"]:
+                kept.append(r)
+        rows = kept
+    return rows
+
+
+def sample_excluded(reg: dict, name: str, excluded: set[str] = frozenset()) -> set[str]:
+    """The repositories a sample leaves out because another sample reads them
+    (``exclude_samples``: corpus B's confirming set leaves out its first set)."""
+    out = set()
+    for other in reg["samples"][name].get("exclude_samples", []):
+        out |= {r["full_name"] for r in chosen(other, reg["samples"][other], excluded)}
+    return out
+
+
+def pending(name: str, spec: dict, force: bool = False, excluded: set[str] = frozenset()) -> list[dict]:
+    """The repositories of a sample still to read: those ``chosen``, and (unless ``force``)
+    without tables yet."""
+    rows = chosen(name, spec, excluded)
     return [r for r in rows
             if force or not (OUT / name / r["full_name"].replace("/", "__") / "meta.json").exists()]
 
@@ -363,6 +389,8 @@ def main() -> None:
     if a.cmd == "sample":
         spec = reg["samples"][a.name]
         runs.guard(reg, {"name": f"sample {a.name}", "role": spec["role"]})
+        if spec.get("csv"):
+            raise SystemExit(f"{a.name} is another study's drawn sample ({spec['csv']}): it is read, not drawn")
         subprocess.run(sample_command(a.name, spec), check=True)
         return
     done = set()
@@ -374,7 +402,8 @@ def main() -> None:
         for source in analysis["sources"]:
             spec = reg["samples"][source["sample"]]
             if source["sample"] not in done and sample_path(source["sample"], spec).exists():
-                counts = measure_sample(source["sample"], spec, a.force, skip, a.workers)
+                counts = measure_sample(source["sample"], spec, a.force,
+                                        skip | sample_excluded(reg, source["sample"], skip), a.workers)
                 done.add(source["sample"])
                 print(f"{analysis['name']}: {source['sample']} {counts}")
 

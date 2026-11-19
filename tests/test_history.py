@@ -145,3 +145,28 @@ def test_only_a_development_sample_may_cap_its_units():
     reg["samples"]["open-source-agent"]["max_units"] = 300
     with pytest.raises(ValueError, match="only a development sample"):
         runs.validate(reg)
+
+
+def test_corpus_b_reads_the_first_of_each_tier_and_the_confirming_set_leaves_them_out(tmp_path, monkeypatch):
+    monkeypatch.setattr(history, "OUT", tmp_path / "out")
+    first = tmp_path / "first.csv"
+    first.write_text("draw,full_name,status,language,tier\n3,o/c,usable,java,high\n1,o/a,usable,java,high\n"
+                     "2,o/b,usable,java,mid\n4,o/d,usable,java,high\n5,o/e,excluded,java,mid\n6,o/f,usable,java,mid\n")
+    second = tmp_path / "second.csv"
+    second.write_text("draw,full_name,status,language,tier\n1,o/a,usable,java,high\n2,o/x,usable,java,high\n"
+                      "3,o/y,usable,java,high\n4,o/b,usable,java,mid\n5,o/z,usable,java,mid\n")
+    reg = {"samples": {"b1": {"csv": str(first), "per_tier": 2},
+                       "b2": {"csv": str(second), "per_tier": 2, "exclude_samples": ["b1"]}}}
+    assert [r["full_name"] for r in history.chosen("b1", reg["samples"]["b1"])] == ["o/a", "o/b", "o/c", "o/f"]
+    left_out = history.sample_excluded(reg, "b2")
+    assert left_out == {"o/a", "o/b", "o/c", "o/f"}
+    assert [r["full_name"] for r in history.pending("b2", reg["samples"]["b2"], excluded=left_out)] \
+        == ["o/x", "o/y", "o/z"]
+
+
+def test_corpus_b_is_two_sets_and_corpus_c_one():
+    reg = runs.load()
+    b1, b2 = reg["samples"]["open-source-human"], reg["samples"]["open-source-human-confirm"]
+    assert (b1["seed"], b1["per_tier"]) == (20261101, 100) and b1["csv"].endswith("long-method-slim-study/sample/open-source-repository-sample.csv")
+    assert (b2["seed"], b2["per_tier"], b2["exclude_samples"]) == (20261118, 100, ["open-source-human"])
+    assert reg["samples"]["open-source-agent"]["seed"] == 20261119 and reg["samples"]["open-source-agent"]["target"] == 100
