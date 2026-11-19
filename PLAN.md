@@ -1662,6 +1662,21 @@ binomial mixed model). These details are fixed with the code before any run is r
   times as much as OfficeFloor's at the method. H2 as it stood: 1.10 [1.04, 1.16] at the class,
   no standard error at the method, as before. Nothing in the plan was changed after these were
   seen.
+- **The development chain after the renaming** (19 November 2026, `./step4_analyse.sh --analysis
+  pilot` and `./step5_report.sh`; one chain per arm, descriptive only). The core reuse reading
+  beside H4: how much a core value is come back to, function arm against methods arm, at the
+  method 0.088 [0.024, 0.316]; at the class not estimable (OfficeFloor's one core field was not
+  used again: 0 uses in 1 row, against Spring's 190 uses of 34 values in 31 rows). Per 100 values
+  and later checkpoints, OfficeFloor core 0.40 and periphery 0.08 at the method, periphery 1.9 at
+  the class; Spring as above. The other figures are unchanged from the runs above: H1 0.015
+  overall, 0.026 within a class, 0.023 within a method, 0.003 [-0.005, 0.012] without constants
+  (the bootstrap over one chain per arm gives no width to the bystander intervals of H1 and H4);
+  H2 8.2 and 20.3; H3 at the method cognitive 0.32 [0.21, 0.50] and cyclomatic 0.35 [0.22, 0.56],
+  long left out by the variation rule, the class level not tested (5 classes, the busiest 0.87);
+  H4 arm -1.59, slope -0.017, intrusion ratio 0.16 [0.10, 0.27] at the class and 0.11 [0.03,
+  0.43] at the method, amount 1.076 in the band, largest wiring file 0.16. Size or data still
+  against its direction (0.88 per value that stood by at the class, size 3.05). Nothing in the
+  plan was changed after these were seen.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
@@ -1847,13 +1862,10 @@ author's to set, on the plan and code as they then stand, and starts the experim
 - *To finish:* the development run of the history steps (§3.2) on the three development
   repositories, with every non-merge commit as a unit, looked at and recorded in §6; then one
   commit holding everything.
-- *To finish, left on 19 November 2026:* the development chain's models and report were not run
-  again after H1 and H4 were renamed and the core reuse reading was added (the run was stopped;
-  the code, its tests and the self-test are in place). To do: `./step4_analyse.sh --analysis
-  pilot`, then `./step5_report.sh` (about ten minutes, nothing to measure again), and the core
-  reuse figures recorded in §6. Until then `results/analysis/pilot/REPORT.md` has H2 as restated
-  but the old titles of H1 and H4. An instrument change needs `MEASURE_VERSION`
-  (`placement_gravity/measure.py`) raised, or step 3 keeps the earlier measurements.
+- ~~*To finish, left on 19 November 2026:* the development chain's models and report run again
+  after H1 and H4 were renamed and the core reuse reading was added.~~ Done 19 November 2026; the
+  core reuse figures are in §6. (An instrument change needs `MEASURE_VERSION`
+  (`placement_gravity/measure.py`) raised, or step 3 keeps the earlier measurements.)
 - *Not chased:* the pilot's host table gives 28 bound new methods in Spring where the prepared
   table gives 29 (§6).
 - *Values confirmed by the author on 18 November 2026:* the class-level rule of H3 (10 distinct

@@ -9,7 +9,7 @@ Role: **development**. Chains: officefloor 1, spring 1. **Descriptive only.**
 | H3 | descriptive only | 9.19e-06 |
 | H4 | descriptive only | 0.002 |
 
-## H1, gravity compounds (methods arm)
+## H1, the periphery grows (methods arm)
 
 Runs that need a pre-existing value 91 over 1 chains; the slope of log(1 + bystanders) on the checkpoint index, cluster-bootstrap 95% interval (1000 refits).
 
@@ -65,11 +65,14 @@ Where code was bound to a class or a method (109 of 350 problem and host rows, b
 - Reported, junction × arm (s3_junction): 0.411 [0.027, 6.349]
 - Reported, junction × arm (s3_junction_injection_aware): 0.314 [0.020, 4.863]
 
-## H4, function injection keeps the space open
+## H4, function injection forms no core
 
 - **Function arm's bystanders (arm term, at checkpoint 30.5, the middle of the stream): -1.586 [-1.586, -1.586]**
 - **Their slope on the checkpoint index (interaction): -0.017 [-0.017, -0.017]**
 - **Later intrusion where bound code was placed, function arm / methods arm: at the class 0.162 [0.098, 0.268]; at the method 0.110 [0.029, 0.426]**
+- Reported, how much a core value is come back to, function arm / methods arm: at the class 4.92e-09 [0, –]; at the method 0.088 [0.024, 0.316]
+- Reported, officefloor, uses per 100 values and later checkpoints: at the class core 0.000 (0 uses of 1 values in 1 rows), periphery 1.935; at the method core 0.395 (4 uses of 45 values in 22 rows), periphery 0.084
+- Reported, spring, uses per 100 values and later checkpoints: at the class core 20.563 (190 uses of 34 values in 31 rows), periphery 3.692; at the method core 10.126 (185 uses of 75 values in 51 rows), periphery 0.496
 - Reported, officefloor: per checkpoint, classes its bound code goes back into 0.233, wiring files changed again 0.450
 - Reported, spring: per checkpoint, classes its bound code goes back into 0.883, wiring files changed again 0.000
 - Reported, reopening, function arm / methods arm: classes 0.264 [0.147, 0.476]; with wiring files 0.774 [0.515, 1.163]

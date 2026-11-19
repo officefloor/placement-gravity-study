@@ -9,7 +9,7 @@ Role: **development**. Chains: human 2, agent 1. **Descriptive only.**
 | H3 | descriptive only | 0.065 |
 | H4 | descriptive only | 1.000 |
 
-## H1, gravity compounds (methods arm)
+## H1, the periphery grows (methods arm)
 
 Runs that need a pre-existing value 1181 over 2 chains; the slope of log(1 + bystanders) on the checkpoint index, cluster-bootstrap 95% interval (1000 refits).
 
@@ -59,11 +59,12 @@ Where code was bound to a class or a method (1077 of 1788 problem and host rows,
 - Reported, junction × arm (s3_junction): 5.45e-08 [0, –]
 - Reported, junction × arm (s3_junction_injection_aware): 5.45e-08 [0, –]
 
-## H4, function injection keeps the space open
+## H4, function injection forms no core
 
 - **Function arm's bystanders (arm term, at checkpoint 0.5, the middle of the stream): -0.102 [-0.523, 0.314]**
 - **Their slope on the checkpoint index (interaction): 0.468 [0.244, 0.603]**
 - **Later intrusion where bound code was placed, function arm / methods arm: at the class 0.075 [0.027, 0.210]; at the method 0.072 [0.023, 0.228]**
+- Reported, how much a core value is come back to, function arm / methods arm: at the class not estimated (no data); at the method not estimated (no data)
 - Reported, agent: per checkpoint, classes its bound code goes back into 0.364, wiring files changed again 0.000
 - Reported, human: per checkpoint, classes its bound code goes back into 0.884, wiring files changed again 0.000
 - Reported, reopening, function arm / methods arm: classes 0.422 [0.153, 1.164]; with wiring files 0.422 [0.153, 1.164]
