@@ -1939,8 +1939,15 @@ author's to set, on the plan and code as they then stand, and starts the experim
     - *The alternatives are recorded*, not only counted, since some will be in other REST
       endpoints, where the control flow would bind them too. If types do not separate the
       places, a control-flow refinement is applied after the analysis, recorded as such.
-    - Still to settle (drafter to propose): the test (slope of the alternatives on the checkpoint
-      index, or of the share forced); class and method both, or the class as the test and the
+    - *Its direction* (the author, 19 November 2026, later): the alternatives may stay flat or
+      fall, but should not rise. "It is always the same place, or places get restricted over
+      time"; an increase is unlikely. So H5 is one-sided, a "not above" like H3: what counts
+      against it is choice that widens as the stream goes on. Drafter's proposal, not yet put to
+      the author: the rate ratio of the alternatives over the whole stream (last checkpoint
+      against first) shown below the margin of 1.25, as H3's (so a flat trend can pass), with the
+      slope and its sign reported; a fall is reported with its size and does not count against.
+    - Still to settle (drafter to propose): the test's form (as just proposed, or on the share
+      forced); class and method both, or the class as the test and the
       method reported; how a class's own state, constants and methods count (held by no other
       class, so binding to them leaves one place); the function arm (its injected parameters are
       not bindings) as H5's contrast or as part of H4.
