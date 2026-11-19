@@ -1859,15 +1859,20 @@ binomial mixed model). These details are fixed with the code before any run is r
 **Before the tag `plan-v1` is set** (the list as it stood on 18 November 2026; the tag is the
 author's to set, on the plan and code as they then stand, and starts the experiment):
 
-- *To finish:* the development run of the history steps (§3.2) on the three development
-  repositories, with every non-merge commit as a unit, looked at and recorded in §6; then one
-  commit holding everything.
+- ~~*To finish:* the development run of the history steps (§3.2) on the three development
+  repositories, with every non-merge commit as a unit, looked at and recorded in §6.~~ Done 18
+  November 2026 (§6, *The development repositories again*).
 - ~~*To finish, left on 19 November 2026:* the development chain's models and report run again
   after H1 and H4 were renamed and the core reuse reading was added.~~ Done 19 November 2026; the
   core reuse figures are in §6. (An instrument change needs `MEASURE_VERSION`
   (`placement_gravity/measure.py`) raised, or step 3 keeps the earlier measurements.)
-- *Not chased:* the pilot's host table gives 28 bound new methods in Spring where the prepared
-  table gives 29 (§6).
+- ~~*Not chased:* the pilot's host table gives 28 bound new methods in Spring where the prepared
+  table gives 29 (§6).~~ Chased 19 November 2026: 29 is right. At checkpoint 28 the agent renamed
+  `DuplicateEmailException` to `DuplicateIdentityException` (keeping its field `fields`, changing
+  the constructor's parameter) and deleted `DuplicateHouseholdException`. The instrument as built
+  follows the rename by RefactoringMiner's type hint, so the constructor's use of `fields` is a
+  binding to a field that existed. `results/pilot/hosts.csv` is the earlier instrument's table,
+  which took the class for a new one. No change to the code.
 - *Values confirmed by the author on 18 November 2026:* the class-level rule of H3 (10 distinct
   classes, §5: petclinic gathers on one endpoint and is not expected to pass it; the ui stream and
   the open-source samples are where the class level is read); corpus C's bound of 30 declared
@@ -1877,9 +1882,13 @@ author's to set, on the plan and code as they then stand, and starts the experim
   of up to 6,000 drawn), both being reported and not confirmatory.
 - *Also confirmed:* the as-of date of corpus B, 1 December 2020, as `long-method-slim-study`'s
   and for its reason (§3.2).
-- *Values chosen while drafting and not yet spoken to:* that no class holds more than half of the
-  arrivals (the second half of the class-level rule); corpus B's seed (`20261118`); corpus C's
-  seed (`20261119`) and its stopping rule (fewer than 10 usable, §3.3).
+- *Confirmed by the author on 19 November 2026:* that no class holds more than half of the
+  arrivals (the second half of the class-level rule of H3).
+- *Values chosen while drafting and not yet spoken to:* corpus B's seed (`20261118`); corpus C's
+  seed (`20261119`) and its stopping rule (fewer than 10 usable, §3.3). The author's direction on
+  19 November 2026, not yet drafted: corpus B to be drawn with `long-method-slim-study`'s seed and
+  with a new seed for a second set of repositories that confirms it; corpus C its own seed, and
+  more than 10 repositories.
 - *Not built, and said so where it matters:* the issue-linked unit of corpus B (§3.2); the ranks
   of the landing reading on a history; a reading of what unbound code leaves behind per class
   (the fields it adds to the class it enters, and whether later code is bound to them), which
