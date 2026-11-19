@@ -8,7 +8,7 @@ Role: **development**. Chains: officefloor 1, spring 1. **Descriptive only.**
 | H2 | descriptive only | 1.28e-27 |
 | H3 | descriptive only | 1.23e-05 |
 | H4 | descriptive only | 0.003 |
-| H5 | descriptive only | 0.865 |
+| H5 | descriptive only | 0.970 |
 
 ## H1, the periphery grows (methods arm)
 
@@ -98,15 +98,16 @@ Where code was bound to a class or a method (109 of 350 problem and host rows, b
 
 Per bound addition, the other places in the code before its checkpoint that hold what its code was bound to: at the class, another class holding injected dependencies of the same types (code bound to the class's own state, constants or methods has none); at the method, another method with a parameter or local of each type. The ratio of the alternatives at the end of the stream to its start, 90% interval, one-sided below 1.250.
 
-- **unresolved**
+- **against**
 - **At the class: 0.162 [0.029, 0.916]** (n = 48; one-sided p 0.026)
 - Reported, methods arm at the class: 48 rows, 0.542 forced, 2.583 alternatives a row; over the thirds, forced 0.500, 0.333, 0.722; alternatives 3.500, 3.167, 1.278
 - Reported, function arm at the class: 10 rows, 0.900 forced, 0.100 alternatives a row; over the thirds, forced 1, 1, 0.857; alternatives 0, 0, 0.143
 - Reported, the function arm's ratio at the class: 22.363 [4.55e-05, 10984478.990]; function arm / methods arm: 0.000765 [3.43e-10, 1702.055]
-- **At the method: 2.507 [0.889, 7.073]** (n = 56; one-sided p 0.865)
-- Reported, methods arm at the method: 56 rows, 0.089 forced, 20.446 alternatives a row; over the thirds, forced 0.077, 0.050, 0.130; alternatives 14.923, 17.250, 26.348
-- Reported, function arm at the method: 27 rows, 0.074 forced, 39.926 alternatives a row; over the thirds, forced 0, 0, 0.111; alternatives 23.500, 33.400, 45.389
-- Reported, the function arm's ratio at the method: 2.504 [0.506, 12.384]; function arm / methods arm: 1.692 [0.335, 8.534]
+- **At the method: 4.634 [1.475, 14.561]** (n = 56; one-sided p 0.970)
+- Reported, methods arm at the method: 56 rows, 0.321 forced, 6.411 alternatives a row; over the thirds, forced 0.538, 0.300, 0.217; alternatives 3.538, 4.800, 9.435
+- Reported, function arm at the method: 27 rows, 0.222 forced, 9.889 alternatives a row; over the thirds, forced 0.250, 0.200, 0.222; alternatives 5, 12.800, 10.167
+- Reported, the function arm's ratio at the method: 2.208 [0.276, 17.694]; function arm / methods arm: 2.248 [0.329, 15.378]
+- Reported, at the method by type alone over the whole tree (as first built): 2.507 [0.728, 8.628]; methods on a host's control flow, per arm: officefloor 75.963, spring 89.589; by type over the whole tree: officefloor 39.926, spring 20.446; calls to a name the application declares that were followed by their receiver's type: 0.854 (the rest have a receiver the instrument cannot read)
 - Reported, class rows bound to the class's own state, constants or methods: 0.542; method values of no declared type left out of the match: 0
 
 ## Reported readings: choice, formation, review

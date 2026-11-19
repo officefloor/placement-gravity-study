@@ -4,10 +4,11 @@ Role: **development**. Chains: human 2, agent 1. **Descriptive only.**
 
 | Hypothesis | Verdict | p (Holm) |
 |---|---|---|
-| H1 | descriptive only | 0.003 |
-| H2 | descriptive only | – |
-| H3 | descriptive only | 0.065 |
+| H1 | descriptive only | 0.004 |
+| H2 | descriptive only | 6.41e-14 |
+| H3 | descriptive only | 0.098 |
 | H4 | descriptive only | 1.000 |
+| H5 | descriptive only | 1.000 |
 
 ## H1, the periphery grows (methods arm)
 
@@ -20,8 +21,8 @@ Runs that need a pre-existing value 1181 over 2 chains; the slope of log(1 + bys
 - Reported, method bystanders -0.071 [-0.210, 0.067]; class bystanders 0.805 [0.600, 1.009]
 - Reported, without injected dependencies 0.510 [0.322, 0.698]; without constants 0.641 [0.484, 0.799]
 - Reported, the function arm's slope: 0.978 [-0.614, 2.570]
-- Reported, agent: 45 of 67 runs need a pre-existing value (0.328 free); per such run, needed 2.422, bystanders 7.644 (method 1.378, class 6.267; without constants 7.156); over the thirds of the stream –, –, –; fields left behind per addition 1.556
-- Reported, human: 1181 of 1924 runs need a pre-existing value (0.386 free); per such run, needed 2.318, bystanders 12.882 (method 1.767, class 11.115; without constants 6.786); over the thirds of the stream –, –, –; fields left behind per addition 0.828
+- Reported, agent: 45 of 67 runs need a pre-existing value (0.328 free); per such run, needed 2.422, bystanders 7.644 (method 1.378, class 6.267; without constants 7.156); over the thirds of the stream –, –, –; fields left behind per addition 1.556; method values introduced per addition 12.556
+- Reported, human: 1181 of 1924 runs need a pre-existing value (0.386 free); per such run, needed 2.318, bystanders 12.882 (method 1.767, class 11.115; without constants 6.786); over the thirds of the stream –, –, –; fields left behind per addition 0.828; method values introduced per addition 3.325
 - Reported, H1 as first registered (bindings of runs into existing methods): on log(host positions) -0.085 [-0.115, -0.054]; on the checkpoint index 0.000345 [3.08e-05, 0.000659]
 - Reported, bindings in the function arm: on host size -0.330 [-0.476, -0.184]
 - Reported, bindings at class level (methods arm): on class size -0.014 [-0.042, 0.015]
@@ -31,16 +32,24 @@ Runs that need a pre-existing value 1181 over 2 chains; the slope of log(1 + bys
 
 Where code was bound to a class or a method (1077 of 1788 problem and host rows, both arms; 1036 in the methods arm): the later intrusions' uses of the values that code was bound to (the core) against their uses of the rest the place held, what stood by and what the change introduced (the periphery), as a rate ratio per value. A later change counts each value once in each method its bound code is in.
 
-- **At the class (its fields and the methods it calls): 1.061 [1.053, 1.069]**
-- **At the method (its values): not estimated (standard error not computed: bystanders_method)**
-- Reported, the function arm: class not estimated (no data); method not estimated (no data)
-- Reported, at the class on its fields only (as until 19 November 2026): not estimated (no data)
-- Reported, H2 as it stood until 19 November 2026 (later intrusions bound to what stood by, per value that stood by): class not estimated (no data); method not estimated (no data)
+- **At the class (its fields and the methods it calls): 3.150 [2.734, 3.629]**
+- **At the method (its values): 2.373 [1.900, 2.963]**
+- Reported, the function arm: class 3.342 [0.915, 12.211]; method 1.14e-07 [0, –]
+- Reported, agent, how bound uses are spread: at the class 36 uses of 28 fields, 0.278 to a chain's three most used, 0.944 to fields no checkpoint introduced; of 14 fields introduced, 2 used by later bound code (0.143); at the method 71 uses of 70 values, 0.056 to the three most used, 0.958 to values no checkpoint introduced; of 128 introduced, 3 used later (0.023)
+- Reported, human, how bound uses are spread: at the class 1257 uses of 553 fields, 0.045 to a chain's three most used, 0.721 to fields no checkpoint introduced; of 389 fields introduced, 138 used by later bound code (0.355); at the method 1312 uses of 802 values, 0.028 to the three most used, 0.628 to values no checkpoint introduced; of 1704 introduced, 259 used later (0.152)
+- Reported, at the class on its fields only (as until 19 November 2026): 1.789 [1.536, 2.083]
+- Reported, human, the core's width at the class: 2.357 values a row (median 1, 636 rows); over the thirds of the stream 2.307, 2.201, 2.579
+- Reported, agent, the core's width at the class: 1.840 values a row (median 1, 25 rows); over the thirds of the stream 1.840, –, –
+- Reported, human, the core's width at the method: 2.096 values a row (median 1, 624 rows); over the thirds of the stream 1.727, 2.651, 1.846
+- Reported, agent, the core's width at the method: 2.367 values a row (median 2, 30 rows); over the thirds of the stream 2.367, –, –
+- Reported, H2 as it stood until 19 November 2026 (later intrusions bound to what stood by, per value that stood by): class 1.061 [1.053, 1.069]; method not estimated (standard error not computed: bystanders_method)
 - Reported, agent: 41 bound rows; at the class 6.098 fields stood by, 13 of 29 later intrusions bound to one of them (0.448); at the method 0.878 values stood by, 0 of 4 (0.000)
+- Reported, agent, introduced there by the change: at the class 0.585 fields, 16 of 29 later intrusions bound to one of them (0.552), to one that stood by or was introduced 24 (0.828); at the method 1.976 values, 3 of 4 (0.750), to either 3 (0.750)
 - Reported, human: 1038 bound rows; at the class 10.418 fields stood by, 2029 of 6229 later intrusions bound to one of them (0.326); at the method 1.650 values stood by, 266 of 1092 (0.244)
+- Reported, human, introduced there by the change: at the class 0.511 fields, 280 of 6229 later intrusions bound to one of them (0.045), to one that stood by or was introduced 2182 (0.350); at the method 0.709 values, 125 of 1092 (0.114), to either 376 (0.344)
 - Reported, on log(1 + bystanders): class 0.997 [0.907, 1.087]; method 1.604 [1.283, 1.926]
 - Reported, per value that stood by, the function arm: class 0.904 [0.709, 1.153]; method 0.035 [0, –]
-- Reported, with what the change introduced counted beside what stood by (later intrusions bound to either, per value of both): class not estimated (no data); method not estimated (no data); in the function arm, class not estimated (no data); method not estimated (no data)
+- Reported, with what the change introduced counted beside what stood by (later intrusions bound to either, per value of both): class 1.059 [1.051, 1.067]; method 1.312 [1.241, 1.386]; in the function arm, class 1.099 [0.981, 1.231]; method not estimated (standard error not computed: left_method)
 - Reported, H2 as it stood until 17 November 2026 (later intrusion per binding): class 1.026 [1.001, 1.052]; method 1.088 [1.048, 1.129]
 - For information, the same on the problem's own lines: 1.137 [1.083, 1.195]
 - Reported, per binding, any later change, bound or not: class 1.019 [0.995, 1.044]; method 1.082 [1.047, 1.118]
@@ -65,7 +74,9 @@ Where code was bound to a class or a method (1077 of 1788 problem and host rows,
 - **Function arm's bystanders (arm term, at checkpoint 0.5, the middle of the stream): -0.102 [-0.523, 0.314]**
 - **Their slope on the checkpoint index (interaction): 0.468 [0.244, 0.603]**
 - **Later intrusion where bound code was placed, function arm / methods arm: at the class 0.075 [0.027, 0.210]; at the method 0.072 [0.023, 0.228]**
-- Reported, how much a core value is come back to, function arm / methods arm: at the class not estimated (no data); at the method not estimated (no data)
+- Reported, how much a core value is come back to, function arm / methods arm: at the class 0.155 [0.043, 0.558]; at the method 1.81e-09 [0, –]
+- Reported, agent, uses per 100 values and later checkpoints: at the class core 0.082 (9 uses of 46 values in 25 rows), periphery 0.019; at the method core 0.000 (0 uses of 71 values in 30 rows), periphery 0.010
+- Reported, human, uses per 100 values and later checkpoints: at the class core 0.660 (1587 uses of 1499 values in 636 rows), periphery 0.192; at the method core 0.299 (766 uses of 1308 values in 624 rows), periphery 0.137
 - Reported, agent: per checkpoint, classes its bound code goes back into 0.364, wiring files changed again 0.000
 - Reported, human: per checkpoint, classes its bound code goes back into 0.884, wiring files changed again 0.000
 - Reported, reopening, function arm / methods arm: classes 0.422 [0.153, 1.164]; with wiring files 0.422 [0.153, 1.164]
@@ -83,14 +94,19 @@ Where code was bound to a class or a method (1077 of 1788 problem and host rows,
 
 ## H5, choice narrows (methods arm)
 
-Per bound addition, the other places in the code before its checkpoint that hold what its code was bound to: at the class, another class holding injected dependencies of the same types (code bound to the class's own state, constants or methods has none); at the method, another method with a parameter or local of each type. The ratio of the alternatives at the end of the stream to its start, 90% interval, one-sided below –.
+Per bound addition, the other places in the code before its checkpoint that hold what its code was bound to: at the class, another class holding injected dependencies of the same types (code bound to the class's own state, constants or methods has none); at the method, another method with a parameter or local of each type. The ratio of the alternatives at the end of the stream to its start, 90% interval, one-sided below 1.250.
 
-- **–**
-- **At the class: not estimated (no data)** (n = –)
-- Reported, the function arm's ratio at the class: not estimated (no data); function arm / methods arm: not estimated (no data)
-- **At the method: not estimated (no data)** (n = –)
-- Reported, the function arm's ratio at the method: not estimated (no data); function arm / methods arm: not estimated (no data)
-- Reported, class rows bound to the class's own state, constants or methods: –; method values of no declared type left out of the match: –
+- **unresolved**
+- **At the class: every placement forced** (638 rows; no alternative anywhere)
+- Reported, methods arm at the class: 638 rows, 1 forced, 0 alternatives a row; over the thirds, forced 1, 1, 1; alternatives 0, 0, 0
+- Reported, function arm at the class: 25 rows, 0.520 forced, 3.480 alternatives a row; over the thirds, forced 0.389, 0.857, –; alternatives 3.444, 3.571, –
+- Reported, the function arm's ratio at the class: 6.530 [0.006, 7253.304]; function arm / methods arm: not estimated (standard error not computed: armagent)
+- **At the method: 1.560 [1.007, 2.417]** (n = 627; one-sided p 0.797)
+- Reported, methods arm at the method: 627 rows, 0.429 forced, 6.024 alternatives a row; over the thirds, forced 0.286, 0.518, 0.456; alternatives 6.863, 4.175, 7.263
+- Reported, function arm at the method: 30 rows, 0.400 forced, 2.367 alternatives a row; over the thirds, forced 0.231, 0.529, –; alternatives 1.692, 2.882, –
+- Reported, the function arm's ratio at the method: 50.751 [0.290, 8875.394]; function arm / methods arm: 0.169 [0.025, 1.121]
+- Reported, at the method by type alone over the whole tree (as first built): 4.927 [3.207, 7.571]; methods on a host's control flow, per arm: agent 665.033, human 66.997; by type over the whole tree: agent 92.700, human 28.845; calls to a name the application declares that were followed by their receiver's type: 0.518 (the rest have a receiver the instrument cannot read)
+- Reported, class rows bound to the class's own state, constants or methods: 1; method values of no declared type left out of the match: 1
 
 ## Reported readings: choice, formation, review
 

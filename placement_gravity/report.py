@@ -76,6 +76,14 @@ def h5_section(est: dict, hyp: dict, rep: dict) -> list[str]:
                      + ", ".join(f(ta.get(k)) for k in ("1", "2", "3")))
         L.append(f"- Reported, the function arm's ratio at the {lev}: {ratio(rep.get(f'H5_function_arm_{lev}'))}; "
                  f"function arm / methods arm: {ratio(rep.get(f'H5_arm_{lev}'))}")
+    fl = rep.get("H5_flow") or {}
+    L.append(f"- Reported, at the method by type alone over the whole tree (as first built): "
+             f"{ratio(rep.get('H5_method_by_type'))}; methods on a host's control flow, per arm: "
+             + ", ".join(f"{a} {f(v)}" for a, v in (fl.get("methods") or {}).items())
+             + "; by type over the whole tree: "
+             + ", ".join(f"{a} {f(v)}" for a, v in (fl.get("by_type") or {}).items())
+             + f"; calls to a name the application declares that were followed by their receiver's type: "
+             f"{f(fl.get('followed'))} (the rest have a receiver the instrument cannot read)")
     L.append(f"- Reported, class rows bound to the class's own state, constants or methods: "
              f"{f(rep.get('H5_class_own'))}; method values of no declared type left out of the match: "
              f"{f(rep.get('H5_method_untyped'))}")

@@ -113,22 +113,27 @@ def h1_rows(run_rows: list[dict], host_rows: list[dict], streamed: dict) -> list
 def h5_rows(host_rows: list[dict], streamed: dict) -> list[dict]:
     """Choice (H5, PLAN.md 4.2a): one row per bound host and level (class, method) where the
     alternatives were counted: the other places in the tree before the checkpoint that hold what the
-    code was bound to there. None on a history, whose whole tree is not read."""
+    code was bound to there; at the method, on the host's control flow (the count over the whole
+    tree, by type alone, beside it). On a history the index is the unit's place from 0 to 1."""
     out = []
     for h in host_rows:
         if truth(h.get("replacement")):
             continue
-        cp = int(h["cp"])
+        cp = float(h["position"]) if h.get("position") not in (None, "") else int(h["cp"])
         for level in ("class", "method"):
             n = num(h.get(f"choice_{level}"))
             if n is None:
                 continue
             out.append({
                 "chain_id": h["chain_id"], "arm": h["arm"], "frontend": h.get("frontend", ""),
-                "cp": cp, "act": streamed.get(cp, {}).get("act"), "level": level,
+                "cp": cp, "act": streamed.get(int(h["cp"]), {}).get("act"), "level": level,
                 "alternatives": int(n), "forced": int(n) == 0,
                 "own": truth(h.get("choice_class_own")) if level == "class" else None,
                 "untyped": int(num(h.get("choice_method_untyped"), 0)) if level == "method" else None,
+                "by_type": num(h.get("choice_method_by_type")) if level == "method" else None,
+                "flow_methods": num(h.get("choice_flow_methods")) if level == "method" else None,
+                "calls_to_app_names": num(h.get("calls_to_app_names")) if level == "method" else None,
+                "calls_followed": num(h.get("calls_followed")) if level == "method" else None,
                 "places": h.get(f"choice_{level}_places", ""),
             })
     return out

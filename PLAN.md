@@ -486,6 +486,13 @@ repository of corpus B or C is read:
   destinations (existing method, new method of an existing class, new class) but not the ranks.
   CodeTracker is not run; a method is followed by the instrument's chaining of RefactoringMiner's
   renames and moves.
+- **H5 is read on corpora B and C too** (decided by the author, 19 November 2026). Its places
+  need the whole tree, so one index is kept running through a history: the whole production tree
+  before the first unit, then, before each later unit, the files that differ between the previous
+  unit's parent and this one's (merges and commits that are not units included, as a diff of
+  trees), so the index is the tree at each unit's parent (`chain.tree_places`). H5 there is read
+  in the methods arm as on corpus A, on the unit's place from 0 to 1, with the repository's
+  intercept.
 - **The issue-linked unit** is not built: a unit records the issues its message names, and the
   labels of those issues are not yet fetched. Until they are, corpus B is read on the second unit
   only, and that is said wherever it is reported.
@@ -592,8 +599,19 @@ tree at *k − 1*, every production Java file) that hold what the code was bound
   from its own class (decided by the author: *the same injected dependency*). Code bound to anything
   else of its class (its state, a constant, one of its methods) has no other class holding that
   value, so its alternatives are none: such a placement is forced at the class.
-- **At the method:** another method with a parameter or local of each declared type of the
-  method's values the code used (decided by the author: *the type*). Generic arguments are kept
+- **At the method:** another method **on the host's control flow** with a parameter or local of
+  each declared type of the method's values the code used (decided by the author: *the type*; the
+  control flow decided by the author on 19 November 2026, after the development chain showed that
+  type alone does not separate the places, §6). The control flow (`placement_gravity/flow.py`):
+  the methods that call the host, directly or not; of those, the ones nothing in the application
+  calls (the request's entry points, which the framework calls); and every method those reach. A
+  call is followed by its receiver's declared type (a local, parameter or field, a class named for
+  a static call, or the method's own class), to the methods of that name and arity in that class,
+  what it extends or implements, and what extends or implements it; a call whose receiver the
+  source does not type (a chained call, an expression) is not followed, and how many such calls
+  there are is reported. With OfficeFloor, a request's functions are joined by its wiring file, not
+  by Java calls: the classes one wiring file declares are on one flow. The count by type alone over
+  the whole tree (as first built) is reported beside it. Generic arguments are kept
   (`List<Owner>` is not `List<Pet>`). A value with no declared type (`var`, an untyped lambda
   parameter) is left out of the match and counted. Common types (`String`, `int`) will give
   alternatives that are not real; most reuse is expected to be of domain types specific to the
@@ -604,8 +622,8 @@ tree at *k − 1*, every production Java file) that hold what the code was bound
   is applied after the analysis and recorded as such (§9), not before.
 - **Forced:** a row with no alternative.
 - **Where read:** corpus A, whose instrument reads the whole tree before each checkpoint
-  (`Pull --places`). A history (corpora B and C) is read light, without the whole tree, so H5 is
-  not read there (§7).
+  (`Pull --places`), and corpora B and C, where an index of the tree is kept running through the
+  history (§3.2).
 
 As built: `instrument/Pull.java` (the declared types of each method's values and of each class's
 fields; `--places`, the places of a tree), `tables.choice`, `prepare.h5_rows` (`h5.csv`).
@@ -1355,7 +1373,7 @@ on the place an addition lands in, as it stood at *k* − 1, with the harness's 
     expected of almost any code that enters an existing class. The reading is therefore between
     bound and unbound, and between the arms, not against 0.5. It replaces nothing: H3 stands as it
     is until this has been looked at on the development chain.
-- **Corpus B and corpus C** (§3.2, §3.3; extended 18 November 2026): the H1 and H2 models with a
+- **Corpus B and corpus C** (§3.2, §3.3; extended 18 November 2026, and to H5 on 19 November 2026): the H1, H2 and H5 models with a
   random intercept for the repository in place of the chain's and the checkpoint's, the index the
   commit's place in the repository's order. Direction and interval only. The two comparisons of
   §3.3 are the same models with a term for the declared agent commit (within a repository) or for
@@ -1767,6 +1785,19 @@ binomial mixed model). These details are fixed with the code before any run is r
   well as in those bound to `String`s: types do not separate the places at the method. Every new
   method that handles an owner counts as an alternative, whether or not the request's control
   flow reaches it. This is the case §4.2a foresaw (a refinement by control flow); not yet decided.
+- **H5 on the control flow, on the development chain and the development histories** (19 November
+  2026, `MEASURE_VERSION` 19; descriptive only). *Pilot:* at the class unchanged, 0.16 [0.03,
+  0.92]. At the method, on the flow, about 6 alternatives a row instead of 20 by type, and still
+  rising: 4.6 [1.5, 14.6] (Spring 3.5, 4.8, 9.4 over the thirds; forced 54%, 30%, 22%). The flow
+  itself grows (Spring about 64 methods a host's flow early, 114 late): the stream keeps adding
+  rules to `POST /owners`, each as a helper method that takes the `Owner`, and each such helper is
+  another place on the same request where later code could go. So at the method choice widens as
+  helpers gather on one flow, while at the class it narrows. Calls into the application followed
+  by their receiver's type: 85%. *Histories* (the two repositories of people's code; the agent
+  repository failed on a fault since fixed, a `catch` of a union type, and is being read again):
+  every class row forced (both are plain Java without injection, so every field is the class's own;
+  the class level of H5 says nothing where there is no injection); at the method 1.56 [1.01, 2.42],
+  by type alone 4.9; calls followed 62%. Nothing in the plan was changed after these were seen.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
@@ -1791,13 +1822,16 @@ binomial mixed model). These details are fixed with the code before any run is r
 
 ## 7. Threats
 
-- **H5's alternatives are found by type** (§4.2a). A common type (`String`, `int`, `Long`) at the
-  method makes places look like alternatives that the code's control flow could never reach, which
-  biases the count up; a constant or state of the class makes the class forced by definition, which
-  biases it down. Neither should change with the checkpoint by itself, and H5 is about the trend,
-  but a stream that comes to use more common types would read as choice widening. The alternatives
-  are kept by name for that check. H5 is read on corpus A only: a history is read without its whole
-  tree.
+- **H5's alternatives are found by type, on a control flow read without a symbol solver** (§4.2a).
+  At the method a common type (`String`, `int`) still matches more readily than a domain type,
+  though only on the host's own flow. The flow can miss a method reached by a call whose receiver
+  the source does not type (a chained call), or by the framework (reflection, events, callbacks),
+  which biases the count down; it can include a method by an interface's every implementation,
+  which biases it up. The share of calls followed is reported. A constant or state of the class
+  makes the class forced by definition. None of these should change with the checkpoint by itself,
+  and H5 is about the trend; the alternatives are kept by name for the check. On a history the
+  index of the tree is exact at each unit's parent, but a repository's tests and generated code are
+  left out as production Java is.
 
 - **Agent-written code (corpus A).** Placement by an agent may not be placement by people.
   Corpus B is the check, which is why it is drawn pre-AI. There is a specific reason for concern:
@@ -1992,11 +2026,14 @@ author's to set, on the plan and code as they then stand, and starts the experim
   §4.4, §5, §7, §9 rows 49 to 53):
   - H2 is about binding only; the core is what a row's own code used; a value counts once; at the
     class each method of a later change is scored on its own; a call to a class's method is a core
-    value (and its uncalled and added methods periphery: the drafter's choice, not yet spoken to).
+    value (and its uncalled and added methods periphery: the drafter's choice; the author confirmed
+    on 19 November 2026 "H2 yes count methods").
   - H1 counts constants, with the author's reason.
   - **H5, choice narrows**, one-sided as H3 (the author agreed the margin, 1.25, on the
     drafter's proposal): alternatives at the class by injected dependency type, at the method by
     the types of the bound values, recorded by name; corpus A only.
+  - *Decided by the author later that day:* H5 at the method counts only the places on the host's
+    control flow (§4.2a), and H5 is read on corpora B and C too (§3.2).
   - *Chosen while drafting and not yet spoken to:* a level where every placement was forced passes
     H5 with p 0; H5 needs both levels; the model has the chain's intercept and no checkpoint
     intercept (the index is the term); a value of no declared type is left out of the match.
@@ -2161,6 +2198,8 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 51 | H1 counts constants, now with the author's reason: a constant in a class binds code to it and belongs in a file of its own | §2 | Decided 17 November 2026; reason given 19 November 2026, so H1 without constants is a reading |
 | 52 | H5, choice narrows: a bound addition's alternatives (other places holding what it was bound to, by injected dependency type at the class and by value type at the method) do not rise over the stream; one-sided below 1.25 at the class and at the method; Holm over five | §2, §4.2a, §5, §7, `Pull.java --places`, `tables.choice`, `prepare.h5_rows`, `analyse.R`, `verdict.h5`, `report.py` | The author's, 19 November 2026: "always the same place, or places get restricted over time"; kept apart from H2, which stays on binding. Its margin the drafter's proposal, agreed by the author |
 | 53 | The core's width (values per row) reported per arm and over the stream | §4.4, `analyse.R`, `report.py` | The author's question on H2's fit ("counts only, particularly for the core, as we are looking at sinew width"); H2's test unchanged until the author decides |
+| 54 | H5 at the method counts only the places on the host's control flow: callers, the request's entry points and what they reach, calls followed by their receiver's declared type; OfficeFloor's flows from its wiring files. The count by type alone is reported | §4.2a, §7, `flow.py`, `tables.choice`, `Pull.java` (calls, supertypes) | Decided by the author on 19 November 2026 after the development chain showed type alone counting every new method that handles an `Owner` (§6), the case §4.2a foresaw. Before the tag, so a revision |
+| 55 | H5 read on corpora B and C, with an index of the tree kept running through each history | §3.2, §4.2a, `chain.tree_places` | Decided by the author on 19 November 2026 |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

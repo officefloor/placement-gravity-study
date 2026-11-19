@@ -167,22 +167,68 @@ def test_at_the_class_each_later_method_is_scored_on_its_own_and_called_methods_
     assert (r["core_class_fields"], r["uses_core_class_fields"], r["periphery_class_fields"]) == (1, 2, 0)
 
 
-def test_choice_counts_the_other_places_holding_the_same_types():
-    places = {"cp04": {"classes": [{"name": "OwnerController", "injected_types": ["ClinicService"]},
-                                   {"name": "VetController", "injected_types": ["ClinicService", "Mapper"]},
-                                   {"name": "PetController", "injected_types": ["Mapper"]}],
-                       "methods": [{"type": "OwnerController", "signature": "add(Owner)", "types": ["Owner"]},
-                                   {"type": "OwnerController", "signature": "edit(Owner,int)", "types": ["Owner", "int"]},
-                                   {"type": "VetController", "signature": "list()", "types": ["List<Vet>"]}]}}
+def _m(type_, name, sig, params, types, calls=()):
+    return {"type": type_, "name": name, "signature": sig, "params": params, "types": types, "calls": list(calls)}
+
+
+def test_choice_counts_the_other_places_on_the_control_flow_holding_the_same_types():
+    """OwnerController.add(Owner) calls its own check(Owner), the field `validator`'s validate(Owner)
+    and the service's save(Owner) through the interface ClinicService. VetController.audit(Owner) is
+    another endpoint, holding an Owner but on no flow add is on. A chained call (`?`) to fix(Owner)
+    is not followed."""
+    files = {"OwnerController.java": {
+                 "classes": [{"name": "OwnerController", "injected_types": ["ClinicService"], "supers": []}],
+                 "methods": [_m("OwnerController", "add", "add(Owner)", 1, ["Owner"],
+                                ["|check|1", "OwnerValidator|validate|1", "ClinicService|save|1", "?|fix|1"]),
+                             _m("OwnerController", "check", "check(Owner)", 1, ["Owner"]),
+                             _m("OwnerController", "edit", "edit(Owner,int)", 2, ["Owner", "int"])]},
+             "OwnerValidator.java": {"classes": [{"name": "OwnerValidator", "injected_types": [], "supers": []}],
+                                     "methods": [_m("OwnerValidator", "validate", "validate(Owner)", 1, ["Owner"])]},
+             "ClinicService.java": {"classes": [{"name": "ClinicService", "injected_types": [], "supers": []}],
+                                    "methods": [_m("ClinicService", "save", "save(Owner)", 1, ["Owner"])]},
+             "ClinicServiceImpl.java": {
+                 "classes": [{"name": "ClinicServiceImpl", "injected_types": [], "supers": ["ClinicService"]}],
+                 "methods": [_m("ClinicServiceImpl", "save", "save(Owner)", 1, ["Owner"])]},
+             "Fixer.java": {"classes": [{"name": "Fixer", "injected_types": [], "supers": []}],
+                            "methods": [_m("Fixer", "fix", "fix(Owner)", 1, ["Owner"])]},
+             "VetController.java": {
+                 "classes": [{"name": "VetController", "injected_types": ["ClinicService", "Mapper"], "supers": []}],
+                 "methods": [_m("VetController", "audit", "audit(Owner)", 1, ["Owner"])]}}
+    places = {"cp04": {"files": files, "flows": []}}
     r = {"unit": "cp04", "type": "OwnerController", "before_type": "OwnerController",
          "before_signature": "add(Owner)", "host_new": False,
          "var_types": {"owner": "Owner", "x": "var"}, "field_types": {"clinicService": "ClinicService",
                                                                        "LIMIT": "int"}}
     c = tables.choice(r, ["owner", "x"], ["clinicService"], ["clinicService"], [], places)
     assert (c["choice_class"], c["choice_class_places"], c["choice_class_own"]) == (1, "VetController", False)
-    assert (c["choice_method"], c["choice_method_places"], c["choice_method_untyped"]) == (1, "OwnerController#edit(Owner,int)", 1)
+    assert c["choice_method_places"].split() == ["ClinicService#save(Owner)", "ClinicServiceImpl#save(Owner)",
+                                                 "OwnerController#check(Owner)", "OwnerValidator#validate(Owner)"]
+    assert (c["choice_method"], c["choice_method_by_type"], c["choice_method_untyped"]) == (4, 7, 1)
+    assert (c["calls_to_app_names"], c["calls_followed"]) == (4, 3)
     # bound to a constant of its own class: no other class holds it
     c = tables.choice(r, [], ["clinicService", "LIMIT"], ["clinicService"], [], places)
     assert (c["choice_class"], c["choice_class_own"], c["choice_method"]) == (0, True, None)
-    # a history has no places: nothing is counted
+    # no places read: nothing is counted
     assert tables.choice(r, ["owner"], [], [], [], {})["choice_method"] is None
+
+
+def test_officefloor_functions_are_on_one_flow_by_their_wiring():
+    """No Java call joins ValidateOwner and BuildOwner; the wiring file of POST /owners does.
+    ListVets, wired in another file, is not on the flow."""
+    files = {f"{n}.java": {"classes": [{"name": n, "injected_types": [], "supers": []}],
+                           "methods": [_m(n, "run", "run(Owner)", 1, ["Owner"])]}
+             for n in ("ValidateOwner", "BuildOwner", "ListVets")}
+    places = {"cp02": {"files": files, "flows": [["BuildOwner", "ValidateOwner"], ["ListVets"]]}}
+    r = {"unit": "cp02", "type": "ValidateOwner", "before_type": "ValidateOwner", "before_signature": "run(Owner)",
+         "host_new": False, "var_types": {"owner": "Owner"}, "field_types": {}}
+    c = tables.choice(r, ["owner"], [], [], [], places)
+    assert (c["choice_method_places"], c["choice_method_by_type"]) == ("BuildOwner#run(Owner)", 2)
+
+
+def test_a_receiver_of_a_union_type_does_not_break_the_call_graph():
+    from placement_gravity import flow
+    files = {"A.java": {"classes": [{"name": "A", "injected_types": [], "supers": []}],
+                        "methods": [_m("A", "f", "f()", 0, [], ["IOException|SQLException|getMessage|0", "|g|0"]),
+                                    _m("A", "g", "g()", 0, [])]}}
+    g = flow.Graph({"files": files, "flows": []})
+    assert g.flow("A", "f()") == {0, 1}

@@ -21,6 +21,8 @@ from pathlib import Path
 
 import yaml
 
+from . import flow
+
 #: A host whose added positions are at least this share moved code is a re-placement.
 REPLACEMENT_SHARE = 0.5
 
@@ -95,44 +97,68 @@ def _type(t: str | None) -> str:
     return (t or "").replace("$", ".")
 
 
+_GRAPHS: dict[int, "flow.Graph"] = {}
+
+
+def _graph(index: dict):
+    g = _GRAPHS.get(id(index))
+    if g is None:
+        if len(_GRAPHS) > 64:
+            _GRAPHS.clear()
+        g = _GRAPHS[id(index)] = flow.Graph(index)
+    return g
+
+
 def choice(r: dict, tm: list[str], tf: list[str], ti: list[str], tc: list[str], places: dict | None) -> dict:
     """Choice (H5, PLAN.md 4.2a): the other places in the tree before the checkpoint that hold what
     this host's code was bound to. At the class: the other classes holding injected dependencies of
     every type the code used; code bound to anything else of its class (its state, a constant, a
-    method) has no other class, so none. At the method: the other methods with a parameter or local
-    of every type of the method's values the code used (a value of no declared type, ``var`` or an
-    untyped lambda parameter, is left out of the match and counted). None where the code is not
-    bound at that level, or the tree's places were not read (a history)."""
+    method) has no other class, so none. At the method: the other methods **on the host's control
+    flow** (``flow.Graph``) with a parameter or local of every type of the method's values the code
+    used (a value of no declared type, ``var`` or an untyped lambda parameter, is left out of the
+    match and counted); the count over the whole tree, by type alone, is reported beside it. None
+    where the code is not bound at that level, or the host is not found in the tree."""
     out = {"choice_class": None, "choice_class_own": None, "choice_class_places": "",
-           "choice_method": None, "choice_method_untyped": None, "choice_method_places": ""}
+           "choice_method": None, "choice_method_untyped": None, "choice_method_places": "",
+           "choice_method_by_type": None, "choice_flow_methods": None,
+           "calls_to_app_names": None, "calls_followed": None}
     index = (places or {}).get(r["unit"])
     if index is None:
         return out
+    methods = [m for f in index.get("files", {}).values() for m in f.get("methods", [])]
+    classes = [c for f in index.get("files", {}).values() for c in f.get("classes", [])]
     vt, ft = r.get("var_types", {}), r.get("field_types", {})
     if tf or tc:
         own = bool(set(tf) - set(ti) or tc)
         need = {ft[f] for f in ti if f in ft}
         here = _type(r.get("before_type") or r["type"])
         alt = [] if own or not need else sorted(
-            c["name"] for c in index["classes"]
+            c["name"] for c in classes
             if _type(c["name"]) != here and need <= set(c["injected_types"]))
         out.update({"choice_class": len(alt), "choice_class_own": own, "choice_class_places": " ".join(alt)})
     if tm and not r["host_new"]:
         typed = {vt[v] for v in tm if vt.get(v, "var") != "var"}
         untyped = sum(1 for v in tm if vt.get(v, "var") == "var")
         here = (_type(r.get("before_type")), r.get("before_signature"))
-        alt = [] if not typed else sorted(
-            f"{m['type']}#{m['signature']}" for m in index["methods"]
-            if (_type(m["type"]), m["signature"]) != here and typed <= set(m["types"]))
-        out.update({"choice_method": len(alt) if typed else None, "choice_method_untyped": untyped,
-                    "choice_method_places": " ".join(alt)})
+        g = _graph(index)
+        on = g.flow(*here)
+        if typed and on is not None:
+            def holds(m):
+                return (_type(m["type"]), m["signature"]) != here and typed <= set(m["types"])
+            alt = sorted(f"{g.methods[i]['type']}#{g.methods[i]['signature']}" for i in on if holds(g.methods[i]))
+            out.update({"choice_method": len(alt), "choice_method_places": " ".join(alt),
+                        "choice_method_by_type": sum(1 for m in methods if holds(m)),
+                        "choice_flow_methods": len(on),
+                        "calls_to_app_names": g.resolution["calls_to_app_names"],
+                        "calls_followed": g.resolution["followed"]})
+        out["choice_method_untyped"] = untyped
     return out
 
 
 def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
     """One row per host and addition. With ``measured["shape"]`` (chain.measure), an existing
     host also carries S1 to S5 of its version at k − 1 (PLAN.md §4.7, ``shape.host_shape``)."""
-    from . import shape
+    from . import flow, shape
     shaped = shape.index(measured.get("shape", []))
     in_class = shape.class_index(measured.get("shape", []))
     # the fields each checkpoint introduces to a class that existed (PLAN.md 4.3b)

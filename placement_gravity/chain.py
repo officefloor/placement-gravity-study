@@ -86,6 +86,44 @@ def materialise(repo: Path, rev: str, path: str, dest: Path) -> Path:
     return dest
 
 
+def materialise_many(repo: Path, rev: str, paths: list[str], dest: Path) -> None:
+    """Many files at rev under dest, by one ``git cat-file --batch``."""
+    if not paths:
+        return
+    req = "".join(f"{rev}:{p}\n" for p in paths).encode()
+    out = subprocess.run(["git", "-C", str(repo), "cat-file", "--batch"], input=req, check=True,
+                         capture_output=True).stdout
+    i = 0
+    for p in paths:
+        nl = out.index(b"\n", i)
+        head = out[i:nl].split()
+        if len(head) < 3 or head[1] == b"missing":
+            i = nl + 1
+            continue
+        size = int(head[2])
+        f = dest / p
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_bytes(out[nl + 1:nl + 1 + size])
+        i = nl + 1 + size + 1
+
+
+def flows(repo: Path, rev: str, root: str = WIRING) -> list[list[str]]:
+    """The OfficeFloor control flows at rev (H5, PLAN.md 4.2a): per wiring file, the simple names of
+    the classes it wires. A request's functions are the classes of its file, joined by ``next`` and
+    ``outputs``, not by Java calls. None for an arm without wiring."""
+    out = []
+    for f in git(repo, "ls-tree", "-r", "--name-only", rev, "--", root).splitlines():
+        if f.endswith((".yml", ".yaml")):
+            names = []
+            for line in git(repo, "show", f"{rev}:{f}").splitlines():
+                m = re.match(r"\s*class:\s*([\w.$]+)", line.split("#", 1)[0])
+                if m:
+                    names.append(m.group(1).split(".")[-1].split("$")[-1])
+            if names:
+                out.append(sorted(set(names)))
+    return out
+
+
 def extract(repo: Path, rev: str, java_src: str, dest: Path) -> Path:
     """The production Java tree at rev, under dest. Empty where rev has none (a stack's empty base)."""
     dest.mkdir(parents=True, exist_ok=True)
@@ -147,6 +185,57 @@ def parse_wiring(texts: dict[str, str]) -> dict:
             largest, largest_lines = f, own
     return {"files": len(texts), "nodes": nodes, "edges": edges, "lines": lines,
             "largest_file": largest, "largest_lines": largest_lines}
+
+
+def tree_places(repo: Path, cps: list, work: Path, java_src: str, wiring_root: str, light: bool,
+                keep, shapes: list[str]) -> dict:
+    """Per unit, the places of the production tree before it: {"files": {path: record}, "flows":
+    [...]}. A checkpoint chain indexes its whole tree at k - 1 (already extracted for the shape). A
+    history keeps one index running: the whole tree before its first unit, then, before each later
+    unit, the files that differ between the previous unit's parent and this one's (whatever came
+    between, merges and commits that are not units included), so the index is the tree at each
+    unit's parent."""
+    listing, removed = [], {}
+    if not light:
+        listing = [f"{line.split(chr(9))[0]}\t{line.split(chr(9))[1]}" for line in shapes]
+    else:
+        prev = None
+        for c in cps:
+            unit = f"cp{c.cp:02d}"
+            d = work / unit / "places"
+            if prev is None:
+                paths = [p for p in git(repo, "ls-tree", "-r", "--name-only", c.parent).splitlines()
+                         if p.endswith(".java") and (keep is None or keep(p))]
+                gone = []
+            elif prev == c.parent:
+                paths, gone = [], []
+            else:
+                pairs = changed_java(repo, prev, c.parent, java_src)
+                paths = [n for _, n in pairs if n and (keep is None or keep(n))]
+                gone = [o for o, n in pairs if o and o != n]
+            materialise_many(repo, c.parent, paths, d)
+            removed[unit] = gone
+            listing.append(f"{unit}\t{d}")
+            prev = c.parent
+    (work / "places.tsv").write_text("\n".join(listing) + "\n")
+    subprocess.run(["java", "-cp", CLASSPATH, "Pull", "--places", str(work / "places.tsv"),
+                    str(work / "places.jsonl")], check=True)
+    by_unit: dict[str, dict] = {}
+    for r in (json.loads(l) for l in (work / "places.jsonl").read_text().splitlines() if l):
+        by_unit.setdefault(r["unit"], {})[r["path"]] = r
+    out, running = {}, {}
+    for c in cps:
+        unit = f"cp{c.cp:02d}"
+        if light:
+            for p in removed.get(unit, []):
+                running.pop(p, None)
+            running.update(by_unit.get(unit, {}))
+            files = dict(running)
+        else:
+            files = by_unit.get(unit, {})
+        out[unit] = {"files": files,
+                     "flows": [] if light else flows(repo, c.parent, wiring_root)}
+    return out
 
 
 #: No wiring: an arm, or a history, without OfficeFloor configuration.
@@ -233,15 +322,8 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path, java_src: str = 
     subprocess.run(["java", "-cp", CLASSPATH, "Pull", "--amount", str(work / "amount.tsv"),
                     str(work / "amount.jsonl")], check=True)
     # choice (H5, PLAN.md 4.2a): the places of the tree before each checkpoint, by the types they
-    # hold. A history is read light, without the whole tree, so it has none.
-    places = {}
-    if not light:
-        (work / "places.tsv").write_text("\n".join(f"{line.split(chr(9))[0]}\t{line.split(chr(9))[1]}"
-                                                   for line in shapes) + "\n")
-        subprocess.run(["java", "-cp", CLASSPATH, "Pull", "--places", str(work / "places.tsv"),
-                        str(work / "places.jsonl")], check=True)
-        places = {r["unit"]: r for r in (json.loads(l) for l in
-                                         (work / "places.jsonl").read_text().splitlines() if l)}
+    # hold and the calls they make, and (OfficeFloor) the flows its wiring declares
+    places = tree_places(repo, cps, work, java_src, wiring_root, light, keep, shapes)
     (work / "shape.tsv").write_text("\n".join(shapes) + "\n")
     shaped = shape.run(work / "shape.tsv", work / "shape.jsonl")
     trees = {line.split("\t")[0]: Path(line.split("\t")[1]) for line in shapes}

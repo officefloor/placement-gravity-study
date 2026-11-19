@@ -96,7 +96,7 @@ import net.officefloor.sinewslim.javaparser.ParsedFile;
 public final class Pull {
 
 	/** Bump whenever a field's meaning changes. */
-	static final int VERSION = 12;
+	static final int VERSION = 13;
 
 	/** A removed position's text must be at least this long to mark an added one as moved. */
 	static final int MOVED_MIN_CHARS = 12;
@@ -160,7 +160,7 @@ public final class Pull {
 
 	/** A type: its fields, the names of its methods, and which of its fields hold injected dependencies. */
 	record T(String file, String name, int origLine, Set<String> fields, Set<String> utilities, Set<String> methods,
-			Set<String> injected, Set<String> constants, Map<String, String> fieldTypes) {
+			Set<String> injected, Set<String> constants, Map<String, String> fieldTypes, Set<String> supers) {
 
 		/** The fields the class holds: state, injected dependencies and constants (not utilities). */
 		int held() {
@@ -1139,24 +1139,89 @@ public final class Pull {
 		return s.append('}').toString();
 	}
 
+	/** The simple names of the types a type extends or implements. */
+	static Set<String> supers(TypeDeclaration<?> t) {
+		Set<String> out = new TreeSet<>();
+		if (t instanceof com.github.javaparser.ast.body.ClassOrInterfaceDeclaration c) {
+			c.getExtendedTypes().forEach(x -> out.add(x.getNameAsString()));
+			c.getImplementedTypes().forEach(x -> out.add(x.getNameAsString()));
+		} else if (t instanceof com.github.javaparser.ast.body.EnumDeclaration e) {
+			e.getImplementedTypes().forEach(x -> out.add(x.getNameAsString()));
+		} else if (t instanceof com.github.javaparser.ast.body.RecordDeclaration r) {
+			r.getImplementedTypes().forEach(x -> out.add(x.getNameAsString()));
+		}
+		return out;
+	}
+
+	/** A declared type's class: generic arguments and array brackets dropped, the simple name. */
+	static String rawSimple(String type) {
+		String t = type.replaceAll("<.*>", "").replace("[]", "").replace("...", "");
+		return t.substring(t.lastIndexOf('.') + 1);
+	}
+
 	/**
-	 * For each line {@code unit<TAB>dir}, one record of the places of every .java file under dir: each
-	 * class with the types of its injected dependencies, and each method with the types of its
-	 * parameters and locals. H5 counts, for a bound addition, the other places that hold the same types.
+	 * The calls a method makes, each as {@code receiver|name|arity}: the receiver is the simple name of
+	 * the class the call goes to where the source says it (a local, parameter or field of a declared type;
+	 * a class named for a static call), "" for the method's own class ({@code this}, {@code super} or no
+	 * receiver), and "?" where it cannot be read without a symbol solver (a chained call, an expression).
+	 * A method reference has arity -1 (any).
+	 */
+	static List<String> calls(M m) {
+		Map<String, String> vars = varTypes(m.node);
+		Map<String, String> fields = m.owner == null ? Map.of() : m.owner.fieldTypes;
+		List<String> out = new ArrayList<>();
+		java.util.function.Function<Expression, String> receiver = e -> {
+			if (e == null || e instanceof ThisExpr || e instanceof com.github.javaparser.ast.expr.SuperExpr) {
+				return "";
+			}
+			if (e instanceof NameExpr n) {
+				String x = n.getNameAsString();
+				if (vars.containsKey(x)) {
+					return rawSimple(vars.get(x));
+				}
+				if (fields.containsKey(x)) {
+					return rawSimple(fields.get(x));
+				}
+				return Character.isUpperCase(x.charAt(0)) ? x : "?";
+			}
+			if (e instanceof FieldAccessExpr fa && fa.getScope() instanceof ThisExpr && fields.containsKey(fa.getNameAsString())) {
+				return rawSimple(fields.get(fa.getNameAsString()));
+			}
+			if (e instanceof com.github.javaparser.ast.expr.TypeExpr te) {
+				return rawSimple(te.getType().asString());
+			}
+			return "?";
+		};
+		for (MethodCallExpr c : m.node.findAll(MethodCallExpr.class)) {
+			out.add(receiver.apply(c.getScope().orElse(null)) + "|" + c.getNameAsString() + "|" + c.getArguments().size());
+		}
+		for (com.github.javaparser.ast.expr.MethodReferenceExpr r : m.node
+				.findAll(com.github.javaparser.ast.expr.MethodReferenceExpr.class)) {
+			out.add(receiver.apply(r.getScope()) + "|" + r.getIdentifier() + "|-1");
+		}
+		return out;
+	}
+
+	/**
+	 * For each line {@code unit<TAB>dir}, one record per .java file under dir (its path relative to dir):
+	 * each class with the types of its injected dependencies and the types it extends or implements, and
+	 * each method with the types of its parameters and locals and the calls it makes. H5 counts, for a
+	 * bound addition, the other places on its control flow that hold the same types (PLAN.md 4.2a).
 	 */
 	static void places(Path listing, Path out) throws IOException {
 		try (BufferedWriter w = Files.newBufferedWriter(out, StandardCharsets.UTF_8)) {
 			for (String[] r : rows(listing)) {
 				Path root = Path.of(r[1]);
-				StringBuilder classes = new StringBuilder(), methods = new StringBuilder();
-				List<String> problems = new ArrayList<>();
+				if (!Files.isDirectory(root)) {
+					continue;
+				}
 				try (var files = Files.walk(root)) {
 					for (Path p : files.filter(x -> x.toString().endsWith(".java")).sorted().toList()) {
-						F f = file(root.relativize(p).toString(), p, problems, r[0]);
-						if (f == null) {
-							continue;
-						}
-						for (T t : f.types()) {
+						String rel = root.relativize(p).toString();
+						List<String> problems = new ArrayList<>();
+						F f = file(rel, p, problems, r[0]);
+						StringBuilder classes = new StringBuilder(), methods = new StringBuilder();
+						for (T t : f == null ? List.<T>of() : f.types()) {
 							Set<String> types = new TreeSet<>();
 							t.injected().forEach(x -> {
 								if (t.fieldTypes().containsKey(x)) {
@@ -1164,17 +1229,20 @@ public final class Pull {
 								}
 							});
 							classes.append(classes.length() > 0 ? "," : "").append("{\"name\":").append(q(t.name()))
-									.append(",\"injected_types\":").append(strs(types)).append('}');
+									.append(",\"injected_types\":").append(strs(types)).append(",\"supers\":")
+									.append(strs(t.supers())).append('}');
 						}
-						for (M m : f.methods()) {
+						for (M m : f == null ? List.<M>of() : f.methods()) {
 							methods.append(methods.length() > 0 ? "," : "").append("{\"type\":").append(q(m.type()))
-									.append(",\"signature\":").append(q(m.signature())).append(",\"types\":")
-									.append(strs(new TreeSet<>(varTypes(m.node()).values()))).append('}');
+									.append(",\"name\":").append(q(m.name())).append(",\"signature\":")
+									.append(q(m.signature())).append(",\"params\":").append(paramCount(m.signature()))
+									.append(",\"types\":").append(strs(new TreeSet<>(varTypes(m.node()).values())))
+									.append(",\"calls\":").append(strs(calls(m))).append('}');
 						}
+						w.write("{\"unit\":" + q(r[0]) + ",\"path\":" + q(rel) + ",\"classes\":[" + classes
+								+ "],\"methods\":[" + methods + "],\"problems\":" + problems.size() + "}\n");
 					}
 				}
-				w.write("{\"unit\":" + q(r[0]) + ",\"classes\":[" + classes + "],\"methods\":[" + methods
-						+ "],\"problems\":" + problems.size() + "}\n");
 			}
 		}
 	}
@@ -1367,7 +1435,7 @@ public final class Pull {
 			}
 			int oline = i < otypes.size() ? ((Node) otypes.get(i)).getBegin().map(p -> p.line).orElse(0) : 0;
 			T tt = new T(rel, qualifiedName(t), oline, fields, utilities, methods, injectedFields(t), constants,
-					fieldTypes);
+					fieldTypes, supers(t));
 			typeOf.put(t, tt);
 			types.add(tt);
 		}

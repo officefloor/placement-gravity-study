@@ -242,13 +242,13 @@
    "verdict": "descriptive only"
   },
   "H5": {
-   "p": 0.865106051113045,
-   "state": "unresolved",
+   "p": 0.970103749685836,
+   "state": "against",
    "levels": {
     "class": "not above",
-    "method": "unresolved"
+    "method": "against"
    },
-   "reversed": false,
+   "reversed": true,
    "conditions_met": false,
    "detail": {
     "margin": [
@@ -274,25 +274,25 @@
      "all_forced": false
     },
     "method": {
-     "estimate": 0.919056601054052,
-     "se": 0.630612417559834,
-     "lower": -0.118208521169876,
-     "upper": 1.95632172327798,
+     "estimate": 1.53338280409704,
+     "se": 0.696076566454403,
+     "lower": 0.388438739128588,
+     "upper": 2.67832686906549,
      "level": 0.9,
-     "p_greater": 0.0725025471379572,
-     "p_less": 0.927497452862043,
-     "irr": 2.50692424431249,
-     "irr_lower": 0.888510759993451,
-     "irr_upper": 7.07326174279315,
-     "p_upper": 0.865106051113045,
-     "above": false,
-     "p_tost": 0.865106051113045,
-     "outside": false,
+     "p_greater": 0.0138011147512417,
+     "p_less": 0.986198885248758,
+     "irr": 4.63382566333395,
+     "irr_lower": 1.47467664072145,
+     "irr_upper": 14.5607109282395,
+     "p_upper": 0.970103749685836,
+     "above": true,
+     "p_tost": 0.970103749685836,
+     "outside": true,
      "n": 56,
      "all_forced": false
     }
    },
-   "p_holm": 0.865106051113045,
+   "p_holm": 0.970103749685836,
    "verdict": "descriptive only"
   }
  }

@@ -640,7 +640,20 @@ if (!is.null(h5) && nrow(h5) > 0) {
       res$reported[[paste0("H5_arm_", lev)]] <- irr(wald(fa, FARM))
     }
     if (lev == "class") res$reported$H5_class_own <- mean(as.logical(dm$own), na.rm = TRUE)
-    if (lev == "method") res$reported$H5_method_untyped <- sum(dm$untyped, na.rm = TRUE)
+    if (lev == "method") {
+      res$reported$H5_method_untyped <- sum(dm$untyped, na.rm = TRUE)
+      # reported: by type alone over the whole tree (as first built, 19 November 2026), the flow's
+      # size, and how much of the call graph could be followed
+      if ("by_type" %in% names(dm) && any(!is.na(dm$by_type))) {
+        dt <- dm[!is.na(dm$by_type), ]
+        dt$alternatives <- dt$by_type
+        res$reported$H5_method_by_type <- irr(wald(fit5(dt), "x"))
+        res$reported$H5_flow <- list(
+          methods = as.list(tapply(d$flow_methods, as.character(d$arm), mean, na.rm = TRUE)),
+          by_type = as.list(tapply(d$by_type, as.character(d$arm), mean, na.rm = TRUE)),
+          followed = sum(d$calls_followed, na.rm = TRUE) / max(sum(d$calls_to_app_names, na.rm = TRUE), 1))
+      }
+    }
   }
 }
 

@@ -117,7 +117,9 @@ h5 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
   a <- rnbinom(n, size = 4, mu = mu)
   data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = cp, act = NA,
              level = sample(c("class", "method"), n, replace = TRUE), alternatives = a, forced = a == 0,
-             own = rbinom(n, 1, 0.3) == 1, untyped = rpois(n, 0.1), places = "")
+             own = rbinom(n, 1, 0.3) == 1, untyped = rpois(n, 0.1), places = "",
+             by_type = a + rpois(n, cp / 3), flow_methods = 20 + rpois(n, 5),
+             calls_to_app_names = 10, calls_followed = 8)
 }))))
 write.csv(h5, file.path(dir, "h5.csv"), row.names = FALSE)
 writeLines(jsonlite::toJSON(list(
@@ -241,4 +243,6 @@ for (lev in c("class", "method")) {
   check(length(e$reported[[paste0("H2_core_width_", lev)]]) > 0, paste("the core's width is reported,", lev))
 }
 check(!is.null(e$reported$H2_class_fields$irr), "H2 at the class on its fields only is reported")
+check(e$reported$H5_method_by_type$irr > 1, "H5 by type alone over the whole tree, simulated rising, is reported as such")
+check(abs(e$reported$H5_flow$followed - 0.8) < 1e-9, "the share of calls followed is reported")
 cat("analysis/analyse.R self-test passed\n")
