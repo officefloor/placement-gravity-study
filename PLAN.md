@@ -1797,7 +1797,12 @@ binomial mixed model). These details are fixed with the code before any run is r
   repository failed on a fault since fixed, a `catch` of a union type, and is being read again):
   every class row forced (both are plain Java without injection, so every field is the class's own;
   the class level of H5 says nothing where there is no injection); at the method 1.56 [1.01, 2.42],
-  by type alone 4.9; calls followed 62%. Nothing in the plan was changed after these were seen.
+  by type alone 4.9; calls followed 62%. *The agent repository* (`bytechef`, read again after the
+  fix; its 300 newest units): a Spring application, so the class level has alternatives (2.4 a
+  class row; 64% bound to the class's own values); at the method 26 alternatives a row on flows of
+  about 665 methods, with only 50% of calls followed: in a large application of interfaces and
+  shared services, a flow taken from the entry points above the host takes in most of the code.
+  Nothing in the plan was changed after these were seen.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
