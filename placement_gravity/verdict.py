@@ -17,9 +17,10 @@
   condition against.
 - **H5** (one-sided, as H3; 19 November 2026): in the methods arm, the alternatives a bound
   addition had (other places holding what its code was bound to) do not rise over the stream: the
-  ratio of the end of the stream to its start shown below the upper margin (1.25), at the class and
-  at the method. A level where every placement was forced (no alternative anywhere) cannot rise and
-  passes, with p 0. p = the larger of the two.
+  ratio of the end of the stream to its start shown below the upper margin (1.25), at the class,
+  the encapsulation (20 November 2026: the method level shows the encapsulation's volume growing,
+  so it is reported, not tested). A class level where every placement was forced (no alternative
+  anywhere) cannot rise and passes, with p 0.
 - **H6** (20 November 2026): in the methods arm, a unit with a placement forced at the class
   places or edits code in more of the classes that existed before it than a unit without one, at
   the same point in the stream: the spread's rate ratio on forced above 1 (one-sided Wald).
@@ -130,7 +131,7 @@ def h4(est: dict, cond: dict) -> dict:
 def h5(est: dict) -> dict:
     x = est.get("H5") or {}
     states, ps = {}, []
-    for lev in ("class", "method"):
+    for lev in ("class",):           # the method level is reported (20 November 2026)
         b = x.get(lev) or {}
         if b.get("all_forced"):
             states[lev], p = "not above", 0.0

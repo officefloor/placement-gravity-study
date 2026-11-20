@@ -491,7 +491,9 @@ def ripple(hosts: list[dict], edges: list[dict]) -> dict:
     that change the method it reaches, and how many of those also change the calling class (the
     change ripples back across the boundary). Per arm, by whether the call came with a forced change
     (the caller's or the callee's class forced in the unit) and by the member it reached: already
-    open, or exposed or widened by the unit."""
+    open, or exposed or widened by the unit. Against chance: the share of the chain's units that
+    change the calling class anyway, summed over the later changes (``expected``), so that
+    ``ripple_ratio`` above 1 is a ripple beyond two classes that both change often."""
     from . import flow
     changed_methods: dict[str, dict[tuple, list[int]]] = {}
     changed_classes: dict[str, dict[int, set]] = {}
@@ -502,12 +504,22 @@ def ripple(hosts: list[dict], edges: list[dict]) -> dict:
         sig = h.get("before_signature") or h.get("signature")
         changed_methods.setdefault(h["chain_id"], {}).setdefault((t, sig), []).append(int(h["cp"]))
         changed_classes.setdefault(h["chain_id"], {}).setdefault(int(h["cp"]), set()).add(t)
+    units_of = {cid: len({h_cp for h_cp in by}) for cid, by in changed_classes.items()}
+    share: dict[tuple, float] = {}
+    for cid, by in changed_classes.items():
+        n = max(units_of[cid], 1)
+        counts: dict[str, int] = {}
+        for cs in by.values():
+            for c in cs:
+                counts[c] = counts.get(c, 0) + 1
+        for c, k in counts.items():
+            share[(cid, c)] = k / n
     out: dict[str, dict] = {}
     for e in edges:
         forced = truth(e["caller_forced"]) or truth(e["callee_forced"])
         group = f"{'forced' if forced else 'unforced'}_{'existing' if e['kind'] == 'existing' else 'opened'}"
         g = out.setdefault(e["arm"], {}).setdefault(group, {"calls": 0, "later_changes": 0, "rippled": 0,
-                                                             "calls_changed_later": 0})
+                                                             "calls_changed_later": 0, "expected": 0.0})
         g["calls"] += 1
         t = int(e["cp"])
         later = sorted({u for u in changed_methods.get(e["chain_id"], {}).get(
@@ -516,9 +528,13 @@ def ripple(hosts: list[dict], edges: list[dict]) -> dict:
         g["calls_changed_later"] += bool(later)
         g["rippled"] += sum(1 for u in later
                             if e["caller_class"] in changed_classes.get(e["chain_id"], {}).get(u, set()))
+        # by chance: the caller's class changes in this share of the chain's units anyway
+        g["expected"] += len(later) * share.get((e["chain_id"], e["caller_class"]), 0.0)
     for arm in out.values():
         for g in arm.values():
             g["ripple_rate"] = g["rippled"] / g["later_changes"] if g["later_changes"] else None
+            g["chance_rate"] = g["expected"] / g["later_changes"] if g["later_changes"] else None
+            g["ripple_ratio"] = g["rippled"] / g["expected"] if g["expected"] else None
     return out
 
 

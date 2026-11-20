@@ -233,7 +233,7 @@ Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 Novem
   The author's expectation is that it is always the same place, or that places get restricted over
   time, especially at the class; there may be choice early and less later. One-sided, as H3: the
   ratio of the alternatives at the end of the stream to those at its start is shown below the
-  upper margin (1.25), at the class and at the method. A flat count passes; a fall is reported
+  upper margin (1.25), at the class (the method level reported since 20 November 2026, row 64). A flat count passes; a fall is reported
   with its size and does not count against. H5 is decided apart from H2: H2 is about what later
   code comes back to a place for (binding), H5 about whether the placement had anywhere else to
   go. It is the plan's title read directly: *whether it had a choice*.
@@ -241,6 +241,9 @@ Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 Novem
     of the stream; the function arm's ratio, and the arms' contrast (its injected parameters are
     not bindings, so its alternatives are expected to stay open); the alternatives themselves, by
     name, for each row.
+  - *H5 is tested at the class only* (decided by the author on 20 November 2026, §9 row 64): "H5
+    for method shows increase volume of the encapsulation so it should only be read at the
+    encapsulation level of the class". The method level is reported.
   - *The author's reading of H5 on the development chain* (20 November 2026, after seeing it, §6):
     new functionality enlarges the area of methods, but binding forces that area into a class. So
     the choice of class narrows while the methods in the class multiply under that forcing, and at
@@ -832,7 +835,9 @@ Added 20 November 2026 (§9 row 63; the author's). The exchange between the two 
   against unforced at the same methods added.
 - **Ripple:** for each call a unit added across a class's boundary (H7's, §4.2c), the later units
   that change the method it reaches, and the share of those that also change the calling class:
-  the cost of dispersion paid again later. Per arm, by whether the call came with a forced change
+  the cost of dispersion paid again later. Against chance (decided by the author, 20 November
+  2026): the share of the chain's units that change the calling class anyway, so that a ripple
+  ratio above 1 is beyond two classes that both change often. Per arm, by whether the call came with a forced change
   and whether it reached a member already open or one the unit exposed or widened.
 
 As built: `tables.boundary_rows` (`boundary.csv`), `tables.edge_rows` (`edges.csv`),
@@ -2380,6 +2385,16 @@ author's to set, on the plan and code as they then stand, and starts the experim
   and forced code lands in existing classes by definition. *The forces within the construct*
   (what the study can show): forced against unforced at the same size and point in the stream,
   and the arm contrast, where the function arm holds no state privately.
+- *Decided by the author on 20 November 2026 (boarding):* H5 tested at the class only (row 64);
+  ripple read against chance (row 64); public fields to be tracked as well as methods (exposure
+  and widening of fields, reads of another class's fields as coupling; not yet built). The
+  author's account of the function arm, for reading H4 and the arm contrasts: "OfficeFloor by
+  nature removes a lot of the domain model encapsulation of methods dispersed over encapsulated
+  units. It is transaction scripts of cohesive blocks of code that are loosely coupled together."
+  So few forced placements in the function arm is the expected result of the construct, and the
+  arm contrast reads the share forced as well as the effects at a forced placement. Open: what
+  *forced* should mean where there is no injection (§2, corpus B), and whether the hypotheses
+  stay one experiment.
 - *The tag stays unset* (the author, 19 November 2026: "still to hold off, as I want to think about
   H2 in terms of placement choice"; H5 now carries choice).
 - *Not built, and said so where it matters:* the issue-linked unit of corpus B (§3.2); the ranks
@@ -2544,6 +2559,7 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 61 | H6 and H7 hold the change's size fixed: log(1 + positions added) and log(1 + methods changed), per unit for H6 and per class in the unit for H7; their forced ratios without size reported | §5, §8, `prepare.h6_rows`, `prepare.h7_rows`, `analyse.R` | Decided by the author on 20 November 2026 after the drafter showed on the development data that forced units are larger changes (Spring 13 positions and 3.9 methods against 8 and 2.4), and that within size the pilot's forced effect on spread disappears (1.0 against 1.1 small, 2.1 against 2.0 large) while the human histories' remains for large changes (jmxtrans 4.1 against 1.9, UsbSerial 2.4 against 1.6). Before the tag, so a revision |
 | 62 | The novelty check's suggestions (LITERATURE.md §10, 20 November 2026): Pescio's use of *gravity* acknowledged; Page-Jones (connascence), Ousterhout (deep modules) and Kobori et al. with Vidal et al. (widening) cited at H7; the split/concentrate reading placed against Extract Class and co-change Move recommenders and Paixão et al. 2017; conservation kept as framing (Tesler, Hatton, Pescio); Lopes and Ossher (size scaling) and Taube-Schock et al. (unavoidable high coupling, H7's rival reading) in §7. No measure, model or rule changes | §1, §2, §4.2c, §4.2d, §7 | The author's, 20 November 2026 ("apply the plan suggestions from the novelty check"). Most sources read as abstracts or records; marked where unchecked |
 | 63 | Reported readings: surface against volume (a class's links across its boundary against its methods, the exponent across classes and within a growing class; surface a change adds, forced against unforced) and ripple (later changes to a method a new call reached that also change the caller, by forced and by opened) | §4.2e, `tables.boundary_rows`, `tables.edge_rows`, `prepare.surface_rows`, `prepare.ripple`, `analyse.R`, `report.py` | The author's, 20 November 2026 ("draft and build surface vs volume and ripple"). Operational form the drafter's |
+| 64 | H5 tested at the class only, its method level reported; the ripple reading against chance (the share of a chain's units that change the calling class anyway) | §2, §4.2e, §5, `verdict.h5`, `prepare.ripple`, `report.py` | Decided by the author on 20 November 2026 after the development chain: the method level shows the encapsulation's volume growing, which the author's reading of H5 expects. Before the tag, so a revision |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

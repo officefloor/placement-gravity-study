@@ -226,7 +226,8 @@ def surface_section(rep: dict, rd: dict) -> list[str]:
                 continue
             L.append(f"- Ripple, {arm} arm, {k.replace('_', ', ')}: {f(g.get('calls'))} new calls; "
                      f"{f(g.get('calls_changed_later'))} reach a method changed later, {f(g.get('later_changes'))} "
-                     f"later changes, {f(g.get('rippled'))} of them changing the caller too ({f(g.get('ripple_rate'))})")
+                     f"later changes, {f(g.get('rippled'))} of them changing the caller too ({f(g.get('ripple_rate'))}; "
+                     f"by chance {f(g.get('chance_rate'))}; ratio {f(g.get('ripple_ratio'))})")
     return L
 
 

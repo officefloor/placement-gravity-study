@@ -343,10 +343,12 @@ def test_h5_choice_that_does_not_rise_is_supported_and_one_that_widens_is_agains
     v = verdict.decide(estimates(**h5_levels(flat, flat)), COND)["hypotheses"]["H5"]
     assert (v["state"], v["verdict"]) == ("not above", "supported")
     rising = {"irr": 2.0, "irr_lower": 1.5, "irr_upper": 2.6, "p_upper": 0.99}
-    v = verdict.decide(estimates(**h5_levels(flat, rising)), COND)["hypotheses"]["H5"]
+    v = verdict.decide(estimates(**h5_levels(rising, flat)), COND)["hypotheses"]["H5"]
     assert (v["state"], v["verdict"]) == ("against", "reversed")
     wide = {"irr": 1.0, "irr_lower": 0.6, "irr_upper": 1.6, "p_upper": 0.3}
-    assert verdict.decide(estimates(**h5_levels(flat, wide)), COND)["hypotheses"]["H5"]["verdict"] == "unresolved"
+    assert verdict.decide(estimates(**h5_levels(wide, flat)), COND)["hypotheses"]["H5"]["verdict"] == "unresolved"
+    # the method level is reported, not tested: rising there does not count against H5
+    assert verdict.decide(estimates(**h5_levels(flat, rising)), COND)["hypotheses"]["H5"]["verdict"] == "supported"
 
 
 def test_h5_a_level_where_every_placement_was_forced_cannot_rise():
@@ -471,6 +473,8 @@ def test_ripple_counts_later_changes_to_a_reached_method_that_also_change_the_ca
     hosts = [host(3, "Pet", "age()"), host(3, "Owner", "add()"), host(5, "Pet", "age()"), host(1, "Pet", "age()"),
              host(4, "Owner", "find()")]
     r = prepare.ripple(hosts, edges)["spring"]
-    assert r["forced_opened"] == {"calls": 1, "later_changes": 2, "rippled": 1, "calls_changed_later": 1,
-                                  "ripple_rate": 0.5}
+    fo = r["forced_opened"]
+    assert (fo["calls"], fo["later_changes"], fo["rippled"], fo["ripple_rate"]) == (1, 2, 1, 0.5)
+    # Owner changes in 2 of the chain's 4 units: by chance a half of the later changes would ripple
+    assert (fo["chance_rate"], fo["ripple_ratio"]) == (0.5, 1.0)
     assert (r["unforced_existing"]["later_changes"], r["unforced_existing"]["rippled"]) == (1, 0)
