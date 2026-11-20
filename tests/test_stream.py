@@ -279,7 +279,7 @@ def test_a_forced_class_gains_calls_across_its_boundary_to_members_exposed_or_wi
              "V.java": {"classes": before["V.java"]["classes"], "methods": [m("Vet", "see", ["Owner|find|0"])]}}
     measured = {"places": {"cp05": {"files": before, "flows": []}, "cp06": {"files": after, "flows": []}}}
     hosts = [{"cp": 5, "type": "Owner", "before_type": "Owner", "added": 4, "replacement": False,
-              "class_new": False, "choice_class": 0},
+              "class_new": False, "choice_class": 0, "forced_enc": True},
              {"cp": 6, "type": "Owner", "before_type": "Owner", "added": 1, "replacement": False,
               "class_new": False, "choice_class": ""}]
     rows = tables.encapsulation_rows("spring", "chain1", hosts, measured)
@@ -305,7 +305,7 @@ def test_boundary_and_edges_give_surface_against_volume_and_the_calls_for_ripple
     measured = {"places": {"cp05": {"files": before, "flows": []}, "cp06": {"files": after, "flows": []}},
                 "shape": [{"unit": "cp05", "type": "Owner", "positions": 7}]}
     hosts = [{"cp": 5, "type": "Owner", "before_type": "Owner", "added": 4, "replacement": False,
-              "class_new": False, "choice_class": 0}]
+              "class_new": False, "choice_class": 0, "forced_enc": True}]
     b = tables.boundary_rows("spring", "chain1", hosts, measured)
     owner = next(r for r in b if not r["cross_section"])
     assert (owner["methods_before"], owner["positions_before"], owner["out_before"], owner["in_before"]) == (2, 7, 1, 0)
@@ -314,3 +314,39 @@ def test_boundary_and_edges_give_surface_against_volume_and_the_calls_for_ripple
     e = tables.edge_rows("spring", "chain1", hosts, measured)
     assert sorted((r["caller_class"], r["callee_signature"], r["kind"], r["caller_forced"]) for r in e) == [
         ("Owner", "age()", "widened", True), ("Pet", "find()", "existing", False)]
+
+
+def test_forced_by_encapsulation_is_a_private_member_or_a_constant_of_the_class():
+    files = {"O.java": {"classes": [{"name": "Owner", "injected_types": [], "supers": [],
+                                     "fields": {"name": "private", "tag": "public", "MAX": "public"},
+                                     "constants": ["MAX"]}],
+                        "methods": [{**_m("Owner", "check", "check()", 0, []), "access": "private"},
+                                    {**_m("Owner", "find", "find()", 0, []), "access": "public"}]}}
+    places = {"cp03": {"files": files, "flows": []}}
+    r = {"unit": "cp03", "type": "Owner", "before_type": "Owner"}
+    assert tables.encapsulated(r, ["name"], [], places) is True          # a private field
+    assert tables.encapsulated(r, ["tag"], ["find"], places) is False    # only what others can reach
+    assert tables.encapsulated(r, ["MAX"], [], places) is True           # a constant binds to the class
+    assert tables.encapsulated(r, [], ["check"], places) is True         # a private method
+    assert tables.encapsulated(r, [], [], places) is None                # not bound at the class
+    assert tables.encapsulated({**r, "unit": "cp09"}, ["name"], [], places) is None
+
+
+def test_reading_another_class_s_field_is_coupling_and_a_field_made_public_is_widened():
+    from placement_gravity import flow
+    def cls(n, fields):
+        return {"name": n, "injected_types": [], "supers": [], "fields": fields}
+    before = {"A.java": {"classes": [cls("A", {})], "methods": [{**_m("A", "f", "f()", 0, []), "access": "public"}]},
+              "B.java": {"classes": [cls("B", {"count": "private"})], "methods": []}}
+    after = {"A.java": {"classes": [cls("A", {})],
+                        "methods": [{**_m("A", "f", "f()", 0, []), "access": "public", "reads": ["B|count"]}]},
+             "B.java": {"classes": [cls("B", {"count": "public"})], "methods": []}}
+    g0, g1 = flow.Graph({"files": before}), flow.Graph({"files": after})
+    assert g1.class_calls() == {("A", "B"): 1}
+    assert g1.cross_edges() - g0.cross_edges() == {(("A", "f()"), ("B", "#count"))}
+    assert (g0.access()[("B", "#count")], g1.access()[("B", "#count")]) == ("private", "public")
+    measured = {"places": {"cp01": {"files": before, "flows": []}, "cp02": {"files": after, "flows": []}}}
+    hosts = [{"cp": 1, "type": "A", "before_type": "A", "added": 2, "replacement": False,
+              "class_new": False, "forced_enc": True}]
+    row = tables.encapsulation_rows("spring", "chain1", hosts, measured)[0]
+    assert (row["new_out"], row["out_widened"], row["forced"]) == (1, 1, True)

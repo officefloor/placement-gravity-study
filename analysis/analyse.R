@@ -696,6 +696,11 @@ if (!is.null(h6) && nrow(h6) > 0) {
   sz <- SIZE(h6)
   res$H6$forced <- one(fit6(dm, paste0("x + forced", sz)), "forced", nrow(dm))
   res$reported$H6_forced_without_size <- one(fit6(dm, "x + forced"), "forced", nrow(dm))
+  if ("forced_bind" %in% names(dm)) {     # forced by binding with no alternative (H5's), reported
+    db <- dm
+    db$forced <- as.numeric(as.logical(db$forced_bind))
+    res$reported$H6_forced_bind <- one(fit6(db, paste0("x + forced", sz)), "forced", nrow(db))
+  }
   res$reported$H6_rise <- one(fit6(dm, paste0("x", sz)), "x", nrow(dm))
   res$reported$H6_rise_forced <- one(fit6(dm[dm$forced == 1, ], paste0("x", sz)), "x", sum(dm$forced == 1))
   res$reported$H6_rise_unforced <- one(fit6(dm[dm$forced == 0, ], paste0("x", sz)), "x", sum(dm$forced == 0))
@@ -761,6 +766,11 @@ if (!is.null(h7) && nrow(h7) > 0) {
   sz7 <- SIZE(h7)
   res$H7 <- list(forced = one7(fit7(dm, "coupled", paste0("forced + x", sz7)), "forced", nrow(dm)))
   res$reported$H7_forced_without_size <- one7(fit7(dm, "coupled", "forced + x"), "forced", nrow(dm))
+  if ("forced_bind" %in% names(dm)) {
+    db <- dm
+    db$forced <- as.numeric(as.logical(db$forced_bind))
+    res$reported$H7_forced_bind <- one7(fit7(db, "coupled", paste0("forced + x", sz7)), "forced", nrow(db))
+  }
   for (y in c("opened", "new_out", "new_in", "members_opened"))
     res$reported[[paste0("H7_forced_", y)]] <- one7(fit7(dm, y, paste0("forced + x", sz7)), "forced", nrow(dm))
   res$reported$H7_rise <- one7(fit7(dm, "coupled", paste0("x", sz7)), "x", nrow(dm))

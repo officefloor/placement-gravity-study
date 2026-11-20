@@ -156,8 +156,9 @@ def h6_rows(host_rows: list[dict], streamed: dict) -> list[dict]:
     """Change spread (H6, PLAN.md 4.2b): one row per unit that placed or edited code in a class that
     existed before it, with the number of such classes (``spread`` is those beyond the first; a
     new class is a free choice, so it is counted beside, not in the spread) and whether any of its
-    placements was forced at the class (bound there with no other class holding what it was bound
-    to, H5's alternatives none), or had a choice there; and the change's size, the positions it
+    placements was forced by encapsulation (bound to a member of the class no other class can reach,
+    ``tables.encapsulated``), or bound at the class only to reachable members (``chosen``); whether
+    one was forced by binding with no alternative (``forced_bind``, H5's class level); and the change's size, the positions it
     added (``positions``) and the methods it placed or edited code in (``methods``), so that forced
     is compared with unforced at the same size (decided 20 November 2026)."""
     units: dict[tuple, dict] = {}
@@ -168,17 +169,21 @@ def h6_rows(host_rows: list[dict], streamed: dict) -> list[dict]:
             "chain_id": h["chain_id"], "arm": h["arm"], "frontend": h.get("frontend", ""),
             "cp": float(h["position"]) if h.get("position") not in (None, "") else int(h["cp"]),
             "act": streamed.get(int(h["cp"]), {}).get("act"), "unit": int(h["cp"]),
-            "existing": set(), "all": set(), "forced": set(), "chosen": set(), "positions": 0, "methods": 0})
+            "existing": set(), "all": set(), "forced": set(), "chosen": set(), "bind": set(), "positions": 0, "methods": 0})
         u["positions"] += added(h)
         u["methods"] += 1
         c = h.get("before_type") or h["type"]
         u["all"].add(c)
         if not truth(h.get("class_new")):
             u["existing"].add(c)
+        f = tables.forced(h)
+        if f is not None:
+            (u["forced"] if f else u["chosen"]).add(c)
         n = num(h.get("choice_class"))
-        if n is not None:
-            (u["forced"] if int(n) == 0 else u["chosen"]).add(c)
-    return [{**{k: v for k, v in u.items() if k not in ("existing", "all", "forced", "chosen")},
+        if n is not None and int(n) == 0:
+            u["bind"].add(c)
+    return [{**{k: v for k, v in u.items() if k not in ("existing", "all", "forced", "chosen", "bind")},
+             "forced_bind": bool(u["bind"]),
              "classes": len(u["existing"]), "spread": len(u["existing"]) - 1,
              "all_classes": len(u["all"]), "new_classes": len(u["all"] - u["existing"]),
              "forced": bool(u["forced"]), "forced_classes": len(u["forced"]),
@@ -219,8 +224,8 @@ def growth_accounting(host_rows: list[dict], checkpoints: int) -> dict:
     for h in host_rows:
         if not tables.changed(h) or truth(h.get("class_new")):
             continue
-        n = num(h.get("choice_class"))
-        kind = "unbound" if n is None else "forced" if int(n) == 0 else "chosen"
+        f = tables.forced(h)
+        kind = "unbound" if f is None else "forced" if f else "chosen"
         x = float(h["position"]) if h.get("position") not in (None, "") else (int(h["cp"]) - 1) / span
         third = str(min(int(x * 3) + 1, 3))
         added = max(num(h.get("net_added"), 0) or 0, 0)
@@ -328,6 +333,7 @@ def h7_rows(enc: list[dict], host_rows: list[dict] | None = None) -> list[dict]:
         out.append({"chain_id": r["chain_id"], "arm": r["arm"], "frontend": r.get("frontend", ""),
                     "cp": float(r["position"]) if r.get("position") not in (None, "") else int(r["cp"]),
                     "unit": int(r["cp"]), "class": r["class"], "forced": truth(r["forced"]),
+                    "forced_bind": truth(r.get("forced_bind")),
                     "positions": size.get((r["chain_id"], int(r["cp"]), r["class"]), [0, 0])[0],
                     "methods": size.get((r["chain_id"], int(r["cp"]), r["class"]), [0, 0])[1],
                     "chosen": truth(r["chosen"]), **n,
@@ -391,8 +397,7 @@ def redesign(hosts: list[dict], pairs: list[dict], min_changes: int = 2,
             units.setdefault((h["chain_id"], int(h["cp"])), set()).add(h.get("before_type") or h["type"])
     forced: dict[tuple, list] = {}
     for h in sorted(hosts, key=lambda r: int(r["cp"])):
-        n = num(h.get("choice_class"))
-        if not tables.changed(h) or truth(h.get("class_new")) or n is None or int(n) != 0:
+        if not tables.changed(h) or truth(h.get("class_new")) or tables.forced(h) is not True:
             continue
         c = h.get("before_type") or h["type"]
         forced.setdefault((h["chain_id"], h["arm"], c), []).append(

@@ -155,6 +155,39 @@ def choice(r: dict, tm: list[str], tf: list[str], ti: list[str], tc: list[str], 
     return out
 
 
+def encapsulated(r: dict, tf: list[str], tc: list[str], places: dict | None) -> bool | None:
+    """Forced by encapsulation (PLAN.md 4.2a, decided by the author on 21 November 2026): the code
+    was bound at the class to a member no other class can reach: a private field, a private method,
+    or a constant of the class (which binds code to the class whatever its access, §2 H1). False
+    where it was bound at the class only to members other classes can reach; None where it was not
+    bound at the class, or the class is not in the tree before the unit."""
+    if not (tf or tc):
+        return None
+    index = (places or {}).get(r["unit"])
+    if index is None:
+        return None
+    here = flow.simple(r.get("before_type") or r["type"])
+    fields, constants, methods = None, set(), {}
+    for f in index.get("files", {}).values():
+        for c in f.get("classes", []):
+            if flow.simple(c["name"]) == here and "fields" in c:
+                fields, constants = c["fields"], set(c.get("constants") or [])
+        for m in f.get("methods", []):
+            if flow.simple(m["type"]) == here:
+                methods.setdefault(m.get("name") or m["signature"].split("(")[0], set()).add(m.get("access", "public"))
+    if fields is None:
+        return None
+    return (any(fields.get(v) == "private" or v in constants for v in tf)
+            or any("private" in methods.get(v, set()) for v in tc))
+
+
+def forced(h: dict) -> bool | None:
+    """A host's placement forced by encapsulation (``forced_enc``): True, False, or None where its
+    code was not bound at the class."""
+    v = h.get("forced_enc")
+    return None if v in (None, "") else str(v) == "True"
+
+
 def changed(h: dict) -> bool:
     """A host a unit placed or edited code in (H6, PLAN.md 4.2b): it added positions, and is not a
     re-placement of code moved there."""
@@ -228,20 +261,14 @@ def encapsulation_rows(arm: str, chain: str, hosts: list[dict], measured: dict) 
     placed or edited code in, the calls across that class's boundary the unit added (in the tree
     after it, which is the tree before the next unit, and not before), outward (from its methods to
     another class's) and inward (from another class's methods to its own), each by the member it
-    reaches: one that was already open to it (*existing*), one the unit added open to other classes
-    (*exposed*, not private), or one the unit made more open (*widened*). With whether a placement in
-    the class was forced at the class (H5's class level: no alternative), or had a choice there,
-    and how many of the class's own members the unit exposed or widened, called or not."""
+    reaches, a method or a field: one that was already open to it (*existing*), one the unit added
+    open to other classes (*exposed*, not private), or one the unit made more open (*widened*). With
+    whether a placement in the class was forced by encapsulation (``forced``; bound to a member no
+    other class can reach) or bound only to reachable members (``chosen``), whether one was forced by
+    binding with no alternative (``forced_bind``, H5's class level), and how many of the class's own
+    members the unit exposed or widened, called or not."""
     trees, after = _trees(measured)
-    by_cp: dict[int, dict[str, dict]] = {}
-    for h in hosts:
-        if not changed(h) or str(h.get("class_new")) == "True":
-            continue
-        c = _type(h.get("before_type") or h["type"])
-        d = by_cp.setdefault(int(h["cp"]), {}).setdefault(c, {"forced": False, "chosen": False})
-        n = h.get("choice_class")
-        if n not in (None, ""):
-            d["forced" if int(float(n)) == 0 else "chosen"] = True
+    by_cp = _forced_classes(hosts)
     out = []
     for cp, classes in sorted(by_cp.items()):
         if cp not in trees or cp not in after:
@@ -258,7 +285,8 @@ def encapsulation_rows(arm: str, chain: str, hosts: list[dict], measured: dict) 
 
         for c, d in sorted(classes.items()):
             sc = flow.simple(c)
-            row = {"arm": arm, "chain": chain, "cp": cp, "class": c, "forced": d["forced"], "chosen": d["chosen"]}
+            row = {"arm": arm, "chain": chain, "cp": cp, "class": c, "forced": d["forced"], "chosen": d["chosen"],
+                   "forced_bind": d["forced_bind"]}
             for side, mine in (("out", lambda e: e[0][0] == sc), ("in", lambda e: e[1][0] == sc)):
                 edges = [e for e in new if mine(e)]
                 row[f"new_{side}"] = len(edges)
@@ -280,10 +308,13 @@ def _forced_classes(hosts: list[dict]) -> dict[int, dict[str, dict]]:
         if not changed(h) or str(h.get("class_new")) == "True":
             continue
         c = _type(h.get("before_type") or h["type"])
-        d = by_cp.setdefault(int(h["cp"]), {}).setdefault(c, {"forced": False, "chosen": False})
+        d = by_cp.setdefault(int(h["cp"]), {}).setdefault(c, {"forced": False, "chosen": False, "forced_bind": False})
+        f = forced(h)
+        if f is not None:
+            d["forced" if f else "chosen"] = True
         n = h.get("choice_class")
-        if n not in (None, ""):
-            d["forced" if int(float(n)) == 0 else "chosen"] = True
+        if n not in (None, "") and int(float(n)) == 0:
+            d["forced_bind"] = True
     return by_cp
 
 
@@ -452,6 +483,7 @@ def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
             "class_methods_added": " ".join(m + "()" for m in r.get("class_methods_added", [])),
             "called_class_methods": " ".join(m + "()" for m in tc),
             **choice(r, tm, tf, ti, tc, measured.get("places")),
+            "forced_enc": encapsulated(r, tf, tc, measured.get("places")),
         })
         if shaped:
             rows[-1].update(shape.host_shape(rows[-1], shaped, in_class))

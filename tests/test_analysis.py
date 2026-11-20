@@ -280,15 +280,20 @@ def test_reversed_and_holm_failures():
     e = estimates()
     e["H1"]["cp"] = boot(-0.01, -0.02, -0.002, 0.999, 0.001)
     assert verdict.decide(e, COND)["hypotheses"]["H1"]["verdict"] == "reversed"
-    # each interval clears its line, but p = 0.02 for all four: Holm makes them 0.08
+    # each interval clears its line, but p = 0.02 for all five confirmatory: Holm makes them 0.10;
+    # H1, secondary, is decided on its own p = 0.02
     e = estimates(H1={k: boot(0.01, 0.001, 0.02, 0.02, 0.98) for k in ("cp", "within_class", "within_method")})
     e["H2"]["class"]["p_greater"] = e["H2"]["method"]["p_greater"] = 0.02
-    e["H3"]["measures"] = {"s1_long": measure(1.0, 0.9, 1.1, 0.02)}
     e["H4"] = {"arm": boot(-0.5, -0.8, -0.01, 0.98, 0.02), "slope": boot(-0.2, -0.3, -0.01, 0.98, 0.02),
                "intrusion_class": {"irr": 0.4, "irr_lower": 0.3, "irr_upper": 0.9, "p_less": 0.02},
                "intrusion_method": {"irr": 0.4, "irr_lower": 0.3, "irr_upper": 0.9, "p_less": 0.02}}
+    e["H5"] = {"margin": [0.8, 1.25], "class": {"irr": 0.9, "irr_lower": 0.7, "irr_upper": 1.1, "p_upper": 0.02}}
+    up = {"irr": 1.5, "irr_lower": 1.1, "irr_upper": 2.0, "p_greater": 0.02}
+    e["H6"] = {"forced": up}
+    e["H7"] = {"forced": up}
     v = verdict.decide(e, COND)["hypotheses"]
-    assert v["H1"]["p_holm"] == pytest.approx(0.08) and v["H1"]["verdict"] == "not supported"
+    assert v["H2"]["p_holm"] == pytest.approx(0.10) and v["H2"]["verdict"] == "not supported"
+    assert v["H1"]["p_holm"] == pytest.approx(0.02) and v["H1"]["verdict"] == "supported"
 
 
 def test_descriptive_only_decides_nothing():
@@ -358,10 +363,13 @@ def test_h5_a_level_where_every_placement_was_forced_cannot_rise():
     assert v["levels"]["class"] == "not above" and v["verdict"] == "supported"
 
 
-def test_holm_runs_over_seven():
+def test_holm_runs_over_the_five_confirmatory_and_the_secondary_keep_their_own_p():
     flat = {"irr": 0.9, "irr_lower": 0.7, "irr_upper": 1.1, "p_upper": 0.011}
     v = verdict.decide(estimates(**h5_levels(flat, flat)), COND)["hypotheses"]
-    assert len(v) == 7 and v["H5"]["p_holm"] >= 0.011
+    assert len(v) == 7
+    assert {k for k, x in v.items() if x["tier"] == "confirmatory"} == {"H2", "H4", "H5", "H6", "H7"}
+    assert v["H5"]["p_holm"] >= 0.011
+    assert v["H1"]["tier"] == "secondary" and v["H1"]["p_holm"] == v["H1"]["p"]
 
 
 def test_h7_forced_classes_that_gain_more_coupling_are_supported():
@@ -397,7 +405,8 @@ def test_h6_units_count_existing_classes_and_the_accountings_add_up():
     def host(cp, t, choice=None, added=3, new=False):
         return {"chain_id": "spring/r/chain1", "arm": "spring", "cp": cp, "type": t, "before_type": t,
                 "added": added, "net_added": added, "replacement": False, "class_new": new,
-                "choice_class": "" if choice is None else choice}
+                "choice_class": "" if choice is None else choice,
+                "forced_enc": "" if choice is None else choice == 0}
     hosts = [host(1, "A"), host(2, "A", 0), host(2, "B", 2), host(2, "B"), host(3, "A", 1),
              host(3, "C", new=True), host(3, "D", added=0), host(4, "E", new=True)]
     u = {r["cp"]: r for r in prepare.h6_rows(hosts, {})}
@@ -432,6 +441,7 @@ def test_redesign_flags_a_class_whose_forced_changes_share_no_data_and_a_pair_ch
     def host(cp, t, vals, forced=True, chain="s/r/c1"):
         return {"chain_id": chain, "arm": "spring", "cp": cp, "type": t, "before_type": t, "added": 3,
                 "replacement": False, "class_new": False, "choice_class": 0 if forced else "",
+                "forced_enc": True if forced else "",
                 "need_class_values": vals, "called_class_methods": ""}
     # Shop: changes 1, 3 use {stock, price}; 2, 4 use {owner}: two groups by cp 4. Cart: one group
     hosts = [host(1, "Shop", "stock"), host(2, "Shop", "owner"), host(3, "Shop", "stock price"),

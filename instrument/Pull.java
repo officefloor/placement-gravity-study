@@ -96,7 +96,7 @@ import net.officefloor.sinewslim.javaparser.ParsedFile;
 public final class Pull {
 
 	/** Bump whenever a field's meaning changes. */
-	static final int VERSION = 14;
+	static final int VERSION = 15;
 
 	/** A removed position's text must be at least this long to mark an added one as moved. */
 	static final int MOVED_MIN_CHARS = 12;
@@ -160,7 +160,8 @@ public final class Pull {
 
 	/** A type: its fields, the names of its methods, and which of its fields hold injected dependencies. */
 	record T(String file, String name, int origLine, Set<String> fields, Set<String> utilities, Set<String> methods,
-			Set<String> injected, Set<String> constants, Map<String, String> fieldTypes, Set<String> supers) {
+			Set<String> injected, Set<String> constants, Map<String, String> fieldTypes, Set<String> supers,
+			Map<String, String> fieldAccess) {
 
 		/** The fields the class holds: state, injected dependencies and constants (not utilities). */
 		int held() {
@@ -1166,6 +1167,34 @@ public final class Pull {
 	 * receiver), and "?" where it cannot be read without a symbol solver (a chained call, an expression).
 	 * A method reference has arity -1 (any).
 	 */
+	/**
+	 * The fields of other classes a method reads or writes directly, each as {@code receiver|field}: the
+	 * receiver as in {@link #calls} (a local, parameter or field of a declared type, or a class named
+	 * for a static field); a field of its own class ({@code this.x}, or no receiver) is not listed.
+	 */
+	static List<String> reads(M m) {
+		Map<String, String> vars = varTypes(m.node);
+		Map<String, String> fields = m.owner == null ? Map.of() : m.owner.fieldTypes;
+		Set<String> out = new TreeSet<>();
+		for (FieldAccessExpr fa : m.node.findAll(FieldAccessExpr.class)) {
+			Expression sc = fa.getScope();
+			String recv = null;
+			if (sc instanceof NameExpr n) {
+				String x = n.getNameAsString();
+				recv = vars.containsKey(x) ? rawSimple(vars.get(x))
+						: fields.containsKey(x) ? rawSimple(fields.get(x))
+						: Character.isUpperCase(x.charAt(0)) ? x : null;
+			} else if (sc instanceof FieldAccessExpr inner && inner.getScope() instanceof ThisExpr
+					&& fields.containsKey(inner.getNameAsString())) {
+				recv = rawSimple(fields.get(inner.getNameAsString()));
+			}
+			if (recv != null && !recv.isEmpty()) {
+				out.add(recv + "|" + fa.getNameAsString());
+			}
+		}
+		return new ArrayList<>(out);
+	}
+
 	static List<String> calls(M m) {
 		Map<String, String> vars = varTypes(m.node);
 		Map<String, String> fields = m.owner == null ? Map.of() : m.owner.fieldTypes;
@@ -1245,7 +1274,8 @@ public final class Pull {
 							});
 							classes.append(classes.length() > 0 ? "," : "").append("{\"name\":").append(q(t.name()))
 									.append(",\"injected_types\":").append(strs(types)).append(",\"supers\":")
-									.append(strs(t.supers())).append('}');
+									.append(strs(t.supers())).append(",\"fields\":").append(typeMap(t.fieldAccess()))
+									.append(",\"constants\":").append(strs(new TreeSet<>(t.constants()))).append('}');
 						}
 						for (M m : f == null ? List.<M>of() : f.methods()) {
 							methods.append(methods.length() > 0 ? "," : "").append("{\"type\":").append(q(m.type()))
@@ -1253,7 +1283,8 @@ public final class Pull {
 									.append(q(m.signature())).append(",\"params\":").append(paramCount(m.signature()))
 									.append(",\"types\":").append(strs(new TreeSet<>(varTypes(m.node()).values())))
 									.append(",\"calls\":").append(strs(calls(m)))
-									.append(",\"access\":").append(q(access(m.node()))).append('}');
+									.append(",\"access\":").append(q(access(m.node())))
+									.append(",\"reads\":").append(strs(reads(m))).append('}');
 						}
 						w.write("{\"unit\":" + q(r[0]) + ",\"path\":" + q(rel) + ",\"classes\":[" + classes
 								+ "],\"methods\":[" + methods + "],\"problems\":" + problems.size() + "}\n");
@@ -1434,8 +1465,13 @@ public final class Pull {
 			Set<String> fields = new HashSet<>(), utilities = new HashSet<>(), methods = new HashSet<>();
 			Set<String> constants = new HashSet<>();
 			Map<String, String> fieldTypes = new HashMap<>();
+			Map<String, String> fieldAccess = new TreeMap<>();
+			boolean iface = t instanceof com.github.javaparser.ast.body.ClassOrInterfaceDeclaration cid && cid.isInterface();
 			for (FieldDeclaration fd : t.getFields()) {
 				fd.getVariables().forEach(v -> fieldTypes.put(v.getNameAsString(), typeText(v.getType())));
+				String fa = iface ? "public" : fd.getAccessSpecifier() == com.github.javaparser.ast.AccessSpecifier.NONE
+						? "package" : fd.getAccessSpecifier().asString();
+				fd.getVariables().forEach(v -> fieldAccess.put(v.getNameAsString(), fa));
 				// a class utility (a logger) is not a binding: any class can declare its own
 				fd.getVariables().forEach(v -> (utility(v) ? utilities : fields).add(v.getNameAsString()));
 				if (fd.isStatic() && fd.isFinal()) {
@@ -1450,8 +1486,11 @@ public final class Pull {
 				methods.add(md.getNameAsString());
 			}
 			int oline = i < otypes.size() ? ((Node) otypes.get(i)).getBegin().map(p -> p.line).orElse(0) : 0;
+			if (t instanceof com.github.javaparser.ast.body.RecordDeclaration rd) {
+				rd.getParameters().forEach(p -> fieldAccess.putIfAbsent(p.getNameAsString(), "private"));
+			}
 			T tt = new T(rel, qualifiedName(t), oline, fields, utilities, methods, injectedFields(t), constants,
-					fieldTypes, supers(t));
+					fieldTypes, supers(t), fieldAccess);
 			typeOf.put(t, tt);
 			types.add(tt);
 		}

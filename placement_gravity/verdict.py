@@ -31,7 +31,10 @@
   same point in the stream: the rate ratio on forced above 1 (one-sided Wald). Reversed if its
   interval lies wholly below 1. Whether those calls reach members the unit exposed or widened is
   reported.
-- **Multiplicity**: Holm over H1 to H7 at α = 0.05.
+- **Two tiers** (decided by the author on 21 November 2026): the **confirmatory** family is the
+  force and its two outlets, with the control: H2, H4, H5, H6 and H7, Holm over the five at
+  α = 0.05. H1 and H3 are **secondary**: each keeps its rule and direction and is decided at
+  α = 0.05 on its own p, outside the correction, and reported as secondary.
 
 Verdicts: ``supported``; ``not supported``; ``reversed`` (an interval wholly on the wrong side);
 ``unresolved`` (H3: an interval reaching above the upper margin without lying above it);
@@ -45,6 +48,9 @@ import json
 from pathlib import Path
 
 ALPHA = 0.05
+#: The confirmatory family (Holm) and the secondary hypotheses (their own p), 21 November 2026.
+CONFIRMATORY = ("H2", "H4", "H5", "H6", "H7")
+SECONDARY = ("H1", "H3")
 #: H3's measures (PLAN.md §2, §5): at the method, long, cognitive and cyclomatic complexity; at the
 #: class, concentration, WMC and lack of cohesion. Each is fitted alone. Not slimmable and
 #: junction are sinew measures, and fan-out and CBO measures of reach, reported apart.
@@ -170,9 +176,11 @@ def h7(est: dict) -> dict:
 def decide(est: dict, cond: dict) -> dict:
     parts = {"H1": h1(est), "H2": h2(est), "H3": h3(est), "H4": h4(est, cond), "H5": h5(est),
              "H6": h6(est), "H7": h7(est)}
-    adjusted = holm({k: v["p"] for k, v in parts.items()})
+    adjusted = holm({k: parts[k]["p"] for k in CONFIRMATORY})
     for k, v in parts.items():
-        v["p_holm"] = adjusted[k]
+        v["tier"] = "confirmatory" if k in CONFIRMATORY else "secondary"
+        # a secondary hypothesis is decided on its own p, outside the correction
+        v["p_holm"] = adjusted[k] if k in CONFIRMATORY else v["p"]
         if cond.get("descriptive_only"):
             v["verdict"] = "descriptive only"
         elif "verdict" in v:

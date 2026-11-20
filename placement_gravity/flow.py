@@ -69,6 +69,19 @@ class Graph:
                 for j in hit:
                     self.out[i].add(j)
                     self.into[j].add(i)
+        # a class's fields and their access (Pull VERSION 15), and each method's reads of another
+        # class's fields: an edge to that field, as a call is to a method (H7, PLAN.md 4.2c)
+        self.fields: dict[str, dict[str, str]] = defaultdict(dict)
+        for f in files.values():
+            for c in f.get("classes", []):
+                self.fields[simple(c["name"])].update(c.get("fields") or {})
+        self.reads: list[set[tuple[str, str]]] = [set() for _ in self.methods]
+        for i, m in enumerate(self.methods):
+            for r in m.get("reads", []):
+                recv, name = r.rsplit("|", 1)
+                for c in self.family(recv):
+                    if name in self.fields.get(c, {}):
+                        self.reads[i].add((c, f"#{name}"))
         self.flows = [set(f) for f in index.get("flows", [])]
 
     def class_calls(self) -> dict[tuple[str, str], int]:
@@ -79,7 +92,7 @@ class Graph:
             out: dict[tuple[str, str], int] = defaultdict(int)
             for i, js in enumerate(self.out):
                 a = simple(self.methods[i]["type"])
-                for b in {simple(self.methods[j]["type"]) for j in js} - {a}:
+                for b in ({simple(self.methods[j]["type"]) for j in js} | {c for c, _ in self.reads[i]}) - {a}:
                     out[(a, b)] += 1
             self._class_calls = dict(out)
         return self._class_calls
@@ -92,13 +105,16 @@ class Graph:
                 return simple(self.methods[i]["type"]), self.methods[i]["signature"]
             self._cross = {(k(i), k(j)) for i, js in enumerate(self.out) for j in js
                            if k(i)[0] != k(j)[0]}
+            self._cross |= {(k(i), f) for i, fs in enumerate(self.reads) for f in fs if k(i)[0] != f[0]}
         return self._cross
 
     def access(self) -> dict[tuple[str, str], str]:
-        """Each method's access (public, protected, package, private), by (class, signature)."""
+        """Each method's and field's access (public, protected, package, private), by (class,
+        signature), a field as (class, "#name")."""
         if getattr(self, "_access", None) is None:
             self._access = {(simple(m["type"]), m["signature"]): m.get("access", "public")
                             for m in self.methods}
+            self._access.update({(c, f"#{name}"): acc for c, fs in self.fields.items() for name, acc in fs.items()})
         return self._access
 
     def family(self, c: str) -> set[str]:

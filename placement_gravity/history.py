@@ -44,7 +44,7 @@ from . import chain, lines, places, refactor, runs, tables
 OUT = runs.RESULTS / "measure" / "_history"
 WORK = chain.ROOT / ".tmp" / "history"
 SAMPLES = chain.ROOT / "samples"
-HISTORY_VERSION = 8
+HISTORY_VERSION = 9
 #: A unit changes at most this many lines of production Java (PLAN.md §3.2).
 MAX_LINES = 200
 #: No cap on the units read per repository (decided by the author, 18 November 2026): a

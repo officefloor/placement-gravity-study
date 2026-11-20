@@ -107,6 +107,8 @@ def h6_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
          "the same point in the stream; one-sided above 1.", "",
          f"- **{h.get('verdict', '–')}**",
          f"- **Forced: {ratio(fo)}** ({fam(fo)}; one-sided p {f(fo.get('p_greater'))})",
+         f"- Reported, forced by binding with no alternative (H5's): {ratio(rep.get('H6_forced_bind'))}; "
+         f"forced without the change's size: {ratio(rep.get('H6_forced_without_size'))}",
          f"- Reported, the spread's rise over the stream (end against start): all units {ratio(rep.get('H6_rise'))} "
          f"({fam(rep.get('H6_rise'))}); forced units {ratio(rep.get('H6_rise_forced'))} ({fam(rep.get('H6_rise_forced'))}); "
          f"unforced units {ratio(rep.get('H6_rise_unforced'))} ({fam(rep.get('H6_rise_unforced'))})"]
@@ -164,7 +166,9 @@ def h7_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
          "(outward and inward). The ratio for a class with a placement forced at the class to one without, "
          "at the same point in the stream; one-sided above 1.", "",
          f"- **{h.get('verdict', '–')}**",
-         f"- **Forced: {ratio(fo)}** (n = {f(fo.get('n'))}, {fo.get('family', '–')}; one-sided p {f(fo.get('p_greater'))})"]
+         f"- **Forced: {ratio(fo)}** (n = {f(fo.get('n'))}, {fo.get('family', '–')}; one-sided p {f(fo.get('p_greater'))})",
+         f"- Reported, forced by binding with no alternative (H5's): {ratio(rep.get('H7_forced_bind'))}; "
+         f"forced without the change's size: {ratio(rep.get('H7_forced_without_size'))}"]
     for y, lab in (("opened", "calls reaching a member the unit exposed or widened"), ("new_out", "outward calls"),
                    ("new_in", "inward calls"), ("members_opened", "the class's members exposed or widened")):
         L.append(f"- Reported, forced ratio of {lab}: {ratio(rep.get(f'H7_forced_{y}'))}")
@@ -418,9 +422,10 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
     L = [f"# {name}", "",
          f"Role: **{role}**. Chains: " + ", ".join(f"{k} {v}" for k, v in cond["chains"].items())
          + (". **Descriptive only.**" if ver["descriptive_only"] else "."), "",
-         "| Hypothesis | Verdict | p (Holm) |", "|---|---|---|"]
+         "| Hypothesis | Tier | Verdict | p (Holm over the confirmatory; own p for secondary) |",
+         "|---|---|---|---|"]
     for k, v in hyp.items():
-        L.append(f"| {k} | {v['verdict']} | {f(v.get('p_holm'))} |")
+        L.append(f"| {k} | {v.get('tier', '–')} | {v['verdict']} | {f(v.get('p_holm'))} |")
     h1 = est.get("H1") or {}
     lv = rep.get("H1_levels") or {}
     t1 = rep.get("H1_bindings") or {}
