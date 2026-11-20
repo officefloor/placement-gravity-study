@@ -159,9 +159,11 @@ outside the correction. The readings (§4.2b–4.2e) are reported.
 
 **Forced** (decided by the author on 21 November 2026, §9 row 65) means **forced by
 encapsulation**: a placement whose code was bound at the class to a member no other class can
-reach, a private field, a private method, or a constant of the class (§2 H1: a constant binds code
-to its class). A placement bound at the class only to members other classes can reach is
-*unforced* (chosen); one not bound at the class is unbound. The definition is the force itself and
+reach, a private field or a private method. A constant follows its access like any field (the
+author, 21 November 2026: "it is good code to move constants to another class and make public for
+consumption"): a private constant forces, a public one does not. A placement bound at the class
+only to members other classes can reach is *unforced* (chosen); one not bound at the class is
+unbound. The definition is the force itself and
 works the same with or without dependency injection, so corpus B, which mostly has none, gets the
 same contrast as corpus A. Forced by binding with no alternative (H5's class level, §4.2a) is
 reported beside it in H6 and H7, and stays H5's own measure.
@@ -2421,8 +2423,8 @@ author's to set, on the plan and code as they then stand, and starts the experim
 - *Decided by the author on 21 November 2026 (back from the flight):* forced means forced by
   encapsulation (row 65); public fields tracked (row 65); the hypotheses separated into a
   confirmatory family and secondary ones (row 66). The drafter's choices in these, not yet spoken
-  to: a constant of any access counts as forced; package-private and protected members count as
-  reachable; the confirmatory family is H2, H4, H5, H6 and H7.
+  to: package-private and protected members count as reachable; (a constant follows its access,
+  decided by the author the same day); the confirmatory family is H2, H4, H5, H6 and H7.
 - *The tag stays unset* (the author, 19 November 2026: "still to hold off, as I want to think about
   H2 in terms of placement choice"; H5 now carries choice).
 - *Not built, and said so where it matters:* the issue-linked unit of corpus B (§3.2); the ranks
@@ -2588,7 +2590,7 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 62 | The novelty check's suggestions (LITERATURE.md §10, 20 November 2026): Pescio's use of *gravity* acknowledged; Page-Jones (connascence), Ousterhout (deep modules) and Kobori et al. with Vidal et al. (widening) cited at H7; the split/concentrate reading placed against Extract Class and co-change Move recommenders and Paixão et al. 2017; conservation kept as framing (Tesler, Hatton, Pescio); Lopes and Ossher (size scaling) and Taube-Schock et al. (unavoidable high coupling, H7's rival reading) in §7. No measure, model or rule changes | §1, §2, §4.2c, §4.2d, §7 | The author's, 20 November 2026 ("apply the plan suggestions from the novelty check"). Most sources read as abstracts or records; marked where unchecked |
 | 63 | Reported readings: surface against volume (a class's links across its boundary against its methods, the exponent across classes and within a growing class; surface a change adds, forced against unforced) and ripple (later changes to a method a new call reached that also change the caller, by forced and by opened) | §4.2e, `tables.boundary_rows`, `tables.edge_rows`, `prepare.surface_rows`, `prepare.ripple`, `analyse.R`, `report.py` | The author's, 20 November 2026 ("draft and build surface vs volume and ripple"). Operational form the drafter's |
 | 64 | H5 tested at the class only, its method level reported; the ripple reading against chance (the share of a chain's units that change the calling class anyway) | §2, §4.2e, §5, `verdict.h5`, `prepare.ripple`, `report.py` | Decided by the author on 20 November 2026 after the development chain: the method level shows the encapsulation's volume growing, which the author's reading of H5 expects. Before the tag, so a revision |
-| 65 | *Forced* is forced by encapsulation: code bound at the class to a private field, a private method or a constant of the class; forced by binding with no alternative reported beside it. Fields' access and reads of other classes' fields tracked, so public fields count in coupling, exposure and widening | §2, §4.2b, §4.2c, `Pull.java` (VERSION 15: `fields`, `constants`, `reads`), `flow.Graph`, `tables.encapsulated`, `tables.forced`, `prepare.py`, `analyse.R` | Decided by the author on 21 November 2026, on the drafter's proposal after the author asked what forced should mean where there is no injection (corpus B), and that public fields be tracked. Before the tag, so a revision |
+| 65 | *Forced* is forced by encapsulation: code bound at the class to a private field (a private constant among them) or a private method; a public constant does not force; forced by binding with no alternative reported beside it. Fields' access and reads of other classes' fields tracked, so public fields count in coupling, exposure and widening | §2, §4.2b, §4.2c, `Pull.java` (VERSION 15: `fields`, `constants`, `reads`), `flow.Graph`, `tables.encapsulated`, `tables.forced`, `prepare.py`, `analyse.R` | Decided by the author on 21 November 2026, on the drafter's proposal after the author asked what forced should mean where there is no injection (corpus B), and that public fields be tracked. Before the tag, so a revision |
 | 66 | Two tiers: confirmatory H2, H4, H5, H6, H7 (Holm over five); secondary H1, H3 (each on its own p, reported as secondary) | §2, §5, `verdict.py`, `report.py` | Decided by the author on 21 November 2026, on the drafter's proposal: the necessity is to find the force; a smaller family keeps power. Before the tag, so a revision |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 

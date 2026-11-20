@@ -156,28 +156,28 @@ def choice(r: dict, tm: list[str], tf: list[str], ti: list[str], tc: list[str], 
 
 
 def encapsulated(r: dict, tf: list[str], tc: list[str], places: dict | None) -> bool | None:
-    """Forced by encapsulation (PLAN.md 4.2a, decided by the author on 21 November 2026): the code
-    was bound at the class to a member no other class can reach: a private field, a private method,
-    or a constant of the class (which binds code to the class whatever its access, §2 H1). False
-    where it was bound at the class only to members other classes can reach; None where it was not
-    bound at the class, or the class is not in the tree before the unit."""
+    """Forced by encapsulation (PLAN.md §2, decided by the author on 21 November 2026): the code was
+    bound at the class to a member no other class can reach, a private field (a constant among
+    them) or a private method. False where it was bound at the class only to members other classes
+    can reach (a public constant is open for others to use: the author's "good code"); None where it
+    was not bound at the class, or the class is not in the tree before the unit."""
     if not (tf or tc):
         return None
     index = (places or {}).get(r["unit"])
     if index is None:
         return None
     here = flow.simple(r.get("before_type") or r["type"])
-    fields, constants, methods = None, set(), {}
+    fields, methods = None, {}
     for f in index.get("files", {}).values():
         for c in f.get("classes", []):
             if flow.simple(c["name"]) == here and "fields" in c:
-                fields, constants = c["fields"], set(c.get("constants") or [])
+                fields = c["fields"]
         for m in f.get("methods", []):
             if flow.simple(m["type"]) == here:
                 methods.setdefault(m.get("name") or m["signature"].split("(")[0], set()).add(m.get("access", "public"))
     if fields is None:
         return None
-    return (any(fields.get(v) == "private" or v in constants for v in tf)
+    return (any(fields.get(v) == "private" for v in tf)
             or any("private" in methods.get(v, set()) for v in tc))
 
 

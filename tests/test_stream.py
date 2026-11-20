@@ -316,17 +316,19 @@ def test_boundary_and_edges_give_surface_against_volume_and_the_calls_for_ripple
         ("Owner", "age()", "widened", True), ("Pet", "find()", "existing", False)]
 
 
-def test_forced_by_encapsulation_is_a_private_member_or_a_constant_of_the_class():
+def test_forced_by_encapsulation_is_a_private_member_of_the_class_constants_included():
     files = {"O.java": {"classes": [{"name": "Owner", "injected_types": [], "supers": [],
-                                     "fields": {"name": "private", "tag": "public", "MAX": "public"},
-                                     "constants": ["MAX"]}],
+                                     "fields": {"name": "private", "tag": "public", "MAX": "public",
+                                                "LIMIT": "private"},
+                                     "constants": ["MAX", "LIMIT"]}],
                         "methods": [{**_m("Owner", "check", "check()", 0, []), "access": "private"},
                                     {**_m("Owner", "find", "find()", 0, []), "access": "public"}]}}
     places = {"cp03": {"files": files, "flows": []}}
     r = {"unit": "cp03", "type": "Owner", "before_type": "Owner"}
     assert tables.encapsulated(r, ["name"], [], places) is True          # a private field
     assert tables.encapsulated(r, ["tag"], ["find"], places) is False    # only what others can reach
-    assert tables.encapsulated(r, ["MAX"], [], places) is True           # a constant binds to the class
+    assert tables.encapsulated(r, ["MAX"], [], places) is False          # a public constant is open to others
+    assert tables.encapsulated(r, ["LIMIT"], [], places) is True         # a private constant is not
     assert tables.encapsulated(r, [], ["check"], places) is True         # a private method
     assert tables.encapsulated(r, [], [], places) is None                # not bound at the class
     assert tables.encapsulated({**r, "unit": "cp09"}, ["name"], [], places) is None
