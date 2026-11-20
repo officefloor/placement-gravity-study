@@ -232,3 +232,85 @@ def test_a_receiver_of_a_union_type_does_not_break_the_call_graph():
                                     _m("A", "g", "g()", 0, [])]}}
     g = flow.Graph({"files": files, "flows": []})
     assert g.flow("A", "f()") == {0, 1}
+
+
+def test_pairs_of_classes_changed_together_carry_the_calls_between_them_before_the_unit():
+    """At cp03, A and B are changed together and C is new: A calls B twice (two methods), B calls A
+    once through its interface IA, which A implements; C is not in the tree before."""
+    files = {"A.java": {"classes": [{"name": "A", "injected_types": [], "supers": ["IA"]}],
+                        "methods": [_m("A", "f", "f()", 0, [], ["B|g|0"]), _m("A", "h", "h()", 0, [], ["B|g|0", "|f|0"])]},
+             "IA.java": {"classes": [{"name": "IA", "injected_types": [], "supers": []}],
+                         "methods": [_m("IA", "f", "f()", 0, [])]},
+             "B.java": {"classes": [{"name": "B", "injected_types": [], "supers": []}],
+                        "methods": [_m("B", "g", "g()", 0, [], ["IA|f|0"])]}}
+    later = {**files, "B.java": {"classes": files["B.java"]["classes"],
+                                 "methods": [_m("B", "g", "g()", 0, [], ["IA|f|0"]),
+                                             _m("B", "k", "k()", 0, [], ["A|h|0"])]}}
+    measured = {"places": {"cp03": {"files": files, "flows": []}, "cp04": {"files": later, "flows": []}}}
+    hosts = [{"cp": 3, "type": t, "before_type": t if t != "C" else None, "added": 2, "replacement": False}
+             for t in ("A", "B", "C")] + [{"cp": 3, "type": "D", "added": 0, "replacement": False}]
+    rows = {(r["class_a"], r["class_b"]): r for r in tables.pair_rows("spring", "chain1", hosts, measured)}
+    assert set(rows) == {("A", "B"), ("A", "C"), ("B", "C")}
+    assert (rows["A", "B"]["calls_ab"], rows["A", "B"]["calls_ba"], rows["A", "B"]["in_tree"]) == (2, 1, True)
+    assert (rows["A", "B"]["calls_ab_after"], rows["A", "B"]["calls_ba_after"]) == (2, 2)
+    assert rows["A", "C"]["in_tree"] is False and rows["A", "C"]["calls_ab"] == 0
+    assert (rows["A", "B"]["new"], rows["A", "C"]["new"]) == (0, 0)   # C has no class_new flag here
+    c = tables.coupling_rows("spring", "chain1", measured)
+    assert [(r["cp"], r["cross_class_calls"], r["cross_class_calls_after"]) for r in c] == [(3, 5, 6), (4, 6, None)]   # A.h -> IA (its own f, via the interface) counts too
+
+
+def test_a_forced_class_gains_calls_across_its_boundary_to_members_exposed_or_widened():
+    """At cp05 Owner is changed with a forced placement. After it, Owner calls Pet's existing public
+    name(), Pet's private age() now widened to public, and Pet's new public weight(); Vet newly calls
+    Owner's existing find(). Owner's own new public label() is opened but not called."""
+    def m(t, n, calls=(), access="public"):
+        return {**_m(t, n, f"{n}()", 0, [], calls), "access": access}
+    before = {"O.java": {"classes": [{"name": "Owner", "injected_types": [], "supers": []}],
+                         "methods": [m("Owner", "find"), m("Owner", "add")]},
+              "P.java": {"classes": [{"name": "Pet", "injected_types": [], "supers": []}],
+                         "methods": [m("Pet", "name"), m("Pet", "age", access="private")]},
+              "V.java": {"classes": [{"name": "Vet", "injected_types": [], "supers": []}],
+                         "methods": [m("Vet", "see")]}}
+    after = {"O.java": {"classes": before["O.java"]["classes"],
+                        "methods": [m("Owner", "find"), m("Owner", "label"),
+                                    m("Owner", "add", ["Pet|name|0", "Pet|age|0", "Pet|weight|0"])]},
+             "P.java": {"classes": before["P.java"]["classes"],
+                        "methods": [m("Pet", "name"), m("Pet", "age"), m("Pet", "weight")]},
+             "V.java": {"classes": before["V.java"]["classes"], "methods": [m("Vet", "see", ["Owner|find|0"])]}}
+    measured = {"places": {"cp05": {"files": before, "flows": []}, "cp06": {"files": after, "flows": []}}}
+    hosts = [{"cp": 5, "type": "Owner", "before_type": "Owner", "added": 4, "replacement": False,
+              "class_new": False, "choice_class": 0},
+             {"cp": 6, "type": "Owner", "before_type": "Owner", "added": 1, "replacement": False,
+              "class_new": False, "choice_class": ""}]
+    rows = tables.encapsulation_rows("spring", "chain1", hosts, measured)
+    assert len(rows) == 1                                  # cp 6 has no tree after it
+    r = rows[0]
+    assert (r["class"], r["forced"], r["new_out"], r["new_in"]) == ("Owner", True, 3, 1)
+    assert (r["out_existing"], r["out_widened"], r["out_exposed"], r["in_existing"]) == (1, 1, 1, 1)
+    assert r["members_opened"] == 1
+
+
+def test_boundary_and_edges_give_surface_against_volume_and_the_calls_for_ripple():
+    def m(t, n, calls=(), access="public"):
+        return {**_m(t, n, f"{n}()", 0, [], calls), "access": access}
+    before = {"O.java": {"classes": [{"name": "Owner", "injected_types": [], "supers": []}],
+                         "methods": [m("Owner", "find"), m("Owner", "add", ["Pet|name|0"])]},
+              "P.java": {"classes": [{"name": "Pet", "injected_types": [], "supers": []}],
+                         "methods": [m("Pet", "name"), m("Pet", "age", access="private")]}}
+    after = {"O.java": {"classes": before["O.java"]["classes"],
+                        "methods": [m("Owner", "find"), m("Owner", "add", ["Pet|name|0", "Pet|age|0"]),
+                                    m("Owner", "more")]},
+             "P.java": {"classes": before["P.java"]["classes"],
+                        "methods": [m("Pet", "name", ["Owner|find|0"]), m("Pet", "age")]}}
+    measured = {"places": {"cp05": {"files": before, "flows": []}, "cp06": {"files": after, "flows": []}},
+                "shape": [{"unit": "cp05", "type": "Owner", "positions": 7}]}
+    hosts = [{"cp": 5, "type": "Owner", "before_type": "Owner", "added": 4, "replacement": False,
+              "class_new": False, "choice_class": 0}]
+    b = tables.boundary_rows("spring", "chain1", hosts, measured)
+    owner = next(r for r in b if not r["cross_section"])
+    assert (owner["methods_before"], owner["positions_before"], owner["out_before"], owner["in_before"]) == (2, 7, 1, 0)
+    assert (owner["methods_after"], owner["out_after"], owner["in_after"], owner["forced"]) == (3, 1, 1, True)   # add() links to Pet once, whatever it calls there
+    assert {r["class"] for r in b if r["cross_section"]} == {"Owner", "Pet"}
+    e = tables.edge_rows("spring", "chain1", hosts, measured)
+    assert sorted((r["caller_class"], r["callee_signature"], r["kind"], r["caller_forced"]) for r in e) == [
+        ("Owner", "age()", "widened", True), ("Pet", "find()", "existing", False)]

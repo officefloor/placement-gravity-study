@@ -96,7 +96,7 @@ import net.officefloor.sinewslim.javaparser.ParsedFile;
 public final class Pull {
 
 	/** Bump whenever a field's meaning changes. */
-	static final int VERSION = 13;
+	static final int VERSION = 14;
 
 	/** A removed position's text must be at least this long to mark an added one as moved. */
 	static final int MOVED_MIN_CHARS = 12;
@@ -1208,6 +1208,21 @@ public final class Pull {
 	 * each method with the types of its parameters and locals and the calls it makes. H5 counts, for a
 	 * bound addition, the other places on its control flow that hold the same types (PLAN.md 4.2a).
 	 */
+	/** A method's access (H7, PLAN.md 4.2c): public, protected, package or private; an interface's
+	 * members without a modifier are public. */
+	static String access(Node n) {
+		if (!(n instanceof CallableDeclaration<?> cd)) {
+			return "package";
+		}
+		var a = cd.getAccessSpecifier();
+		if (a == com.github.javaparser.ast.AccessSpecifier.NONE) {
+			boolean inInterface = cd.getParentNode().filter(p -> p instanceof com.github.javaparser.ast.body.ClassOrInterfaceDeclaration c
+					&& c.isInterface()).isPresent();
+			return inInterface ? "public" : "package";
+		}
+		return a.asString();
+	}
+
 	static void places(Path listing, Path out) throws IOException {
 		try (BufferedWriter w = Files.newBufferedWriter(out, StandardCharsets.UTF_8)) {
 			for (String[] r : rows(listing)) {
@@ -1237,7 +1252,8 @@ public final class Pull {
 									.append(",\"name\":").append(q(m.name())).append(",\"signature\":")
 									.append(q(m.signature())).append(",\"params\":").append(paramCount(m.signature()))
 									.append(",\"types\":").append(strs(new TreeSet<>(varTypes(m.node()).values())))
-									.append(",\"calls\":").append(strs(calls(m))).append('}');
+									.append(",\"calls\":").append(strs(calls(m)))
+									.append(",\"access\":").append(q(access(m.node()))).append('}');
 						}
 						w.write("{\"unit\":" + q(r[0]) + ",\"path\":" + q(rel) + ",\"classes\":[" + classes
 								+ "],\"methods\":[" + methods + "],\"problems\":" + problems.size() + "}\n");

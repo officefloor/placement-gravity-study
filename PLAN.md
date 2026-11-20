@@ -51,6 +51,11 @@ This study turns the question round:
   needs. Those are its **bystanders** (§4.3a). A scope that keeps what each problem leaves behind
   grows heavier, and the next problem that needs any one of its values lands beside all of them.
   That growth is the gravity.
+  *Gravity* is also a word of Pescio's (*Notes on Software Design*, 2008–2012, chapters on mass,
+  gravity and inertia in a "physics of software"; unrefereed essays, not measured), for the pull
+  that gathers things in a design. Those chapters have not been read, so how far his sense and
+  this study's overlap is not known; **check before quoting**. This study's sense is the one above,
+  measured per addition (LITERATURE.md §10, the novelty check of 20 November 2026).
 - **Core and periphery** (stated 19 November 2026, §9). The last sentence was the reading until
   then. On the development chain the data that gathers is mostly not what later code comes for
   (§6): later code comes for a few values that code there was already bound to, the place's
@@ -236,6 +241,81 @@ Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 Novem
     of the stream; the function arm's ratio, and the arms' contrast (its injected parameters are
     not bindings, so its alternatives are expected to stay open); the alternatives themselves, by
     name, for each row.
+  - *The author's reading of H5 on the development chain* (20 November 2026, after seeing it, §6):
+    new functionality enlarges the area of methods, but binding forces that area into a class. So
+    the choice of class narrows while the methods in the class multiply under that forcing, and at
+    the method the alternatives on a request's flow widen. H5 and its test are unchanged by this;
+    it is the reason for H6.
+- **H6, forced changes spread** (added 20 November 2026, §9; the author's). In the methods arm,
+  a change with no choice has to be made in more classes at once: the number of classes that
+  existed before it that a unit places or edits code in (its **spread**, §4.2b) is wider in a unit
+  where a placement was forced at the class (bound there with no other class holding what it was
+  bound to, §4.2a) than in one where none was, at the same point in the stream. One-sided. A new
+  class is a free choice and is not counted (decided by the author on 20 November 2026, after the
+  development chain, §9). As first drafted, H6 also needed the spread to rise over the stream; the
+  author decided the same day to focus on forced and to track forced and unforced units apart, so
+  the rise is reported, in each apart (§9). The author's
+  reasoning: things that change together should stay together, so a change that keeps having to
+  go into two classes because it has no choice shows that the two lack cohesion, and that
+  placement (in particular which class encapsulates which fields) should be redistributed between
+  them. H6 joins H5 (choice) to its cost across classes, as H2 joins binding to its cost within
+  one.
+  - *Reported beside it:* the spread's rise over the stream, over all units and in forced and in
+    unforced units apart; the spread per arm and third, with new classes beside it; the function
+    arm's forced ratio, rise and the arms' contrast (a function placed by its wiring is not forced into a class by fields, so
+    its spread is expected to stay flat); and the **coupling of pairs of classes changed
+    together**: the calls between the two before each unit that changes both, on the index, for
+    pairs changed together more than once, expected to rise (coupling growing between classes
+    that keep changing together). The pairs most often changed together whose coupling rose are
+    listed by name, the candidates for redesign.
+  - *Accounted beside it* (the author, 20 November 2026): where the **growth of existing classes**
+    came from (the share of positions added by placements forced at the class, chosen there, or not
+    bound there), and where **coupling between classes** came from (the calls between classes each
+    unit added, the share of it in units with a forced placement and between classes changed
+    together). Together these say how much of the growth in size, and of the growth in coupling,
+    arrived by forcing: by absorbing into a class, or by spreading to the classes holding the
+    other data.
+- **H7, forced changes couple** (added 20 November 2026, §9; the author's). In the methods arm, a
+  class that a forced change goes into gains more calls across its boundary in that change than a
+  class a change goes into with no forced placement, at the same point in the stream: outward,
+  to the other places holding data it needs, and inward, from places that now need it. One-sided.
+  The author's reasoning: encapsulation is the force. What a class holds privately can only be
+  used inside it, so a change that needs it is forced inside (concentration; its cost is the
+  class's size, H1, H2 and H6's growth accounting). A forced change that also needs data held
+  elsewhere couples to that other place, either to what it already exposes or by asking for its
+  encapsulated data to be widened (made public) to couple to (dispersion; its cost is coupling).
+  So coupling between the encapsulation and the rest of the system increases because of the
+  forced change. With the amount of code conserved (H4's band), placement is the design: it
+  divides the same complexity between size and coupling. H6 says whether forced changes spread;
+  H7 whether they couple, and through what.
+  - *Prior work* (LITERATURE.md §10, novelty check of 20 November 2026; read as abstracts or
+    records unless said): encapsulation as a force is known as a concept, not as a measure.
+    Page-Jones's connascence (1992, 1995) holds that a dependency across an encapsulation
+    boundary is worse than one within it, the stronger the worse; Ousterhout (2018) argues for
+    deep modules, much behind a small interface, and against information leakage across them.
+    Neither measures a change. Widening is measured per member across releases, not tied to the
+    change that caused it (Kobori, Matsushita and Inoue 2015; Vidal et al. 2016). That the amount
+    is conserved and placement divides it is a framing only (Tesler's law; Hatton 2014; Pescio's
+    *physics of software*), not a tested law; the study keeps it as framing and tests the
+    forced/unforced contrast, not conservation itself (which H4's amount band only checks).
+  - *Reported beside it:* the forced ratio for the calls that reach a member the change exposed
+    (added, not private) or widened (made more open), for outward and inward calls apart, and for
+    the class's own members exposed or widened; the share of the added calls reaching an exposed
+    or widened member, forced against unforced; the rise of the added calls over the stream; the
+    function arm's forced ratio and the arms' contrast (a function's dependencies are injected,
+    so no private data forces it, and its coupling is in the wiring, H4).
+- **A reading: split or concentrate** (added 20 November 2026, §9; the author's; reported, not
+  among the confirmatory tests). Encapsulation forces code into a class
+  (concentration); the counter force is to separate it into more encapsulated units, which opens
+  up coupling. Between them is a tension, size of the encapsulation against distribution and
+  coupling, and the author asks what relation between them is good engineering. The reading: a
+  class whose forced changes fall into groups that share none of its data (mutually exclusive
+  encapsulated items, the groups changing with different classes) lacks cohesion, and splitting
+  it is right; a few classes changed together again and again over the same data, their coupling
+  rising, should be concentrated. Good engineering is where neither holds. The reading describes
+  where the code stands between the two forces (§4.2d). It is not checked against what developers
+  later did: the author's interest is the forces, and developers work inside them (20 November
+  2026).
 - **Q1 is descriptive.** Its expected baseline (Steidl and Deissenboeck 2015) is that most
   growth is new methods. So the share of additions that land in an existing host is reported as
   found, with no direction predicted.
@@ -268,6 +348,12 @@ Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 Novem
 - H5: alternatives that widen over the stream, beyond the margin, at the class or at the method:
   code would then find more places to go as the system grows, and placement would loosen, not
   narrow.
+- H7: a class a forced change goes into gaining no more calls across its boundary than one a
+  change goes into unforced. Forcing would then concentrate code without coupling it, and the
+  coupling between classes would come from elsewhere.
+- H6: a spread no wider where a placement was forced than where none was. Changes would then stay
+  in one class however little choice there was, and lack of choice would cost nothing across
+  classes.
 
 Every one of these outcomes is reported whichever way it points.
 
@@ -486,6 +572,8 @@ repository of corpus B or C is read:
   destinations (existing method, new method of an existing class, new class) but not the ranks.
   CodeTracker is not run; a method is followed by the instrument's chaining of RefactoringMiner's
   renames and moves.
+- **H6 and H7 are read on corpora B and C** as H5 is (20 November 2026): a unit is a commit, its
+  pairs' coupling and the calls across a class's boundary read on the same running index.
 - **H5 is read on corpora B and C too** (decided by the author, 19 November 2026). Its places
   need the whole tree, so one index is kept running through a history: the whole production tree
   before the first unit, then, before each later unit, the files that differ between the previous
@@ -627,6 +715,129 @@ tree at *k − 1*, every production Java file) that hold what the code was bound
 
 As built: `instrument/Pull.java` (the declared types of each method's values and of each class's
 fields; `--places`, the places of a tree), `tables.choice`, `prepare.h5_rows` (`h5.csv`).
+
+### 4.2b Spread (H6): the classes a change has to go into
+
+Added 20 November 2026 (§9). The **unit** is a checkpoint on corpus A and a commit on corpora B
+and C (§3.2).
+
+- **Spread:** the number of classes that existed before the unit that it places or edits code
+  in, beyond the first: the classes of its hosts (§4.2) that gained positions, re-placements of
+  moved code left out. A unit that changes one class has spread 0. A class new in the unit is a
+  free choice, not counted (counted beside, as *all classes*); a unit that changes only new
+  classes has no row.
+- **Forced unit:** a unit with at least one host whose code was bound at the class and had no
+  alternative there (H5's class level, §4.2a: no other class holding injected dependencies of the
+  types used, or bound to the class's own state, constants or methods). A unit with a placement
+  that had alternatives is recorded as *chosen*; a unit can be both.
+- **Coupling of a pair** (reported): for each pair of classes a unit changes together, the calls
+  followed from the methods of one to the methods of the other, each way, in the tree before the
+  unit (`flow.Graph.class_calls`: the call graph of §4.2a, a call that may go to several
+  overrides counted once for each class it may reach). A pair is followed through its chain or
+  repository: how many times it has been changed together, its coupling before each time, and
+  what that unit added (the tree after it, which is the tree before the next unit, less the tree
+  before; none for the last unit). Pairs with a new class are left out.
+- **Candidates for redesign** (reported): pairs changed together more than once whose coupling
+  is higher after their last change together than before their first, listed by how often they
+  changed together.
+- **Growth accounting** (reported): the positions added to classes that existed, per arm and
+  third, by the kind of the placement that added them: *forced* (bound at the class, no
+  alternative), *chosen* (bound at the class, with alternatives), *unbound* (not bound at the
+  class); and each one's share.
+- **Coupling accounting** (reported): per unit, the calls between classes in the whole tree after
+  it less before it (`tables.coupling_rows`); summed per arm, with the share added in units with
+  a forced placement, and the share added between the pairs of existing classes the unit changed
+  together (in forced units and in the others).
+
+As built: `tables.pair_rows` (`pairs.csv` per chain or repository), `tables.coupling_rows`
+(`coupling.csv`), `prepare.h6_rows` (`h6.csv`), `prepare.pair_rows`, `prepare.co_change`,
+`prepare.growth_accounting`, `prepare.coupling_accounting`.
+
+### 4.2c Coupling across the encapsulation (H7)
+
+Added 20 November 2026 (§9). Per unit and class that existed before it that the unit placed or
+edited code in:
+
+- **Calls added across its boundary:** the calls followed (§4.2a) from a method of the class to a
+  method of another class (*outward*), or from another class's to its own (*inward*), that are in
+  the tree after the unit (the tree before the next unit) and not in the tree before it. A method
+  is its class and signature, so a moved or renamed method's calls count as new. The calls lost
+  are recorded beside.
+- **By the member reached:** *existing*, a member that was there before with the same access or
+  wider; *exposed*, a member the unit added that is not private; *widened*, a member whose access
+  the unit made more open (private, package, protected, public, in that order; an interface's
+  members are public). Access is read by the instrument for every method of the tree
+  (`Pull --places`, `access`).
+- **Members opened:** the class's own members the unit exposed or widened, called or not.
+- **Forced:** the class had a placement in the unit bound at the class with no alternative (H5's
+  class level); otherwise it is unforced (chosen there, or not bound at the class).
+- The last unit of a chain or a history has no tree after it and no row.
+
+As built: `instrument/Pull.java` (`access`, VERSION 14), `flow.Graph.cross_edges`,
+`flow.Graph.access`, `tables.encapsulation_rows` (`encapsulation.csv`), `prepare.h7_rows`
+(`h7.csv`), `prepare.encapsulation_summary`.
+
+*Prior work:* access excessiveness and its evolution are measured per member (Kobori et al. 2015,
+across releases; Vidal et al. 2016, over-exposed methods and classes, mostly from their first
+version), with no link to the change that widened them. H7 reads widening at the change, and only
+as it is reached by the change's new calls.
+
+### 4.2d Split or concentrate (reported reading)
+
+Added 20 November 2026 (§9). Per chain or repository:
+
+- **The values a change used in a class:** its fields and the class methods it called (§4.4's core
+  at the class), for each host of the unit in that class.
+- **Split, flagged:** a class that existed, with its forced changes (placements bound at the
+  class with no alternative, §4.2a) in order; two changes are joined when they used a value in
+  common, and the class is flagged at the first unit by which there are at least two groups of at
+  least two changes each that share no value. Recorded: the groups' values, and whether the
+  groups' changes went with different classes (the other classes the same units changed, none in
+  common).
+- **Concentrate, flagged:** a pair of existing classes changed together at least three times
+  (§4.2b), where at least half of the times after the first the change used a value of either
+  class it had used at an earlier time (the same data again), and whose coupling after its last
+  time together is above that before its first. Flagged at its third time.
+- **Reported per arm:** the classes with two or more forced changes and how many were flagged
+  (and of those, how many with groups changed with different classes); the pairs changed together
+  at least three times and how many were flagged; the candidates by name, with their groups' values.
+- *Drafted with a check against the developers' later refactorings and withdrawn the same day by
+  the author* ("I'm not interested in what developers did. They are likely working inside the
+  engineering forces"). The refactorings RefactoringMiner finds that split a class or move a member
+  between classes are still recorded per unit (`tables.refactoring_rows`, `refactorings.csv`);
+  nothing reads them.
+
+*Prior work:* splitting and concentrating are what Extract Class recommenders and co-change based
+Move Method/Field recommenders propose (LITERATURE.md §10), and the balance between cohesion and
+coupling is what search-based modularisation optimises (Mancoridis et al., Bunch; Harman et al.);
+Paixão, Harman, Zhang and Yu (2017) measure how far developers' changes move a system towards or
+away from that optimum. This reading is those signals restricted to forced changes, reported as
+where the code stands between the two forces, not as a recommender.
+
+As built: `prepare.redesign`, `report.redesign_section`.
+
+### 4.2e Surface against volume, and ripple (reported readings)
+
+Added 20 November 2026 (§9 row 63; the author's). The exchange between the two outlets.
+
+- **Volume** of a class: its methods (and its positions where the tree's shape was read).
+  **Surface**: its links across its boundary, each method's link to another class counted once
+  (out), and each other class's method linking to it once (in), as followed in §4.2a.
+- **Surface against volume:** per arm, log(1 + surface) on log(methods): across the classes of
+  each chain's last tree (the chain's intercept), and within a class as it grows over the units
+  that changed it (log methods centred on the class's mean). The exponent below 1 means surface
+  grows slower than volume, so concentration saves communication; above 1, faster, so a large
+  class leaks. Read against the function arm and against size scaling (Lopes and Ossher 2015,
+  §7), not against 1 alone. Per change: the surface it added against the methods it added, forced
+  against unforced at the same methods added.
+- **Ripple:** for each call a unit added across a class's boundary (H7's, §4.2c), the later units
+  that change the method it reaches, and the share of those that also change the calling class:
+  the cost of dispersion paid again later. Per arm, by whether the call came with a forced change
+  and whether it reached a member already open or one the unit exposed or widened.
+
+As built: `tables.boundary_rows` (`boundary.csv`), `tables.edge_rows` (`edges.csv`),
+`prepare.surface_rows` (`surface.csv`), `prepare.ripple`, `analyse.R` (`surface`),
+`report.surface_section`.
 
 ### 4.3 Bindings (Q2), the measure of gravitation
 
@@ -1373,7 +1584,7 @@ on the place an addition lands in, as it stood at *k* − 1, with the harness's 
     expected of almost any code that enters an existing class. The reading is therefore between
     bound and unbound, and between the arms, not against 0.5. It replaces nothing: H3 stands as it
     is until this has been looked at on the development chain.
-- **Corpus B and corpus C** (§3.2, §3.3; extended 18 November 2026, and to H5 on 19 November 2026): the H1, H2 and H5 models with a
+- **Corpus B and corpus C** (§3.2, §3.3; extended 18 November 2026, to H5 on 19 November 2026 and to H6 on 20 November 2026): the H1, H2, H5 and H6 models with a
   random intercept for the repository in place of the chain's and the checkpoint's, the index the
   commit's place in the repository's order. Direction and interval only. The two comparisons of
   §3.3 are the same models with a term for the declared agent commit (within a repository) or for
@@ -1389,8 +1600,35 @@ on the place an addition lands in, as it stood at *k* − 1, with the harness's 
   × index interaction's arm term; the share of class rows bound to the class's own values; the
   method values of no declared type. The verdicts are as H3's (unresolved: reaching above the
   margin without lying above it).
-- **Multiplicity:** H1–H5 are five confirmatory tests at α = 0.05 each, Holm-corrected (four until
-  19 November 2026). All else is descriptive.
+- **H6** (20 November 2026): per unit that placed or edited code in an existing class, its spread
+  (§4.2b) as a negative binomial (nbinom2) mixed model on whether the unit was forced and the index
+  scaled from 0 to 1, with the chain's intercept, in the methods arm (*forced*: the ratio of the
+  spread of a forced unit to one that was not, at the same point in the stream). One-sided above
+  1, 95% Wald interval; reversed if the interval lies wholly below 1. Reported: the spread on the
+  index alone (*rise*: exp(slope), the end of the stream against its start), over all units and in
+  forced and in unforced units apart. Every H6 model holds the change's size fixed: log(1 +
+  positions it added) and log(1 + methods it placed or edited code in) (20 November 2026, §9 row
+  61); the forced ratio without them is reported. A spread
+  with less variance than its mean, where the negative binomial cannot be fitted (its Hessian not
+  positive definite), is fitted as Poisson, and that is recorded. Reported: the spread per arm and
+  third, and against forced; the function arm's forced ratio and rise; the arm × index
+  interaction's arm term; the growth and coupling accountings (§4.2b); the
+  coupling of pairs changed together more than once, a negative binomial model of it on the index
+  with intercepts for the chain and the pair; the pairs changed together, how many more than once,
+  in how many of those coupling rose or fell, and the candidates by name.
+- **H7** (20 November 2026): per unit and existing class it changed, the calls added across the
+  class's boundary (§4.2c) as a negative binomial (nbinom2) mixed model on whether the class was
+  forced and the index scaled from 0 to 1, with the chain's intercept, in the methods arm
+  (*forced*: the ratio of a forced class's added calls to an unforced one's at the same point in
+  the stream and of the same size: log(1 + positions the unit added to the class) and log(1 +
+  methods it changed there) in the model, §9 row 61; the ratio without them reported). One-sided above 1, 95% Wald interval; reversed if the interval lies wholly below 1.
+  Poisson where the negative binomial cannot be fitted, recorded. Reported: the same model for
+  the calls reaching an exposed or widened member, for outward and inward calls apart, and for
+  the members opened; the added calls on the index alone (rise); the function arm's forced ratio;
+  the arm term with forced and the index in the model; per arm, forced against unforced rows, the
+  calls added a row and the share reaching an exposed or widened member.
+- **Multiplicity:** H1–H7 are seven confirmatory tests at α = 0.05 each, Holm-corrected (four until
+  19 November 2026, five and then six until 20 November 2026). All else is descriptive.
 
 **As built** (`analysis/analyse.R` with glmmTMB, `placement_gravity/prepare.py` and
 `placement_gravity/verdict.py`, 16 November 2026; R chosen by the author for glmmTMB's negative
@@ -1419,8 +1657,8 @@ binomial mixed model). These details are fixed with the code before any run is r
   (over all runs, within a class, within a method);
   H2, of the class level and the method level; H3, of every shape measure's one-sided test; H4, of the arm
   term, the interaction and the arm's rate ratio in intrusion at the class and at the method; H5, of
-  the class level and the method level. A hypothesis is supported when its Holm-adjusted p (over the
-  five) is at most 0.05 **and** its conditions hold (H4: the amount in its band and neither wiring
+  the class level and the method level; H6 and H7, each its forced ratio's. A hypothesis is
+  supported when its Holm-adjusted p (over the seven) is at most 0.05 **and** its conditions hold (H4: the amount in its band and neither wiring
   condition against). The verdicts are supported, not supported, reversed (an interval wholly on
   the wrong side), unresolved (H3 and H5: an interval reaching above the upper margin), not testable (H3: no
   shape measure varies) or descriptive only.
@@ -1803,6 +2041,33 @@ binomial mixed model). These details are fixed with the code before any run is r
   about 665 methods, with only 50% of calls followed: in a large application of interfaces and
   shared services, a flow taken from the entry points above the host takes in most of the code.
   Nothing in the plan was changed after these were seen.
+- **H6 on the development chain and the development histories** (20 November 2026,
+  `MEASURE_VERSION` 20, `HISTORY_VERSION` 4; descriptive only; H1 to H5 unchanged). *Pilot:* rise
+  0.45 [0.15, 1.37], the spread not rising (Spring's units in more than one class 55%, 40%, 37%
+  over the thirds); forced 2.77 [1.44, 5.31] (a forced unit 2.1 classes, the others 1.4). The
+  coupling of pairs changed together more than once rose, 5.3 [2.0, 14.0] (4 pairs); Spring's
+  candidates `Owner` with `OwnerRestControllerV1` (changed together 9 times, calls 3 → 8) and
+  `OwnerMapper` with it (7 times, 0 → 5). The author's reading and the drafter's (20 November
+  2026): Spring's spread does not rise because the change piles into the core class (H1, H2;
+  petclinic puts every rule on one endpoint); where it cannot be absorbed it spreads, forced, and
+  the pair's coupling rises. OfficeFloor makes each function a class, so about one class a unit is
+  new; counting existing classes only, Spring 1.55, 1.50, 1.42 over the thirds and OfficeFloor
+  0.82, 1.15, 2.28 (not yet decided whether H6 counts existing classes only). *Histories* (the
+  two human repositories, 489 units): rise 1.57 [0.81, 3.07]; forced 2.22 [1.52, 3.26] (2.3
+  classes against 1.6); 63% of units forced, but without injection a class row bound at all is
+  forced (H5, above), so there *forced* is *bound at the class*; coupling of pairs changed
+  together more than once 1.65 [1.05, 2.60] (587 pairs; of those compared, coupling rose in 30 and
+  fell in 16), the candidates mostly `UsbSerial`'s device classes with their base class. The agent
+  repository has 9 declared agent units, too few to read. Nothing in the plan was changed after
+  these were seen.
+- **H6 within change size** (20 November 2026, the hosts of MEASURE_VERSION 22 and the histories as
+  then read; descriptive only): a forced unit is a larger change (Spring 13.2 positions and 3.9
+  methods against 7.7 and 2.4; OfficeFloor 19.0 and 5.2 against 9.7 and 3.2; jmxtrans 10.3 and 4.6
+  against 8.1 and 2.3; UsbSerial 13.3 and 3.4 against 12.7 and 3.8). Existing classes a unit, units
+  split at the median number of methods: Spring 1.0 against 1.1 (small) and 2.1 against 2.0
+  (large); jmxtrans 1.2 against 1.0 and 4.1 against 1.9; UsbSerial 1.1 against 0.9 and 2.4 against
+  1.6. The pilot's forced effect on spread is change size; the histories' remains for large
+  changes. Led to row 61.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
@@ -1837,6 +2102,40 @@ binomial mixed model). These details are fixed with the code before any run is r
   and H5 is about the trend; the alternatives are kept by name for the check. On a history the
   index of the tree is exact at each unit's parent, but a repository's tests and generated code are
   left out as production Java is.
+
+- **H6's spread counts classes, not reasons** (§4.2b). A feature that touches a controller, a
+  service and a repository spreads by design (layering), not from lack of cohesion; H6's *forced*
+  part is what ties the spread to lack of choice, at the same point in the stream, and the
+  function arm is the contrast. On a history a commit can bundle unrelated work (a tangled
+  commit), which widens the spread whatever the placement; this does not change with the unit's
+  place by itself, and the 200-line cap on a unit (§3.2) bounds it. The pair's coupling counts the
+  calls the instrument follows (§4.2a): not reads of another class's fields, nor calls whose
+  receiver is untyped; it is the trend of a pair that is read, not its level. On a history the tree
+  after a unit is the tree before the next, so the coupling a unit added there includes any
+  commits between them that are not units (merges, large commits); on corpus A the two trees are
+  the unit's own. The coupling accounting is per unit and does not say which of a unit's changes
+  added a call.
+- **The redesign reading** (§4.2d) has thresholds (two groups of two forced changes, three times
+  together, half the same data) that are the drafter's. A class's values are the fields and class
+  methods its changes used, so two groups that share only a value the instrument does not see (an
+  inherited field) are counted as apart.
+- **Coupling scales with size** (Lopes and Ossher 2015, read in full: structure measures of Java
+  programs follow size by power laws, so a size-normalised reading needs the exponent, not a
+  ratio). H6 and H7 hold the change's size fixed for this reason (§9 row 61); a reading of a
+  class's boundary against its size, if built, must be read against the exponent the size alone
+  predicts, and against the function arm.
+- **High coupling in a few classes may be unavoidable** (Taube-Schock, Walker and Witten 2011:
+  between-module connectivity is roughly scale-free, so some highly coupled modules are expected
+  of the distribution, not of poor design). This is the rival reading of H7 and of the
+  concentrate signal: a forced class that gains coupling may be in that tail whatever forced it.
+  The forced/unforced contrast at the same size and the arm contrast are what separate the two.
+- **H7 reads coupling as calls and openness as method access** (§4.2c). A field made public and
+  read directly from another class, or a call the instrument cannot follow (an untyped receiver,
+  reflection, framework callbacks), is not seen; nor is coupling through shared types without
+  calls. A renamed or moved method makes its calls look new on both sides. Neither should differ
+  between forced and unforced classes by itself. A forced class is often the larger class (the
+  core of H2), and a larger class may gain more calls whatever forced it; the index is in the
+  model, and the class's size is not (the reading is about the force, and size is its result).
 
 - **Agent-written code (corpus A).** Placement by an agent may not be placement by people.
   Corpus B is the check, which is why it is drawn pre-AI. There is a specific reason for concern:
@@ -2049,6 +2348,38 @@ author's to set, on the plan and code as they then stand, and starts the experim
   checkpoints, with the problem terms; it does not compare methods with each other and has no term
   per row. H2 stays a rate per value until the author decides otherwise; the core's width is now
   reported per row, per arm and over the stream (§4.4).
+- *Decided by the author on 20 November 2026, after seeing H5 on the development chain* (§2, §6):
+  H5 read as the area of methods growing inside classes the binding forces it into, and a new
+  **H6, forced changes spread**: do changes come to need several classes at once for lack of
+  choice, and does the coupling of classes that keep changing together rise (the case for
+  redistributing placement, and the encapsulation of fields, between them). The drafter's
+  operational form (§4.2b, §5: spread as classes beyond the first; forced as H5's class level;
+  rise and forced each one-sided above 1; coupling as the calls followed between the pair) is not
+  yet spoken to by the author.
+- *Decided by the author on 20 November 2026, after H6 on the development chain and histories*
+  (§6): H6 counts only classes that existed ("new classes are freedom of choice"); H6 focuses on
+  forced, with forced and unforced units tracked apart ("possibly track forced and unforced
+  separately to compare, but focus on forced"), so H6's test is the forced ratio and the rise is
+  reported in each; and the growth and coupling accountings are built.
+- *Decided by the author on 20 November 2026:* **H7, forced changes couple** ("make it H7 and
+  build it"): encapsulation as the force, concentration and dispersion its two outlets, coupling
+  through existing exposure or widening the cost of dispersion. The operational form (calls added
+  across the class's boundary, forced ratio one-sided above 1; exposed and widened by method
+  access) is the drafter's, not yet spoken to.
+- *Decided by the author on 20 November 2026:* the **split or concentrate** reading ("draft it as
+  a reading with the refactoring check"); the check against developers' refactorings withdrawn
+  the same day ("I'm not interested in what developers did ... I'm interested in how the force of
+  encapsulation forcing concentration verses dispersion forcing coupling"). Its thresholds are the
+  drafter's, not yet spoken to.
+- *Decided by the author on 20 November 2026, after a check on the development data* (§6): H6 and
+  H7 hold the change's size fixed ("yes add change size to H6 and H7"). The author's question was
+  whether the effects are true by construction or reflect the forces within the construct. The
+  drafter's answer, recorded: three kinds. *By definition* (a measuring artefact, now removed): a
+  forced unit is a larger change, so it touches more classes and adds more calls. *By the
+  construct* (the finding, not evidence for it): without injection all class-bound code is forced,
+  and forced code lands in existing classes by definition. *The forces within the construct*
+  (what the study can show): forced against unforced at the same size and point in the stream,
+  and the arm contrast, where the function arm holds no state privately.
 - *The tag stays unset* (the author, 19 November 2026: "still to hold off, as I want to think about
   H2 in terms of placement choice"; H5 now carries choice).
 - *Not built, and said so where it matters:* the issue-linked unit of corpus B (§3.2); the ranks
@@ -2205,6 +2536,14 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 53 | The core's width (values per row) reported per arm and over the stream | §4.4, `analyse.R`, `report.py` | The author's question on H2's fit ("counts only, particularly for the core, as we are looking at sinew width"); H2's test unchanged until the author decides |
 | 54 | H5 at the method counts only the places on the host's control flow: callers, the request's entry points and what they reach, calls followed by their receiver's declared type; OfficeFloor's flows from its wiring files. The count by type alone is reported | §4.2a, §7, `flow.py`, `tables.choice`, `Pull.java` (calls, supertypes) | Decided by the author on 19 November 2026 after the development chain showed type alone counting every new method that handles an `Owner` (§6), the case §4.2a foresaw. Before the tag, so a revision |
 | 55 | H5 read on corpora B and C, with an index of the tree kept running through each history | §3.2, §4.2a, `chain.tree_places` | Decided by the author on 19 November 2026 |
+| 56 | H6, forced changes spread: the classes a unit places or edits code in rise over the stream and are more where a placement was forced at the class; one-sided above 1, each needed; Holm over six. Reported: the coupling (calls followed) of pairs of classes changed together, on the index, and the pairs whose coupling rose, by name | §2, §3.2, §4.2b, §5, §7, `flow.Graph.class_calls`, `tables.pair_rows`, `prepare.h6_rows`, `prepare.co_change`, `analyse.R`, `verdict.h6`, `report.py` | The author's, 20 November 2026, after seeing H5 on the development chain (§6): "if continually having to change two classes due to lack of choice, highlights lack of cohesion (things that change together should stay together)", and the coupling between them a case for redesign. The operational form the drafter's. Before the tag, so a revision |
+| 57 | H6 counts only classes that existed before the unit (a new class is a free choice); H6's test is the forced ratio alone, the rise over the stream reported over all units and in forced and unforced units apart | §2, §4.2b, §5, `prepare.h6_rows`, `analyse.R`, `verdict.h6`, `report.py` | Decided by the author on 20 November 2026 after H6 on the development chain and histories (§6): the pilot's spread did not rise (the change piled into the core class) while forced units spread wider, and OfficeFloor's spread was mostly new classes, one per function. Before the tag, so a revision |
+| 58 | H6's accountings, reported: the growth of existing classes by the kind of placement that added it (forced, chosen, unbound), and the coupling between classes each unit added (tree after less before), in forced units and between pairs changed together | §2, §4.2b, §7, `tables.coupling_rows`, `tables.pair_rows`, `prepare.growth_accounting`, `prepare.coupling_accounting`, `report.py` | The author's, 20 November 2026: to see the cause of the growth in size (absorbing) and, where a change spreads, of the growth in coupling |
+| 59 | H7, forced changes couple: a class a forced change goes into gains more calls across its boundary (outward and inward) in that unit than one an unforced change goes into; one-sided above 1; Holm over seven. Reported: whether the calls reach members exposed or widened (method access, read by the instrument) | §2, §3.2, §4.2c, §5, §7, `Pull.java` (`access`, VERSION 14), `flow.Graph.cross_edges`, `tables.encapsulation_rows`, `prepare.h7_rows`, `analyse.R`, `verdict.h7`, `report.py` | The author's, 20 November 2026: "a forced change that requires data from another place couples to that other place or asks for the encapsulated data of that other place to be widened (made public) for it to couple to ... an increase in coupling between the encapsulation and other parts of the system". The operational form the drafter's. Before the tag, so a revision |
+| 60 | A reported reading, split or concentrate: a class whose forced changes fall into groups sharing none of its values, and a pair changed together repeatedly over the same data with coupling rising; drafted with a check against the developers' later refactorings, withdrawn by the author the same day (the refactorings are still recorded, not read) | §2, §4.2d, §7, `tables.refactoring_rows`, `prepare.redesign`, `report.py` | The author's, 20 November 2026: "mutual exclusion in the encapsulated items and coupling in the changes ... cause for question of cohesion of the encapsulation and where splitting is right", and "coupling between a small number of encapsulated units but constant change across them for similar data, then there is reason to concentrate". The operational form the drafter's |
+| 61 | H6 and H7 hold the change's size fixed: log(1 + positions added) and log(1 + methods changed), per unit for H6 and per class in the unit for H7; their forced ratios without size reported | §5, §8, `prepare.h6_rows`, `prepare.h7_rows`, `analyse.R` | Decided by the author on 20 November 2026 after the drafter showed on the development data that forced units are larger changes (Spring 13 positions and 3.9 methods against 8 and 2.4), and that within size the pilot's forced effect on spread disappears (1.0 against 1.1 small, 2.1 against 2.0 large) while the human histories' remains for large changes (jmxtrans 4.1 against 1.9, UsbSerial 2.4 against 1.6). Before the tag, so a revision |
+| 62 | The novelty check's suggestions (LITERATURE.md §10, 20 November 2026): Pescio's use of *gravity* acknowledged; Page-Jones (connascence), Ousterhout (deep modules) and Kobori et al. with Vidal et al. (widening) cited at H7; the split/concentrate reading placed against Extract Class and co-change Move recommenders and Paixão et al. 2017; conservation kept as framing (Tesler, Hatton, Pescio); Lopes and Ossher (size scaling) and Taube-Schock et al. (unavoidable high coupling, H7's rival reading) in §7. No measure, model or rule changes | §1, §2, §4.2c, §4.2d, §7 | The author's, 20 November 2026 ("apply the plan suggestions from the novelty check"). Most sources read as abstracts or records; marked where unchecked |
+| 63 | Reported readings: surface against volume (a class's links across its boundary against its methods, the exponent across classes and within a growing class; surface a change adds, forced against unforced) and ripple (later changes to a method a new call reached that also change the caller, by forced and by opened) | §4.2e, `tables.boundary_rows`, `tables.edge_rows`, `prepare.surface_rows`, `prepare.ripple`, `analyse.R`, `report.py` | The author's, 20 November 2026 ("draft and build surface vs volume and ripple"). Operational form the drafter's |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

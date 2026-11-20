@@ -657,6 +657,160 @@ if (!is.null(h5) && nrow(h5) > 0) {
   }
 }
 
+# ---------------------------------------------------------------- H6: forced changes spread
+# Per unit that placed or edited code in a class that existed before it, those classes beyond the
+# first (spread; a new class is a free choice and is not counted; PLAN.md 4.2b). H6's test, in the
+# methods arm: a negative binomial model of the spread on whether a placement in the unit was forced
+# at the class, with the index scaled from 0 to 1 and the chain's intercept (forced: the ratio of the
+# spread of a forced unit to one that was not, at the same point in the stream), one-sided above 1.
+# Reported: the spread's rise over the stream (exp(slope), end against start) over all units, and in
+# forced and in unforced units apart. A model that cannot be fitted as negative binomial (a spread
+# with less variance than its mean) is fitted as Poisson, and that is recorded. Reported too: the
+# spread per arm and third, the function arm's forced ratio and rise, the arms' contrast, and, on
+# the pairs of classes changed together, their coupling (the calls between them before the unit) on
+# the index, the pair's intercept in the chain's. Every H6 model holds the change's size fixed:
+# log(1 + positions it added) and log(1 + methods it placed or edited code in) (20 November 2026,
+# after a forced unit was seen to be a larger change); the forced ratio without them is reported.
+SIZE <- function(d) if (all(c("positions", "methods") %in% names(d))) " + log1p(positions) + log1p(methods)" else ""
+h6 <- read("h6.csv")
+if (!is.null(h6) && nrow(h6) > 0) {
+  h6$arm <- as_arm(h6$arm)
+  span6 <- max(spec$checkpoints - 1, 1)
+  h6$x <- if (isFALSE(spec$problem_fixed)) h6$cp else (h6$cp - 1) / span6
+  h6$forced <- as.numeric(as.logical(h6$forced))
+  res$H6 <- list()
+  fit6 <- function(d, rhs) {
+    if (nrow(d) < 3 || length(unique(d$cp)) < 2) return(list(fit = structure(list(msg = "too few rows"), class = "fit_error")))
+    if (all(d$spread == 0)) return(list(fit = structure(list(msg = "every change in one class"), class = "fit_error")))
+    if (grepl("forced", rhs) && length(unique(d$forced)) < 2) return(list(fit = structure(list(msg = "forced does not vary"), class = "fit_error")))
+    fe <- if (multi(d$frontend)) " + frontend" else ""
+    f <- as.formula(paste0("spread ~ ", rhs, fe, " + (1 | chain_id)"))
+    nb <- fit_or_error(glmmTMB(f, data = d, family = nbinom2()))
+    ok <- !inherits(nb, "fit_error") && isTRUE(nb$sdr$pdHess)
+    if (ok) return(list(fit = nb, family = "nbinom2"))
+    list(fit = fit_or_error(glmmTMB(f, data = d, family = poisson())), family = "poisson")
+  }
+  one <- function(m, term, n) c(irr(wald(m$fit, term)), list(n = n, family = m$family))
+  dm <- h6[h6$arm == spec$methods_arm, ]
+  df <- h6[h6$arm == spec$function_arm, ]
+  sz <- SIZE(h6)
+  res$H6$forced <- one(fit6(dm, paste0("x + forced", sz)), "forced", nrow(dm))
+  res$reported$H6_forced_without_size <- one(fit6(dm, "x + forced"), "forced", nrow(dm))
+  res$reported$H6_rise <- one(fit6(dm, paste0("x", sz)), "x", nrow(dm))
+  res$reported$H6_rise_forced <- one(fit6(dm[dm$forced == 1, ], paste0("x", sz)), "x", sum(dm$forced == 1))
+  res$reported$H6_rise_unforced <- one(fit6(dm[dm$forced == 0, ], paste0("x", sz)), "x", sum(dm$forced == 0))
+  res$reported$H6_function_arm <- irr(wald(fit6(df, paste0("x", sz))$fit, "x"))
+  res$reported$H6_function_arm_forced <- irr(wald(fit6(df, paste0("x + forced", sz))$fit, "forced"))
+  thirds <- function(x) if (nrow(x) == 0) NULL else list(units = nrow(x),
+    mean_classes = mean(x$classes), multi = mean(x$classes > 1), forced = mean(x$forced),
+    thirds_classes = as.list(tapply(x$classes, factor(cut(x$x, c(-Inf, 1/3, 2/3, Inf), labels = FALSE), levels = 1:3), mean)),
+    thirds_multi = as.list(tapply(x$classes > 1, factor(cut(x$x, c(-Inf, 1/3, 2/3, Inf), labels = FALSE), levels = 1:3), mean)),
+    thirds_forced = as.list(tapply(x$classes[x$forced == 1], factor(cut(x$x[x$forced == 1], c(-Inf, 1/3, 2/3, Inf), labels = FALSE), levels = 1:3), mean)),
+    thirds_unforced = as.list(tapply(x$classes[x$forced == 0], factor(cut(x$x[x$forced == 0], c(-Inf, 1/3, 2/3, Inf), labels = FALSE), levels = 1:3), mean)),
+    all_classes = if ("all_classes" %in% names(x)) mean(x$all_classes) else NULL,
+    classes_forced = if (any(x$forced == 1)) mean(x$classes[x$forced == 1]) else NULL,
+    classes_not_forced = if (any(x$forced == 0)) mean(x$classes[x$forced == 0]) else NULL)
+  res$reported$H6_spread <- list(methods = thirds(dm), "function" = thirds(df))
+  if (multi(as.character(h6$arm)) && !all(h6$spread == 0)) {
+    fa <- fit_or_error(glmmTMB(as.formula(paste0("spread ~ x * arm", sz, " + (1 | chain_id)")), data = h6, family = nbinom2()))
+    res$reported$H6_arm <- irr(wald(fa, FARM))
+  }
+  pairs <- read("pairs.csv")
+  if (!is.null(pairs) && nrow(pairs) > 0) {
+    pairs$x <- if (isFALSE(spec$problem_fixed)) pairs$cp else (pairs$cp - 1) / span6
+    pm <- pairs[pairs$arm == spec$methods_arm & as.logical(pairs$in_tree), ]
+    again <- pm[pm$pair %in% pm$pair[duplicated(pm$pair)], ]
+    res$reported$H6_pair_coupling <- if (nrow(again) < 3 || length(unique(again$cp)) < 2 || all(again$coupling == 0))
+      list(error = "too few pairs changed together more than once") else
+      c(irr(wald(fit_or_error(glmmTMB(coupling ~ x + (1 | chain_id) + (1 | pair), data = again, family = nbinom2())), "x")),
+        list(n = nrow(again), pairs = length(unique(again$pair))))
+  }
+}
+
+# ---------------------------------------------------------------- H7: forced changes couple
+# Per unit and class that existed before it that the unit changed, the calls across the class's
+# boundary the unit added, outward and inward (coupled; PLAN.md 4.2c). H7's test, in the methods
+# arm: a negative binomial model of coupled on whether a placement in the class was forced at the
+# class, with the index scaled from 0 to 1 and the chain's intercept (forced: the ratio of a forced
+# class row's added coupling to another's, at the same point in the stream), one-sided above 1.
+# Reported: the same for the calls reaching a member the unit exposed or widened (opened), for the
+# outward and inward calls apart, and for the members the class opened; coupled's rise over the
+# stream; the function arm's forced ratio; the arms' contrast. Poisson where the negative binomial
+# cannot be fitted, recorded. Every H7 model holds the change's size in the class fixed, as H6's
+# (log(1 + positions added there), log(1 + methods changed there)); the forced ratio without them
+# is reported.
+h7 <- read("h7.csv")
+if (!is.null(h7) && nrow(h7) > 0) {
+  h7$arm <- as_arm(h7$arm)
+  span7 <- max(spec$checkpoints - 1, 1)
+  h7$x <- if (isFALSE(spec$problem_fixed)) h7$cp else (h7$cp - 1) / span7
+  h7$forced <- as.numeric(as.logical(h7$forced))
+  fit7 <- function(d, y, rhs) {
+    if (nrow(d) < 3 || length(unique(d$cp)) < 2) return(list(fit = structure(list(msg = "too few rows"), class = "fit_error")))
+    if (all(d[[y]] == 0)) return(list(fit = structure(list(msg = paste("no", y)), class = "fit_error")))
+    if (grepl("forced", rhs) && length(unique(d$forced)) < 2) return(list(fit = structure(list(msg = "forced does not vary"), class = "fit_error")))
+    fe <- if (multi(d$frontend)) " + frontend" else ""
+    f <- as.formula(paste0(y, " ~ ", rhs, fe, " + (1 | chain_id)"))
+    nb <- fit_or_error(glmmTMB(f, data = d, family = nbinom2()))
+    if (!inherits(nb, "fit_error") && isTRUE(nb$sdr$pdHess)) return(list(fit = nb, family = "nbinom2"))
+    list(fit = fit_or_error(glmmTMB(f, data = d, family = poisson())), family = "poisson")
+  }
+  one7 <- function(m, term, n) c(irr(wald(m$fit, term)), list(n = n, family = m$family))
+  dm <- h7[h7$arm == spec$methods_arm, ]
+  df <- h7[h7$arm == spec$function_arm, ]
+  sz7 <- SIZE(h7)
+  res$H7 <- list(forced = one7(fit7(dm, "coupled", paste0("forced + x", sz7)), "forced", nrow(dm)))
+  res$reported$H7_forced_without_size <- one7(fit7(dm, "coupled", "forced + x"), "forced", nrow(dm))
+  for (y in c("opened", "new_out", "new_in", "members_opened"))
+    res$reported[[paste0("H7_forced_", y)]] <- one7(fit7(dm, y, paste0("forced + x", sz7)), "forced", nrow(dm))
+  res$reported$H7_rise <- one7(fit7(dm, "coupled", paste0("x", sz7)), "x", nrow(dm))
+  res$reported$H7_function_arm_forced <- irr(wald(fit7(df, "coupled", paste0("forced + x", sz7))$fit, "forced"))
+  if (multi(as.character(h7$arm)) && !all(h7$coupled == 0)) {
+    fa <- fit_or_error(glmmTMB(as.formula(paste0("coupled ~ forced + x + arm", sz7, " + (1 | chain_id)")), data = h7, family = nbinom2()))
+    res$reported$H7_arm <- irr(wald(fa, FARM))
+  }
+}
+
+# ---------------------------------------------------------------- surface against volume (reported)
+# A class's surface (calls out of and into it) against its volume (its methods), PLAN.md 4.2e, per
+# arm: across the classes of each chain's last tree, log(1 + surface) on log(methods) with the
+# chain's intercept (the exponent across classes); and within a class over the units that changed
+# it, the same on log(methods) centred on the class's mean, with the class's mean beside it (the
+# exponent as a class grows). Below 1, surface grows slower than volume (concentration saves
+# communication); above 1, faster. And per change: the surface it added against the methods it
+# added, forced against unforced, at the same volume added (Gaussian, the chain's intercept).
+sf <- read("surface.csv")
+if (!is.null(sf) && nrow(sf) > 0) {
+  sf$arm <- as.character(sf$arm)
+  res$reported$surface <- list()
+  for (a in unique(sf$arm)) {
+    cs <- sf[sf$arm == a & as.logical(sf$cross_section) & sf$methods_before > 0, ]
+    ch <- sf[sf$arm == a & !as.logical(sf$cross_section) & sf$methods_before > 0 & !is.na(sf$methods_after), ]
+    r <- list()
+    r$across <- if (nrow(cs) >= 5 && length(unique(cs$methods_before)) > 1)
+      c(wald(fit_or_error(glmmTMB(log1p(surface_before) ~ log(methods_before) + (1 | chain_id), data = cs)),
+             "log(methods_before)"), list(classes = nrow(cs))) else list(error = "too few classes")
+    if (nrow(ch) >= 5) {
+      ch$lm <- log(ch$methods_before)
+      ch$lm_mean <- ave(ch$lm, ch$class)
+      ch$lm_c <- ch$lm - ch$lm_mean
+      ch$d_surface <- ch$surface_after - ch$surface_before
+      ch$d_methods <- ch$methods_after - ch$methods_before
+      ch$forced <- as.numeric(as.logical(ch$forced))
+      r$within <- if (length(unique(ch$class)) < nrow(ch) && sd(ch$lm_c) > 0)
+        c(wald(fit_or_error(glmmTMB(log1p(surface_before) ~ lm_c + lm_mean + (1 | chain_id), data = ch)), "lm_c"),
+          list(rows = nrow(ch), classes = length(unique(ch$class)))) else list(error = "no class changed twice at different sizes")
+      r$added_forced <- if (length(unique(ch$forced)) > 1)
+        c(wald(fit_or_error(glmmTMB(d_surface ~ forced + d_methods + (1 | chain_id), data = ch)), "forced"),
+          list(rows = nrow(ch))) else list(error = "forced does not vary")
+      r$per_change <- list(
+        forced = if (any(ch$forced == 1)) list(surface_added = mean(ch$d_surface[ch$forced == 1]), methods_added = mean(ch$d_methods[ch$forced == 1])) else NULL,
+        unforced = if (any(ch$forced == 0)) list(surface_added = mean(ch$d_surface[ch$forced == 0]), methods_added = mean(ch$d_methods[ch$forced == 0])) else NULL)
+    }
+    res$reported$surface[[a]] <- r
+  }
+}
+
 # Where unbound code lands (reported, §3.3): whether an unbound landing enters a class that
 # existed, the function arm (on a history, the declared agent commits) against the methods arm;
 # a binomial mixed model, the odds ratio.

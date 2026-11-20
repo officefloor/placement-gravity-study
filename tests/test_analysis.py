@@ -317,7 +317,7 @@ def test_the_report_names_every_hypothesis_and_commit():
     cond = {**COND, "chains": {"spring": 9, "officefloor": 9}}
     heads = [{"arm": "spring", "run": "r", "chain": 1, "excluded": False, "sha": "a" * 40}]
     md = report.render("petclinic-primary", "primary", est, ver, cond, {"shape_counts": {}}, heads)
-    for k in ("H1", "H2", "H3", "H4", "supported", "`aaaaaaaaaaaa`", "s3_junction", "At the class (its fields and the methods it calls)", "H5, choice narrows", "Within a class",
+    for k in ("H1", "H2", "H3", "H4", "supported", "`aaaaaaaaaaaa`", "s3_junction", "At the class (its fields and the methods it calls)", "H5, choice narrows", "H6, forced changes spread", "H7, forced changes couple", "Within a class",
               "the sinew measures", "s3_junction at the method 1.400 [1.100, 1.800]",
               "Later intrusion where bound code was placed"):
         assert k in md
@@ -356,7 +356,121 @@ def test_h5_a_level_where_every_placement_was_forced_cannot_rise():
     assert v["levels"]["class"] == "not above" and v["verdict"] == "supported"
 
 
-def test_holm_runs_over_five():
+def test_holm_runs_over_seven():
     flat = {"irr": 0.9, "irr_lower": 0.7, "irr_upper": 1.1, "p_upper": 0.011}
     v = verdict.decide(estimates(**h5_levels(flat, flat)), COND)["hypotheses"]
-    assert len(v) == 5 and v["H5"]["p_holm"] >= 0.011
+    assert len(v) == 7 and v["H5"]["p_holm"] >= 0.011
+
+
+def test_h7_forced_classes_that_gain_more_coupling_are_supported():
+    up = {"irr": 1.8, "irr_lower": 1.3, "irr_upper": 2.4, "p_greater": 0.001}
+    assert verdict.decide(estimates(H7={"forced": up}), COND)["hypotheses"]["H7"]["verdict"] == "supported"
+    down = {"irr": 0.6, "irr_lower": 0.4, "irr_upper": 0.9, "p_greater": 0.99}
+    assert verdict.decide(estimates(H7={"forced": down}), COND)["hypotheses"]["H7"]["verdict"] == "reversed"
+    assert verdict.decide(estimates(H7={"forced": {"error": "no coupled"}}), COND)["hypotheses"]["H7"]["verdict"] \
+        == "not estimable"
+    rows = prepare.h7_rows([{"chain_id": "s/r/c1", "arm": "spring", "cp": 2, "class": "A", "forced": "True",
+                             "chosen": "False", "new_out": 3, "new_in": 1, "out_exposed": 1, "in_widened": 1}])
+    assert (rows[0]["coupled"], rows[0]["opened"], rows[0]["forced"]) == (4, 2, True)
+    s = prepare.encapsulation_summary(rows)["spring"]
+    assert (s["forced"]["coupled"], s["forced"]["opened_share"], s["unforced"]["rows"]) == (4, 0.5, 0)
+
+
+def h6(forced):
+    return {"H6": {"forced": forced}}
+
+
+def test_h6_forced_units_that_spread_wider_are_supported():
+    up = {"irr": 1.8, "irr_lower": 1.3, "irr_upper": 2.4, "p_greater": 0.001}
+    assert verdict.decide(estimates(**h6(up)), COND)["hypotheses"]["H6"]["verdict"] == "supported"
+    flat = {"irr": 1.0, "irr_lower": 0.8, "irr_upper": 1.25, "p_greater": 0.5}
+    assert verdict.decide(estimates(**h6(flat)), COND)["hypotheses"]["H6"]["verdict"] == "not supported"
+    down = {"irr": 0.6, "irr_lower": 0.4, "irr_upper": 0.9, "p_greater": 0.99}
+    assert verdict.decide(estimates(**h6(down)), COND)["hypotheses"]["H6"]["verdict"] == "reversed"
+    v = verdict.decide(estimates(**h6({"error": "every change in one class"})), COND)["hypotheses"]
+    assert v["H6"]["verdict"] == "not estimable" and v["H2"]["verdict"] == "supported"
+
+
+def test_h6_units_count_existing_classes_and_the_accountings_add_up():
+    def host(cp, t, choice=None, added=3, new=False):
+        return {"chain_id": "spring/r/chain1", "arm": "spring", "cp": cp, "type": t, "before_type": t,
+                "added": added, "net_added": added, "replacement": False, "class_new": new,
+                "choice_class": "" if choice is None else choice}
+    hosts = [host(1, "A"), host(2, "A", 0), host(2, "B", 2), host(2, "B"), host(3, "A", 1),
+             host(3, "C", new=True), host(3, "D", added=0), host(4, "E", new=True)]
+    u = {r["cp"]: r for r in prepare.h6_rows(hosts, {})}
+    assert set(u) == {1, 2, 3}                      # cp 4 changed only a new class: a free choice
+    assert (u[1]["classes"], u[1]["spread"], u[1]["forced"], u[1]["chosen"]) == (1, 0, False, False)
+    assert (u[2]["classes"], u[2]["forced"], u[2]["forced_classes"], u[2]["chosen"]) == (2, True, 1, True)
+    assert (u[3]["classes"], u[3]["all_classes"], u[3]["new_classes"], u[3]["class_names"]) == (1, 2, 1, "A")
+    # growth of existing classes: forced 3 (A at cp 2), chosen 3 + 3, unbound 3 + 3; new classes left out
+    g = prepare.growth_accounting(hosts, 4)["spring"]["positions"]
+    assert (g["forced"], g["chosen"], g["unbound"], g["total"]) == (3, 6, 6, 15)
+    assert abs(g["forced_share"] - 0.2) < 1e-9
+    raw = [{"chain_id": "spring/r/chain1", "arm": "spring", "cp": cp, "class_a": "A", "class_b": "B",
+            "calls_ab": ab, "calls_ba": 0, "calls_ab_after": after, "calls_ba_after": 0 if after is not None else None,
+            "in_tree": "True", "new": 0} for cp, ab, after in ((2, 1, 2), (3, 2, 4), (9, 5, None))]
+    raw.append({"chain_id": "spring/r/chain1", "arm": "spring", "cp": 3, "class_a": "A", "class_b": "C",
+                "calls_ab": 0, "calls_ba": 0, "calls_ab_after": 1, "calls_ba_after": 0, "in_tree": "False", "new": 1})
+    p = prepare.pair_rows(raw)
+    assert [(r["times"], r["added"]) for r in p] == [(1, 1), (2, 2), (3, None)]   # the pair with a new class left out
+    cc = prepare.co_change(p)["spring"]
+    assert (cc["pairs"], cc["again"], cc["rose"], cc["fell"]) == (1, 1, 1, 0)
+    assert cc["candidates"][0] == {"chain_id": "spring/r/chain1", "classes": ["A", "B"], "times": 3,
+                                   "coupling_first": 1, "coupling_last": 5}
+    coupling = [{"chain_id": "spring/r/chain1", "arm": "spring", "cp": cp, "cross_class_calls": b,
+                 "cross_class_calls_after": a} for cp, b, a in ((1, 0, 1), (2, 1, 4), (3, 4, 10), (4, 10, ""))]
+    ca = prepare.coupling_accounting(p, coupling, list(u.values()))["spring"]
+    assert (ca["added"], ca["units"], ca["added_forced_units"], ca["added_unforced_units"]) == (10, 3, 3, 7)
+    assert (ca["pairs_added"], ca["pairs_added_forced"], ca["pairs_added_unforced"]) == (3, 1, 2)
+    assert abs(ca["share_between_pairs"] - 0.3) < 1e-9
+
+
+def test_redesign_flags_a_class_whose_forced_changes_share_no_data_and_a_pair_changing_over_the_same_data():
+    def host(cp, t, vals, forced=True, chain="s/r/c1"):
+        return {"chain_id": chain, "arm": "spring", "cp": cp, "type": t, "before_type": t, "added": 3,
+                "replacement": False, "class_new": False, "choice_class": 0 if forced else "",
+                "need_class_values": vals, "called_class_methods": ""}
+    # Shop: changes 1, 3 use {stock, price}; 2, 4 use {owner}: two groups by cp 4. Cart: one group
+    hosts = [host(1, "Shop", "stock"), host(2, "Shop", "owner"), host(3, "Shop", "stock price"),
+             host(4, "Shop", "owner"), host(1, "Cart", "items"), host(5, "Cart", "items total"),
+             host(2, "Bill", "sum"), host(3, "Bill", "sum"), host(4, "Bill", "sum")]
+    pairs = [{"chain_id": "s/r/c1", "arm": "spring", "unit": u, "pair": "s/r/c1|Bill|Shop", "coupling": c,
+              "added": 1, "in_tree": True} for u, c in ((2, 1), (3, 2), (4, 3))]
+    r = prepare.redesign(hosts, pairs)["spring"]
+    sp = r["split"]
+    assert (sp["classes"], sp["flagged"]) == (3, 1)
+    c = sp["candidates"][0]
+    assert (c["class"], c["at"], c["groups"]) == ("Shop", 4, [["price", "stock"], ["owner"]])
+    co = r["concentrate"]
+    assert (co["pairs"], co["together"], co["flagged"]) == (1, 1, 1)
+    assert co["candidates"][0]["same_data"] == 1.0
+
+
+def test_refactoring_rows_keep_splits_and_moves_between_classes():
+    from placement_gravity import tables
+    measured = {"refactorings": [{"unit": "cp03", "refactorings": [
+        {"type": "Extract Class", "description": "Extract Class a.b.Owners from class a.b.Shop"},
+        {"type": "Move Method", "description": "Move Method public pay() : void from class a.Bill to class a.Shop"},
+        {"type": "Rename Method", "description": "Rename Method x() renamed to y() in class a.Shop"}]}]}
+    rows = tables.refactoring_rows("spring", "chain1", measured)
+    assert [(r["cp"], r["kind"], r["from_class"], r["to_class"]) for r in rows] == [
+        (3, "Extract Class", "a.b.Shop", "a.b.Owners"), (3, "Move Method", "a.Bill", "a.Shop")]
+
+
+def test_ripple_counts_later_changes_to_a_reached_method_that_also_change_the_caller():
+    def host(cp, t, sig):
+        return {"chain_id": "s/r/c1", "arm": "spring", "cp": cp, "type": t, "before_type": t,
+                "before_signature": sig, "added": 2, "replacement": False}
+    edges = [{"chain_id": "s/r/c1", "arm": "spring", "cp": 2, "caller_class": "Owner", "caller_signature": "add()",
+              "callee_class": "Pet", "callee_signature": "age()", "kind": "widened",
+              "caller_forced": "True", "callee_forced": "False"},
+             {"chain_id": "s/r/c1", "arm": "spring", "cp": 2, "caller_class": "Vet", "caller_signature": "see()",
+              "callee_class": "Owner", "callee_signature": "find()", "kind": "existing",
+              "caller_forced": "False", "callee_forced": "False"}]
+    hosts = [host(3, "Pet", "age()"), host(3, "Owner", "add()"), host(5, "Pet", "age()"), host(1, "Pet", "age()"),
+             host(4, "Owner", "find()")]
+    r = prepare.ripple(hosts, edges)["spring"]
+    assert r["forced_opened"] == {"calls": 1, "later_changes": 2, "rippled": 1, "calls_changed_later": 1,
+                                  "ripple_rate": 0.5}
+    assert (r["unforced_existing"]["later_changes"], r["unforced_existing"]["rippled"]) == (1, 0)

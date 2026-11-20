@@ -90,6 +90,146 @@ def h5_section(est: dict, hyp: dict, rep: dict) -> list[str]:
     return L
 
 
+def h6_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
+    """H6, forced changes spread (PLAN.md §2, §4.2b, §5), and its accountings."""
+    b = est.get("H6") or {}
+    h = hyp.get("H6") or {}
+    fo = b.get("forced") or {}
+
+    def fam(e):
+        e = e or {}
+        return f"n = {f(e.get('n'))}, {e.get('family', '–')}"
+
+    L = ["", "## H6, forced changes spread (methods arm)", "",
+         "Per unit that placed or edited code in classes that existed before it, those classes beyond the "
+         "first (a new class is a free choice and is not counted). The ratio of the spread of a unit with a "
+         "placement forced at the class (no other class held what the code was bound to) to one without, at "
+         "the same point in the stream; one-sided above 1.", "",
+         f"- **{h.get('verdict', '–')}**",
+         f"- **Forced: {ratio(fo)}** ({fam(fo)}; one-sided p {f(fo.get('p_greater'))})",
+         f"- Reported, the spread's rise over the stream (end against start): all units {ratio(rep.get('H6_rise'))} "
+         f"({fam(rep.get('H6_rise'))}); forced units {ratio(rep.get('H6_rise_forced'))} ({fam(rep.get('H6_rise_forced'))}); "
+         f"unforced units {ratio(rep.get('H6_rise_unforced'))} ({fam(rep.get('H6_rise_unforced'))})"]
+    for arm, sp in (rep.get("H6_spread") or {}).items():
+        if not sp:
+            continue
+        th = {k: sp.get(f"thirds_{k}") or {} for k in ("classes", "forced", "unforced")}
+        L.append(f"- Reported, {arm} arm: {f(sp.get('units'))} units, {f(sp.get('mean_classes'))} existing classes a "
+                 f"unit ({f(sp.get('all_classes'))} with new ones), {f(sp.get('multi'))} in more than one; units with a "
+                 f"forced placement {f(sp.get('forced'))}, their classes {f(sp.get('classes_forced'))} against "
+                 f"{f(sp.get('classes_not_forced'))}; over the thirds, all "
+                 + ", ".join(f(th["classes"].get(k)) for k in ("1", "2", "3")) + "; forced "
+                 + ", ".join(f(th["forced"].get(k)) for k in ("1", "2", "3")) + "; unforced "
+                 + ", ".join(f(th["unforced"].get(k)) for k in ("1", "2", "3")))
+    L.append(f"- Reported, the function arm: forced {ratio(rep.get('H6_function_arm_forced'))}; rise "
+             f"{ratio(rep.get('H6_function_arm'))}; function arm / methods arm: {ratio(rep.get('H6_arm'))}")
+    L += ["", "### Where the growth of existing classes came from", "",
+          "Positions added to classes that existed, by the placement that added them: forced at the class, "
+          "with a choice there, or not bound at the class.", ""]
+    for arm, g in ((rd or {}).get("growth") or {}).items():
+        t = g.get("positions") or {}
+        L.append(f"- {arm} arm: {f(t.get('total'))} positions; forced {f(t.get('forced_share'))}, chosen "
+                 f"{f(t.get('chosen_share'))}, unbound {f(t.get('unbound_share'))}; forced over the thirds "
+                 + ", ".join(f((g.get("thirds") or {}).get(k, {}).get("forced_share")) for k in ("1", "2", "3")))
+    L += ["", "### Where coupling between classes came from", "",
+          "Calls between classes each unit added (the tree after it less the tree before), over every class.", ""]
+    for arm, c in ((rd or {}).get("coupling_added") or {}).items():
+        L.append(f"- {arm} arm: {f(c.get('added'))} calls added over {f(c.get('units'))} units; in units with a "
+                 f"forced placement {f(c.get('added_forced_units'))} ({f(c.get('share_forced_units'))}), in the others "
+                 f"{f(c.get('added_unforced_units'))}; between existing classes changed together "
+                 f"{f(c.get('pairs_added'))} ({f(c.get('share_between_pairs'))}), of it in forced units "
+                 f"{f(c.get('pairs_added_forced'))} ({f(c.get('share_pairs_forced'))})")
+    pc = rep.get("H6_pair_coupling") or {}
+    L += ["", "### Pairs of classes changed together", "",
+          f"- The coupling of pairs changed together more than once (calls between them before the unit) on "
+          f"the index: {ratio(pc)}" + (f" ({f(pc.get('pairs'))} pairs, {f(pc.get('n'))} rows)" if "pairs" in pc else "")]
+    for arm, a in ((rd or {}).get("co_change") or {}).items():
+        L.append(f"- {arm} arm: {f(a.get('pairs'))} pairs of classes changed together, "
+                 f"{f(a.get('again'))} more than once; of those, coupling rose in {f(a.get('rose'))} "
+                 f"and fell in {f(a.get('fell'))}")
+        for c in a.get("candidates") or []:
+            L.append(f"  - candidate for redistribution: `{c['classes'][0]}` and `{c['classes'][1]}` "
+                     f"({c['chain_id']}), changed together {c['times']} times, calls between them "
+                     f"{c['coupling_first']} → {c['coupling_last']}")
+    return L
+
+
+def h7_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
+    """H7, forced changes couple (PLAN.md §2, §4.2c, §5)."""
+    b = est.get("H7") or {}
+    h = hyp.get("H7") or {}
+    fo = b.get("forced") or {}
+    L = ["", "## H7, forced changes couple (methods arm)", "",
+         "Per unit and existing class it changed, the calls across the class's boundary the unit added "
+         "(outward and inward). The ratio for a class with a placement forced at the class to one without, "
+         "at the same point in the stream; one-sided above 1.", "",
+         f"- **{h.get('verdict', '–')}**",
+         f"- **Forced: {ratio(fo)}** (n = {f(fo.get('n'))}, {fo.get('family', '–')}; one-sided p {f(fo.get('p_greater'))})"]
+    for y, lab in (("opened", "calls reaching a member the unit exposed or widened"), ("new_out", "outward calls"),
+                   ("new_in", "inward calls"), ("members_opened", "the class's members exposed or widened")):
+        L.append(f"- Reported, forced ratio of {lab}: {ratio(rep.get(f'H7_forced_{y}'))}")
+    L.append(f"- Reported, the rise of the calls added over the stream: {ratio(rep.get('H7_rise'))}; the function "
+             f"arm's forced ratio: {ratio(rep.get('H7_function_arm_forced'))}; function arm / methods arm: "
+             f"{ratio(rep.get('H7_arm'))}")
+    for arm, a in ((rd or {}).get("encapsulation") or {}).items():
+        for lab in ("forced", "unforced"):
+            x = a.get(lab) or {}
+            L.append(f"- Reported, {arm} arm, {lab} class rows: {f(x.get('rows'))}; calls added a row "
+                     f"{f(x.get('coupled'))} (outward {f(x.get('out'))}, inward {f(x.get('in'))}); reaching an "
+                     f"exposed or widened member {f(x.get('opened_share'))} (exposed {f(x.get('exposed'))}, widened "
+                     f"{f(x.get('widened'))}); members opened a row {f(x.get('members_opened'))}")
+    return L
+
+
+def redesign_section(rd: dict) -> list[str]:
+    """The redesign reading (PLAN.md §4.2d): where the code stands between the two forces."""
+    L = ["", "## Reported: split or concentrate (redesign reading)", "",
+         "*Split:* a class whose forced changes fall into groups sharing none of its values. *Concentrate:* "
+         "a pair changed together at least three times over the same data, its coupling rising.", ""]
+    for arm, a in ((rd or {}).get("redesign") or {}).items():
+        sp, co = a.get("split") or {}, a.get("concentrate") or {}
+        L.append(f"- {arm} arm, split: {f(sp.get('classes'))} classes with two or more forced changes; flagged "
+                 f"{f(sp.get('flagged'))}, of which {f(sp.get('disjoint_partners'))} with groups changed with "
+                 f"different classes")
+        for c in sp.get("candidates") or []:
+            L.append(f"  - `{c['class']}` ({c['chain_id']}, at {c['at']}): groups "
+                     + " | ".join(", ".join(g) for g in c["groups"])
+                     + f"; changed with different classes: {f(c['disjoint_partners'])}")
+        L.append(f"- {arm} arm, concentrate: {f(co.get('pairs'))} pairs changed together, "
+                 f"{f(co.get('together'))} at least three times; flagged {f(co.get('flagged'))}")
+        for c in co.get("candidates") or []:
+            L.append(f"  - `{c['classes'][0]}` and `{c['classes'][1]}` ({c['chain_id']}): changed together "
+                     f"{c['times']} times, the same data {f(c['same_data'])}")
+    return L
+
+
+def surface_section(rep: dict, rd: dict) -> list[str]:
+    """Surface against volume and ripple (PLAN.md §4.2e): the exchange between the two outlets."""
+    L = ["", "## Reported: surface against volume, and ripple", "",
+         "A class's surface (calls out and in) against its volume (methods). The exponent below 1: surface grows "
+         "slower than volume, so concentrating saves communication; above 1: faster. Ripple: of the later changes "
+         "to a method a unit's new call reached, the share that also changed the calling class.", ""]
+    for arm, r in (rep.get("surface") or {}).items():
+        a, w, fo = r.get("across") or {}, r.get("within") or {}, r.get("added_forced") or {}
+        pc = r.get("per_change") or {}
+        L.append(f"- {arm} arm: exponent across the classes of the last tree {interval(a)}"
+                 + (f" ({f(a.get('classes'))} classes)" if "classes" in a else "")
+                 + f"; within a class as it grows {interval(w)}"
+                 + (f" ({f(w.get('classes'))} classes, {f(w.get('rows'))} changes)" if "rows" in w else ""))
+        L.append(f"  - surface a change added, forced against unforced at the same methods added: {interval(fo)}; "
+                 + "; ".join(f"{k} {f((pc.get(k) or {}).get('surface_added'))} calls for "
+                             f"{f((pc.get(k) or {}).get('methods_added'))} methods" for k in ("forced", "unforced")))
+    for arm, groups in ((rd or {}).get("ripple") or {}).items():
+        for k in ("forced_opened", "forced_existing", "unforced_opened", "unforced_existing"):
+            g = groups.get(k)
+            if not g:
+                continue
+            L.append(f"- Ripple, {arm} arm, {k.replace('_', ', ')}: {f(g.get('calls'))} new calls; "
+                     f"{f(g.get('calls_changed_later'))} reach a method changed later, {f(g.get('later_changes'))} "
+                     f"later changes, {f(g.get('rippled'))} of them changing the caller too ({f(g.get('ripple_rate'))})")
+    return L
+
+
 def bystander_lines(r: dict) -> list[str]:
     """The description beside H1: needed values and bystanders per run, per arm (PLAN.md §4.3a)."""
     L = []
@@ -440,6 +580,10 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           f"slope {interval((rep.get('H4_without_injected') or {}).get('slope'))}",
           f"- Reported, trajectory of the bindings (arm × checkpoint): {interval(rep.get('H4_trajectory'))}",
           *h5_section(est, hyp, rep),
+          *h6_section(est, hyp, rep, readings or {}),
+          *h7_section(est, hyp, rep, readings or {}),
+          *redesign_section(readings or {}),
+          *surface_section(rep, readings or {}),
           *readings_section(est, readings or {}),
           *landing_section({**(readings or {}), "_estimates": rep}),
           *literature_section(est, spec),
@@ -462,7 +606,8 @@ def main() -> None:
     heads = runs.read_heads()
     tag = reg["registration_tag"]
     drift = runs.drift(tag) if runs.registered(tag) else None
-    index = ["# Results", "", "| Analysis | Role | H1 | H2 | H3 | H4 | H5 |", "|---|---|---|---|---|---|---|"]
+    index = ["# Results", "", "| Analysis | Role | H1 | H2 | H3 | H4 | H5 | H6 | H7 |",
+             "|---|---|---|---|---|---|---|---|---|"]
     for analysis in reg["analyses"]:
         name = analysis["name"]
         d = OUT / name
@@ -479,7 +624,8 @@ def main() -> None:
         hy = ver["hypotheses"]
         index.append(f"| [{name}]({name}/REPORT.md) | {analysis['role']} | {hy['H1']['verdict']} "
                      f"| {hy['H2']['verdict']} | {hy['H3']['verdict']} | {hy['H4']['verdict']} "
-                     f"| {hy.get('H5', {}).get('verdict', '–')} |")
+                     f"| {hy.get('H5', {}).get('verdict', '–')} | {hy.get('H6', {}).get('verdict', '–')} "
+                     f"| {hy.get('H7', {}).get('verdict', '–')} |")
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "REPORT.md").write_text("\n".join(index) + "\n")
     print((OUT / "REPORT.md").read_text())

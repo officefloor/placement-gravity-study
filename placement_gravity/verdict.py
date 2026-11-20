@@ -20,7 +20,17 @@
   ratio of the end of the stream to its start shown below the upper margin (1.25), at the class and
   at the method. A level where every placement was forced (no alternative anywhere) cannot rise and
   passes, with p 0. p = the larger of the two.
-- **Multiplicity**: Holm over H1 to H5 at α = 0.05.
+- **H6** (20 November 2026): in the methods arm, a unit with a placement forced at the class
+  places or edits code in more of the classes that existed before it than a unit without one, at
+  the same point in the stream: the spread's rate ratio on forced above 1 (one-sided Wald).
+  Reversed if its interval lies wholly below 1. The spread's rise over the stream, in forced and
+  in unforced units apart, is reported.
+- **H7** (20 November 2026): in the methods arm, a class with a placement forced at the class
+  gains more calls across its boundary (outward and inward) in that unit than one without, at the
+  same point in the stream: the rate ratio on forced above 1 (one-sided Wald). Reversed if its
+  interval lies wholly below 1. Whether those calls reach members the unit exposed or widened is
+  reported.
+- **Multiplicity**: Holm over H1 to H7 at α = 0.05.
 
 Verdicts: ``supported``; ``not supported``; ``reversed`` (an interval wholly on the wrong side);
 ``unresolved`` (H3: an interval reaching above the upper margin without lying above it);
@@ -138,8 +148,27 @@ def h5(est: dict) -> dict:
             "conditions_met": state == "not above", "detail": x}
 
 
+def h6(est: dict) -> dict:
+    x = est.get("H6") or {}
+    fo = x.get("forced")
+    if not _ok(fo):
+        return {"p": None, "verdict": "not estimable", "detail": x}
+    return {"p": fo["p_greater"], "reversed": fo["irr_upper"] < 1,
+            "conditions_met": fo["irr_lower"] > 1, "detail": x}
+
+
+def h7(est: dict) -> dict:
+    x = est.get("H7") or {}
+    fo = x.get("forced")
+    if not _ok(fo):
+        return {"p": None, "verdict": "not estimable", "detail": x}
+    return {"p": fo["p_greater"], "reversed": fo["irr_upper"] < 1,
+            "conditions_met": fo["irr_lower"] > 1, "detail": x}
+
+
 def decide(est: dict, cond: dict) -> dict:
-    parts = {"H1": h1(est), "H2": h2(est), "H3": h3(est), "H4": h4(est, cond), "H5": h5(est)}
+    parts = {"H1": h1(est), "H2": h2(est), "H3": h3(est), "H4": h4(est, cond), "H5": h5(est),
+             "H6": h6(est), "H7": h7(est)}
     adjusted = holm({k: v["p"] for k, v in parts.items()})
     for k, v in parts.items():
         v["p_holm"] = adjusted[k]

@@ -21,7 +21,7 @@ from . import chain, crosscheck, lines, places, runs, shape, tables
 OUT = runs.RESULTS / "measure"
 WORK = chain.ROOT / ".tmp" / "measure"
 #: Bump when a table's meaning changes, so measured chains are redone.
-MEASURE_VERSION = 19
+MEASURE_VERSION = 24
 
 
 def write(path: Path, rows: list[dict]) -> None:
@@ -77,6 +77,12 @@ def measure_chain(reg: dict, analysis: dict, head: dict, streamed: dict, stacks:
     write(out / "additions.csv", label(tables.addition_rows(arm, name, measured, h, streamed), head))
     followed = lines.follow(measured["records"], final_keys(work))
     write(out / "outcomes.csv", label(tables.outcome_rows(arm, name, h, streamed, cc, followed), head))
+    write(out / "pairs.csv", label(tables.pair_rows(arm, name, h, measured), head))
+    write(out / "coupling.csv", label(tables.coupling_rows(arm, name, measured), head))
+    write(out / "encapsulation.csv", label(tables.encapsulation_rows(arm, name, h, measured), head))
+    write(out / "refactorings.csv", label(tables.refactoring_rows(arm, name, measured), head))
+    write(out / "boundary.csv", label(tables.boundary_rows(arm, name, h, measured), head))
+    write(out / "edges.csv", label(tables.edge_rows(arm, name, h, measured), head))
     write(out / "landings.csv", label(places.landings(arm, name, h, measured["shape"]), head))
     write(out / "shape_series.csv", label(shape.series_rows(arm, name, measured["shape"]), head))
     (out / "codetracker.json").write_text(json.dumps(

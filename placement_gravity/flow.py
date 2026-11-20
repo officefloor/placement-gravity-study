@@ -71,6 +71,36 @@ class Graph:
                     self.into[j].add(i)
         self.flows = [set(f) for f in index.get("flows", [])]
 
+    def class_calls(self) -> dict[tuple[str, str], int]:
+        """Calls followed from one class's methods to another's (H6, PLAN.md 4.2b), keyed by the
+        classes' simple names, caller first; a call that may go to several overrides counts once
+        for each class it may reach."""
+        if getattr(self, "_class_calls", None) is None:
+            out: dict[tuple[str, str], int] = defaultdict(int)
+            for i, js in enumerate(self.out):
+                a = simple(self.methods[i]["type"])
+                for b in {simple(self.methods[j]["type"]) for j in js} - {a}:
+                    out[(a, b)] += 1
+            self._class_calls = dict(out)
+        return self._class_calls
+
+    def cross_edges(self) -> set[tuple[tuple[str, str], tuple[str, str]]]:
+        """The calls followed from a method of one class to a method of another (H7, PLAN.md 4.2c),
+        each as (caller, callee), a method as (its class's simple name, its signature)."""
+        if getattr(self, "_cross", None) is None:
+            def k(i):
+                return simple(self.methods[i]["type"]), self.methods[i]["signature"]
+            self._cross = {(k(i), k(j)) for i, js in enumerate(self.out) for j in js
+                           if k(i)[0] != k(j)[0]}
+        return self._cross
+
+    def access(self) -> dict[tuple[str, str], str]:
+        """Each method's access (public, protected, package, private), by (class, signature)."""
+        if getattr(self, "_access", None) is None:
+            self._access = {(simple(m["type"]), m["signature"]): m.get("access", "public")
+                            for m in self.methods}
+        return self._access
+
     def family(self, c: str) -> set[str]:
         """A class, what it extends or implements, and what extends or implements it."""
         out, todo = {c}, deque([c])

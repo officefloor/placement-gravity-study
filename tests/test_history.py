@@ -134,7 +134,7 @@ def test_what_is_pending_is_usable_java_not_excluded_and_not_yet_read(tmp_path, 
     assert [r["full_name"] for r in history.pending("s", spec, excluded={"o/e"})] == ["o/a", "o/d"]
     done = tmp_path / "out" / "s" / "o__a"
     done.mkdir(parents=True)
-    (done / "meta.json").write_text("{}")
+    (done / "meta.json").write_text(f'{{"history_version": {history.HISTORY_VERSION}}}')
     assert [r["full_name"] for r in history.pending("s", spec)] == ["o/d", "o/e"]
     assert len(history.pending("s", spec, force=True)) == 3
 
@@ -170,3 +170,13 @@ def test_corpus_b_is_two_sets_and_corpus_c_one():
     assert (b1["seed"], b1["per_tier"]) == (20261101, 100) and b1["csv"].endswith("long-method-slim-study/sample/open-source-repository-sample.csv")
     assert (b2["seed"], b2["per_tier"], b2["exclude_samples"]) == (20261118, 100, ["open-source-human"])
     assert reg["samples"]["open-source-agent"]["seed"] == 20261119 and reg["samples"]["open-source-agent"]["target"] == 100
+
+
+def test_a_repository_read_by_an_older_version_is_read_again(tmp_path):
+    import json
+    from placement_gravity import history
+    assert not history.current(tmp_path)
+    (tmp_path / "meta.json").write_text(json.dumps({"history_version": history.HISTORY_VERSION - 1}))
+    assert not history.current(tmp_path)
+    (tmp_path / "meta.json").write_text(json.dumps({"history_version": history.HISTORY_VERSION}))
+    assert history.current(tmp_path)

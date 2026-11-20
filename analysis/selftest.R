@@ -122,6 +122,70 @@ h5 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
              calls_to_app_names = 10, calls_followed = 8)
 }))))
 write.csv(h5, file.path(dir, "h5.csv"), row.names = FALSE)
+# change spread (H6): in the methods arm the classes beyond the first double over the stream and
+# are 1.5 times as many where a placement was forced; the function arm's stay where they are.
+# Pairs changed together: their coupling rises over the stream in the methods arm
+h6 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
+  cp <- 1:60
+  forced <- rbinom(60, 1, 0.5) == 1
+  methods <- 1 + rpois(60, ifelse(forced, 3, 1))           # a forced unit is a larger change
+  positions <- methods * (3 + rpois(60, 2))
+  mu <- (if (arm == "spring") 0.8 * exp(log(2) * (cp - 1) / 59) * ifelse(forced, 1.5, 1) else rep(0.8, 60)) *
+    (1 + methods) / 3
+  sp <- rnbinom(60, size = 5, mu = mu)
+  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = cp, act = NA,
+             positions = positions, methods = methods,
+             classes = sp + 1, spread = sp, all_classes = sp + 1, forced = forced, forced_classes = as.integer(forced),
+             chosen = !forced, new_classes = 0, class_names = "")
+}))))
+write.csv(h6, file.path(dir, "h6.csv"), row.names = FALSE)
+pairs <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
+  do.call(rbind, lapply(1:6, function(k) {
+    cp <- sort(sample(1:60, 5))
+    mu <- if (arm == "spring") 2 * exp(log(3) * (cp - 1) / 59) else rep(2, 5)
+    data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = cp,
+               pair = paste0(arm, "/r/chain", ch, "|A", k, "|B", k), coupling = rnbinom(5, size = 10, mu = mu),
+               times = 1:5, in_tree = TRUE)
+  }))
+}))))
+write.csv(pairs, file.path(dir, "pairs.csv"), row.names = FALSE)
+# forced coupling (H7): in the methods arm a forced class gains twice the calls across its boundary,
+# half of them to members the unit opened; the function arm's forced classes gain no more
+h7 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
+  n <- 100
+  forced <- rbinom(n, 1, 0.4) == 1
+  cp <- sample(1:60, n, replace = TRUE)
+  mu <- if (arm == "spring") 1.5 * ifelse(forced, 2, 1) else rep(1.5, n)
+  out <- rnbinom(n, size = 4, mu = mu * 0.6)
+  inn <- rnbinom(n, size = 4, mu = mu * 0.4)
+  op <- rbinom(n, out + inn, ifelse(forced & arm == "spring", 0.5, 0.2))
+  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = cp, unit = cp,
+             class = "C", forced = forced, chosen = !forced, new_out = out, new_in = inn,
+             coupled = out + inn, opened = op, members_opened = rpois(n, ifelse(forced, 1, 0.5)))
+}))))
+write.csv(h7, file.path(dir, "h7.csv"), row.names = FALSE)
+# surface against volume: across classes the surface grows as volume^0.7 in the methods arm; a class
+# that grows gains surface as volume^1.3; a forced change adds 3 more calls at the same volume added
+sf <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
+  cs <- data.frame(methods_before = sample(2:80, 60, replace = TRUE))
+  cs$surface_before <- round(exp(0.7 * log(cs$methods_before) + rnorm(60, 0, 0.2))) - 1
+  cs <- data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = 60,
+                   class = paste0(arm, ch, "c", 1:60), cross_section = TRUE, forced = NA,
+                   methods_before = cs$methods_before, surface_before = pmax(cs$surface_before, 0),
+                   methods_after = NA, surface_after = NA)
+  tr <- do.call(rbind, lapply(1:10, function(k) {
+    m <- cumsum(sample(1:4, 6, replace = TRUE)) + 3
+    forced <- rbinom(6, 1, 0.5)
+    sb <- pmax(round(exp(1.3 * log(m) + rnorm(6, 0, 0.1) - 1)), 0)
+    dm <- sample(1:3, 6, replace = TRUE)
+    data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = 1:6 * 10,
+               class = paste0(arm, ch, "k", k), cross_section = FALSE, forced = forced == 1,
+               methods_before = m, surface_before = sb, methods_after = m + dm,
+               surface_after = sb + 2 * dm + 3 * forced + rpois(6, 1))
+  }))
+  rbind(cs, tr)
+}))))
+write.csv(sf, file.path(dir, "surface.csv"), row.names = FALSE)
 writeLines(jsonlite::toJSON(list(
   analysis = "selftest", role = "development", seed = 20261116, boot = 60, margin = c(0.8, 1.25),
   methods_arm = "spring", function_arm = "officefloor", checkpoints = 60,
@@ -245,4 +309,19 @@ for (lev in c("class", "method")) {
 check(!is.null(e$reported$H2_class_fields$irr), "H2 at the class on its fields only is reported")
 check(e$reported$H5_method_by_type$irr > 1, "H5 by type alone over the whole tree, simulated rising, is reported as such")
 check(abs(e$reported$H5_flow$followed - 0.8) < 1e-9, "the share of calls followed is reported")
+check(abs(log(e$reported$H6_rise$irr) - log(2)) < 0.3 && e$reported$H6_rise$irr_lower > 1, "the spread doubling over the stream is reported")
+check(abs(log(e$reported$H6_rise_forced$irr) - log(2)) < 0.45 && abs(log(e$reported$H6_rise_unforced$irr) - log(2)) < 0.45,
+      "the rise in forced and in unforced units is reported apart")
+check(abs(log(e$H6$forced$irr) - log(1.5)) < 0.25 && e$H6$forced$irr_lower > 1, "H6 recovers forced units spreading wider at the same size")
+check(e$reported$H6_forced_without_size$irr > e$H6$forced$irr * 1.2, "without the change's size, the forced ratio is inflated, as simulated")
+check(abs(log(e$reported$H6_function_arm$irr)) < 0.35, "the function arm's flat spread is reported")
+check(!is.null(e$reported$H6_spread$methods$thirds_classes), "the spread per third is reported")
+check(abs(log(e$reported$H6_pair_coupling$irr) - log(3)) < 0.35, "the rising coupling of pairs changed together is recovered")
+check(abs(log(e$H7$forced$irr) - log(2)) < 0.25 && e$H7$forced$irr_lower > 1, "H7 recovers forced classes gaining twice the coupling")
+check(e$reported$H7_forced_opened$irr > e$H7$forced$irr, "H7: forced classes' coupling reaches opened members more, as simulated")
+check(abs(log(e$reported$H7_function_arm_forced$irr)) < 0.3, "the function arm's forced ratio, simulated 1, is reported")
+sx <- e$reported$surface$spring
+check(abs(sx$across$estimate - 0.7) < 0.1, "the exponent across classes is recovered")
+check(abs(sx$within$estimate - 1.3) < 0.25, "the exponent within a growing class is recovered")
+check(abs(sx$added_forced$estimate - 3) < 0.8, "the surface a forced change adds at the same volume is recovered")
 cat("analysis/analyse.R self-test passed\n")

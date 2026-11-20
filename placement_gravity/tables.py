@@ -155,6 +155,250 @@ def choice(r: dict, tm: list[str], tf: list[str], ti: list[str], tc: list[str], 
     return out
 
 
+def changed(h: dict) -> bool:
+    """A host a unit placed or edited code in (H6, PLAN.md 4.2b): it added positions, and is not a
+    re-placement of code moved there."""
+    return float(h.get("added") or 0) > 0 and str(h.get("replacement")) != "True"
+
+
+def _trees(measured: dict) -> tuple[dict, dict]:
+    """The tree before each unit, by unit number, and the unit whose tree follows each one (the
+    tree after a unit is the tree before the next; the last unit has none)."""
+    places = measured.get("places") or {}
+    by = {int(k[2:]): v for k, v in places.items()}
+    order = sorted(by)
+    return by, dict(zip(order, order[1:]))
+
+
+def pair_rows(arm: str, chain: str, hosts: list[dict], measured: dict) -> list[dict]:
+    """Change spread (H6, PLAN.md 4.2b): per unit, every pair of classes it placed or edited code
+    in, with the calls between them in the tree before the unit and in the tree after it (before
+    the next unit; on a history, with any commits between that are not units), followed by their
+    receiver's type (``flow.Graph.class_calls``), each way. A class not in the tree before (new in
+    the unit) has none there; ``in_tree`` says whether both were there, ``new`` how many were new."""
+    from itertools import combinations
+    trees, after = _trees(measured)
+    by_cp: dict[int, dict[str, bool]] = {}
+    for h in hosts:
+        if changed(h):
+            c = _type(h.get("before_type") or h["type"])
+            cs = by_cp.setdefault(int(h["cp"]), {})
+            cs[c] = cs.get(c, True) and str(h.get("class_new")) == "True"
+
+    def calls(index):
+        return _graph(index).class_calls() if index is not None else None
+
+    out = []
+    for cp, cs in sorted(by_cp.items()):
+        index = trees.get(cp)
+        g = _graph(index) if index is not None else None
+        before = calls(index) or {}
+        nxt = calls(trees.get(after.get(cp))) if after.get(cp) is not None else None
+        there = {flow.simple(m["type"]) for m in g.methods} if g else set()
+        for a, b in combinations(sorted(cs), 2):
+            sa, sb = flow.simple(a), flow.simple(b)
+            out.append({"arm": arm, "chain": chain, "cp": cp, "class_a": a, "class_b": b,
+                        "calls_ab": before.get((sa, sb), 0), "calls_ba": before.get((sb, sa), 0),
+                        "calls_ab_after": None if nxt is None else nxt.get((sa, sb), 0),
+                        "calls_ba_after": None if nxt is None else nxt.get((sb, sa), 0),
+                        "in_tree": sa in there and sb in there, "new": int(cs[a]) + int(cs[b])})
+    return out
+
+
+def coupling_rows(arm: str, chain: str, measured: dict) -> list[dict]:
+    """The coupling of the whole tree (H6's accounting, PLAN.md 4.2b): per unit, the calls followed
+    from one class to another in the tree before it and in the tree after it, so that what a unit
+    added between all classes, changed together or not, can be counted."""
+    trees, after = _trees(measured)
+
+    def total(index):
+        return sum(_graph(index).class_calls().values())
+
+    return [{"arm": arm, "chain": chain, "cp": cp, "cross_class_calls": total(trees[cp]),
+             "cross_class_calls_after": total(trees[after[cp]]) if cp in after else None}
+            for cp in sorted(trees)]
+
+
+#: Access, from closed to open (H7): a member whose rank rises was widened.
+ACCESS = {"private": 0, "package": 1, "protected": 2, "public": 3}
+
+
+def encapsulation_rows(arm: str, chain: str, hosts: list[dict], measured: dict) -> list[dict]:
+    """Forced coupling (H7, PLAN.md 4.2c): per unit and class that existed before it that the unit
+    placed or edited code in, the calls across that class's boundary the unit added (in the tree
+    after it, which is the tree before the next unit, and not before), outward (from its methods to
+    another class's) and inward (from another class's methods to its own), each by the member it
+    reaches: one that was already open to it (*existing*), one the unit added open to other classes
+    (*exposed*, not private), or one the unit made more open (*widened*). With whether a placement in
+    the class was forced at the class (H5's class level: no alternative), or had a choice there,
+    and how many of the class's own members the unit exposed or widened, called or not."""
+    trees, after = _trees(measured)
+    by_cp: dict[int, dict[str, dict]] = {}
+    for h in hosts:
+        if not changed(h) or str(h.get("class_new")) == "True":
+            continue
+        c = _type(h.get("before_type") or h["type"])
+        d = by_cp.setdefault(int(h["cp"]), {}).setdefault(c, {"forced": False, "chosen": False})
+        n = h.get("choice_class")
+        if n not in (None, ""):
+            d["forced" if int(float(n)) == 0 else "chosen"] = True
+    out = []
+    for cp, classes in sorted(by_cp.items()):
+        if cp not in trees or cp not in after:
+            continue
+        g0, g1 = _graph(trees[cp]), _graph(trees[after[cp]])
+        e0, e1 = g0.cross_edges(), g1.cross_edges()
+        a0, a1 = g0.access(), g1.access()
+        new, lost = e1 - e0, e0 - e1
+
+        def kind(callee):
+            if callee not in a0:
+                return "exposed"
+            return "widened" if ACCESS.get(a1.get(callee), 3) > ACCESS.get(a0[callee], 3) else "existing"
+
+        for c, d in sorted(classes.items()):
+            sc = flow.simple(c)
+            row = {"arm": arm, "chain": chain, "cp": cp, "class": c, "forced": d["forced"], "chosen": d["chosen"]}
+            for side, mine in (("out", lambda e: e[0][0] == sc), ("in", lambda e: e[1][0] == sc)):
+                edges = [e for e in new if mine(e)]
+                row[f"new_{side}"] = len(edges)
+                row[f"lost_{side}"] = sum(1 for e in lost if mine(e))
+                for k in ("existing", "exposed", "widened"):
+                    row[f"{side}_{k}"] = sum(1 for e in edges if kind(e[1]) == k)
+            row["members_opened"] = sum(
+                1 for (t, sig), acc in a1.items() if t == sc and acc != "private"
+                and ((t, sig) not in a0 or ACCESS.get(acc, 3) > ACCESS.get(a0[(t, sig)], 3)))
+            out.append(row)
+    return out
+
+
+def _forced_classes(hosts: list[dict]) -> dict[int, dict[str, dict]]:
+    """Per unit, the classes that existed that it placed or edited code in, each with whether a
+    placement there was forced at the class or had a choice (H5's class level)."""
+    by_cp: dict[int, dict[str, dict]] = {}
+    for h in hosts:
+        if not changed(h) or str(h.get("class_new")) == "True":
+            continue
+        c = _type(h.get("before_type") or h["type"])
+        d = by_cp.setdefault(int(h["cp"]), {}).setdefault(c, {"forced": False, "chosen": False})
+        n = h.get("choice_class")
+        if n not in (None, ""):
+            d["forced" if int(float(n)) == 0 else "chosen"] = True
+    return by_cp
+
+
+def boundary_rows(arm: str, chain: str, hosts: list[dict], measured: dict) -> list[dict]:
+    """Surface against volume (PLAN.md 4.2e): per unit and class that existed that it changed, the
+    class's volume (its methods; its positions where the shape of the tree was read) and its surface
+    (the calls followed out of it and into it, and the classes on each side) in the tree before the
+    unit and in the tree after it, with whether the class was forced in the unit. Then, per chain,
+    every class of the last tree (``cross_section``), for the relation across classes."""
+    trees, after = _trees(measured)
+    sizes: dict[tuple[str, str], int] = {}
+    for r in measured.get("shape") or []:
+        k = (str(r["unit"]), flow.simple(r["type"]))
+        sizes[k] = sizes.get(k, 0) + int(r.get("positions") or 0)
+
+    def state(cp, g):
+        calls = g.class_calls()
+        out = {}
+        for (a, b), n in calls.items():
+            o = out.setdefault(a, [0, 0, set(), set()])
+            o[0] += n
+            o[2].add(b)
+            i = out.setdefault(b, [0, 0, set(), set()])
+            i[1] += n
+            i[3].add(a)
+        methods: dict[str, int] = {}
+        for m in g.methods:
+            methods[flow.simple(m["type"])] = methods.get(flow.simple(m["type"]), 0) + 1
+        return methods, out
+
+    rows = []
+    for cp, classes in sorted(_forced_classes(hosts).items()):
+        if cp not in trees or cp not in after:
+            continue
+        m0, s0 = state(cp, _graph(trees[cp]))
+        m1, s1 = state(after[cp], _graph(trees[after[cp]]))
+        for c, d in sorted(classes.items()):
+            sc = flow.simple(c)
+            row = {"arm": arm, "chain": chain, "cp": cp, "class": c, "forced": d["forced"], "chosen": d["chosen"],
+                   "cross_section": False}
+            for tag, m, s, unit in (("before", m0, s0, cp), ("after", m1, s1, after[cp])):
+                o = s.get(sc, [0, 0, set(), set()])
+                row.update({f"methods_{tag}": m.get(sc, 0),
+                            f"positions_{tag}": sizes.get((f"cp{unit:02d}", sc)),
+                            f"out_{tag}": o[0], f"in_{tag}": o[1],
+                            f"out_classes_{tag}": len(o[2]), f"in_classes_{tag}": len(o[3])})
+            rows.append(row)
+    if trees:
+        last = max(trees)
+        m, s = state(last, _graph(trees[last]))
+        for sc in sorted(m):
+            o = s.get(sc, [0, 0, set(), set()])
+            rows.append({"arm": arm, "chain": chain, "cp": last, "class": sc, "forced": None, "chosen": None,
+                         "cross_section": True, "methods_before": m[sc],
+                         "positions_before": sizes.get((f"cp{last:02d}", sc)),
+                         "out_before": o[0], "in_before": o[1],
+                         "out_classes_before": len(o[2]), "in_classes_before": len(o[3])})
+    return rows
+
+
+def edge_rows(arm: str, chain: str, hosts: list[dict], measured: dict) -> list[dict]:
+    """The calls across a class's boundary each unit added (H7's calls, PLAN.md 4.2c), one row each,
+    for the ripple reading (4.2e): the caller's class and method, the callee's class and method, the
+    kind of member reached (existing, exposed, widened), and whether the caller's or the callee's
+    class was forced in the unit."""
+    trees, after = _trees(measured)
+    out = []
+    for cp, classes in sorted(_forced_classes(hosts).items()):
+        if cp not in trees or cp not in after:
+            continue
+        g0, g1 = _graph(trees[cp]), _graph(trees[after[cp]])
+        a0, a1 = g0.access(), g1.access()
+        mine = {flow.simple(c): d for c, d in classes.items()}
+        for caller, callee in sorted(g1.cross_edges() - g0.cross_edges()):
+            if caller[0] not in mine and callee[0] not in mine:
+                continue
+            kind = ("exposed" if callee not in a0 else
+                    "widened" if ACCESS.get(a1.get(callee), 3) > ACCESS.get(a0[callee], 3) else "existing")
+            out.append({"arm": arm, "chain": chain, "cp": cp, "caller_class": caller[0],
+                        "caller_signature": caller[1], "callee_class": callee[0],
+                        "callee_signature": callee[1], "kind": kind,
+                        "caller_forced": mine.get(caller[0], {}).get("forced", False),
+                        "callee_forced": mine.get(callee[0], {}).get("forced", False)})
+    return out
+
+
+#: RefactoringMiner's kinds that split a class or move members between classes (the redesign
+#: reading's check, PLAN.md 4.2d).
+SPLITS = {"Extract Class", "Extract Subclass"}
+MOVES = {"Move Method", "Move And Rename Method", "Move Attribute", "Move And Rename Attribute",
+         "Move And Inline Method"}
+_EXTRACT = re.compile(r"^Extract (?:Class|Subclass) (\S+) from class (\S+)")
+_FROM_TO = re.compile(r"from class (\S+) to class (\S+)")
+
+
+def refactoring_rows(arm: str, chain: str, measured: dict) -> list[dict]:
+    """The refactorings RefactoringMiner found that split a class (Extract Class, Extract Subclass)
+    or move a member between two classes (PLAN.md 4.2d), one row each: the unit, the kind, and the
+    classes from and to (as RefactoringMiner names them, qualified)."""
+    out = []
+    for found in measured.get("refactorings") or []:
+        cp = int(str(found["unit"])[2:])
+        for r in found.get("refactorings", []):
+            kind, desc = r.get("type", ""), r.get("description", "")
+            if kind in SPLITS and (m := _EXTRACT.match(desc)):
+                to, frm = m.group(1), m.group(2)
+            elif kind in MOVES and (m := _FROM_TO.search(desc)):
+                frm, to = m.group(1), m.group(2)
+            else:
+                continue
+            out.append({"arm": arm, "chain": chain, "cp": cp, "kind": kind,
+                        "from_class": frm, "to_class": to})
+    return out
+
+
 def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
     """One row per host and addition. With ``measured["shape"]`` (chain.measure), an existing
     host also carries S1 to S5 of its version at k − 1 (PLAN.md §4.7, ``shape.host_shape``)."""

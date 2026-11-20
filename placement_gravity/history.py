@@ -44,7 +44,7 @@ from . import chain, lines, places, refactor, runs, tables
 OUT = runs.RESULTS / "measure" / "_history"
 WORK = chain.ROOT / ".tmp" / "history"
 SAMPLES = chain.ROOT / "samples"
-HISTORY_VERSION = 3
+HISTORY_VERSION = 8
 #: A unit changes at most this many lines of production Java (PLAN.md §3.2).
 MAX_LINES = 200
 #: No cap on the units read per repository (decided by the author, 18 November 2026): a
@@ -134,6 +134,12 @@ def measure_repo(repo: Path, out: Path, name: str, head: str = "HEAD",
     write("additions", tables.addition_rows("history", name, measured, h, {}))
     write("outcomes", tables.outcome_rows("history", name, h, {}, None, lines.follow(measured["records"])))
     write("landings", places.landings("history", name, h, measured["shape"]))
+    write("pairs", tables.pair_rows("history", name, h, measured))
+    write("coupling", tables.coupling_rows("history", name, measured))
+    write("encapsulation", tables.encapsulation_rows("history", name, h, measured))
+    write("refactorings", tables.refactoring_rows("history", name, measured))
+    write("boundary", tables.boundary_rows("history", name, h, measured))
+    write("edges", tables.edge_rows("history", name, h, measured))
     write("units", [{"repo": name, "cp": u["cp"], "commit": u["commit"], "date": u["date"],
                      "agent": bool(u["agents"]), "agents": " ".join(u["agents"]),
                      "issues": " ".join(map(str, u["issues"])), "lines": u["lines"]} for u in us])
@@ -263,12 +269,21 @@ def sample_excluded(reg: dict, name: str, excluded: set[str] = frozenset()) -> s
     return out
 
 
+def current(out: Path) -> bool:
+    """Whether a repository's tables are whole and made by this ``HISTORY_VERSION``."""
+    meta = out / "meta.json"
+    try:
+        return json.loads(meta.read_text()).get("history_version") == HISTORY_VERSION
+    except (OSError, ValueError):
+        return False
+
+
 def pending(name: str, spec: dict, force: bool = False, excluded: set[str] = frozenset()) -> list[dict]:
     """The repositories of a sample still to read: those ``chosen``, and (unless ``force``)
-    without tables yet."""
+    without tables of this version yet."""
     rows = chosen(name, spec, excluded)
     return [r for r in rows
-            if force or not (OUT / name / r["full_name"].replace("/", "__") / "meta.json").exists()]
+            if force or not current(OUT / name / r["full_name"].replace("/", "__"))]
 
 
 def shards(rows: list[dict], workers: int) -> list[list[dict]]:
@@ -381,7 +396,7 @@ def main() -> None:
         skip = (OUT / a.sample / "excluded.txt")
         if a.name in (skip.read_text().split() if skip.exists() else []):
             return
-        if a.force or not (out / "meta.json").exists():
+        if a.force or not current(out):
             (out / "meta.json").unlink(missing_ok=True)     # tables are whole or absent
             measure_repo(Path(a.path), out, a.name, before=spec.get("before"),
                          max_units=spec.get("max_units") or MAX_UNITS)

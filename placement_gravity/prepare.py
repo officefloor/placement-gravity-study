@@ -19,6 +19,14 @@ Writes data/analysis/<name>/:
   reading), with what stood by there, the later intrusion at the class and the method, how much of
   it is bound to what stood by, what the change introduced there (§4.3b), the problem's own lines, the problem's size and declared crossings,
   the host's size and its shape at k − 1.
+- ``h6.csv``: one row per unit that placed or edited code, with the classes it did so in and
+  whether a placement in it was forced at the class (H6, PLAN.md §4.2b); ``pairs.csv``: one row
+  per unit and pair of classes it changed together, with the calls between them before it.
+- ``h7.csv``: one row per unit and existing class it changed, with the calls across the class's
+  boundary the unit added, by the member they reach (already open, exposed, widened), and whether
+  a placement in the class was forced (H7, PLAN.md §4.2c).
+- ``surface.csv``: one row per class a unit changed, its volume (methods, positions) and surface
+  (calls out and in) before and after, and per class of each chain's last tree (PLAN.md §4.2e).
 - ``spec.json``: what the R models need (seed, resamples, the equivalence margin, the shape measures
   kept by the variation rule, whether the stream has acts).
 - ``conditions.json``: what H4 reads besides the models (the amount band and the wiring checks),
@@ -34,7 +42,7 @@ import random
 import statistics
 from pathlib import Path
 
-from . import chain, history, literature, places, readings, runs, wiring
+from . import chain, history, literature, places, readings, runs, tables, wiring
 
 DATA = chain.ROOT / "data" / "analysis"
 SEED = 20261116
@@ -136,6 +144,381 @@ def h5_rows(host_rows: list[dict], streamed: dict) -> list[dict]:
                 "calls_followed": num(h.get("calls_followed")) if level == "method" else None,
                 "places": h.get(f"choice_{level}_places", ""),
             })
+    return out
+
+
+def added(h: dict) -> float:
+    """The positions a host gained (its net addition, none below 0): the size of a change there."""
+    return max(num(h.get("net_added"), 0) or 0, 0)
+
+
+def h6_rows(host_rows: list[dict], streamed: dict) -> list[dict]:
+    """Change spread (H6, PLAN.md 4.2b): one row per unit that placed or edited code in a class that
+    existed before it, with the number of such classes (``spread`` is those beyond the first; a
+    new class is a free choice, so it is counted beside, not in the spread) and whether any of its
+    placements was forced at the class (bound there with no other class holding what it was bound
+    to, H5's alternatives none), or had a choice there; and the change's size, the positions it
+    added (``positions``) and the methods it placed or edited code in (``methods``), so that forced
+    is compared with unforced at the same size (decided 20 November 2026)."""
+    units: dict[tuple, dict] = {}
+    for h in host_rows:
+        if not tables.changed(h):
+            continue
+        u = units.setdefault((h["chain_id"], int(h["cp"])), {
+            "chain_id": h["chain_id"], "arm": h["arm"], "frontend": h.get("frontend", ""),
+            "cp": float(h["position"]) if h.get("position") not in (None, "") else int(h["cp"]),
+            "act": streamed.get(int(h["cp"]), {}).get("act"), "unit": int(h["cp"]),
+            "existing": set(), "all": set(), "forced": set(), "chosen": set(), "positions": 0, "methods": 0})
+        u["positions"] += added(h)
+        u["methods"] += 1
+        c = h.get("before_type") or h["type"]
+        u["all"].add(c)
+        if not truth(h.get("class_new")):
+            u["existing"].add(c)
+        n = num(h.get("choice_class"))
+        if n is not None:
+            (u["forced"] if int(n) == 0 else u["chosen"]).add(c)
+    return [{**{k: v for k, v in u.items() if k not in ("existing", "all", "forced", "chosen")},
+             "classes": len(u["existing"]), "spread": len(u["existing"]) - 1,
+             "all_classes": len(u["all"]), "new_classes": len(u["all"] - u["existing"]),
+             "forced": bool(u["forced"]), "forced_classes": len(u["forced"]),
+             "chosen": bool(u["chosen"]), "class_names": " ".join(sorted(u["existing"]))}
+            for _, u in sorted(units.items()) if u["existing"]]
+
+
+def pair_rows(pairs: list[dict]) -> list[dict]:
+    """The coupling of classes changed together (H6, reported): one row per unit and pair of
+    classes that both existed before it, the calls between them in the tree before the unit and
+    what the unit added (after less before; none for the last unit), with the number of times the
+    pair has been changed together in its chain so far."""
+    out, seen = [], {}
+    for p in sorted(pairs, key=lambda r: (r["chain_id"], int(r["cp"]))):
+        if int(num(p.get("new"), 0)):
+            continue
+        key = (p["chain_id"], p["class_a"], p["class_b"])
+        seen[key] = seen.get(key, 0) + 1
+        before = int(p["calls_ab"]) + int(p["calls_ba"])
+        after = (None if num(p.get("calls_ab_after")) is None
+                 else int(num(p["calls_ab_after"])) + int(num(p["calls_ba_after"])))
+        out.append({"chain_id": p["chain_id"], "arm": p["arm"], "frontend": p.get("frontend", ""),
+                    "cp": float(p["position"]) if p.get("position") not in (None, "") else int(p["cp"]),
+                    "unit": int(p["cp"]),
+                    "pair": f"{p['chain_id']}|{p['class_a']}|{p['class_b']}",
+                    "coupling": before, "added": None if after is None else after - before,
+                    "times": seen[key], "in_tree": truth(p["in_tree"])})
+    return out
+
+
+def growth_accounting(host_rows: list[dict], checkpoints: int) -> dict:
+    """Where the growth of classes that existed came from (H6's accounting, PLAN.md 4.2b): per arm,
+    and per third of the stream, the positions added to existing classes by placements forced at
+    the class, by placements that had a choice there, and by code not bound at the class; and
+    each one's share."""
+    span = max(checkpoints - 1, 1)
+    out: dict[str, dict] = {}
+    for h in host_rows:
+        if not tables.changed(h) or truth(h.get("class_new")):
+            continue
+        n = num(h.get("choice_class"))
+        kind = "unbound" if n is None else "forced" if int(n) == 0 else "chosen"
+        x = float(h["position"]) if h.get("position") not in (None, "") else (int(h["cp"]) - 1) / span
+        third = str(min(int(x * 3) + 1, 3))
+        added = max(num(h.get("net_added"), 0) or 0, 0)
+        a = out.setdefault(h["arm"], {"positions": {}, "thirds": {}})
+        for d in (a["positions"], a["thirds"].setdefault(third, {})):
+            d[kind] = d.get(kind, 0) + added
+    for a in out.values():
+        for d in [a["positions"], *a["thirds"].values()]:
+            total = sum(d.get(k, 0) for k in ("forced", "chosen", "unbound"))
+            d["total"] = total
+            for k in ("forced", "chosen", "unbound"):
+                d[f"{k}_share"] = d.get(k, 0) / total if total else None
+    return out
+
+
+def coupling_accounting(pairs: list[dict], coupling: list[dict], h6: list[dict]) -> dict:
+    """What coupling between classes each unit added (H6's accounting, PLAN.md 4.2b): per arm, the
+    calls between classes the units added in all (the tree after less the tree before, over every
+    class), how much of that between pairs of existing classes changed together, and how much in
+    units with a forced placement and in the others."""
+    forced = {(r["chain_id"], int(r["unit"])): truth(r["forced"]) for r in h6}
+    out: dict[str, dict] = {}
+
+    def acc(arm):
+        return out.setdefault(arm, {"added": 0, "added_forced_units": 0, "added_unforced_units": 0,
+                                    "pairs_added": 0, "pairs_added_forced": 0, "pairs_added_unforced": 0,
+                                    "units": 0})
+    for c in coupling:
+        if num(c.get("cross_class_calls_after")) is None:
+            continue
+        d = int(num(c["cross_class_calls_after"])) - int(num(c["cross_class_calls"]))
+        a = acc(c["arm"])
+        a["units"] += 1
+        a["added"] += d
+        f = forced.get((c["chain_id"], int(c["cp"])))
+        if f is not None:
+            a["added_forced_units" if f else "added_unforced_units"] += d
+    for p in pairs:
+        if p["added"] is None or not p["in_tree"]:
+            continue
+        a = acc(p["arm"])
+        a["pairs_added"] += p["added"]
+        f = forced.get((p["chain_id"], p["unit"]))
+        if f is not None:
+            a["pairs_added_forced" if f else "pairs_added_unforced"] += p["added"]
+    for a in out.values():
+        t = a["added"]
+        a["share_forced_units"] = a["added_forced_units"] / t if t else None
+        a["share_between_pairs"] = a["pairs_added"] / t if t else None
+        a["share_pairs_forced"] = a["pairs_added_forced"] / t if t else None
+    return out
+
+
+def co_change(pairs: list[dict], top: int = 10) -> dict:
+    """Per arm: the pairs of classes changed together, how many were changed together more than
+    once, and of those how many are more coupled after their last change together than before
+    their first (both in the tree); the pairs most often changed together whose coupling rose, the candidates
+    for redistributing placement between the two (PLAN.md 4.2b)."""
+    by: dict[str, list[dict]] = {}
+    for p in pairs:
+        by.setdefault(p["pair"], []).append(p)
+    out: dict[str, dict] = {}
+    for rows in by.values():
+        rows.sort(key=lambda r: r["cp"])
+        arm = rows[0]["arm"]
+        a = out.setdefault(arm, {"pairs": 0, "again": 0, "rose": 0, "fell": 0, "candidates": []})
+        a["pairs"] += 1
+        if len(rows) < 2:
+            continue
+        a["again"] += 1
+        both = [r for r in rows if r["in_tree"]]
+        if len(both) < 2:
+            continue
+        # coupling before the first change together, and after the last (where a tree follows it)
+        first, last = both[0]["coupling"], both[-1]["coupling"] + (both[-1]["added"] or 0)
+        a["rose"] += last > first
+        a["fell"] += last < first
+        if last > first:
+            chain_id, x, y = rows[0]["pair"].split("|")
+            a["candidates"].append({"chain_id": chain_id, "classes": [x, y], "times": len(rows),
+                                    "coupling_first": first, "coupling_last": last})
+    for a in out.values():
+        a["candidates"] = sorted(a["candidates"], key=lambda c: (-c["times"], -c["coupling_last"]))[:top]
+    return out
+
+
+def h7_rows(enc: list[dict], host_rows: list[dict] | None = None) -> list[dict]:
+    """Forced coupling (H7, PLAN.md 4.2c): one row per unit and existing class it changed, with the
+    calls across the class's boundary the unit added (``coupled``, outward and inward), how many of
+    those reach a member the unit exposed or widened (``opened``), and whether the class had a
+    placement forced at the class; and the change's size in the class, the positions it added there
+    (``positions``) and the methods it placed or edited code in there (``methods``). The unit's last
+    row has no tree after it and is not here."""
+    size: dict[tuple, list] = {}
+    for h in host_rows or []:
+        if tables.changed(h):
+            s = size.setdefault((h["chain_id"], int(h["cp"]), tables._type(h.get("before_type") or h["type"])), [0, 0])
+            s[0] += added(h)
+            s[1] += 1
+    out = []
+    for r in enc:
+        n = {k: int(num(r.get(k), 0)) for k in (
+            "new_out", "new_in", "lost_out", "lost_in", "out_existing", "out_exposed", "out_widened",
+            "in_existing", "in_exposed", "in_widened", "members_opened")}
+        out.append({"chain_id": r["chain_id"], "arm": r["arm"], "frontend": r.get("frontend", ""),
+                    "cp": float(r["position"]) if r.get("position") not in (None, "") else int(r["cp"]),
+                    "unit": int(r["cp"]), "class": r["class"], "forced": truth(r["forced"]),
+                    "positions": size.get((r["chain_id"], int(r["cp"]), r["class"]), [0, 0])[0],
+                    "methods": size.get((r["chain_id"], int(r["cp"]), r["class"]), [0, 0])[1],
+                    "chosen": truth(r["chosen"]), **n,
+                    "coupled": n["new_out"] + n["new_in"],
+                    "opened": n["out_exposed"] + n["out_widened"] + n["in_exposed"] + n["in_widened"]})
+    return out
+
+
+def encapsulation_summary(h7: list[dict]) -> dict:
+    """Per arm, forced class rows against the others: the calls across the boundary added a row,
+    outward and inward, the share of them reaching a member the unit exposed or widened, and the
+    members a row exposed or widened."""
+    out: dict[str, dict] = {}
+    for arm in sorted({r["arm"] for r in h7}):
+        a = {}
+        for lab, rows in (("forced", [r for r in h7 if r["arm"] == arm and r["forced"]]),
+                          ("unforced", [r for r in h7 if r["arm"] == arm and not r["forced"]])):
+            n = len(rows)
+            c = sum(r["coupled"] for r in rows)
+            a[lab] = {"rows": n,
+                      "coupled": c / n if n else None,
+                      "out": sum(r["new_out"] for r in rows) / n if n else None,
+                      "in": sum(r["new_in"] for r in rows) / n if n else None,
+                      "opened_share": sum(r["opened"] for r in rows) / c if c else None,
+                      "widened": sum(r["out_widened"] + r["in_widened"] for r in rows),
+                      "exposed": sum(r["out_exposed"] + r["in_exposed"] for r in rows),
+                      "members_opened": sum(r["members_opened"] for r in rows) / n if n else None}
+        out[arm] = a
+    return out
+
+
+def _values(h: dict) -> set[str]:
+    """The class's own values a host's code was bound to: its fields and the class methods called."""
+    return set((h.get("need_class_values") or "").split()) | set((h.get("called_class_methods") or "").split())
+
+
+def redesign(hosts: list[dict], pairs: list[dict], min_changes: int = 2,
+             min_together: int = 3, overlap: float = 0.5) -> dict:
+    """The redesign reading (PLAN.md 4.2d), per arm: where the code stands between the two forces.
+
+    *Split:* a class whose forced changes (placements bound at the class with no alternative) fall
+    into groups that share none of the class's values, at least two groups of ``min_changes`` or
+    more. A class is flagged at the first unit at which that holds; the classes with at least two
+    forced changes and never flagged are the reference, from their second forced change. Whether the
+    groups' changes went with different classes (none in common) is recorded.
+
+    *Concentrate:* a pair of existing classes changed together at least ``min_together`` times,
+    where at least ``overlap`` of the later times the change was bound to class values it had been
+    bound to in an earlier time (the same data again), and whose coupling rose (after the last time
+    against before the first). Flagged at its ``min_together``-th time."""
+    out: dict[str, dict] = {}
+
+    def arm_of(a):
+        return out.setdefault(a, {"split": {"classes": 0, "flagged": 0, "disjoint_partners": 0, "candidates": []},
+                                  "concentrate": {"pairs": 0, "together": 0, "flagged": 0, "candidates": []}})
+
+    # ---- split: forced changes into one class, grouped by shared values
+    units: dict[tuple, set] = {}
+    for h in hosts:
+        if tables.changed(h):
+            units.setdefault((h["chain_id"], int(h["cp"])), set()).add(h.get("before_type") or h["type"])
+    forced: dict[tuple, list] = {}
+    for h in sorted(hosts, key=lambda r: int(r["cp"])):
+        n = num(h.get("choice_class"))
+        if not tables.changed(h) or truth(h.get("class_new")) or n is None or int(n) != 0:
+            continue
+        c = h.get("before_type") or h["type"]
+        forced.setdefault((h["chain_id"], h["arm"], c), []).append(
+            (int(h["cp"]), _values(h), units.get((h["chain_id"], int(h["cp"])), set()) - {c}))
+    for (chain_id, arm, c), changes in forced.items():
+        if len(changes) < 2:
+            continue
+        a = arm_of(arm)["split"]
+        a["classes"] += 1
+        flagged_at, groups = None, []
+        for i in range(len(changes)):
+            seen = changes[:i + 1]
+            parent = list(range(len(seen)))
+
+            def find(x):
+                while parent[x] != x:
+                    parent[x] = parent[parent[x]]
+                    x = parent[x]
+                return x
+            for x in range(len(seen)):
+                for y in range(x):
+                    if seen[x][1] & seen[y][1]:
+                        parent[find(x)] = find(y)
+            gs: dict[int, list] = {}
+            for x in range(len(seen)):
+                gs.setdefault(find(x), []).append(seen[x])
+            big = [g for g in gs.values() if len(g) >= min_changes]
+            if len(big) >= 2:
+                flagged_at, groups = seen[-1][0], big
+                break
+        if flagged_at is None:
+            continue
+        partners = [set().union(*(ch[2] for ch in g)) for g in groups]
+        disjoint = all(not (partners[x] & partners[y]) for x in range(len(partners)) for y in range(x))
+        a["flagged"] += 1
+        a["disjoint_partners"] += disjoint
+        a["candidates"].append({"chain_id": chain_id, "class": c, "at": flagged_at,
+                                "groups": [sorted(set().union(*(ch[1] for ch in g))) for g in groups],
+                                "disjoint_partners": disjoint})
+
+    # ---- concentrate: pairs changed together again over the same data
+    vals: dict[tuple, set] = {}
+    for h in hosts:
+        if tables.changed(h):
+            vals.setdefault((h["chain_id"], int(h["cp"]), h.get("before_type") or h["type"]), set()).update(_values(h))
+    by_pair: dict[str, list] = {}
+    for p in pairs:
+        if p["in_tree"]:
+            by_pair.setdefault(p["pair"], []).append(p)
+    for key, rows in by_pair.items():
+        rows.sort(key=lambda r: r["unit"])
+        a = arm_of(rows[0]["arm"])["concentrate"]
+        a["pairs"] += 1
+        if len(rows) < min_together:
+            continue
+        a["together"] += 1
+        chain_id, x, y = key.split("|")
+        used = [vals.get((chain_id, r["unit"], x), set()) | {f"{y}:{v}" for v in vals.get((chain_id, r["unit"], y), set())}
+                for r in rows]
+        again = sum(1 for i in range(1, len(used)) if used[i] & set().union(*used[:i]))
+        rose = rows[-1]["coupling"] + (rows[-1]["added"] or 0) > rows[0]["coupling"]
+        at = rows[min_together - 1]["unit"]
+        if again / (len(used) - 1) >= overlap and rose:
+            a["flagged"] += 1
+            a["candidates"].append({"chain_id": chain_id, "classes": [x, y], "times": len(rows), "at": at,
+                                    "same_data": round(again / (len(used) - 1), 3)})
+    for a in out.values():
+        a["split"]["candidates"] = sorted(a["split"]["candidates"], key=lambda c: -len(c["groups"]))[:10]
+        a["concentrate"]["candidates"] = sorted(a["concentrate"]["candidates"], key=lambda c: -c["times"])[:10]
+    return out
+
+
+def surface_rows(boundary: list[dict]) -> list[dict]:
+    """Surface against volume (PLAN.md 4.2e): one row per class a unit changed (volume and surface
+    before and after the change) and per class of each chain's last tree (``cross_section``), with
+    the surface as the calls out of and into the class."""
+    out = []
+    for r in boundary:
+        row = {"chain_id": r["chain_id"], "arm": r["arm"], "frontend": r.get("frontend", ""),
+               "cp": float(r["position"]) if r.get("position") not in (None, "") else int(r["cp"]),
+               "class": f"{r['chain_id']}|{r['class']}", "cross_section": truth(r["cross_section"]),
+               "forced": truth(r.get("forced"))}
+        for tag in ("before", "after"):
+            if num(r.get(f"methods_{tag}")) is None:
+                continue
+            row[f"methods_{tag}"] = int(num(r[f"methods_{tag}"]))
+            row[f"positions_{tag}"] = num(r.get(f"positions_{tag}"))
+            row[f"surface_{tag}"] = int(num(r[f"out_{tag}"], 0)) + int(num(r[f"in_{tag}"], 0))
+            row[f"neighbours_{tag}"] = int(num(r[f"out_classes_{tag}"], 0)) + int(num(r[f"in_classes_{tag}"], 0))
+        out.append(row)
+    return out
+
+
+def ripple(hosts: list[dict], edges: list[dict]) -> dict:
+    """Ripple (PLAN.md 4.2e): for each call a unit added across a class's boundary, the later units
+    that change the method it reaches, and how many of those also change the calling class (the
+    change ripples back across the boundary). Per arm, by whether the call came with a forced change
+    (the caller's or the callee's class forced in the unit) and by the member it reached: already
+    open, or exposed or widened by the unit."""
+    from . import flow
+    changed_methods: dict[str, dict[tuple, list[int]]] = {}
+    changed_classes: dict[str, dict[int, set]] = {}
+    for h in hosts:
+        if not tables.changed(h):
+            continue
+        t = flow.simple(h.get("before_type") or h["type"])
+        sig = h.get("before_signature") or h.get("signature")
+        changed_methods.setdefault(h["chain_id"], {}).setdefault((t, sig), []).append(int(h["cp"]))
+        changed_classes.setdefault(h["chain_id"], {}).setdefault(int(h["cp"]), set()).add(t)
+    out: dict[str, dict] = {}
+    for e in edges:
+        forced = truth(e["caller_forced"]) or truth(e["callee_forced"])
+        group = f"{'forced' if forced else 'unforced'}_{'existing' if e['kind'] == 'existing' else 'opened'}"
+        g = out.setdefault(e["arm"], {}).setdefault(group, {"calls": 0, "later_changes": 0, "rippled": 0,
+                                                             "calls_changed_later": 0})
+        g["calls"] += 1
+        t = int(e["cp"])
+        later = sorted({u for u in changed_methods.get(e["chain_id"], {}).get(
+            (e["callee_class"], e["callee_signature"]), []) if u > t})
+        g["later_changes"] += len(later)
+        g["calls_changed_later"] += bool(later)
+        g["rippled"] += sum(1 for u in later
+                            if e["caller_class"] in changed_classes.get(e["chain_id"], {}).get(u, set()))
+    for arm in out.values():
+        for g in arm.values():
+            g["ripple_rate"] = g["rippled"] / g["later_changes"] if g["later_changes"] else None
     return out
 
 
@@ -398,6 +781,15 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
     write_csv(out / "reopen.csv", again)
     write_csv(out / "h2.csv", h2)
     write_csv(out / "h5.csv", h5_rows(hosts, streamed))
+    h6 = h6_rows(hosts, streamed)
+    write_csv(out / "h6.csv", h6)
+    paired = pair_rows(table("pairs"))
+    write_csv(out / "pairs.csv", paired)
+    coupled = table("coupling")
+    h7 = h7_rows(table("encapsulation"), hosts)
+    write_csv(out / "h7.csv", h7)
+    write_csv(out / "surface.csv", surface_rows(table("boundary")))
+    rippled = ripple(hosts, table("edges"))
     spec = {"analysis": name, "role": analysis["role"], "seed": SEED, "boot": BOOT,
             "margin": MARGIN, "methods_arm": analysis.get("methods_arm", METHODS_ARM),
             "function_arm": analysis.get("function_arm", FUNCTION_ARM),
@@ -433,6 +825,12 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
         "core": readings.core_summary(hosts),
         "core_reuse": readings.core_reuse(h2),
         "landings": places.summary(landed),
+        "co_change": co_change(paired),
+        "growth": growth_accounting(hosts, len(streamed)),
+        "coupling_added": coupling_accounting(paired, coupled, h6),
+        "encapsulation": encapsulation_summary(h7),
+        "redesign": redesign(hosts, paired),
+        "ripple": rippled,
         "own_lines": lost}, indent=1) + "\n")
     (out / "spec.json").write_text(json.dumps(spec, indent=1) + "\n")
     (out / "conditions.json").write_text(json.dumps(conditions, indent=1) + "\n")

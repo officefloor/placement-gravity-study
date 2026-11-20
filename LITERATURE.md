@@ -375,7 +375,7 @@ accessibility) that do not cite each other.
    seen only as a search summary**. The agent studies found concern unrequested file creation and
    over-editing, not placement.
 
-**What this suggests for the plan** (suggestions; none applied):
+**What this suggests for the plan** (applied to PLAN.md on 20 November 2026, §9 row 62):
 
 - Cite the Linux common-coupling studies in §1 and §4.3a as the precedent for data that gathers
   and exposes code without the code changing, and state how a bystander differs.
@@ -389,6 +389,141 @@ accessibility) that do not cite each other.
 - Cite Zhou et al. 2009 and Chowdhury et al. 2022b at H3 as the two sides; Chowdhury et al. is
   already in the references.
 - Cite the over-exposure studies as the nearest "visible beyond use" measure.
+
+### Novelty check for encapsulation as a force, surface against volume, and conservation, 20 November 2026
+
+The ideas checked are the newest readings of 20 November 2026, not yet in `PLAN.md` as
+hypotheses:
+
+1. **Encapsulation as a force.** Data private to a class can be used only inside it, so a change
+   that needs it is *forced* into that class (concentration; the cost is the class's growth). If
+   the forced change also needs data held elsewhere, it either couples to what that other class
+   already exposes, or that class's encapsulation is widened (members made public, getters added)
+   so that it can (dispersion; the cost is coupling). Measured per change: positions absorbed into
+   the forced class against calls added across class boundaries, split by whether the callee was
+   already exposed, newly exposed, or widened in access.
+2. **Forced changes spread** across more classes and raise the coupling between the classes that
+   change together (H6 and H7).
+3. **Surface against volume.** A class's boundary (calls in and out) against its size (the
+   content it encapsulates), followed over time, with a scaling exponent: concentration lowers
+   surface per volume, dispersion raises it, and good engineering is the balance point. With it, a
+   split-or-concentrate reading: split a class whose forced changes fall into groups that use
+   disjoint data; concentrate classes that repeatedly change together over the same data.
+4. **Conservation of complexity.** With the amount of code fixed by the problem, placement only
+   redistributes complexity between size and coupling (a "physics of software").
+
+**Protocol, as run.** No citation snowball this time: the ideas sit in design theory and in
+modularisation research rather than near one seed paper. Instead:
+
+1. **Named works verified** (they had been named from memory): Ousterhout's *A Philosophy of
+   Software Design*, Page-Jones's connascence, and Carlo Pescio's *Physics of Software*, by web
+   search against the author's or publisher's pages and index records.
+2. **Keyword searches on OpenAlex**, 26 unrestricted (`literature/snowball/oa3.py`) and 21
+   restricted to the field Computer Science (`oa3cs.py`), each read to the first 20–25 titles:
+   scaling of coupling with size, allometric and surface-to-volume analogies, Rent's rule in
+   software, interface against implementation size, access-modifier and visibility change over
+   evolution, getters added and Encapsulate Field, coupling introduced by a commit, co-change with
+   structural coupling, co-change as a split or move signal, Extract Class from cohesion,
+   god-class decomposition, search-based modularisation (Bunch, multi-objective clustering), the
+   physics of software, the cohesion–coupling trade-off, dependency injection and coupling,
+   procedural or functional against object-oriented coupling, connascence, deep modules,
+   conservation of complexity or information. The title lists are in `openalex3-titles.txt` and
+   `oa3cs-titles.txt`; the raw responses are not kept.
+3. **Semantic Scholar** (`s2b3.py`) was rate-limited on the first query and returned nothing;
+   the same queries were then run through `oa3cs.py`. About 15 web searches filled in records the
+   indexes lacked.
+
+**Limits.** No snowball; the first 20–25 hits per query only; OpenAlex's relevance ranking is
+noisy outside its field filter (many unrestricted hits were physics, biology and materials).
+**Read in full: Lopes and Ossher 2015 (arXiv version, results and discussion sections) only.**
+Pescio's Chapter 16 was read through a fetched page summary. Every other entry below was read as
+an abstract, index record or search snippet, and is marked where that matters. As before, this
+is "not found by this protocol", not "does not exist".
+
+**The named works, verified.**
+
+| Work | What it is (as verified) | How it relates / differs |
+|---|---|---|
+| Ousterhout 2018; 2nd ed. 2021, *A Philosophy of Software Design*, Yaknyam Press | Book. Confirmed by the author's Stanford page and library records (2nd ed. July 2021, ISBN 978-1-7321022-1-7; the first edition's ISBN was not confirmed). Its *deep module* has a small interface over a large implementation; *information leakage* is the same knowledge needed in two modules (secondary summaries; **text not read, check before quoting**). | **The design-advice form of idea 3.** "Deep" is a low surface-per-volume ratio held up as good; leakage is idea 1's dispersion seen as a defect. It gives no measure, no exponent, and nothing about how the ratio moves as changes land. |
+| Page-Jones 1992 (*CACM* 35(9), 147–151, "Comparing techniques by means of encapsulation and connascence"); 1995 (*What Every Programmer Should Know About Object-Oriented Design*, Dorset House; the year is given as 1995 or 1996 by different sources); 1999 (*Fundamentals of Object-Oriented Design in UML*) | Connascence: two elements are connascent if changing one requires changing the other, graded by strength, degree and locality; connascence across an encapsulation boundary is worse than inside one. The CACM paper is confirmed by DOI; the grading is from secondary sources (**check before quoting**). Weirich's "rule of locality" is attributed inconsistently. | **The closest conceptual precedent for idea 1.** Connascence is the reason a change is forced to where its data is, and "locality" is concentration against dispersion. It is a taxonomy for judging a design, not a measure taken per change, and it has no notion of widening a boundary to let a change through. |
+| Pescio, *Notes on Software Design* (blog, 2008–2012) and *Physics of Software* drafts (e.g. "Forces in the Physics of Software – the final word", January 2024, draft, no venue) | Design decisions as forces acting on the software "material"; *entanglement* (change to one artefact forces change to another) as an attractive force; chapters titled **mass, gravity, inertia** (2008–09), distance, friction. Chapter 16 (May 2012): forces pull responsibilities together or push them apart; putting an unstable set inside one class makes the class unstable. Listing from physicsofsoftware.weebly.com. | **The precedent for idea 4's vocabulary, and a name collision with "placement gravity".** Pescio uses *gravity* for the pull that gathers things; the gravity chapters were **not read**, so the overlap with this study's sense is unknown. Not empirical, not peer reviewed, no measurement. It must be cited so that the physics framing is not read as new. |
+
+**The nearest neighbours found.**
+
+| Work | What it does | How it relates / differs |
+|---|---|---|
+| Lopes and Ossher 2015 (how scale affects structure in Java) | 30,911 Google Code projects, fitted as power laws across projects. **Read:** methods ≈ e^1.09 · classes^1.106 (superlinear); SLOC ≈ modules^1.094; interfaces ≈ classes^0.70; project efferent coupling (external types used) ≈ SLOC^0.564 (sublinear); used internal modules ≈ declared^0.74. "Large Java projects have injected stronger coupling material ... into the [larger] software bricks." | **The closest empirical scaling result for idea 3.** But it is cross-sectional and per *project* (one point per project), not per class over its history, and its coupling is to external types, not calls across class boundaries. It shows exponents ≠ 1 are real and must be normalised for, which supports reporting an exponent rather than a ratio. |
+| Taube-Schock, Walker and Witten 2011 (*Can we avoid high coupling?*, ECOOP) | A model and a large empirical study: between-module connectivity is approximately scale-free, so some highly coupled modules are statistically unavoidable, not a sign of poor design (abstract and repository record). | A rival for idea 3's "balance point": high coupling in some classes may be the distribution's tail, not a failure of balance. Snapshot degree distribution; no size against boundary per class. |
+| Myers 2003; Concas et al. 2007; Wheeldon and Counsell 2003 (already cited) | Scale-free, small-world class and collaboration graphs. | Degree distributions, not degree against size. |
+| Hatton 2014 (*Conservation of information: software's hidden clockwork?*, IEEE TSE 40(5); arXiv 1207.5027) | Derives power-law component sizes from conservation of Hartley–Shannon information under scale invariance (abstract and preprint listing). | **The only "conservation law" for software found in a refereed venue.** What is conserved is information in a token alphabet, and the prediction is the size distribution, not a trade between size and coupling. A reviewer may point to it against idea 4. |
+| Loth 2026 (*Coupling as a consequence of cohesion*, Zenodo preprint) | Argues that within one partitioning rule, coupling follows from cohesion; defines an irreducible "coupling floor" equal to the necessary dependency graph, with every edge above it a boundary defect (abstract). | Close to idea 4 in spirit: a floor of coupling fixed by the domain, the rest caused by placement. Not peer reviewed, theory only. **Check before citing.** |
+| Kobori, Matsushita and Inoue 2015 (accessibility excessiveness over versions, SANER) | Runs an accessibility-excessiveness checker across releases of several OSS projects and reports how fields and methods move between excessive and not, by major against minor release (abstract). | **The nearest to measuring widening over evolution.** Per release and per member, not per change; it does not ask which change made a member wider or whether that change also needed the class's data. |
+| Vidal et al. 2016 (already cited); Steimann and Thies 2009 (*From public to private to absent*, ECOOP) | Over-exposure is common and mostly present from a member's first version; changes of access modifier are reported as infrequent (cited in Vidal et al., **source not traced**). Steimann and Thies formalise the accessibility constraints that moving members imposes, so refactorings must sometimes widen access (**index record only**). | Together they bound idea 1's widening branch: widening exists, is rare per member, and is a known side effect of moves. None links a widening to the change that needed it. |
+| Paixão et al. 2017 (ASE, already cited); Eick et al. 2001 (already cited) | Per-commit cohesion and coupling deltas; span of changes grows over time. | Measure the *outcome* of ideas 1–2 per commit. No forced/unforced split. |
+| Ajienka and Capiluppi 2017 (JSS); Oliva and Gerosa (cited by them); Beck and Diehl 2011 (FSE) | 79 projects: structural and logical (co-change) coupling overlap little; co-changed sets are much larger than structurally coupled ones (abstract and secondary). Beck and Diehl: which coupling kinds (structural, co-change, ownership, clones, semantics) agree with the package structure in 16 projects (abstract). | Background for H6/H7: co-change and structural coupling are different things, so "coupling between co-changed classes" must say which it means. |
+| Silva, Valente and Maia 2014; 2015 (co-change clusters); de Oliveira et al. 2019 (JSS, *Finding needles in a haystack*); Bavota, De Lucia and Oliveto 2011 (JSS, Extract Class from structural and semantic cohesion); Chen et al. 2024 (ASE, ClassSplitter) | Co-change clusters projected on packages to assess modularity; Move Method/Move Field recommended to remove co-change dependencies across classes (610 "evolutionary smells" in 49 projects); classes split by clustering methods on shared fields and semantics; god classes split using method position. (Abstracts or snippets.) | **Idea 3's split-or-concentrate reading is well established** as refactoring recommendation: split on disjoint data use, move or merge on co-change. What none does is restrict the evidence to *forced* changes. |
+| Mancoridis et al. 1998; Mitchell and Mancoridis 2006 (Bunch, TSE); Harman, Hierons and Proctor 2002; Praditwong, Harman and Yao 2010 (TSE); Paixão, Harman, Zhang and Yu 2017 (IEEE TEVC) | Modularisation as search maximising cohesion and minimising coupling (with granularity); multi-objective forms. The longitudinal study over 233 releases of ten systems: developers' structures beat random on the cohesion/coupling fitness but leave about 25% improvement, and optimising would change over 57% of the structure (abstract). | **Idea 3's "balance point" as an optimum is known** and has an operational form. It optimises a static graph; it does not derive the trade from forced changes, and treats size only as granularity. Paixão et al. 2017 TEVC is the longitudinal comparison to cite. |
+| Razina and Janzen 2007; Sun et al. 2022 (*Computers* 11(9)) | Twenty pairs of SourceForge projects with and without dependency injection: no correlation of DI use with coupling or cohesion, a trend to lower coupling above 10% DI (abstract). Sun et al. propose DI-weighted CBO (abstract). | The only DI-against-not comparisons found; project-level, not about placement, and not size against coupling. |
+
+**Verdict, idea by idea.**
+
+1. **Encapsulation as a force (concentration forced; dispersion by exposed, newly exposed or
+   widened access).** *Partly known as concept; not found as measurement.* That data hiding forces
+   a change to where its data is, and that crossings of encapsulation are the costly kind, is
+   Parnas, Page-Jones (connascence locality), Ousterhout (information leakage) and Pescio
+   (entanglement). Widening is measured per member over releases (Kobori et al.; Vidal et al.) and
+   modelled as a refactoring constraint (Steimann and Thies). **Not found:** a per-change account
+   of positions absorbed against calls added, split by the callee's prior, new or widened
+   exposure. **Claim:** new as a measure; present it as connascence locality made measurable at
+   the commit.
+2. **Forced changes spread and raise co-change coupling (H6/H7).** *Outcome measures known;
+   predictor not found.* Change span (Eick), per-commit coupling deltas (Paixão et al. ASE) and
+   the gap between logical and structural coupling (Ajienka and Capiluppi) exist. No study
+   separates forced from unforced changes. **Claim:** new in its predictor, as for the first
+   check's claim 4.
+3. **Surface against volume, with an exponent; split or concentrate.** *The scaling reading is
+   not found; the trade and the split/merge rules are known.* Superlinear and sublinear size
+   effects are documented across projects (Lopes and Ossher), the small-interface-over-large-body
+   ideal is Ousterhout's deep module, and high coupling is argued unavoidable in the tail
+   (Taube-Schock et al.). Rent's rule (terminals against gates in circuits) is the exact physical
+   analogue; the search found it applied to parallel programs and network traffic, **not to class
+   or module boundaries in code**. Splitting on disjoint data and moving or merging on co-change
+   are standard recommenders (Bavota et al.; de Oliveira et al.; Silva et al.), and cohesion
+   against coupling as an optimum is the search-based modularisation literature (Bunch; Harman
+   et al.; Paixão et al. TEVC). **Claim:** a per-class surface-to-volume exponent followed over
+   history, moved by forced changes, is new; the balance point and the split/merge heuristics are
+   not, and should be cited as such (including Rent's rule as the analogy's origin, if used).
+4. **Conservation of complexity (placement redistributes between size and coupling).** *Known as
+   framing; not found as a testable law.* Tesler (already cited), Pescio's physics of software,
+   Hatton's conservation of information (a different conserved quantity), Loth's coupling floor
+   (preprint), and the size–coupling trade implicit in Stevens, Myers and Constantine and in
+   search-based modularisation's granularity term. **Claim:** a framing, not a result; if it is
+   kept it should be stated as the hypothesis that coupling plus size per problem stays constant
+   across placements, which none of these tests. **Pescio's use of "gravity" must be cited** next
+   to the study's name.
+
+**Not found by this protocol:** per-change attribution of coupling growth to the change that
+needed it (beyond per-commit deltas); any comparison of dependency-injected, function-oriented and
+class-oriented placement on size against coupling; Rent's rule or allometric scaling applied to
+classes over their history.
+
+**Unverified, check before quoting:** Ousterhout's wording (deep module, information leakage) and
+the first edition's ISBN; Page-Jones's grading of connascence and the 1995/1996 book year; the
+content of Pescio's gravity chapters and 2024 drafts; Hatton 2014's results beyond the abstract;
+Taube-Schock et al. beyond the abstract; Loth 2026 in full (unrefereed); Steimann and Thies 2009
+and de Oliveira et al. 2019 beyond index records and snippets; the claim that access-modifier
+changes are infrequent (traced only to a citation inside Vidal et al.).
+
+**What this suggests for the plan** (applied to PLAN.md on 20 November 2026, §9 row 62):
+
+- Cite Page-Jones (connascence locality) and Ousterhout (deep modules, information leakage) where
+  encapsulation as a force is introduced, and Kobori et al. with Vidal et al. for widening.
+- Cite Lopes and Ossher for size scaling and the need to normalise by an exponent, and
+  Taube-Schock et al. as the rival reading of high coupling in a few classes.
+- Present the split/concentrate reading as the established recommenders (Extract Class, co-change
+  Move) restricted to forced changes, and the balance point against Paixão et al. TEVC 2017.
+- Keep conservation as framing; cite Tesler, Hatton and Pescio, and acknowledge Pescio's
+  "gravity".
 
 ## References
 
@@ -482,3 +617,33 @@ was not confirmed, it says so.
 - Vidal, S. A., Bergel, A., Marcos, C., Díaz-Pace, J. A. (2016). Understanding and addressing exhibitionism in Java: empirical research about method accessibility. *Empirical Software Engineering* 21(2), 483–516. doi:10.1007/s10664-015-9365-9
 - Yu, L., Schach, S. R., Chen, K., Offutt, J. (2004). Categorization of common coupling and its application to the maintainability of the Linux kernel. *IEEE TSE* 30(10), 694–706. doi:10.1109/TSE.2004.58
 - Zhou, Y., Leung, H., Xu, B. (2009). Examining the potentially confounding effect of class size on the associations between object-oriented metrics and change-proneness. *IEEE TSE*. doi:10.1109/TSE.2009.32
+
+### Added by the novelty check of 20 November 2026
+
+Details are as the indexes, publishers' or authors' pages gave them; where something was not
+confirmed, it says so.
+
+- Ajienka, N., Capiluppi, A. (2017). Understanding the interplay between the logical and structural coupling of software classes. *Journal of Systems and Software*. doi:10.1016/j.jss.2017.08.042 (Abstract, partly.)
+- Bavota, G., De Lucia, A., Oliveto, R. (2011). Identifying Extract Class refactoring opportunities using structural and semantic cohesion measures. *Journal of Systems and Software* 84(3). doi:10.1016/j.jss.2010.11.918 (Index record only.)
+- Beck, F., Diehl, S. (2011). On the congruence of modularity and code coupling. *ESEC/FSE 2011*. doi:10.1145/2025113.2025162
+- Chen, T., Jiang, Y., Fan, F., Liu, B., Liu, H. (2024). A position-aware approach to decomposing god classes. *ASE 2024*. doi:10.1145/3691620.3694992
+- de Oliveira, M. C., Freitas, D., Bonifácio, R., Pinto, G., Lo, D. (2019). Finding needles in a haystack: leveraging co-change dependencies to recommend refactorings. *Journal of Systems and Software* 158. doi:10.1016/j.jss.2019.110420 (Snippets only.)
+- Harman, M., Hierons, R. M., Proctor, M. (2002). A new representation and crossover operator for search-based optimization of software modularization. *GECCO 2002*. (Venue from memory and the UCL record; **check**.)
+- Hatton, L. (2014). Conservation of information: software's hidden clockwork? *IEEE TSE* 40(5). doi:10.1109/TSE.2014.2316158 (Abstract and preprint listing only.)
+- Kobori, K., Matsushita, M., Inoue, K. (2015). Evolution analysis for accessibility excessiveness in Java. *SANER 2015*. doi:10.1109/SANER.2015.7081818
+- Lopes, C. V., Ossher, J. (2015). How scale affects structure in Java programs. *OOPSLA 2015*, 675–694. doi:10.1145/2814270.2814300; arXiv:1508.00628 (Read.)
+- Loth, Y. (2026). Coupling as a consequence of cohesion. Zenodo preprint. doi:10.5281/zenodo.21925200 (Unrefereed; abstract only.)
+- Mancoridis, S., Mitchell, B. S., Rorres, C., Chen, Y., Gansner, E. R. (1998). Using automatic clustering to produce high-level system organizations of source code. *IWPC 1998*. doi:10.1109/WPC.1998.693283
+- Mitchell, B. S., Mancoridis, S. (2006). On the automatic modularization of software systems using the Bunch tool. *IEEE TSE* 32(3). doi:10.1109/TSE.2006.31
+- Myers, C. R. (2003). Software systems as complex networks: structure, function, and evolvability of software collaboration graphs. *Physical Review E* 68, 046116. doi:10.1103/PhysRevE.68.046116
+- Ousterhout, J. (2018; 2nd ed. 2021). *A Philosophy of Software Design*. Yaknyam Press. (2nd ed. ISBN 978-1-7321022-1-7; text not read.)
+- Page-Jones, M. (1992). Comparing techniques by means of encapsulation and connascence. *Communications of the ACM* 35(9), 147–151. doi:10.1145/130994.131004
+- Page-Jones, M. (1995). *What Every Programmer Should Know About Object-Oriented Design*. Dorset House. (Year given as 1995 or 1996; **check**.)
+- Paixão, M., Harman, M., Zhang, Y., Yu, Y. (2017). An empirical study of cohesion and coupling: balancing optimization and disruption. *IEEE Transactions on Evolutionary Computation*. doi:10.1109/TEVC.2017.2691281
+- Pescio, C. (2008–2012). *Notes on Software Design* (blog series), carlopescio.com; and *Forces in the Physics of Software – the final word* (draft, January 2024), physicsofsoftware.weebly.com. (Unrefereed.)
+- Praditwong, K., Harman, M., Yao, X. (2011; online 2010). Software module clustering as a multi-objective search problem. *IEEE TSE* 37(2). doi:10.1109/TSE.2010.26 (Volume from memory; **check**.)
+- Razina, E., Janzen, D. S. (2007). Effects of dependency injection on maintainability. (Cal Poly DigitalCommons; **venue not confirmed**.)
+- Silva, L. L., Valente, M. T., Maia, M. A. (2014). Assessing modularity using co-change clusters. *MODULARITY 2014*. doi:10.1145/2577080.2577086
+- Steimann, F., Thies, A. (2009). From public to private to absent: refactoring Java programs under constrained accessibility. *ECOOP 2009*, LNCS. doi:10.1007/978-3-642-03013-0_19 (Index record only.)
+- Sun, P., Kim, D.-K., Ming, H., Lu, L. (2022). Measuring impact of dependency injection on software maintainability. *Computers* 11(9), 141. doi:10.3390/computers11090141
+- Taube-Schock, C., Walker, R. J., Witten, I. H. (2011). Can we avoid high coupling? *ECOOP 2011*, LNCS 6813, 204–228. doi:10.1007/978-3-642-22655-7_10

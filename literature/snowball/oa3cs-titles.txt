@@ -1,0 +1,315 @@
+## Rent's rule software
+  2008 | Rent's rule and parallel programs: characterizing network traffic behavior | International Workshop on Syst | 39
+  2019 | Rent’s rule and extensibility in quantum computing | Microprocessors and Microsyste | 110
+  2004 | Testing and defect tolerance: a rent's rule based analysis and implications on nanoelectronics | Proceedings | 10
+  2004 | Information flow and interconnections in computing: extensions and applications of Rent's rule | Journal of Parallel and Distri | 5
+  2022 | Rapid Prototyping of Business Rule-Based Systems with Controlled Natural Language and Semantic Web Software | Lecture notes in business info | 1
+  2020 | Basic Rules for Managing Software Startups | Zenodo (CERN European Organiza | 0
+  2013 | Configurable Services in SaaS Environments Using Rules Engines | SSRN Electronic Journal | 1
+  2008 | ADVANCES IN THE STUDIES ON COMPLEX NETWORKS OF SOFTWARE SYSTEMS | Lixue jinzhan | 11
+  1985 | Rule-based systems | Communications of the ACM | 733
+  2017 | Resource Renting for Periodical Cloud Workflow Applications | IEEE Transactions on Services  | 23
+  2026 | Rent-Seeking Language Models: Reward Models Set the Prices, Frequent Audits Curb the Rent | arXiv (Cornell University) | 1
+  2017 | A Mobile based rent collection system | SU+ Digital Repository (Strath | 0
+  1998 | Theory and practice of constraint handling rules | The Journal of Logic Programmi | 662
+  2020 | Rentable CDN Using Blockchain and Proof of Provenance | Applied Sciences | 1
+  2025 | Tokenized Property Renting and Trading Using Blockchain | Communications in computer and | 2
+  1992 | Software cost estimation | Information and Software Techn | 273
+  1985 | A knowledge-based system for debugging concurrent software (ada, temporal logic) |  | 10
+  1993 | Scalable software libraries | ACM SIGSOFT Software Engineeri | 129
+  2004 | Understanding service-oriented software | IEEE Software | 244
+  1995 | Subject-oriented composition rules | Conference on Object-Oriented  | 104
+## software coupling superlinear size
+  2026 | A Proximal Newton Framework with Local Superlinear Convergence for Simple Bilevel Optimization | arXiv (Cornell University) | 0
+  2026 | More Bang for the Buck: Superlinear Scaling with Distributed Self-Adjusting Systems (Invited Talk) | DROPS (Schloss Dagstuhl – Leib | 0
+  2008 | Software Evolution | Springer eBooks | 139
+  2025 | Coupling deal.II and FROSch: A Sustainable and Accessible (O)RAS Preconditioner | ACM Transactions on Mathematic | 2
+  2013 | The evolution of the laws of software evolution: A discussion based on a systematic literature review | ACM Computing Surveys | 106
+  2023 | Randomized Numerical Linear Algebra : A Perspective on the Field With an Eye to Software | arXiv (Cornell University) | 169
+  2023 | Effects of Imperfections on Quantum Algorithms: A Software Engineering Perspective | IEEE International Conference  | 36
+  2019 | Generating Human Action Videos by Coupling 3D Game Engines and Probabilistic Graphical Models | International Journal of Compu | 25
+  2011 | Software Evolution Characterization - A Complex Network Approach | Simpósio Brasileiro de Qualida | 13
+  2008 | Agent Systems in Software Engineering | InTech eBooks | 3
+  2002 | A comparison of black-box models for software evolution | ThinkTech (Texas Tech Universi | 2
+  1999 | Integrating Deduction Techniques in a Software Reuse Application | Zenodo (CERN European Organiza | 4
+  1999 | Integrating Deduction Techniques in a Software Reuse Application | TUGraz OPEN Library (Graz Univ | 0
+  2026 | Vero: Can AI Agents Build Formally Verified Software Repositories? | arXiv (Cornell University) | 7
+  2025 | Analyzing productivity in open source software development: an explainable AI approach using SHAP and causal d | Digital Library of Theses and  | 0
+  2015 | On the Socio-Technical Dependencies in Free/Libre/Open Source Software Projects | Tampere University Institution | 3
+  2022 | Stochastic batch size for adaptive regularization in deep network optimization | Pattern Recognition | 10
+  2020 | A study on the evolution of software quality and technical debt in open source applications |  | 0
+  2009 | Exploring coordinated software and hardware support for hardware resource allocation | UPCommons institutional reposi | 0
+  2013 | Issues in strategic management of large-scale software product line development | DSpace@MIT (Massachusetts Inst | 2
+## scaling law software structure size
+  2021 | Scaling Laws for Deep Learning | arXiv (Cornell University) | 63
+  2024 | Scaling Laws for Galaxy Images | arXiv (Cornell University) | 49
+  2024 | Scaling Laws of Synthetic Images for Model Training … for Now | IEEE Computer Society Conferen | 152
+  2024 | Scaling Laws for Precision | International Conference on Le | 111
+  2025 | Skywork-SWE: Unveiling Data Scaling Laws for Software Engineering in LLMs | arXiv (Cornell University) | 41
+  2024 | Scaling Laws for Reward Model Overoptimization in Direct Alignment Algorithms | neural information processing  | 181
+  2025 | A Mathematical Theory of Optimal Team Coordination and Sizing in Software Engineering |  | 0
+  2023 | Scaling Laws for Sparsely-Connected Foundation Models | International Conference on Le | 37
+  2026 | A Mathematical Theory of Team Sizing for Optimal Coordination in Software Engineering | SSRN Electronic Journal | 0
+  2006 | Towards Rules and Laws for Software Factories and Evolvability: A Case-Driven Approach | International Conference on So | 6
+  2021 | On the analysis of power law distribution in software component sizes | Journal of Software Evolution  | 7
+  2023 | Scaling Laws vs Model Architectures: How does Inductive Bias Influence Scaling? | Findings of the Association fo | 84
+  2026 | Scaling Laws for Educational AI Agents | arXiv (Cornell University) | 2
+  2003 | Software systems as complex networks: Structure, function, and evolvability of software collaboration graphs | Physical review. E, Statistica | 491
+  2025 | P2 Law: Scaling Law for Post-Training After Model Pruning | Proceedings of the conference  | 10
+  2025 | Communication-Efficient Language Model Training Scales Reliably and Robustly: Scaling Laws for DiLoCo | neural information processing  | 33
+  2024 | Scaling Laws for Online Advertisement Retrieval | arXiv (Cornell University) | 17
+  2017 | Software teams and their knowledge networks in large-scale software development | Information and Software Techn | 172
+  2023 | Scaling Law for Recommendation Models: Towards General-Purpose User Representations | Proceedings of the AAAI Confer | 58
+  1996 | Dynamic structure in software architectures | ACM SIGSOFT Software Engineeri | 239
+## Bunch module dependency graph clustering
+  2007 | On the evaluation of the Bunch search-based software modularization algorithm | Soft Computing | 113
+  2015 | A STUDY ON TRIMODAL DEPENDENCY GRAPH FOR SOFTWARE CLUSTERING | International Journal of Compu | 0
+  2004 | A multiple hill climbing approach to software module clustering | International Conference on So | 179
+  2012 | Feature-gathering dependency-based software clustering using Dedication and Modularity | IEEE International Conference  | 53
+  2016 | A STUDY ON TRIMODALDEPENDENCY GRAPH FORSOFTWARE CLUSTERING | Zenodo (CERN European Organiza | 0
+  2020 | Software Module Clustering: An In-Depth Literature Analysis | IEEE Transactions on Software  | 52
+  2015 | Modularizing Legacy System through an Improved Bunch Clustering Method in Cloud Migration | International Journal of Grid  | 2
+  2015 | Graph based text representation for document clustering | UUM Electronic Theses and Diss | 17
+  2026 | Multi-Relational Graph Convolution with Normalizing flows for Software Module Clustering in Object-Oriented Sy | International journal of intel | 0
+  2024 | SOFTWARE MODULES CLUSTERING: A LITERATURE REVIEW | MINAR International Journal of | 2
+  2018 | CLUSTERING OF SOFTWARE MODULES WITH MULTIPLE VIEWS FOR EFFECTIVE MAINTENANCE COST | International Journal for Rese | 0
+  2016 | E-CDGM: An Evolutionary Call-Dependency Graph Modularization Approach for Software Systems | Cybernetics and Information Te | 24
+  2017 | Large Neighborhood Search applied to the Software Module Clustering problem | Computers & Operations Researc | 32
+  2016 | Software Module Clustering Using Hybrid SocioEvolutionary Algorithms | International Journal of Infor | 10
+  2019 | Software Architecture Module-View Recovery Using Cluster Ensembles | IEEE Access | 18
+  2014 | A Generative Model of Software Dependency Graphs to Better Understand Software Evolution | arXiv (Cornell University) | 11
+  2025 | Software Modules Clustering Using Social Network Algorithms | International Conference on Ne | 0
+  2026 | Software Clustering Reframed | Zenodo (CERN European Organiza | 0
+  2013 | Software Module Clustering using a Fast Multi-objective Hyper-heuristic Evolutionary Algorithm | International Journal of Appli | 17
+  2018 | Data-driven graph construction and graph learning: A review | Neurocomputing | 186
+## access modifier change evolution
+  2015 | Evolution analysis for Accessibility Excessiveness in Java | IEEE International Conference  | 4
+  2023 | A taxonomy of prompt modifiers for text-to-image generation | Behaviour and Information Tech | 480
+  2022 | Evolving Design Modifiers | IEEE Symposium Series on Compu | 8
+  2022 | Task Modifiers for HTN Planning and Acting | arXiv (Cornell University) | 0
+  2004 | The role of behavior modifiers in representation development | arXiv (Cornell University) | 0
+  2005 | The role of refactorings in API evolution | IEEE International Conference  | 183
+  2008 | Change distilling. Enriching software evolution analysis with fine-grained source code change histories | Zurich Open Repository and Arc | 3
+  2023 | Learning Hierarchical Knowledge: Formal Grammar Analysis and Task Modifiers | Lehigh Preserve | 0
+  2020 | RECURSION AND EVOLUTION: PART II | arXiv (Cornell University) | 0
+  2021 | BreakBot: Analyzing the Impact of Breaking Changes to Assist Library Evolution | arXiv (Cornell University) | 0
+  2023 | A VM-Agnostic and Backwards Compatible Protected Modifier for Dynamically-Typed Languages | The Art Science and Engineerin | 4
+  2012 | Evolution of hippocampal shapes across the human lifespan | Human Brain Mapping | 58
+  2010 | A unit test approach for database schema evolution | Information and Software Techn | 8
+  2023 | Towards a Controllable and Reversible Privacy Protection System for Facial Images through Enhanced Multi-Facto | Entropy | 6
+  2026 | The Role of Java Package Architecture and Access Control Mechanisms in Enhancing Software Security and Modular | International Research Journal | 0
+  2017 | API Evolution and Compatibility: A Data Corpus and Tool Evaluation. | The Journal of Object Technolo | 33
+  2023 | Revisiting the Identification of the Co-evolution of Production and Test Code | ACM Transactions on Software E | 30
+  2020 | Evolution of Emacs Lisp | Proceedings of the ACM on Prog | 6
+  2012 | SEON: a pyramid of ontologies for software evolution and its applications | Computing | 41
+  2024 | Assessing System Quality Changes during Software Evolution: The Impact of Design Patterns Explored via Depende | Electronics | 3
+## change access modifier refactoring
+  2008 | Controlling Accessibility in Agile Projects with the Access Modifier Modifier | Lecture notes in business info | 11
+  2009 | From Public to Private to Absent: Refactoring Java Programs under Constrained Accessibility | Lecture notes in computer scie | 79
+  2005 | The role of refactorings in API evolution | IEEE International Conference  | 183
+  2004 | Static composition of refactorings | Science of Computer Programmin | 118
+  2005 | Deriving refactorings for AspectJ | International Conference on As | 69
+  2011 | Refactoring using type constraints | ACM Transactions on Programmin | 83
+  2007 | Automated testing of refactoring engines | ACM Joint European Software En | 269
+  2005 | Finding Refactorings Using Lightweight Code Analysis |  | 0
+  2026 | Synthetic Java Refactoring Dataset Generated with Large Language Models across Seven Refactoring Types | Zenodo (CERN European Organiza | 0
+  2019 | RefBot: Intelligent Software Refactoring Bot | IEEE/ACM International Confere | 77
+  2025 | Pattern-Oriented Refactoring: Protecting the Template Method Behavior | International Conference in So | 0
+  2022 | Refactoring for reuse: an empirical study | Innovations in Systems and Sof | 43
+  2020 | How Does Refactoring Impact Security When Improving Quality? A Security-Aware Refactoring Approach | IEEE Transactions on Software  | 35
+  2012 | Scripting a refactoring with Rascal and Eclipse | Workshop on Refactoring Tools  | 31
+  2016 | Towards Trustworthy Refactoring in Erlang | Electronic Proceedings in Theo | 20
+  2026 | An Empirical Study on the Code Refactoring Capability of Large Language Models | ACM Transactions on Software E | 94
+  2022 | Impact of change granularity in refactoring detection | IEEE International Conference  | 3
+  2010 | Specification, implementation and verification of refactorings | Oxford University Research Arc | 11
+  2026 | Agentic Refactoring: An Empirical Study of AI Coding Agents | ACM Transactions on Software E | 55
+  2008 | Formal Model-Driven Program Refactoring | Springer eBooks | 23
+## encapsulation violation commits
+  2018 | Mining Fix Patterns for FindBugs Violations | IEEE Transactions on Software  | 164
+  2024 | Leveraging Context-Aware Prompting for Commit Message Generation | Conference on Empirical Method | 5
+  2019 | Reconfigurable Atomic Transaction Commit | ACM Symposium on Principles of | 13
+  2021 | Multi-shot distributed transaction commit | Distributed Computing | 18
+  1995 | Implementation of the two-phase commit protocol in Thor | DSpace@MIT (Massachusetts Inst | 1
+  2013 | Justificatory and Explanatory Argumentation for Committing Agents | arXiv (Cornell University) | 0
+  2013 | Detecting missing method calls as violations of the majority rule | ACM Transactions on Software E | 57
+  2015 | Constructing and Understanding Chosen Ciphertext Security via Puncturable Key Encapsulation Mechanisms | Lecture notes in computer scie | 11
+  2026 | Fork, Explore, Commit: OS Primitives for Agentic Exploration | arXiv (Cornell University) | 9
+  2019 | Automated vulnerability detection system based on commit messages |  | 8
+  2017 | Norms and value based reasoning: justifying compliance and violation | Artificial Intelligence and La | 84
+  2019 | CODE, COMMIT, CONFIRM: EXPLORING TDD WITH CONTINUOUS INTEGRATION | Turkish Journal of Computer an | 0
+  2021 | Commits Analysis for Software Refactoring Documentation and Recommendation | Deep Blue (University of Michi | 0
+  2023 | Warnings: Violation symptoms indicating architecture erosion | Information and Software Techn | 11
+  2019 | ACE: Abstract Consensus Encapsulation for Liveness Boosting of State Machine Replication | DROPS (Schloss Dagstuhl – Leib | 13
+  2010 | Perturbation-Resilient Atomic Commit Protocols for Mobile Environments | Technischen Universität Darmst | 1
+  2026 | Evidence Against Syntactic Encapsulation in Large Language Models | Cognitive Science | 4
+  2015 | Fast and efficient commits for Lazy-Lazy hardware transactional memory | The Journal of Supercomputing | 1
+  2022 | Cyber–Information Security Compliance and Violation Behaviour in Organisations: A Systematic Review | Social Sciences | 84
+  2025 | AI Augmented CI/CD Pipelines: From Code Commit to Production with Autonomous Decisions | International Conference on Fo | 23
+## co-change clusters modularity
+  2014 | Assessing modularity using co-change clusters | International Conference on Mo | 25
+  2014 | Assessing modularity using co-change clusters | International Conference on Mo | 2
+  2015 | Co-change Clusters: Extraction and Application on Assessing Software Modularity | Lecture notes in computer scie | 16
+  2015 | ModularityCheck: A Tool for Assessing Modularity using Co-Change Clusters | arXiv (Cornell University) | 6
+  2015 | Co-change clustering | Americanae (AECID Library) | 0
+  2015 | On the Conceptual Cohesion of Co-Change Clusters | Brazilian Symposium on Softwar | 7
+  2007 | Natural clustering: the modularity approach | Journal of Statistical Mechani | 13
+  2018 | A design structure matrix approach for measuring co-change-modularity of software products | International Conference on Mi | 14
+  2018 | A Fuzzy Co-Clustering Algorithm via Modularity Maximization | Mathematical Problems in Engin | 3
+  2014 | A Clustering Method Using New Modularity Indices and a Genetic Algorithm with Extended Chromosomes | Carl Hanser Verlag GmbH & Co.  | 12
+  2025 | Refining Software Clustering: The Impact of Code Co-Changes on Architectural Reconstruction | IEEE Access | 0
+  2020 | Graph Clustering with Graph Neural Networks | arXiv (Cornell University) | 389
+  2015 | Developers' perception of co-change patterns: An empirical study | IEEE International Conference  | 18
+  2019 | A Validity Index for Fuzzy Clustering Based on Bipartite Modularity | Journal of Electrical and Comp | 25
+  2025 | Studying Cross-cluster Modularity in Neural Networks | arXiv (Cornell University) | 6
+  2018 | Comparing of Term Clustering Frameworks for Modular Ontology Learning | International Joint Conference | 8
+  2012 | Feature-gathering dependency-based software clustering using Dedication and Modularity | IEEE International Conference  | 53
+  2016 | Unveiling and reasoning about co-change dependencies | International Conference on Mo | 12
+  2020 | Towards a Term Clustering Framework for Modular Ontology Learning | Communications in computer and | 5
+  2019 | Co-change patterns: A large scale empirical study | Journal of Systems and Softwar | 12
+## congruence modularity code coupling
+  2011 | On the congruence of modularity and code coupling | ACM Joint European Software En | 71
+  1997 | Assessing modular structure of legacy code based on mathematical concept analysis | ACM/IEEE International Confere | 230
+  2015 | Code Generation in Java : A modular approach for better cohesion | University Library of Skövde ( | 0
+  2020 | Refactoring Recommendations Based on the Optimization of Socio-Technical Congruence | IEEE International Conference  | 5
+  2021 | In Search of Socio-Technical Congruence: A Large-Scale Longitudinal Study | IEEE Transactions on Software  | 39
+  2019 | What the fork: a study of inefficient and efficient forking practices in social coding | ACM Joint European Software En | 70
+  2014 | Audiovisual spatial congruence, and applications to 3D sound and stereoscopic video | ORBi (University of Liège) | 3
+  1990 | Modular Verification of Object-Oriented Programs with Subtypes | Iowa State University Digital  | 19
+  1999 | Proving Correctness of Modular Functional Programs | ERA | 1
+  2018 | Automated Modular Verification for Relaxed Communication Protocols | Lecture notes in computer scie | 8
+  2021 | Socio-Technical Congruence as an Emerging Concept in Software Development: A Scientometric Analysis and Critic | IEEE Access | 14
+  2021 | Assessing the impact of socio-technical congruence in software development: a systematic literature review | Kuwait Journal of Science | 7
+  2024 | Enhancing Cross-Modal Contextual Congruence for Crowdfunding Success using Knowledge-infused Learning | IEEE International Conference  | 8
+  2016 | Counting, modular counting and graph homomorphisms | Oxford University Research Arc | 2
+  2024 | Asynchronous Probabilistic Couplings in Higher-Order Separation Logic | Proceedings of the ACM on Prog | 44
+  2017 | Understanding the interplay between the logical and structural coupling of software classes | Journal of Systems and Softwar | 27
+  2019 | How Management Control Portfolios are Developed for Modularized ISD Projects | AIS Electronic Library (AISeL) | 0
+  2021 | Governing Intra-project Modular Interdependencies in ISD Projects: A Control Theory Perspective | Communications of the Associat | 1
+  2023 | How deadline orientation and architectural modularity influence software quality and job satisfaction | Journal of Operations Manageme | 20
+  2021 | Automated Modular Verification for Race-Free Channels with Implicit and Explicit Synchronization | arXiv (Cornell University) | 0
+## extract class refactoring structural semantic cohesion
+  2010 | Identifying Extract Class refactoring opportunities using structural and semantic cohesion measures | Journal of Systems and Softwar | 148
+  2019 | Combining structural and semantic cohesion measures to identify extract class refactoring | International Journal of Compu | 1
+  2010 | A two-step technique for extract class refactoring | IEEE/ACM International Confere | 54
+  2008 | Using structural and semantic metrics to improve class cohesion | IEEE International Conference  | 42
+  2013 | Automating extract class refactoring: an improved method and its evaluation | Empirical Software Engineering | 122
+  2024 | Graph Learning for Extract Class Refactoring | ACM SIGSOFT International Symp | 0
+  2019 | An Approach of Extracting God Class Exploiting Both Structural and Semantic Similarity | International Conference on Ev | 19
+  2022 | Extract Class Refactoring Based on Cohesion and Coupling: A Greedy Approach | Computers | 12
+  2022 | Exploring Variational Graph Auto-Encoders for Extract Class Refactoring Recommendation | arXiv (Cornell University) | 7
+  2017 | PENGIDENTIFIKASIAN EXTRACT CLASS REFACTORING UNTUK MENINGKATKAN NILAI COHESION CLASS: SYSTEMATIC LITERATURE RE | Telematika | 0
+  2020 | On the Link Between Refactoring Activity and Class Cohesion Through the Prism of Two Cohesion-Based Metrics | IEEE International Conference  | 2
+  2026 | Integrating Structural and Semantic Analysis for Code Smell Refactoring Prediction | Research Square | 0
+  2017 | “Refactoring” Refactoring | Hawaii International Conferenc | 1
+  2020 | An External Client-Based Approach for the Extract Class Refactoring: A Theoretical Model and an Empirical Appr | Applied Sciences | 4
+  2020 | Measuring Class Cohesion Based on Client Similarities Between Method Pairs: An Improved Approach That Supports | IEEE Access | 6
+  2024 | Behind the Intent of Extract Method Refactoring: A Systematic Literature Review | IEEE Transactions on Software  | 31
+  2016 | Identifying Extract Method Refactoring Opportunities Based on Functional Relevance | IEEE Transactions on Software  | 60
+  2020 | Code smells and refactoring: A tertiary systematic review of challenges and observations | Journal of Systems and Softwar | 321
+  2015 | JExtract: An Eclipse Plug-in for Recommending Automated Extract Method Refactorings | arXiv (Cornell University) | 25
+  2019 | UNDERSTANDING CHARACTERISTICS AND STRUCTURAL EFFECTS OF BATCH REFACTORINGS IN PRACTICE |  | 3
+## physics of software
+  2023 | Quantum machine learning: from physics to software engineering | Advances in Physics X | 178
+  2019 | Reflections on Bernhard Steffen’s Physics of Software Tools | Lecture notes in computer scie | 5
+  2017 | The physics of software tools: SWOT analysis and vision | International Journal on Softw | 20
+  2006 | Managing structure complexity in a multi-physics simulation software | IEEE Transactions on Magnetics | 2
+  None | Applying mathematical sketching to sketch-based physics tutoring software |  | 9
+  2004 | A construction framework design for the maintainable multiplatform for physics CAI software development enviro | College Physics | 0
+  2010 | Applying Mathematical Sketching to Sketch-Based Physics Tutoring Software | Lecture notes in computer scie | 7
+  2026 | Towards a New Physics of Software Systems: A Finite Element and Spectral Framework for Distributed Architectur | International Journal of Scien | 0
+  2025 | 光学神经网络：硬件物理与软件算法的融合进展（特邀） | Acta Optica Sinica | 0
+  2026 | Physics of Software Systems: A Spectral-Element Derivation of Resilience from Enterprise System Observables | SSRN Electronic Journal | 0
+  2026 | Physics of Software Systems Part III: Emergent Self-Healing and Predictive Stability in Distributed Architectu | SSRN Electronic Journal | 0
+  2026 | Physics of Software Systems Part II: Stability Potential, Compute Energy, and Operational Cost in Enterprise S | SSRN Electronic Journal | 0
+  2026 | Physics of Software Systems -Part VI Emergent Adaptive Routing: A First-Principles Theory of Decentralized Str |  | 0
+  2001 | Development of the Teaching Software in Modern Physics | Journal of Jiangsu Polytechnic | 0
+  2009 | The “Physics” of Notations: Toward a Scientific Basis for Constructing Visual Notations in Software Engineerin | IEEE Transactions on Software  | 1431
+  2006 | SOFTWARE FOR STATISTICS FOR PHYSICS | Conference on Statistical Prob | 0
+  1981 | A basis for software physics? | ACM SIGPLAN Notices | 1
+  1997 | Using qualitative physics to create articulate educational software | IEEE Expert | 55
+  1976 | An independent test of the theory of software physics | ACM SIGPLAN Notices | 23
+  1972 | Software physics and computer performance measurements | ACM Annual Conference | 12
+## procedural object-oriented comparison coupling size
+  2009 | Object Identification and Aspect Mining in Procedural Object-Oriented Code | OpenGrey (Institut de l'Inform | 0
+  2018 | Object Oriented Coupling based Test Case Prioritization | International Journal of Compu | 10
+  1996 | A unified framework for coupling measurement in object-oriented systems | Publikationsdatenbank der Frau | 8
+  2009 | An Empirical Study of a Repeatable Method for Reengineering Procedural Software Systems to Object- Oriented Sy | VTechWorks (Virginia Tech) | 0
+  2026 | Applying Object-Oriented Programming Principles in Large-Scale Software Development: A Quantitative Comparativ | Alqalam Journal of Science | 0
+  2016 | Design Migration from Procedural to Object Oriented Paradigm by Clustering Data Call Graph | International Journal of Infor | 2
+  1998 | Reuse Metrics for Object Oriented Software | NASA Technical Reports Server  | 0
+  2013 | Existing Object Oriented Design Metrics a Study and Comparison | Maǧallaẗ al-rāfidayn li-ʿulūm  | 2
+  2015 | DEFINITIONS AND VALIDATIONS OF METRICS OF INDIRECT PACKAGE COUPLING IN AN AGILE, OBJECT-ORIENTED ENVIRONMENT | OhioLink ETD Center (Ohio Libr | 3
+  2015 | A metrics-based comparative study on object-oriented programming languages | Proceedings/Proceedings of the | 14
+  2000 | The optimal class size for object-oriented software: a replicated study | NPARC | 7
+  2011 | Comparing Complexity in Accordance with Object Oriented Metrics | International Journal of Compu | 24
+  1989 | SOS: An Object-Oriented Operating System - Assessment and Perspectives | HAL | 98
+  2002 | The development of a method to assist in the transformation from procedural languages to object oriented langu | DUT Open Scholar (Durban Unive | 0
+  2002 | Object-Oriented Metrics: A Review of Theory and Practice | Springer eBooks | 56
+  2010 | Inheritance Metrics for Object-Oriented Design | International journal of Compu | 16
+  2005 | Ownership confinement ensures representation independence for object-oriented programs | Journal of the ACM | 105
+  2005 | Refactorings to evolve object-oriented systems with aspect-oriented concepts | Portuguese National Funding Ag | 22
+  2013 | Object Oriented Metrics Evaluation | International Journal of Compu | 4
+  1999 | Restructuring Object -Oriented Designs Using a Metric-Driven Approach. | Louisiana State University | 2
+## god class decomposition fields methods clusters
+  2024 | A Position-Aware Approach to Decomposing God Classes | IEEE/ACM International Confere | 6
+  2020 | God Class Refactoring Recommendation and Extraction Using Context based Grouping | International Journal of Infor | 9
+  2021 | A comparison of machine learning algorithms on design smell detection using balanced and imbalanced dataset: A | Information and Software Techn | 70
+  2012 | Identifying Clusters of Concepts in a Low Cohesive Class for Extract Class Refactoring Using Metrics Supplemen | arXiv (Cornell University) | 9
+  2009 | Matrix Decomposition Methods for Data Mining : Computational Complexity and Algorithms | Helda - University of Helsinki | 66
+  2013 | Algorithms for structural learning with decompositions | Illinois Digital Environment f | 0
+  2014 | A Review of Subsequence Time Series Clustering | The Scientific World JOURNAL | 124
+  2009 | Enhancing clustering methods by inserting relational information | Lirias (KU Leuven) | 0
+  2025 | Domain Aligned Microservices Decomposition | Innovations in Software Engine | 1
+  2016 | Improving Clustering Methods By Exploiting Richness Of Text Data | Open Access Victoria Universit | 0
+  2005 | Semi-supervised clustering: probabilistic models, algorithms and experiments | Texas ScholarWorks (Texas Digi | 77
+  2016 | Web Search Result Clustering based on Cuckoo Search and Consensus Clustering | Indian Journal of Science and  | 8
+  2004 | Spatial decompositions for geometric interpolation and efficient rendering | University Libraries (Universi | 1
+  2025 | Discovering Latent Themes: Mixed-Methods Comparative Analysis of Topic Extraction and Clustering. |  | 0
+  2023 | Methods of Annotating and Identifying Metaphors in the Field of Natural Language Processing | Future Internet | 20
+  2019 | A machine-learning based ensemble method for anti-patterns detection | Journal of Systems and Softwar | 69
+  2026 | SoK: PIAtlas: Decomposing the Unbounded Prompt Injection Attack Space | arXiv (Cornell University) | 0
+  2023 | Towards the Assisted Decomposition of Large-Active Files | IEEE International Conference  | 0
+  2017 | Independence clustering (without a matrix) | arXiv (Cornell University) | 7
+  2003 | DISCOVERY OF CLUSTERS IN SPATIAL DATABASES | OhioLink ETD Center (Ohio Libr | 0
+## deep modules shallow modules software
+  2013 | A scalable module system | Information and Computation | 121
+  2020 | Extracting software modules as communities | University of Groningen resear | 0
+  2023 | Just-in-time defect prediction for mobile applications: using shallow or deep learning? | Software Quality Journal | 21
+  2021 | Continual Learning via Local Module Composition | arXiv (Cornell University) | 88
+  2023 | On the Use of a Convolutional Block Attention Module in Deep Learning-Based Human Activity Recognition with Mo | Diagnostics | 58
+  2017 | Shallow and Deep Networks Intrusion Detection System: A Taxonomy and Survey | Strathprints: The University o | 328
+  2025 | QuFeX: quantum feature extraction module for hybrid quantum-classical deep neural networks | Quantum Science and Technology | 12
+  2007 | Modules and Class Refinement: A Meta-modeling Approach to Object-Oriented Programming | HAL | 5
+  2025 | Evaluating Early Phase Risks in Software Modules through the Prototype Design Pattern | Advances in Nonlinear Variatio | 0
+  2023 | Shallow-to-Deep Spatial–Spectral Feature Enhancement for Hyperspectral Image Classification | Remote Sensing | 25
+  2022 | Depth-Wise Separable Convolution Attention Module for Garbage Image Classification | Sustainability | 69
+  2018 | Deep learning at the shallow end: Malware classification for non-domain experts | Digital Investigation | 220
+  2025 | Effective software defect prediction with deep neural networks | Results in Engineering | 9
+  2022 | A novel multi-module integrated intrusion detection system for high-dimensional imbalanced data | Applied Intelligence | 146
+  2023 | Artistic Style Recognition: Combining Deep and Shallow Neural Networks for Painting Classification | Mathematics | 54
+  2017 | Chaining Identity Mapping Modules for Image Denoising | arXiv (Cornell University) | 16
+  2024 | Violence detection method based on deep and shallow feature fusion | Instrumentation | 0
+  2022 | DSSM: A Deep Neural Network with Spectrum Separable Module for Multi-Spectral Remote Sensing Image Segmentatio | Remote Sensing | 12
+  2020 | Hand Gesture Recognition Using an IR-UWB Radar with an Inception Module-Based Classifier | Sensors | 102
+  2020 | Shallow and deep learning for event relatedness classification | Information Processing & Manag | 26
+## interface complexity implementation complexity module
+  1990 | On criteria for module interfaces | IEEE Transactions on Software  | 22
+  2005 | A reduced complexity integer lifting wavelet-based module for real-time processing in implantable neural inter | Annual International Conferenc | 14
+  1984 | Software errors and complexity: an empirical investigation0 | Communications of the ACM | 730
+  2006 | The Unified Database Interface Module of Altibase and Oracle | Journal of Jiangxi Normal Univ | 0
+  2022 | problexity—An open-source Python library for supervised learning problem complexity assessment | Neurocomputing | 46
+  1989 | Design complexity measurement and testing | Communications of the ACM | 412
+  2005 | Reducing complexity of consumer electronics interfaces using commonsense reasoning | DSpace@MIT (Massachusetts Inst | 3
+  2017 | Evaluating code complexity triggers, use of complexity measures and the influence of code complexity on mainte | Empirical Software Engineering | 68
+  2025 | Assessing Interface Dependency Complexity in Components based Software Systems (CBSS) | Don Bosco Institute of Technol | 0
+  2014 | Efficient Implementation and Design of a New Single-Channel Electrooculography-Based Human–Machine Interface S | IEEE Transactions on Circuits  | 43
+  2020 | Configuration Module for Treating Design Anomalies in Databases for a Natural Language Interface to Databases | Studies in computational intel | 2
+  2008 | Domain Driven Design Tacking Complexity In The Heart Of Software |  | 287
+  2015 | Pipelined Implementation of CORDIC and 64-Point FFT with Memory Interfacing Module | International Journal of Scien | 0
+  2016 | TcT: Tyrolean Complexity Tool | Lecture notes in computer scie | 48
+  1978 | Using assertions about traces to write abstract specifications for software modules | Lecture notes in computer scie | 116
+  2016 | Modeling Task Complexity in Crowdsourcing | Proceedings of the AAAI Confer | 79
+  2019 | IoT Frameworks and Complexity | Apress eBooks | 34
+  1995 | The complexity gap | ACM SIGSOFT Software Engineeri | 18
+  2017 | Analyzing the Influence of Various Fuzzification Methods in the Evaluation of Netbeans Java Components’ Interf | International Journal of Advan | 1
+  2020 | Design and Implementation of Key Extension and Interface Module Based on Quantum Circuit | Communications in computer and | 0
