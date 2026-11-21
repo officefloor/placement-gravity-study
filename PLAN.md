@@ -148,6 +148,19 @@ harness's to do, not this plan's.
 
 Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 November 2026).
 
+![Placement forces map: encapsulation is the force; choice narrows (H5) so changes become forced;
+a forced change concentrates (cost: size, H2, H1) or disperses (cost: coupling, H7); shape (H3) and
+co-change spread (H6) are the literature's readings, predicted not to see it; function injection
+(H4) removes the force](figures/placement-forces.svg)
+
+*How the hypotheses fit together* (a map, not a rule; the hypotheses below govern). A change
+bound to data no other class can reach is forced. It pays in size by concentrating, or in
+coupling by dispersing; the readings (§4.2d, §4.2e) show where code stands between the two. The
+rivals are the literature's two ways of looking, by shape (H3) and by co-change (H6), and the
+change's size and unavoidable tail coupling, held fixed. The control is the construct that holds
+no state privately (H4). Drawn on 21 November 2026, through row 67; the figures on it are the
+development chain's (§6).
+
 **Two tiers** (decided by the author on 21 November 2026, §9 row 66). The study's necessity is to
 find the force. The **confirmatory** family is the force and its two outlets, with the control:
 **H5** (the force forms: choice of class narrows), **H2** (concentration: a core draws code in),

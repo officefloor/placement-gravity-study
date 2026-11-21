@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 610" width="1060" height="610" role="img" aria-labelledby="title desc">
+  <title id="title">Placement forces map</title>
+  <desc id="desc">Encapsulation binds code to private data; choice narrows (H5) so changes become forced; a forced change either concentrates into its class, costing size (H2, H1, growth accounting), or disperses by coupling to, exposing or widening other classes, costing coupling (H7, coupling accounting, ripple). The literature's two readings, shape (H3) and co-change spread (H6), are rivals predicted not to see the force; change size and tail coupling are held fixed; function injection (H4) removes the force as the control. PLAN.md section 2, revisions through row 67, 21 November 2026.</desc>
+  <style>
+    svg { --bg: #ffffff; --fg: #1d2421; --muted: #5d6863; --force: #2f5d8a; --conc: #b5651d; --disp: #1f7a6d; }
+    @media (prefers-color-scheme: dark) {
+      svg { --bg: #1c2220; --fg: #e6ebe8; --muted: #9aa6a0; --force: #7fb0e0; --conc: #e3a25e; --disp: #5cc4b3; }
+    }
+    .bg { fill: var(--bg); }
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; fill: var(--fg); font-size: 13px; }
+    .t { font-weight: 700; font-size: 14px; }
+    .s { fill: var(--muted); font-size: 12px; }
+    .m { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 11.5px; fill: var(--muted); }
+    .box { fill: var(--bg); stroke: var(--fg); stroke-width: 1.2; }
+    .force { stroke: var(--force); stroke-width: 2.2; }
+    .conc { stroke: var(--conc); stroke-width: 2.2; }
+    .disp { stroke: var(--disp); stroke-width: 2.2; }
+    .edge { stroke: var(--fg); stroke-width: 1.4; fill: none; }
+    .edge.c { stroke: var(--conc); }
+    .edge.d { stroke: var(--disp); }
+    .tension { stroke-dasharray: 4 4; }
+    .lab { font-size: 12px; font-style: italic; fill: var(--muted); }
+    .hc { fill: var(--conc); } .hd { fill: var(--disp); } .hf { fill: var(--force); }
+    .x { stroke: var(--force); stroke-width: 3; }
+    .head { fill: var(--fg); } .head.c { fill: var(--conc); } .head.d { fill: var(--disp); }
+  </style>
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="ahc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head c" d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="ahd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head d" d="M0,0 L10,5 L0,10 z"/></marker>
+  </defs>
+  <rect class="bg" width="1060" height="610" rx="6"/>
+
+  <!-- source -->
+  <rect class="box force" x="20" y="250" width="170" height="92" rx="6"/>
+  <text class="t" x="34" y="276">Encapsulation</text>
+  <text x="34" y="296">private data binds code</text>
+  <text class="m" x="34" y="320">measure: bindings (Q2)</text>
+  <line class="edge" x1="190" y1="296" x2="228" y2="296" marker-end="url(#ah)"/>
+
+  <!-- H5 -->
+  <rect class="box" x="230" y="250" width="180" height="92" rx="6"/>
+  <text class="t" x="244" y="276">H5 choice narrows</text>
+  <text x="244" y="296">fewer places hold the data</text>
+  <text class="m" x="244" y="320">pilot, class: 0.16</text>
+  <line class="edge" x1="410" y1="296" x2="448" y2="296" marker-end="url(#ah)"/>
+
+  <!-- forced change -->
+  <rect class="box force" x="450" y="256" width="150" height="80" rx="40"/>
+  <text class="t hf" x="525" y="290" text-anchor="middle">Forced change</text>
+  <text class="s" x="525" y="310" text-anchor="middle">no other class holds it</text>
+
+  <!-- branches -->
+  <path class="edge c" d="M560 262 C 600 180, 600 110, 646 105" marker-end="url(#ahc)"/>
+  <text class="lab" x="590" y="170">absorb</text>
+  <path class="edge d" d="M560 330 C 600 412, 600 482, 646 487" marker-end="url(#ahd)"/>
+  <text class="lab" x="590" y="432">reach out</text>
+
+  <!-- concentrate -->
+  <rect class="box conc" x="648" y="60" width="170" height="90" rx="6"/>
+  <text class="t hc" x="662" y="86">Concentrate</text>
+  <text x="662" y="106">code goes into the class</text>
+  <text x="662" y="124">that holds the data</text>
+
+  <!-- disperse -->
+  <rect class="box disp" x="648" y="442" width="170" height="90" rx="6"/>
+  <text class="t hd" x="662" y="468">Disperse</text>
+  <text x="662" y="488">couple to what is open,</text>
+  <text x="662" y="506">or expose / widen it</text>
+
+  <!-- tension -->
+  <line class="edge tension" x1="733" y1="152" x2="733" y2="250" marker-start="url(#ah)"/>
+  <line class="edge tension" x1="733" y1="342" x2="733" y2="440" marker-end="url(#ah)"/>
+  <rect class="box" x="648" y="252" width="170" height="88" rx="6"/>
+  <text class="t" x="662" y="276">Where code stands</text>
+  <text x="662" y="296">split / concentrate</text>
+  <text x="662" y="314">reading</text>
+  <rect class="box" x="470" y="372" width="150" height="50" rx="6"/>
+  <text class="s" x="482" y="391">READING</text>
+  <text x="482" y="410">surface vs volume</text>
+  <line class="edge" x1="620" y1="380" x2="648" y2="330"/>
+  <text class="lab" x="742" y="208">tension</text>
+
+  <!-- costs -->
+  <line class="edge c" x1="818" y1="105" x2="846" y2="105" marker-end="url(#ahc)"/>
+  <rect class="box conc" x="848" y="40" width="192" height="130" rx="6"/>
+  <text class="s" x="862" y="62">COST: SIZE</text>
+  <text x="862" y="86">H2 a core draws code in</text>
+  <text x="862" y="108">H1 the periphery grows</text>
+  <text x="862" y="130">growth accounting:</text>
+  <text x="862" y="148">share arriving forced</text>
+
+  <line class="edge d" x1="818" y1="487" x2="846" y2="487" marker-end="url(#ahd)"/>
+  <rect class="box disp" x="848" y="422" width="192" height="130" rx="6"/>
+  <text class="s" x="862" y="444">COST: COUPLING</text>
+  <text x="862" y="468">H7 forced changes couple</text>
+  <text x="862" y="490">coupling accounting,</text>
+  <text x="862" y="512">pairs changed together</text>
+
+  <rect class="box" x="848" y="562" width="192" height="32" rx="6"/>
+  <text x="862" y="583">ripple across a new call</text>
+  <line class="edge" x1="944" y1="552" x2="944" y2="562"/>
+  <text class="s" x="836" y="583" text-anchor="end">READING</text>
+
+  <!-- rivals -->
+  <rect class="box" x="848" y="196" width="192" height="84" rx="6"/>
+  <text class="s" x="862" y="216">RIVALS: THE LITERATURE'S</text>
+  <text class="s" x="862" y="231">READINGS, PREDICTED BLIND</text>
+  <text x="862" y="252">H3 shape</text>
+  <text x="862" y="270">H6 co-change spread</text>
+  <line class="edge" x1="944" y1="170" x2="944" y2="196"/>
+
+  <rect class="box" x="848" y="330" width="192" height="62" rx="6"/>
+  <text class="s" x="862" y="352">RIVALS, HELD FIXED</text>
+  <text x="862" y="374">change size, tail coupling</text>
+  <line class="edge" x1="944" y1="392" x2="944" y2="422"/>
+
+  <!-- control -->
+  <rect class="box force" x="20" y="460" width="390" height="82" rx="6"/>
+  <text class="t hf" x="34" y="486">H4 control: function injection</text>
+  <text x="34" y="506">no private state; dependencies injected per function</text>
+  <text class="m" x="34" y="528">same problems, same agent, other construct</text>
+  <path class="edge" d="M209 460 L 209 312" marker-end="url(#ah)"/>
+  <line class="x" x1="200" y1="287" x2="218" y2="305"/>
+  <line class="x" x1="218" y1="287" x2="200" y2="305"/>
+  <text class="lab" x="218" y="400">removes the force</text>
+
+  <!-- corpora -->
+  <text class="s" x="20" y="60">READ ON</text>
+  <text x="20" y="82">A  paired agent runs: the controlled test</text>
+  <text x="20" y="102">B  pre-AI human repositories</text>
+  <text x="20" y="122">C  agent commits against human ones</text>
+</svg>
