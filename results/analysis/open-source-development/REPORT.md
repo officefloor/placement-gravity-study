@@ -2,13 +2,15 @@
 
 Role: **development**. Chains: human 2, agent 1. **Descriptive only.**
 
-| Hypothesis | Verdict | p (Holm) |
-|---|---|---|
-| H1 | descriptive only | 0.004 |
-| H2 | descriptive only | 6.41e-14 |
-| H3 | descriptive only | 0.098 |
-| H4 | descriptive only | 1.000 |
-| H5 | descriptive only | 1.000 |
+| Hypothesis | Tier | Verdict | p (Holm over the confirmatory; own p for secondary) |
+|---|---|---|---|
+| H1 | secondary | descriptive only | 0.000999 |
+| H2 | confirmatory | descriptive only | 3.85e-14 |
+| H3 | secondary | descriptive only | 0.033 |
+| H4 | confirmatory | descriptive only | 1.000 |
+| H5 | confirmatory | descriptive only | 0.000 |
+| H6 | secondary | descriptive only | 0.002 |
+| H7 | confirmatory | descriptive only | 0.465 |
 
 ## H1, the periphery grows (methods arm)
 
@@ -96,7 +98,7 @@ Where code was bound to a class or a method (1077 of 1788 problem and host rows,
 
 Per bound addition, the other places in the code before its checkpoint that hold what its code was bound to: at the class, another class holding injected dependencies of the same types (code bound to the class's own state, constants or methods has none); at the method, another method with a parameter or local of each type. The ratio of the alternatives at the end of the stream to its start, 90% interval, one-sided below 1.250.
 
-- **unresolved**
+- **not above**
 - **At the class: every placement forced** (638 rows; no alternative anywhere)
 - Reported, methods arm at the class: 638 rows, 1 forced, 0 alternatives a row; over the thirds, forced 1, 1, 1; alternatives 0, 0, 0
 - Reported, function arm at the class: 25 rows, 0.520 forced, 3.480 alternatives a row; over the thirds, forced 0.389, 0.857, –; alternatives 3.444, 3.571, –
@@ -107,6 +109,112 @@ Per bound addition, the other places in the code before its checkpoint that hold
 - Reported, the function arm's ratio at the method: 50.751 [0.290, 8875.394]; function arm / methods arm: 0.169 [0.025, 1.121]
 - Reported, at the method by type alone over the whole tree (as first built): 4.927 [3.207, 7.571]; methods on a host's control flow, per arm: agent 665.033, human 66.997; by type over the whole tree: agent 92.700, human 28.845; calls to a name the application declares that were followed by their receiver's type: 0.518 (the rest have a receiver the instrument cannot read)
 - Reported, class rows bound to the class's own state, constants or methods: 1; method values of no declared type left out of the match: 1
+
+## H6, spread does not see it (methods arm; secondary)
+
+Per unit that placed or edited code in classes that existed before it, those classes beyond the first (a new class is a free choice and is not counted): co-change spread, the change-coupling literature's measure. The ratio of the spread of a unit with a placement forced at the class (by encapsulation) to one without, at the same change size and point in the stream; one-sided, shown below the upper margin 1.250, 90% interval (restated 21 November 2026; until then *forced changes spread*, one-sided above 1).
+
+- **descriptive only** (not above)
+- **Forced: 0.845 [0.673, 1.061]** (n = 462, nbinom2; one-sided p below the margin 0.002)
+- Reported, forced by binding with no alternative (H5's): 1.191 [0.867, 1.636]; forced without the change's size: 1.987 [1.305, 3.025]
+- Reported, the spread's rise over the stream (end against start): all units 1.492 [0.951, 2.341] (n = 462, nbinom2); forced units 1.750 [1.021, 2.998] (n = 250, nbinom2); unforced units 1.240 [0.545, 2.821] (n = 212, nbinom2)
+- Reported, methods arm: 462 units, 1.944 existing classes a unit (2.065 with new ones), 0.327 in more than one; units with a forced placement 0.541, their classes 2.240 against 1.594; over the thirds, all 1.500, 2.253, 2.113; forced 1.667, 2.494, 2.449; unforced 1.367, 1.902, 1.623
+- Reported, function arm: 8 units, 2.750 existing classes a unit (2.750 with new ones), 0.625 in more than one; units with a forced placement 0.750, their classes 3.333 against 1; over the thirds, all 1.833, 5.500, –; forced 2.250, 5.500, –; unforced 1, –, –
+- Reported, the function arm: forced 6244559.163 [0, –]; rise 0.111 [2.46e-06, 4976.641]; function arm / methods arm: 1.932 [0.552, 6.757]
+
+### Where the growth of existing classes came from
+
+Positions added to classes that existed, by the placement that added them: forced at the class, with a choice there, or not bound at the class.
+
+- human arm: 3972.000 positions; forced 0.453, chosen 0.088, unbound 0.459; forced over the thirds 0.476, 0.451, 0.425
+- agent arm: 193.000 positions; forced 0.699, chosen 0.000, unbound 0.301; forced over the thirds 0.773, 0.500, –
+
+### Where coupling between classes came from
+
+Calls between classes each unit added (the tree after it less the tree before), over every class.
+
+- human arm: 1053 calls added over 647 units; in units with a forced placement 330 (0.313), in the others 331; between existing classes changed together -18 (-0.017), of it in forced units -27 (-0.026)
+- agent arm: 178 calls added over 11 units; in units with a forced placement 123 (0.691), in the others 0; between existing classes changed together 4 (0.022), of it in forced units 4 (0.022)
+
+### Pairs of classes changed together
+
+- The coupling of pairs changed together more than once (calls between them before the unit) on the index: 1.616 [1.026, 2.545] (586 pairs, 1468 rows)
+- agent arm: 43 pairs of classes changed together, 1 more than once; of those, coupling rose in 1 and fell in 0
+  - candidate for redistribution: `BillingWebhookEventHandler` and `PrepaidSubscriptionModelHandler` (agent/bytechefhq__bytechef), changed together 2 times, calls between them 0 → 1
+- human arm: 1240 pairs of classes changed together, 586 more than once; of those, coupling rose in 32 and fell in 26
+  - candidate for redistribution: `CP2102SerialDevice` and `UsbSerialDevice` (human/felHR85__UsbSerial), changed together 8 times, calls between them 0 → 3
+  - candidate for redistribution: `CDCSerialDevice` and `CP2102SerialDevice` (human/felHR85__UsbSerial), changed together 7 times, calls between them 13 → 19
+  - candidate for redistribution: `CH34xSerialDevice` and `CP2102SerialDevice` (human/felHR85__UsbSerial), changed together 7 times, calls between them 3 → 12
+  - candidate for redistribution: `FTDISerialDevice` and `UsbSerialDevice` (human/felHR85__UsbSerial), changed together 7 times, calls between them 2 → 3
+  - candidate for redistribution: `SerialBuffer` and `UsbSerialDevice` (human/felHR85__UsbSerial), changed together 6 times, calls between them 0 → 4
+  - candidate for redistribution: `FTDISerialDevice` and `FTDISerialDevice.FTDIUtilities` (human/felHR85__UsbSerial), changed together 6 times, calls between them 0 → 1
+  - candidate for redistribution: `CH34xSerialDevice` and `UsbSerialDevice` (human/felHR85__UsbSerial), changed together 5 times, calls between them 1 → 3
+  - candidate for redistribution: `Server` and `Server.Builder` (human/jmxtrans__jmxtrans), changed together 5 times, calls between them 2 → 3
+  - candidate for redistribution: `SerialPortBuilder` and `UsbService` (human/felHR85__UsbSerial), changed together 5 times, calls between them 0 → 2
+  - candidate for redistribution: `BLED112SerialDevice` and `CP2102SerialDevice` (human/felHR85__UsbSerial), changed together 4 times, calls between them 12 → 15
+
+## H7, forced changes couple (methods arm)
+
+Per unit and existing class it changed, the calls across the class's boundary the unit added (outward and inward). The ratio for a class with a placement forced at the class to one without, at the same point in the stream; one-sided above 1.
+
+- **descriptive only**
+- **Forced: 1.125 [0.820, 1.545]** (n = 896, nbinom2; one-sided p 0.233)
+- Reported, forced by binding with no alternative (H5's): 1.207 [0.874, 1.668]; forced without the change's size: 1.654 [1.213, 2.256]
+- Reported, forced ratio of calls reaching a member the unit exposed or widened: 0.884 [0.604, 1.296]
+- Reported, forced ratio of outward calls: 1.073 [0.738, 1.561]
+- Reported, forced ratio of inward calls: 1.238 [0.749, 2.046]
+- Reported, forced ratio of the class's members exposed or widened: 0.826 [0.646, 1.057]
+- Reported, the rise of the calls added over the stream: 0.396 [0.228, 0.689]; the function arm's forced ratio: 0.524 [0.133, 2.070]; function arm / methods arm: 3.062 [1.071, 8.756]
+- Reported, agent arm, forced class rows: 13; calls added a row 8.154 (outward 7.231, inward 0.923); reaching an exposed or widened member 0.274 (exposed 29, widened 0); members opened a row 1.077
+- Reported, agent arm, unforced class rows: 9; calls added a row 5.111 (outward 2.556, inward 2.556); reaching an exposed or widened member 0.587 (exposed 27, widened 0); members opened a row 0.778
+- Reported, human arm, forced class rows: 354; calls added a row 1.969 (outward 1.483, inward 0.486); reaching an exposed or widened member 0.297 (exposed 205, widened 2); members opened a row 0.508
+- Reported, human arm, unforced class rows: 542; calls added a row 1.314 (outward 0.954, inward 0.360); reaching an exposed or widened member 0.388 (exposed 276, widened 0); members opened a row 0.504
+
+## Reported: split or concentrate (redesign reading)
+
+*Split:* a class whose forced changes fall into groups sharing none of its values. *Concentrate:* a pair changed together at least three times over the same data, its coupling rising.
+
+- human arm, split: 69 classes with two or more forced changes; flagged 20, of which 11 with groups changed with different classes
+  - `JmxTransformer` (human/jmxtrans__jmxtrans, at 168): groups parseOptions(), runEndlessly | poolMBeans, poolMap; changed with different classes: no
+  - `Server` (human/jmxtrans__jmxtrans, at 231): groups cronExpression, host, numQueryThreads, port, queries, url | getUrl(), pid; changed with different classes: no
+  - `CP2102SerialDevice` (human/felHR85__UsbSerial, at 11): groups CP210x_IFC_ENABLE, CP210x_LINE_CTL_DEFAULT, CP210x_MHS_DEFAULT, CP210x_SET_BAUDRATE, CP210x_SET_FLOW, CP210x_SET_LINE_CTL, CP210x_SET_MHS, CP210x_UART_ENABLE, inEndpoint, mInterface, outEndpoint, setBaudRate(), setControlCommand(), setFlowControl() | requestIN; changed with different classes: no
+  - `Query` (human/jmxtrans__jmxtrans, at 246): groups attr, keys, obj, resultAlias, server | outputWriters; changed with different classes: no
+  - `FTDISerialDevice` (human/felHR85__UsbSerial, at 61): groups CLASS_ID, FTDI_BAUDRATE_115200, FTDI_BAUDRATE_1200, FTDI_BAUDRATE_19200, FTDI_BAUDRATE_230400, FTDI_BAUDRATE_2400, FTDI_BAUDRATE_300, FTDI_BAUDRATE_38400, FTDI_BAUDRATE_460800, FTDI_BAUDRATE_4800, FTDI_BAUDRATE_57600, FTDI_BAUDRATE_600, FTDI_BAUDRATE_921600, FTDI_BAUDRATE_9600, FTDI_SET_DATA_DEFAULT, FTDI_SET_FLOW_CTRL_DEFAULT, FTDI_SET_MODEM_CTRL_DEFAULT1, FTDI_SET_MODEM_CTRL_DEFAULT2, FTDI_SET_MODEM_CTRL_DEFAULT3, FTDI_SET_MODEM_CTRL_DEFAULT4, FTDI_SIO_MODEM_CTRL, FTDI_SIO_RESET, FTDI_SIO_SET_BAUD_RATE, FTDI_SIO_SET_DATA, FTDI_SIO_SET_FLOW_CTRL, currentSioSetData, setControlCommand() | FTDI_REQTYPE_HOST2DEVICE, mInterface; changed with different classes: no
+  - `PL2303SerialDevice` (human/felHR85__UsbSerial, at 61): groups PL2303_REQTYPE_HOST2DEVICE, PL2303_REQTYPE_HOST2DEVICE_VENDOR, PL2303_SET_LINE_CODING, PL2303_VENDOR_WRITE_REQUEST, defaultSetLine, setControlCommand() | mInterface; changed with different classes: yes
+  - `GraphiteWriter` (human/jmxtrans__jmxtrans, at 108): groups address, details, host, pool, port | status; changed with different classes: yes
+  - `CDCSerialDevice` (human/felHR85__UsbSerial, at 91): groups CDC_GET_LINE_CODING, CDC_REQTYPE_DEVICE2HOST, CDC_REQTYPE_HOST2DEVICE, mInterface | CDC_DEFAULT_CONTROL_LINE, CDC_DEFAULT_LINE_CODING, CDC_SET_CONTROL_LINE_STATE, CDC_SET_LINE_CODING, setControlCommand(); changed with different classes: yes
+  - `CH34xSerialDevice` (human/felHR85__UsbSerial, at 111): groups mInterface | CLASS_ID, checkState(), setControlCommandOut(); changed with different classes: no
+  - `GangliaWriter` (human/jmxtrans__jmxtrans, at 93): groups sendMetricMetadata() | addressingMode, dmax, getType(), groupName, host, port, slope, spoofedHostname, tmax, ttl, units, v31; changed with different classes: no
+- human arm, concentrate: 1225 pairs changed together, 152 at least three times; flagged 11
+  - `SerialBuffer` and `UsbSerialDevice` (human/felHR85__UsbSerial): changed together 6 times, the same data 1.000
+  - `SerialPortBuilder` and `UsbService` (human/felHR85__UsbSerial): changed together 5 times, the same data 0.500
+  - `Server` and `Server.Builder` (human/jmxtrans__jmxtrans): changed together 5 times, the same data 1.000
+  - `SerialBuffer` and `UsbSerialDevice.WorkerThread` (human/felHR85__UsbSerial): changed together 4 times, the same data 0.667
+  - `GraphiteWriter` and `InterestingInfo` (human/jmxtrans__jmxtrans): changed together 3 times, the same data 0.500
+  - `JmxUtils` and `Query` (human/jmxtrans__jmxtrans): changed together 3 times, the same data 0.500
+  - `BaseOutputWriter` and `Query` (human/jmxtrans__jmxtrans): changed together 3 times, the same data 0.500
+  - `CloudWatchWriter` and `Query` (human/jmxtrans__jmxtrans): changed together 3 times, the same data 0.500
+  - `DailyKeyOutWriter` and `KeyOutWriter` (human/jmxtrans__jmxtrans): changed together 3 times, the same data 0.500
+  - `KeyUtils` and `Query` (human/jmxtrans__jmxtrans): changed together 3 times, the same data 0.500
+- agent arm, split: 3 classes with two or more forced changes; flagged 0, of which 0 with groups changed with different classes
+- agent arm, concentrate: 43 pairs changed together, 0 at least three times; flagged 0
+
+## Reported: surface against volume, and ripple
+
+A class's surface (calls out and in) against its volume (methods). The exponent below 1: surface grows slower than volume, so concentrating saves communication; above 1: faster. Ripple: of the later changes to a method a unit's new call reached, the share that also changed the calling class.
+
+- human arm: exponent across the classes of the last tree 0.704 [0.586, 0.823] (231 classes); within a class as it grows 1.014 [0.868, 1.161] (175 classes, 891 changes)
+  - surface a change added, forced against unforced at the same methods added: 0.072 [-0.402, 0.547]; forced 0.347 calls for 0.184 methods; unforced 0.276 calls for 0.246 methods
+- agent arm: exponent across the classes of the last tree not estimated (too few classes); within a class as it grows 1.794 [-4.584, 8.172] (18 classes, 22 changes)
+  - surface a change added, forced against unforced at the same methods added: 1.878 [0.026, 3.730]; forced 3.308 calls for 1.154 methods; unforced 1 calls for 0.889 methods
+- Ripple, human arm, forced, opened: 193 new calls; 55 reach a method changed later, 72 later changes, 14 of them changing the caller too (0.194; by chance 0.079; ratio 2.459)
+- Ripple, human arm, forced, existing: 475 new calls; 97 reach a method changed later, 159 later changes, 23 of them changing the caller too (0.145; by chance 0.072; ratio 2.002)
+- Ripple, human arm, unforced, opened: 195 new calls; 73 reach a method changed later, 142 later changes, 23 of them changing the caller too (0.162; by chance 0.062; ratio 2.595)
+- Ripple, human arm, unforced, existing: 384 new calls; 90 reach a method changed later, 147 later changes, 18 of them changing the caller too (0.122; by chance 0.048; ratio 2.527)
+- Ripple, agent arm, forced, opened: 23 new calls; 1 reach a method changed later, 1 later changes, 0 of them changing the caller too (0.000; by chance 0.222; ratio 0.000)
+- Ripple, agent arm, forced, existing: 76 new calls; 0 reach a method changed later, 0 later changes, 0 of them changing the caller too (–; by chance –; ratio –)
+- Ripple, agent arm, unforced, opened: 10 new calls; 0 reach a method changed later, 0 later changes, 0 of them changing the caller too (–; by chance –; ratio –)
+- Ripple, agent arm, unforced, existing: 10 new calls; 0 reach a method changed later, 0 later changes, 0 of them changing the caller too (–; by chance –; ratio –)
 
 ## Reported readings: choice, formation, review
 

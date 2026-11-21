@@ -657,12 +657,13 @@ if (!is.null(h5) && nrow(h5) > 0) {
   }
 }
 
-# ---------------------------------------------------------------- H6: forced changes spread
+# ---------------------------------------------------------------- H6: spread does not see it
 # Per unit that placed or edited code in a class that existed before it, those classes beyond the
 # first (spread; a new class is a free choice and is not counted; PLAN.md 4.2b). H6's test, in the
 # methods arm: a negative binomial model of the spread on whether a placement in the unit was forced
 # at the class, with the index scaled from 0 to 1 and the chain's intercept (forced: the ratio of the
-# spread of a forced unit to one that was not, at the same point in the stream), one-sided above 1.
+# spread of a forced unit to one that was not, at the same point in the stream), one-sided below the
+# upper margin (restated 21 November 2026; until then one-sided above 1).
 # Reported: the spread's rise over the stream (exp(slope), end against start) over all units, and in
 # forced and in unforced units apart. A model that cannot be fitted as negative binomial (a spread
 # with less variance than its mean) is fitted as Poisson, and that is recorded. Reported too: the
@@ -694,7 +695,11 @@ if (!is.null(h6) && nrow(h6) > 0) {
   dm <- h6[h6$arm == spec$methods_arm, ]
   df <- h6[h6$arm == spec$function_arm, ]
   sz <- SIZE(h6)
-  res$H6$forced <- one(fit6(dm, paste0("x + forced", sz)), "forced", nrow(dm))
+  # H6's test (restated 21 November 2026, PLAN.md 9 row 67): spread does not see the force. The
+  # forced ratio shown below the upper margin (1.25), one-sided with the 90% interval, as H3.
+  res$H6$margin <- spec$margin
+  m6 <- fit6(dm, paste0("x + forced", sz))
+  res$H6$forced <- c(tost(m6$fit, "forced", spec$margin), list(n = nrow(dm), family = m6$family))
   res$reported$H6_forced_without_size <- one(fit6(dm, "x + forced"), "forced", nrow(dm))
   if ("forced_bind" %in% names(dm)) {     # forced by binding with no alternative (H5's), reported
     db <- dm

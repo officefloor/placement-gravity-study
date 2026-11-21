@@ -21,23 +21,25 @@
   the encapsulation (20 November 2026: the method level shows the encapsulation's volume growing,
   so it is reported, not tested). A class level where every placement was forced (no alternative
   anywhere) cannot rise and passes, with p 0.
-- **H6** (20 November 2026): in the methods arm, a unit with a placement forced at the class
-  places or edits code in more of the classes that existed before it than a unit without one, at
-  the same point in the stream: the spread's rate ratio on forced above 1 (one-sided Wald).
-  Reversed if its interval lies wholly below 1. The spread's rise over the stream, in forced and
-  in unforced units apart, is reported.
+- **H6, spread does not see it** (restated 21 November 2026, PLAN.md §9 row 67; one-sided, as
+  H3): in the methods arm, a unit with a placement forced at the class does not place or edit code
+  in more of the classes that existed before it than a unit without one, at the same change size
+  and point in the stream: the spread's rate ratio on forced shown below the upper margin (1.25).
+  Not supported when its interval lies wholly above the margin; unresolved when it reaches above
+  it. (Until then, *forced changes spread*: the ratio above 1.) The spread's rise is reported.
 - **H7** (20 November 2026): in the methods arm, a class with a placement forced at the class
   gains more calls across its boundary (outward and inward) in that unit than one without, at the
   same point in the stream: the rate ratio on forced above 1 (one-sided Wald). Reversed if its
   interval lies wholly below 1. Whether those calls reach members the unit exposed or widened is
   reported.
 - **Two tiers** (decided by the author on 21 November 2026): the **confirmatory** family is the
-  force and its two outlets, with the control: H2, H4, H5, H6 and H7, Holm over the five at
-  α = 0.05. H1 and H3 are **secondary**: each keeps its rule and direction and is decided at
-  α = 0.05 on its own p, outside the correction, and reported as secondary.
+  force and its two outlets, with the control: H2, H4, H5 and H7, Holm over the four at α = 0.05
+  (H6 left it when restated, later the same day). H1, H3 and H6 are **secondary**: each keeps its
+  rule and direction and is decided at α = 0.05 on its own p, outside the correction, and
+  reported as secondary.
 
 Verdicts: ``supported``; ``not supported``; ``reversed`` (an interval wholly on the wrong side);
-``unresolved`` (H3: an interval reaching above the upper margin without lying above it);
+``unresolved`` (H3, H5, H6: an interval reaching above the upper margin without lying above it);
 ``not testable`` (H3: no shape measure varies); ``descriptive only`` (fewer than 6 chains in an
 arm, or the development analysis).
 """
@@ -48,9 +50,10 @@ import json
 from pathlib import Path
 
 ALPHA = 0.05
-#: The confirmatory family (Holm) and the secondary hypotheses (their own p), 21 November 2026.
-CONFIRMATORY = ("H2", "H4", "H5", "H6", "H7")
-SECONDARY = ("H1", "H3")
+#: The confirmatory family (Holm) and the secondary hypotheses (their own p), 21 November 2026;
+#: H6 secondary since its restatement the same day.
+CONFIRMATORY = ("H2", "H4", "H5", "H7")
+SECONDARY = ("H1", "H3", "H6")
 #: H3's measures (PLAN.md §2, §5): at the method, long, cognitive and cyclomatic complexity; at the
 #: class, concentration, WMC and lack of cohesion. Each is fitted alone. Not slimmable and
 #: junction are sinew measures, and fan-out and CBO measures of reach, reported apart.
@@ -158,10 +161,13 @@ def h5(est: dict) -> dict:
 def h6(est: dict) -> dict:
     x = est.get("H6") or {}
     fo = x.get("forced")
-    if not _ok(fo):
+    if not _ok(fo) or "p_upper" not in fo:
         return {"p": None, "verdict": "not estimable", "detail": x}
-    return {"p": fo["p_greater"], "reversed": fo["irr_upper"] < 1,
-            "conditions_met": fo["irr_lower"] > 1, "detail": x}
+    upper = (x.get("margin") or [0.8, 1.25])[1]
+    state = ("against" if fo["irr_lower"] > upper else
+             "not above" if fo["irr_upper"] <= upper else "unresolved")
+    return {"p": fo["p_upper"], "state": state, "conditions_met": state == "not above",
+            "detail": x}
 
 
 def h7(est: dict) -> dict:
@@ -189,7 +195,7 @@ def decide(est: dict, cond: dict) -> dict:
             v["verdict"] = "supported"
         elif v.get("reversed"):
             v["verdict"] = "reversed"
-        elif k in ("H3", "H5") and v.get("state") == "unresolved":
+        elif k in ("H3", "H5", "H6") and v.get("state") == "unresolved":
             v["verdict"] = "unresolved"
         else:
             v["verdict"] = "not supported"

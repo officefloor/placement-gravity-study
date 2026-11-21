@@ -41,7 +41,8 @@
      "checkpoint_intercept": false
     }
    },
-   "p_holm": 0.003996003996003996,
+   "tier": "secondary",
+   "p_holm": 0.000999000999000999,
    "verdict": "descriptive only"
   },
   "H2": {
@@ -77,7 +78,8 @@
      "records": 1371
     }
    },
-   "p_holm": 6.4127935207089e-14,
+   "tier": "confirmatory",
+   "p_holm": 3.8476761124253405e-14,
    "verdict": "descriptive only"
   },
   "H3": {
@@ -150,7 +152,8 @@
      }
     }
    },
-   "p_holm": 0.09781450219303921,
+   "tier": "secondary",
+   "p_holm": 0.0326048340643464,
    "verdict": "descriptive only"
   },
   "H4": {
@@ -223,18 +226,18 @@
     },
     "wiring": {}
    },
+   "tier": "confirmatory",
    "p_holm": 1.0,
    "verdict": "descriptive only"
   },
   "H5": {
-   "p": 0.797193939441083,
-   "state": "unresolved",
+   "p": 0.0,
+   "state": "not above",
    "levels": {
-    "class": "not above",
-    "method": "unresolved"
+    "class": "not above"
    },
    "reversed": false,
-   "conditions_met": false,
+   "conditions_met": true,
    "detail": {
     "margin": [
      0.8,
@@ -265,7 +268,64 @@
      "all_forced": false
     }
    },
-   "p_holm": 1.0,
+   "tier": "confirmatory",
+   "p_holm": 0.0,
+   "verdict": "descriptive only"
+  },
+  "H6": {
+   "p": 0.00231651286967686,
+   "state": "not above",
+   "conditions_met": true,
+   "detail": {
+    "margin": [
+     0.8,
+     1.25
+    ],
+    "forced": {
+     "estimate": -0.168687182983601,
+     "se": 0.138382750147962,
+     "lower": -0.396306551471995,
+     "upper": 0.0589321855047937,
+     "level": 0.9,
+     "p_greater": 0.888575998295093,
+     "p_less": 0.111424001704907,
+     "irr": 0.844773121465315,
+     "irr_lower": 0.672800416363353,
+     "irr_upper": 1.06070330724178,
+     "p_upper": 0.00231651286967686,
+     "above": false,
+     "p_tost": 0.346967758304914,
+     "outside": false,
+     "n": 462,
+     "family": "nbinom2"
+    }
+   },
+   "tier": "secondary",
+   "p_holm": 0.00231651286967686,
+   "verdict": "descriptive only"
+  },
+  "H7": {
+   "p": 0.232600909861081,
+   "reversed": false,
+   "conditions_met": false,
+   "detail": {
+    "forced": {
+     "estimate": 0.11811393161587,
+     "se": 0.161731625525213,
+     "lower": -0.198874229574668,
+     "upper": 0.435102092806407,
+     "level": 0.95,
+     "p_greater": 0.232600909861081,
+     "p_less": 0.767399090138919,
+     "irr": 1.12537231955054,
+     "irr_lower": 0.819652974953765,
+     "irr_upper": 1.54512079661762,
+     "n": 896,
+     "family": "nbinom2"
+    }
+   },
+   "tier": "confirmatory",
+   "p_holm": 0.465201819722162,
    "verdict": "descriptive only"
   }
  }

@@ -313,6 +313,8 @@ check(abs(log(e$reported$H6_rise$irr) - log(2)) < 0.3 && e$reported$H6_rise$irr_
 check(abs(log(e$reported$H6_rise_forced$irr) - log(2)) < 0.45 && abs(log(e$reported$H6_rise_unforced$irr) - log(2)) < 0.45,
       "the rise in forced and in unforced units is reported apart")
 check(abs(log(e$H6$forced$irr) - log(1.5)) < 0.25 && e$H6$forced$irr_lower > 1, "H6 recovers forced units spreading wider at the same size")
+check(is.numeric(e$H6$forced$p_upper) && e$H6$forced$level == 0.90 && e$H6$margin[2] == 1.25 &&
+        e$H6$forced$p_upper > 0.5, "H6 is tested against the upper margin, 90% interval: a simulated spread of 1.5 is not shown below it")
 check(e$reported$H6_forced_without_size$irr > e$H6$forced$irr * 1.2, "without the change's size, the forced ratio is inflated, as simulated")
 check(abs(log(e$reported$H6_function_arm$irr)) < 0.35, "the function arm's flat spread is reported")
 check(!is.null(e$reported$H6_spread$methods$thirds_classes), "the spread per third is reported")

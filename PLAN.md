@@ -151,11 +151,14 @@ Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 Novem
 **Two tiers** (decided by the author on 21 November 2026, §9 row 66). The study's necessity is to
 find the force. The **confirmatory** family is the force and its two outlets, with the control:
 **H5** (the force forms: choice of class narrows), **H2** (concentration: a core draws code in),
-**H6** and **H7** (dispersion: forced changes spread and couple, at the same change size) and
-**H4** (the control: function injection removes the force). Holm over these five. **H1** (the
-periphery grows, the cost of concentration) and **H3** (shape does not draw code in, the rival
-ruled out) are **secondary**: each keeps its direction and rule and is decided on its own p,
-outside the correction. The readings (§4.2b–4.2e) are reported.
+**H7** (dispersion: forced changes couple, at the same change size) and **H4** (the control:
+function injection removes the force). Holm over these four. **H1** (the periphery grows, the
+cost of concentration), **H3** (shape does not draw code in) and **H6** (spread does not see it)
+are **secondary**: each keeps its direction and rule and is decided on its own p, outside the
+correction. H3 and H6 are the existing literature's two ways of looking for the cause, by shape
+and by co-change, each predicted not to find it. (Until 21 November 2026, later, H6 was
+confirmatory, as *forced changes spread*, and Holm was over five; §9 row 67.) The readings
+(§4.2b–4.2e) are reported.
 
 **Forced** (decided by the author on 21 November 2026, §9 row 65) means **forced by
 encapsulation**: a placement whose code was bound at the class to a member no other class can
@@ -269,7 +272,22 @@ reported beside it in H6 and H7, and stays H5's own measure.
     the choice of class narrows while the methods in the class multiply under that forcing, and at
     the method the alternatives on a request's flow widen. H5 and its test are unchanged by this;
     it is the reason for H6.
-- **H6, forced changes spread** (added 20 November 2026, §9; the author's). In the methods arm,
+- **H6, spread does not see it** (restated 21 November 2026, later, §9 row 67; the author's).
+  Co-change spread, the measure of the change-coupling literature (logical coupling, Gall, Hajek
+  and Jazayeri 1998; co-change rules, Zimmermann et al. 2005; change coupling and defects,
+  D'Ambros, Lanza and Robbes 2009; Shotgun Surgery from co-change, Palomba et al. 2015;
+  LITERATURE.md §4), is not wider where a placement was forced by encapsulation than where none
+  was, at the same change size and point in the stream: the forced ratio of the spread (below) is
+  **not above** the upper margin 1.25, one-sided, as H3. The author's reasoning: that literature,
+  like the shape literature, reads a symptom to find a cause; cohesion has no shape to highlight,
+  so the force of encapsulation does not show in how many classes a change touches. Where it
+  shows is what the force costs at the boundary (H7). H6 is secondary, beside H3: the existing
+  literature's two ways of looking, each predicted not to find the force. Its measure, model and
+  terms are unchanged; only its direction and tier changed. *Seen before it was restated* (§6):
+  on the development chain 1.026 [0.380, 2.775] (unresolved on one chain an arm); on the
+  development histories 0.845 [0.644, 1.108]; without the change's size 3.656 and 1.987, which is
+  what the spread follows.
+  - *As first drafted* (20 November 2026, §9 rows 56-58), **H6, forced changes spread**: in the methods arm,
   a change with no choice has to be made in more classes at once: the number of classes that
   existed before it that a unit places or edits code in (its **spread**, §4.2b) is wider in a unit
   where a placement was forced at the class (bound there with no other class holding what it was
@@ -309,7 +327,7 @@ reported beside it in H6 and H7, and stays H5's own measure.
   encapsulated data to be widened (made public) to couple to (dispersion; its cost is coupling).
   So coupling between the encapsulation and the rest of the system increases because of the
   forced change. With the amount of code conserved (H4's band), placement is the design: it
-  divides the same complexity between size and coupling. H6 says whether forced changes spread;
+  divides the same complexity between size and coupling. H6 reads whether forced changes spread (predicted not, beyond the margin);
   H7 whether they couple, and through what.
   - *Prior work* (LITERATURE.md §10, novelty check of 20 November 2026; read as abstracts or
     records unless said): encapsulation as a force is known as a concept, not as a measure.
@@ -374,9 +392,10 @@ reported beside it in H6 and H7, and stays H5's own measure.
 - H7: a class a forced change goes into gaining no more calls across its boundary than one a
   change goes into unforced. Forcing would then concentrate code without coupling it, and the
   coupling between classes would come from elsewhere.
-- H6: a spread no wider where a placement was forced than where none was. Changes would then stay
-  in one class however little choice there was, and lack of choice would cost nothing across
-  classes.
+- H6: a spread wider where a placement was forced than where none was, beyond the margin, at the
+  same change size. Co-change would then see the force of encapsulation, and the change-coupling
+  literature would find what this study says it misses. (As first drafted, H6 was the opposite:
+  a spread no wider where forced would have refuted it.)
 
 Every one of these outcomes is reported whichever way it points.
 
@@ -1631,8 +1650,11 @@ on the place an addition lands in, as it stood at *k* − 1, with the harness's 
 - **H6** (20 November 2026): per unit that placed or edited code in an existing class, its spread
   (§4.2b) as a negative binomial (nbinom2) mixed model on whether the unit was forced and the index
   scaled from 0 to 1, with the chain's intercept, in the methods arm (*forced*: the ratio of the
-  spread of a forced unit to one that was not, at the same point in the stream). One-sided above
-  1, 95% Wald interval; reversed if the interval lies wholly below 1. Reported: the spread on the
+  spread of a forced unit to one that was not, at the same point in the stream). One-sided
+  against the upper margin 1.25, 90% Wald interval, as H3 (21 November 2026, later, §9 row 67):
+  *not above* when the interval lies below 1.25, *unresolved* when it reaches above it without
+  lying above it, *not supported* when it lies wholly above it; the two-sided reading (0.8 to
+  1.25) is reported. (Until then: one-sided above 1, 95% interval.) Reported: the spread on the
   index alone (*rise*: exp(slope), the end of the stream against its start), over all units and in
   forced and in unforced units apart. Every H6 model holds the change's size fixed: log(1 +
   positions it added) and log(1 + methods it placed or edited code in) (20 November 2026, §9 row
@@ -1655,10 +1677,12 @@ on the place an addition lands in, as it stood at *k* − 1, with the harness's 
   the members opened; the added calls on the index alone (rise); the function arm's forced ratio;
   the arm term with forced and the index in the model; per arm, forced against unforced rows, the
   calls added a row and the share reaching an exposed or widened member.
-- **Multiplicity** (21 November 2026, §9 row 66): the confirmatory family H2, H4, H5, H6 and H7,
-  Holm-corrected at α = 0.05. H1 and H3 are secondary, each decided at α = 0.05 on its own p
-  outside the correction and reported as secondary. (Until 20 November 2026, every hypothesis was
-  in one Holm family: four, then five, six and seven.) All else is descriptive.
+- **Multiplicity** (21 November 2026, §9 rows 66 and 67): the confirmatory family H2, H4, H5 and
+  H7, Holm-corrected at α = 0.05. H1, H3 and H6 are secondary, each decided at α = 0.05 on its
+  own p outside the correction and reported as secondary. (Until 20 November 2026, every
+  hypothesis was in one Holm family: four, then five, six and seven; on 21 November 2026 the
+  confirmatory family was H2, H4, H5, H6 and H7 until H6 was restated the same day.) All else is
+  descriptive.
 
 **As built** (`analysis/analyse.R` with glmmTMB, `placement_gravity/prepare.py` and
 `placement_gravity/verdict.py`, 16 November 2026; R chosen by the author for glmmTMB's negative
@@ -1688,9 +1712,9 @@ binomial mixed model). These details are fixed with the code before any run is r
   H2, of the class level and the method level; H3, of every shape measure's one-sided test; H4, of the arm
   term, the interaction and the arm's rate ratio in intrusion at the class and at the method; H5, of
   the class level and the method level; H6 and H7, each its forced ratio's. A hypothesis is
-  supported when its Holm-adjusted p (over the seven) is at most 0.05 **and** its conditions hold (H4: the amount in its band and neither wiring
+  supported when its p (Holm-adjusted over the confirmatory four; its own for a secondary one) is at most 0.05 **and** its conditions hold (H4: the amount in its band and neither wiring
   condition against). The verdicts are supported, not supported, reversed (an interval wholly on
-  the wrong side), unresolved (H3 and H5: an interval reaching above the upper margin), not testable (H3: no
+  the wrong side), unresolved (H3, H5 and H6: an interval reaching above the upper margin), not testable (H3: no
   shape measure varies) or descriptive only.
 - **The revisions of 16 November 2026** (§9) are built: the checkpoint intercept, the centred host
   size, the new-host term and the lagged formation term in `analysis/analyse.R` (its self-test
@@ -2098,6 +2122,27 @@ binomial mixed model). These details are fixed with the code before any run is r
   (large); jmxtrans 1.2 against 1.0 and 4.1 against 1.9; UsbSerial 1.1 against 0.9 and 2.4 against
   1.6. The pilot's forced effect on spread is change size; the histories' remains for large
   changes. Led to row 61.
+- **Under forced by encapsulation** (21 November 2026, `MEASURE_VERSION` 26, `HISTORY_VERSION` 10,
+  the development chain and the development histories, rows 64-67 built; descriptive only).
+  *Pilot:* H2 class 17.5 [11.9, 25.6], method 20.3 [11.8, 34.7]; H3 not above (cognitive 0.32,
+  cyclomatic 0.35; the class measures not tested, 5 distinct classes); H4 intrusion ratio class
+  0.16, method 0.11; H5 class 0.16 [0.03, 0.92], method 4.6 [1.5, 14.6] (reported); H6 1.03
+  [0.45, 2.37] (90%), unresolved, 3.66 without the change's size; H7 2.17 [1.44, 3.27], outward
+  3.64, inward not estimable, members opened 0.19. Growth of existing classes forced: Spring
+  0.32, OfficeFloor 0.02; calls added in forced units: Spring 0.70 of 69, OfficeFloor −6 of
+  199. Split flagged on `OwnerRestControllerV1` (`clinicService` against the household helpers);
+  concentrate flagged on `OwnerMapper` with `OwnerRestControllerV1` (7 times together, half the
+  same data). Surface against volume across classes 0.80 (OfficeFloor) and 0.82 (Spring).
+  *Histories* (two human repositories, 462 units; the agent repository, 8 units, too few): H2
+  class 3.15 [2.73, 3.63], method 2.37 [1.90, 2.96]; H3 not above (cognitive 1.10, class Gini
+  1.09); H4 intrusion ratio 0.075 and 0.072, but the bystanders' arm term −0.10 [−0.52, 0.31] and
+  slope 0.47, against (p 1.0); H5 at the class every placement forced (no injection), method 1.56
+  [1.01, 2.42]; **H6 0.845 [0.673, 1.061] (90%), not above** (1.99 without size); **H7 1.13
+  [0.82, 1.55]**, not shown (1.65 without size). Growth of existing classes forced: human 0.45,
+  agent 0.70; calls added in forced units: human 0.31 of 1,053, agent 0.69 of 178. All of these
+  were seen before row 67 was drafted (H6 under encapsulation on both is its evidence); H7 on the
+  histories leaves the contrast H6 leans on (force seen at the boundary, not in the spread)
+  shown on the development chain only (§8).
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
@@ -2425,6 +2470,15 @@ author's to set, on the plan and code as they then stand, and starts the experim
   confirmatory family and secondary ones (row 66). The drafter's choices in these, not yet spoken
   to: package-private and protected members count as reachable; (a constant follows its access,
   decided by the author the same day); the confirmatory family is H2, H4, H5, H6 and H7.
+- *Decided by the author on 21 November 2026 (later), after seeing H6 on the development chain and
+  the development histories under forced by encapsulation* (§6): H6 restated as **spread does
+  not see it** and moved to the secondary tier (row 67): "H6 falls into existing shape literature
+  of trying to find cause. Nothing about shape will help as cohesion has no shape to highlight."
+  The drafter's choices in it, not yet spoken to: the margin 1.25 and the 90% interval taken from
+  H3; the function arm's forced ratio, the rise and the accountings kept as reported. Noted with
+  it: on the development histories H7 is 1.125 [0.820, 1.545], so the contrast the restatement
+  leans on (force seen at the boundary, not in the spread) is so far shown on the development
+  chain only (§6).
 - *The tag stays unset* (the author, 19 November 2026: "still to hold off, as I want to think about
   H2 in terms of placement choice"; H5 now carries choice).
 - *Not built, and said so where it matters:* the issue-linked unit of corpus B (§3.2); the ranks
@@ -2592,6 +2646,7 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 64 | H5 tested at the class only, its method level reported; the ripple reading against chance (the share of a chain's units that change the calling class anyway) | §2, §4.2e, §5, `verdict.h5`, `prepare.ripple`, `report.py` | Decided by the author on 20 November 2026 after the development chain: the method level shows the encapsulation's volume growing, which the author's reading of H5 expects. Before the tag, so a revision |
 | 65 | *Forced* is forced by encapsulation: code bound at the class to a private field (a private constant among them) or a private method; a public constant does not force; forced by binding with no alternative reported beside it. Fields' access and reads of other classes' fields tracked, so public fields count in coupling, exposure and widening | §2, §4.2b, §4.2c, `Pull.java` (VERSION 15: `fields`, `constants`, `reads`), `flow.Graph`, `tables.encapsulated`, `tables.forced`, `prepare.py`, `analyse.R` | Decided by the author on 21 November 2026, on the drafter's proposal after the author asked what forced should mean where there is no injection (corpus B), and that public fields be tracked. Before the tag, so a revision |
 | 66 | Two tiers: confirmatory H2, H4, H5, H6, H7 (Holm over five); secondary H1, H3 (each on its own p, reported as secondary) | §2, §5, `verdict.py`, `report.py` | Decided by the author on 21 November 2026, on the drafter's proposal: the necessity is to find the force; a smaller family keeps power. Before the tag, so a revision |
+| 67 | H6 restated as *spread does not see it*: the forced ratio of co-change spread not above the upper margin 1.25 (one-sided, 90% interval, as H3), its measure, model and change-size terms unchanged; H6 secondary; the confirmatory family H2, H4, H5, H7 (Holm over four) | §2, §5, §8, `verdict.h6`, `report.h6_section`, `analyse.R` (H6 with `tost`), `selftest.R` | Decided by the author on 21 November 2026 (later), after seeing H6 under forced by encapsulation on the development chain (1.026 [0.380, 2.775]) and histories (0.845 [0.644, 1.108]): co-change, like shape, is the literature reading a symptom to find a cause, and cohesion has no shape to highlight. Recorded as decided after seeing development results. Before the tag, so a revision |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

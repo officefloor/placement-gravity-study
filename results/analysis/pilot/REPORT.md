@@ -2,13 +2,15 @@
 
 Role: **development**. Chains: officefloor 1, spring 1. **Descriptive only.**
 
-| Hypothesis | Verdict | p (Holm) |
-|---|---|---|
-| H1 | descriptive only | 0.003 |
-| H2 | descriptive only | 1.28e-27 |
-| H3 | descriptive only | 1.23e-05 |
-| H4 | descriptive only | 0.003 |
-| H5 | descriptive only | 0.970 |
+| Hypothesis | Tier | Verdict | p (Holm over the confirmatory; own p for secondary) |
+|---|---|---|---|
+| H1 | secondary | descriptive only | 0.000999 |
+| H2 | confirmatory | descriptive only | 1.03e-27 |
+| H3 | secondary | descriptive only | 3.06e-06 |
+| H4 | confirmatory | descriptive only | 0.002 |
+| H5 | confirmatory | descriptive only | 0.026 |
+| H6 | secondary | descriptive only | 0.349 |
+| H7 | confirmatory | descriptive only | 0.000318 |
 
 ## H1, the periphery grows (methods arm)
 
@@ -98,7 +100,7 @@ Where code was bound to a class or a method (109 of 350 problem and host rows, b
 
 Per bound addition, the other places in the code before its checkpoint that hold what its code was bound to: at the class, another class holding injected dependencies of the same types (code bound to the class's own state, constants or methods has none); at the method, another method with a parameter or local of each type. The ratio of the alternatives at the end of the stream to its start, 90% interval, one-sided below 1.250.
 
-- **against**
+- **not above**
 - **At the class: 0.162 [0.029, 0.916]** (n = 48; one-sided p 0.026)
 - Reported, methods arm at the class: 48 rows, 0.542 forced, 2.583 alternatives a row; over the thirds, forced 0.500, 0.333, 0.722; alternatives 3.500, 3.167, 1.278
 - Reported, function arm at the class: 10 rows, 0.900 forced, 0.100 alternatives a row; over the thirds, forced 1, 1, 0.857; alternatives 0, 0, 0.143
@@ -109,6 +111,88 @@ Per bound addition, the other places in the code before its checkpoint that hold
 - Reported, the function arm's ratio at the method: 2.208 [0.276, 17.694]; function arm / methods arm: 2.248 [0.329, 15.378]
 - Reported, at the method by type alone over the whole tree (as first built): 2.507 [0.728, 8.628]; methods on a host's control flow, per arm: officefloor 75.963, spring 89.589; by type over the whole tree: officefloor 39.926, spring 20.446; calls to a name the application declares that were followed by their receiver's type: 0.854 (the rest have a receiver the instrument cannot read)
 - Reported, class rows bound to the class's own state, constants or methods: 0.542; method values of no declared type left out of the match: 0
+
+## H6, spread does not see it (methods arm; secondary)
+
+Per unit that placed or edited code in classes that existed before it, those classes beyond the first (a new class is a free choice and is not counted): co-change spread, the change-coupling literature's measure. The ratio of the spread of a unit with a placement forced at the class (by encapsulation) to one without, at the same change size and point in the stream; one-sided, shown below the upper margin 1.250, 90% interval (restated 21 November 2026; until then *forced changes spread*, one-sided above 1).
+
+- **descriptive only** (unresolved)
+- **Forced: 1.026 [0.445, 2.365]** (n = 59, nbinom2; one-sided p below the margin 0.349)
+- Reported, forced by binding with no alternative (H5's): 0.913 [0.404, 2.064]; forced without the change's size: 3.656 [1.484, 9.007]
+- Reported, the spread's rise over the stream (end against start): all units 0.622 [0.204, 1.895] (n = 59, poisson); forced units 0.811 [0.224, 2.932] (n = 30, poisson); unforced units 0.221 [0.013, 3.702] (n = 29, poisson)
+- Reported, methods arm: 59 units, 1.492 existing classes a unit (1.644 with new ones), 0.424 in more than one; units with a forced placement 0.508, their classes 1.767 against 1.207; over the thirds, all 1.550, 1.500, 1.421; forced 1.750, 1.889, 1.667; unforced 1.250, 1.182, 1.200
+- Reported, function arm: 42 units, 1.857 existing classes a unit (2.452 with new ones), 0.452 in more than one; units with a forced placement 0.071, their classes 2.667 against 1.795; over the thirds, all 1.400, 1.438, 2.562; forced 2, 3, 3; unforced 1.333, 1.333, 2.533
+- Reported, the function arm: forced 1.059 [0.402, 2.788]; rise 2.436 [0.591, 10.043]; function arm / methods arm: not estimated (standard error not computed: armofficefloor)
+
+### Where the growth of existing classes came from
+
+Positions added to classes that existed, by the placement that added them: forced at the class, with a choice there, or not bound at the class.
+
+- officefloor arm: 321.000 positions; forced 0.019, chosen 0.072, unbound 0.910; forced over the thirds 0.043, 0.014, 0.015
+- spring arm: 510.000 positions; forced 0.322, chosen 0.035, unbound 0.643; forced over the thirds 0.353, 0.236, 0.396
+
+### Where coupling between classes came from
+
+Calls between classes each unit added (the tree after it less the tree before), over every class.
+
+- officefloor arm: 199 calls added over 59 units; in units with a forced placement -6 (-0.030), in the others 119; between existing classes changed together 7 (0.035), of it in forced units 2 (0.010)
+- spring arm: 69 calls added over 59 units; in units with a forced placement 48 (0.696), in the others 21; between existing classes changed together 10 (0.145), of it in forced units 7 (0.101)
+
+### Pairs of classes changed together
+
+- The coupling of pairs changed together more than once (calls between them before the unit) on the index: 5.510 [2.151, 14.115] (4 pairs, 26 rows)
+- officefloor arm: 68 pairs of classes changed together, 6 more than once; of those, coupling rose in 2 and fell in 0
+  - candidate for redistribution: `Owner` and `OwnerMapper` (officefloor/blind-202608100006/chain9), changed together 2 times, calls between them 4 → 8
+  - candidate for redistribution: `LocalityLookup` and `OwnerMapper` (officefloor/blind-202608100006/chain9), changed together 2 times, calls between them 0 → 2
+- spring arm: 12 pairs of classes changed together, 4 more than once; of those, coupling rose in 3 and fell in 0
+  - candidate for redistribution: `Owner` and `OwnerRestControllerV1` (spring/blind-202608100006/chain9), changed together 9 times, calls between them 3 → 9
+  - candidate for redistribution: `OwnerMapper` and `OwnerRestControllerV1` (spring/blind-202608100006/chain9), changed together 7 times, calls between them 0 → 6
+  - candidate for redistribution: `Owner` and `OwnerMapper` (spring/blind-202608100006/chain9), changed together 2 times, calls between them 7 → 10
+
+## H7, forced changes couple (methods arm)
+
+Per unit and existing class it changed, the calls across the class's boundary the unit added (outward and inward). The ratio for a class with a placement forced at the class to one without, at the same point in the stream; one-sided above 1.
+
+- **descriptive only**
+- **Forced: 2.169 [1.440, 3.267]** (n = 85, nbinom2; one-sided p 0.000106)
+- Reported, forced by binding with no alternative (H5's): 1.839 [1.148, 2.947]; forced without the change's size: 2.065 [1.387, 3.075]
+- Reported, forced ratio of calls reaching a member the unit exposed or widened: 1.643 [0.826, 3.270]
+- Reported, forced ratio of outward calls: 3.638 [2.301, 5.750]
+- Reported, forced ratio of inward calls: 2.58e-10 [0, –]
+- Reported, forced ratio of the class's members exposed or widened: 0.187 [0.083, 0.420]
+- Reported, the rise of the calls added over the stream: 1.896 [0.862, 4.168]; the function arm's forced ratio: 0.419 [0.081, 2.165]; function arm / methods arm: 1.585 [1.058, 2.374]
+- Reported, officefloor arm, forced class rows: 3; calls added a row 1.000 (outward 0.333, inward 0.667); reaching an exposed or widened member 0.667 (exposed 2, widened 0); members opened a row 0.333
+- Reported, officefloor arm, unforced class rows: 69; calls added a row 3.420 (outward 2.899, inward 0.522); reaching an exposed or widened member 0.203 (exposed 48, widened 0); members opened a row 0.971
+- Reported, spring arm, forced class rows: 34; calls added a row 3.647 (outward 3.647, inward 0.000); reaching an exposed or widened member 0.290 (exposed 36, widened 0); members opened a row 0.206
+- Reported, spring arm, unforced class rows: 51; calls added a row 1.843 (outward 1.196, inward 0.647); reaching an exposed or widened member 0.447 (exposed 42, widened 0); members opened a row 1.078
+
+## Reported: split or concentrate (redesign reading)
+
+*Split:* a class whose forced changes fall into groups sharing none of its values. *Concentrate:* a pair changed together at least three times over the same data, its coupling rising.
+
+- spring arm, split: 2 classes with two or more forced changes; flagged 1, of which 0 with groups changed with different classes
+  - `OwnerRestControllerV1` (spring/blind-202608100006/chain9, at 28): groups clinicService | backfillHousehold(), householdAddressKey(), householdIdFor(), normalizeForHousehold(); changed with different classes: no
+- spring arm, concentrate: 9 pairs changed together, 3 at least three times; flagged 1
+  - `OwnerMapper` and `OwnerRestControllerV1` (spring/blind-202608100006/chain9): changed together 7 times, the same data 0.500
+- officefloor arm, split: 0 classes with two or more forced changes; flagged 0, of which 0 with groups changed with different classes
+- officefloor arm, concentrate: 68 pairs changed together, 1 at least three times; flagged 0
+
+## Reported: surface against volume, and ripple
+
+A class's surface (calls out and in) against its volume (methods). The exponent below 1: surface grows slower than volume, so concentrating saves communication; above 1: faster. Ripple: of the later changes to a method a unit's new call reached, the share that also changed the calling class.
+
+- officefloor arm: exponent across the classes of the last tree 0.800 [0.575, 1.026] (172 classes); within a class as it grows 0.984 [0.527, 1.442] (28 classes, 71 changes)
+  - surface a change added, forced against unforced at the same methods added: -3.672 [-8.816, 1.472]; forced -4.333 calls for -0.333 methods; unforced 0.882 calls for 0.809 methods
+- spring arm: exponent across the classes of the last tree 0.821 [0.569, 1.072] (64 classes); within a class as it grows 0.928 [0.762, 1.094] (5 classes, 84 changes)
+  - surface a change added, forced against unforced at the same methods added: 1.903 [0.703, 3.103]; forced 1.824 calls for 0.824 methods; unforced 0.300 calls for 1.160 methods
+- Ripple, officefloor arm, forced, opened: 2 new calls; 0 reach a method changed later, 0 later changes, 0 of them changing the caller too (–; by chance –; ratio –)
+- Ripple, officefloor arm, forced, existing: 1 new calls; 0 reach a method changed later, 0 later changes, 0 of them changing the caller too (–; by chance –; ratio –)
+- Ripple, officefloor arm, unforced, opened: 36 new calls; 0 reach a method changed later, 0 later changes, 0 of them changing the caller too (–; by chance –; ratio –)
+- Ripple, officefloor arm, unforced, existing: 182 new calls; 1 reach a method changed later, 1 later changes, 0 of them changing the caller too (0.000; by chance 0.055; ratio 0.000)
+- Ripple, spring arm, forced, opened: 36 new calls; 3 reach a method changed later, 4 later changes, 2 of them changing the caller too (0.500; by chance 0.729; ratio 0.686)
+- Ripple, spring arm, forced, existing: 88 new calls; 2 reach a method changed later, 3 later changes, 3 of them changing the caller too (1.000; by chance 0.729; ratio 1.372)
+- Ripple, spring arm, unforced, opened: 20 new calls; 1 reach a method changed later, 1 later changes, 1 of them changing the caller too (1.000; by chance 0.729; ratio 1.372)
+- Ripple, spring arm, unforced, existing: 45 new calls; 0 reach a method changed later, 0 later changes, 0 of them changing the caller too (–; by chance –; ratio –)
 
 ## Reported readings: choice, formation, review
 

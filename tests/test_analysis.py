@@ -280,8 +280,8 @@ def test_reversed_and_holm_failures():
     e = estimates()
     e["H1"]["cp"] = boot(-0.01, -0.02, -0.002, 0.999, 0.001)
     assert verdict.decide(e, COND)["hypotheses"]["H1"]["verdict"] == "reversed"
-    # each interval clears its line, but p = 0.02 for all five confirmatory: Holm makes them 0.10;
-    # H1, secondary, is decided on its own p = 0.02
+    # each interval clears its line, but p = 0.02 for all four confirmatory: Holm makes them 0.08;
+    # H1 and H6, secondary, are decided on their own p = 0.02
     e = estimates(H1={k: boot(0.01, 0.001, 0.02, 0.02, 0.98) for k in ("cp", "within_class", "within_method")})
     e["H2"]["class"]["p_greater"] = e["H2"]["method"]["p_greater"] = 0.02
     e["H4"] = {"arm": boot(-0.5, -0.8, -0.01, 0.98, 0.02), "slope": boot(-0.2, -0.3, -0.01, 0.98, 0.02),
@@ -289,11 +289,12 @@ def test_reversed_and_holm_failures():
                "intrusion_method": {"irr": 0.4, "irr_lower": 0.3, "irr_upper": 0.9, "p_less": 0.02}}
     e["H5"] = {"margin": [0.8, 1.25], "class": {"irr": 0.9, "irr_lower": 0.7, "irr_upper": 1.1, "p_upper": 0.02}}
     up = {"irr": 1.5, "irr_lower": 1.1, "irr_upper": 2.0, "p_greater": 0.02}
-    e["H6"] = {"forced": up}
+    e["H6"] = {"margin": [0.8, 1.25], "forced": {"irr": 0.9, "irr_lower": 0.7, "irr_upper": 1.1, "p_upper": 0.02}}
     e["H7"] = {"forced": up}
     v = verdict.decide(e, COND)["hypotheses"]
-    assert v["H2"]["p_holm"] == pytest.approx(0.10) and v["H2"]["verdict"] == "not supported"
+    assert v["H2"]["p_holm"] == pytest.approx(0.08) and v["H2"]["verdict"] == "not supported"
     assert v["H1"]["p_holm"] == pytest.approx(0.02) and v["H1"]["verdict"] == "supported"
+    assert v["H6"]["p_holm"] == pytest.approx(0.02) and v["H6"]["verdict"] == "supported"
 
 
 def test_descriptive_only_decides_nothing():
@@ -322,7 +323,7 @@ def test_the_report_names_every_hypothesis_and_commit():
     cond = {**COND, "chains": {"spring": 9, "officefloor": 9}}
     heads = [{"arm": "spring", "run": "r", "chain": 1, "excluded": False, "sha": "a" * 40}]
     md = report.render("petclinic-primary", "primary", est, ver, cond, {"shape_counts": {}}, heads)
-    for k in ("H1", "H2", "H3", "H4", "supported", "`aaaaaaaaaaaa`", "s3_junction", "At the class (its fields and the methods it calls)", "H5, choice narrows", "H6, forced changes spread", "H7, forced changes couple", "Within a class",
+    for k in ("H1", "H2", "H3", "H4", "supported", "`aaaaaaaaaaaa`", "s3_junction", "At the class (its fields and the methods it calls)", "H5, choice narrows", "H6, spread does not see it", "H7, forced changes couple", "Within a class",
               "the sinew measures", "s3_junction at the method 1.400 [1.100, 1.800]",
               "Later intrusion where bound code was placed"):
         assert k in md
@@ -363,11 +364,12 @@ def test_h5_a_level_where_every_placement_was_forced_cannot_rise():
     assert v["levels"]["class"] == "not above" and v["verdict"] == "supported"
 
 
-def test_holm_runs_over_the_five_confirmatory_and_the_secondary_keep_their_own_p():
+def test_holm_runs_over_the_four_confirmatory_and_the_secondary_keep_their_own_p():
     flat = {"irr": 0.9, "irr_lower": 0.7, "irr_upper": 1.1, "p_upper": 0.011}
     v = verdict.decide(estimates(**h5_levels(flat, flat)), COND)["hypotheses"]
     assert len(v) == 7
-    assert {k for k, x in v.items() if x["tier"] == "confirmatory"} == {"H2", "H4", "H5", "H6", "H7"}
+    assert {k for k, x in v.items() if x["tier"] == "confirmatory"} == {"H2", "H4", "H5", "H7"}
+    assert {k for k, x in v.items() if x["tier"] == "secondary"} == {"H1", "H3", "H6"}
     assert v["H5"]["p_holm"] >= 0.011
     assert v["H1"]["tier"] == "secondary" and v["H1"]["p_holm"] == v["H1"]["p"]
 
@@ -387,16 +389,19 @@ def test_h7_forced_classes_that_gain_more_coupling_are_supported():
 
 
 def h6(forced):
-    return {"H6": {"forced": forced}}
+    return {"H6": {"margin": [0.8, 1.25], "forced": forced}}
 
 
-def test_h6_forced_units_that_spread_wider_are_supported():
-    up = {"irr": 1.8, "irr_lower": 1.3, "irr_upper": 2.4, "p_greater": 0.001}
-    assert verdict.decide(estimates(**h6(up)), COND)["hypotheses"]["H6"]["verdict"] == "supported"
-    flat = {"irr": 1.0, "irr_lower": 0.8, "irr_upper": 1.25, "p_greater": 0.5}
-    assert verdict.decide(estimates(**h6(flat)), COND)["hypotheses"]["H6"]["verdict"] == "not supported"
-    down = {"irr": 0.6, "irr_lower": 0.4, "irr_upper": 0.9, "p_greater": 0.99}
-    assert verdict.decide(estimates(**h6(down)), COND)["hypotheses"]["H6"]["verdict"] == "reversed"
+def test_h6_spread_not_above_the_margin_is_supported():
+    # restated 21 November 2026: spread does not see the force (one-sided below 1.25, as H3)
+    flat = {"irr": 0.85, "irr_lower": 0.68, "irr_upper": 1.07, "p_upper": 0.004}
+    v = verdict.decide(estimates(**h6(flat)), COND)["hypotheses"]["H6"]
+    assert (v["state"], v["verdict"], v["tier"]) == ("not above", "supported", "secondary")
+    wide = {"irr": 1.03, "irr_lower": 0.45, "irr_upper": 2.4, "p_upper": 0.3}
+    assert verdict.decide(estimates(**h6(wide)), COND)["hypotheses"]["H6"]["verdict"] == "unresolved"
+    up = {"irr": 1.8, "irr_lower": 1.3, "irr_upper": 2.4, "p_upper": 0.99}
+    v = verdict.decide(estimates(**h6(up)), COND)["hypotheses"]["H6"]
+    assert (v["state"], v["verdict"]) == ("against", "not supported")
     v = verdict.decide(estimates(**h6({"error": "every change in one class"})), COND)["hypotheses"]
     assert v["H6"]["verdict"] == "not estimable" and v["H2"]["verdict"] == "supported"
 

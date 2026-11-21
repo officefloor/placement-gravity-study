@@ -91,7 +91,8 @@ def h5_section(est: dict, hyp: dict, rep: dict) -> list[str]:
 
 
 def h6_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
-    """H6, forced changes spread (PLAN.md §2, §4.2b, §5), and its accountings."""
+    """H6, spread does not see it (PLAN.md §2, §4.2b, §5; restated 21 November 2026), and its
+    accountings."""
     b = est.get("H6") or {}
     h = hyp.get("H6") or {}
     fo = b.get("forced") or {}
@@ -100,13 +101,16 @@ def h6_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
         e = e or {}
         return f"n = {f(e.get('n'))}, {e.get('family', '–')}"
 
-    L = ["", "## H6, forced changes spread (methods arm)", "",
+    margin = (b.get("margin") or [0.8, 1.25])[1]
+    L = ["", "## H6, spread does not see it (methods arm; secondary)", "",
          "Per unit that placed or edited code in classes that existed before it, those classes beyond the "
-         "first (a new class is a free choice and is not counted). The ratio of the spread of a unit with a "
-         "placement forced at the class (no other class held what the code was bound to) to one without, at "
-         "the same point in the stream; one-sided above 1.", "",
-         f"- **{h.get('verdict', '–')}**",
-         f"- **Forced: {ratio(fo)}** ({fam(fo)}; one-sided p {f(fo.get('p_greater'))})",
+         "first (a new class is a free choice and is not counted): co-change spread, the change-coupling "
+         "literature's measure. The ratio of the spread of a unit with a placement forced at the class (by "
+         "encapsulation) to one without, at the same change size and point in the stream; one-sided, shown "
+         f"below the upper margin {f(margin)}, 90% interval (restated 21 November 2026; until then "
+         "*forced changes spread*, one-sided above 1).", "",
+         f"- **{h.get('verdict', '–')}**" + (f" ({h['state']})" if h.get("state") else ""),
+         f"- **Forced: {ratio(fo)}** ({fam(fo)}; one-sided p below the margin {f(fo.get('p_upper'))})",
          f"- Reported, forced by binding with no alternative (H5's): {ratio(rep.get('H6_forced_bind'))}; "
          f"forced without the change's size: {ratio(rep.get('H6_forced_without_size'))}",
          f"- Reported, the spread's rise over the stream (end against start): all units {ratio(rep.get('H6_rise'))} "

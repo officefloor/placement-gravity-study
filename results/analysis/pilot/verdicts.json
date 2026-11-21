@@ -41,7 +41,8 @@
      "checkpoint_intercept": false
     }
    },
-   "p_holm": 0.002997002997002997,
+   "tier": "secondary",
+   "p_holm": 0.000999000999000999,
    "verdict": "descriptive only"
   },
   "H2": {
@@ -77,7 +78,8 @@
      "records": 130
     }
    },
-   "p_holm": 1.283006209223445e-27,
+   "tier": "confirmatory",
+   "p_holm": 1.026404967378756e-27,
    "verdict": "descriptive only"
   },
   "H3": {
@@ -150,7 +152,8 @@
      }
     }
    },
-   "p_holm": 1.225790047070768e-05,
+   "tier": "secondary",
+   "p_holm": 3.06447511767692e-06,
    "verdict": "descriptive only"
   },
   "H4": {
@@ -238,18 +241,18 @@
      "concentration_against": false
     }
    },
-   "p_holm": 0.002997002997002997,
+   "tier": "confirmatory",
+   "p_holm": 0.001998001998001998,
    "verdict": "descriptive only"
   },
   "H5": {
-   "p": 0.970103749685836,
-   "state": "against",
+   "p": 0.0262108939584391,
+   "state": "not above",
    "levels": {
-    "class": "not above",
-    "method": "against"
+    "class": "not above"
    },
-   "reversed": true,
-   "conditions_met": false,
+   "reversed": false,
+   "conditions_met": true,
    "detail": {
     "margin": [
      0.8,
@@ -292,7 +295,64 @@
      "all_forced": false
     }
    },
-   "p_holm": 0.970103749685836,
+   "tier": "confirmatory",
+   "p_holm": 0.0262108939584391,
+   "verdict": "descriptive only"
+  },
+  "H6": {
+   "p": 0.348830207848476,
+   "state": "unresolved",
+   "conditions_met": false,
+   "detail": {
+    "margin": [
+     0.8,
+     1.25
+    ],
+    "forced": {
+     "estimate": 0.0259620493721887,
+     "se": 0.507571053149304,
+     "lower": -0.808918038336022,
+     "upper": 0.860842137080399,
+     "level": 0.9,
+     "p_greater": 0.479603161772561,
+     "p_less": 0.520396838227439,
+     "irr": 1.02630199892918,
+     "irr_lower": 0.445339646074995,
+     "irr_upper": 2.3651516371589,
+     "p_upper": 0.348830207848476,
+     "above": false,
+     "p_tost": 0.348830207848476,
+     "outside": false,
+     "n": 59,
+     "family": "nbinom2"
+    }
+   },
+   "tier": "secondary",
+   "p_holm": 0.348830207848476,
+   "verdict": "descriptive only"
+  },
+  "H7": {
+   "p": 0.000105985291038467,
+   "reversed": false,
+   "conditions_met": true,
+   "detail": {
+    "forced": {
+     "estimate": 0.774247971369357,
+     "se": 0.209012984455881,
+     "lower": 0.3645900495346,
+     "upper": 1.18390589320411,
+     "level": 0.95,
+     "p_greater": 0.000105985291038467,
+     "p_less": 0.999894014708962,
+     "irr": 2.16896039339052,
+     "irr_lower": 1.43992358979057,
+     "irr_upper": 3.26711029769363,
+     "n": 85,
+     "family": "nbinom2"
+    }
+   },
+   "tier": "confirmatory",
+   "p_holm": 0.000317955873115401,
    "verdict": "descriptive only"
   }
  }
