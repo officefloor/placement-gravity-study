@@ -200,7 +200,8 @@ def estimates(**over):
                              "s4_cognitive": measure(1.05, 0.95, 1.15, 0.01)}},
          "H4": {"arm": boot(-0.5, -0.8, -0.2, 0.999, 0.001), "slope": boot(-0.2, -0.3, -0.1, 0.99, 0.002),
                 "intrusion_class": {"irr": 0.4, "irr_lower": 0.3, "irr_upper": 0.6, "p_less": 0.001},
-                "intrusion_method": {"irr": 0.5, "irr_lower": 0.3, "irr_upper": 0.8, "p_less": 0.003}}}
+                "intrusion_method": {"irr": 0.5, "irr_lower": 0.3, "irr_upper": 0.8, "p_less": 0.003},
+                "existing_files": {"irr": 0.7, "irr_lower": 0.5, "irr_upper": 0.9, "p_less": 0.002}}}
     e.update(over)
     return e
 
@@ -286,8 +287,9 @@ def test_reversed_and_holm_failures():
     e["H2"]["class"]["p_greater"] = e["H2"]["method"]["p_greater"] = 0.02
     e["H4"] = {"arm": boot(-0.5, -0.8, -0.01, 0.98, 0.02), "slope": boot(-0.2, -0.3, -0.01, 0.98, 0.02),
                "intrusion_class": {"irr": 0.4, "irr_lower": 0.3, "irr_upper": 0.9, "p_less": 0.02},
-               "intrusion_method": {"irr": 0.4, "irr_lower": 0.3, "irr_upper": 0.9, "p_less": 0.02}}
-    e["H5"] = {"margin": [0.8, 1.25], "class": {"irr": 0.9, "irr_lower": 0.7, "irr_upper": 1.1, "p_upper": 0.02}}
+               "intrusion_method": {"irr": 0.4, "irr_lower": 0.3, "irr_upper": 0.9, "p_less": 0.02},
+               "existing_files": {"irr": 0.7, "irr_lower": 0.5, "irr_upper": 0.9, "p_less": 0.02}}
+    e["H5"] = {"margin": [0.8, 1.25], "class": {"irr": 0.6, "irr_lower": 0.4, "irr_upper": 0.9, "p_less": 0.02}}
     up = {"irr": 1.5, "irr_lower": 1.1, "irr_upper": 2.0, "p_greater": 0.02}
     e["H6"] = {"margin": [0.8, 1.25], "forced": {"irr": 0.9, "irr_lower": 0.7, "irr_upper": 1.1, "p_upper": 0.02}}
     e["H7"] = {"forced": up}
@@ -344,34 +346,139 @@ def h5_levels(c, m):
     return {"H5": {"margin": [0.8, 1.25], "class": c, "method": m}}
 
 
-def test_h5_choice_that_does_not_rise_is_supported_and_one_that_widens_is_against():
-    flat = {"irr": 0.9, "irr_lower": 0.7, "irr_upper": 1.1, "p_upper": 0.01}
-    v = verdict.decide(estimates(**h5_levels(flat, flat)), COND)["hypotheses"]["H5"]
-    assert (v["state"], v["verdict"]) == ("not above", "supported")
-    rising = {"irr": 2.0, "irr_lower": 1.5, "irr_upper": 2.6, "p_upper": 0.99}
-    v = verdict.decide(estimates(**h5_levels(rising, flat)), COND)["hypotheses"]["H5"]
-    assert (v["state"], v["verdict"]) == ("against", "reversed")
-    wide = {"irr": 1.0, "irr_lower": 0.6, "irr_upper": 1.6, "p_upper": 0.3}
-    assert verdict.decide(estimates(**h5_levels(wide, flat)), COND)["hypotheses"]["H5"]["verdict"] == "unresolved"
+FALL = {"irr": 0.5, "irr_lower": 0.3, "irr_upper": 0.8, "p_less": 0.004}
+
+
+def test_h5_is_a_fall_a_flat_count_does_not_pass_and_a_rise_is_reversed():
+    v = verdict.decide(estimates(**h5_levels(FALL, FALL)), COND)["hypotheses"]["H5"]
+    assert (v["state"], v["verdict"]) == ("falls", "supported")
+    # flat: below the old margin of 1.25, which passed until 22 November 2026; not a fall
+    flat = {"irr": 0.9, "irr_lower": 0.7, "irr_upper": 1.1, "p_less": 0.2}
+    v = verdict.decide(estimates(**h5_levels(flat, FALL)), COND)["hypotheses"]["H5"]
+    assert (v["state"], v["verdict"]) == ("not shown to fall", "not supported")
+    rising = {"irr": 2.0, "irr_lower": 1.5, "irr_upper": 2.6, "p_less": 0.999}
+    v = verdict.decide(estimates(**h5_levels(rising, FALL)), COND)["hypotheses"]["H5"]
+    assert (v["state"], v["verdict"]) == ("rises", "reversed")
     # the method level is reported, not tested: rising there does not count against H5
-    assert verdict.decide(estimates(**h5_levels(flat, rising)), COND)["hypotheses"]["H5"]["verdict"] == "supported"
+    assert verdict.decide(estimates(**h5_levels(FALL, rising)), COND)["hypotheses"]["H5"]["verdict"] == "supported"
 
 
-def test_h5_a_level_where_every_placement_was_forced_cannot_rise():
-    flat = {"irr": 0.9, "irr_lower": 0.7, "irr_upper": 1.1, "p_upper": 0.01}
-    v = verdict.decide(estimates(**h5_levels({"error": "every placement forced", "all_forced": True}, flat)),
-                       COND)["hypotheses"]["H5"]
-    assert v["levels"]["class"] == "not above" and v["verdict"] == "supported"
+def test_h5_a_level_where_every_placement_was_forced_has_no_choice_to_narrow():
+    v = verdict.decide(estimates(**h5_levels({"error": "every placement forced", "all_forced": True}, FALL)),
+                       COND)["hypotheses"]
+    assert v["H5"]["verdict"] == "not testable" and v["H5"]["p"] is None
+    # it does not enter Holm as a p of 0: the others are corrected over those that have a p
+    assert v["H2"]["p_holm"] == pytest.approx(0.006)   # over H2 and H4 only
 
 
 def test_holm_runs_over_the_four_confirmatory_and_the_secondary_keep_their_own_p():
-    flat = {"irr": 0.9, "irr_lower": 0.7, "irr_upper": 1.1, "p_upper": 0.011}
-    v = verdict.decide(estimates(**h5_levels(flat, flat)), COND)["hypotheses"]
+    v = verdict.decide(estimates(**h5_levels({**FALL, "p_less": 0.011}, FALL)), COND)["hypotheses"]
     assert len(v) == 7
     assert {k for k, x in v.items() if x["tier"] == "confirmatory"} == {"H2", "H4", "H5", "H7"}
     assert {k for k, x in v.items() if x["tier"] == "secondary"} == {"H1", "H3", "H6"}
     assert v["H5"]["p_holm"] >= 0.011
     assert v["H1"]["tier"] == "secondary" and v["H1"]["p_holm"] == v["H1"]["p"]
+
+
+def test_h2_needs_the_core_come_back_to_less_in_the_function_arm_where_the_arms_can_be_compared():
+    less = {"required": True, "irr": 0.2, "irr_lower": 0.1, "irr_upper": 0.5, "p_less": 0.03}
+    same = {"required": True, "irr": 0.9, "irr_lower": 0.6, "irr_upper": 1.3, "p_less": 0.3}
+    few = {"required": False, "note": "too few core records in an arm to compare", "function_records": 1}
+
+    def h2(**reuse):
+        e = estimates()
+        e["H2"].update(reuse)
+        return verdict.decide(e, COND)["hypotheses"]["H2"]
+    v = h2(reuse_class=few, reuse_method=less)
+    assert (v["verdict"], v["arm_contrast"], v["p"]) == ("supported", ["method"], 0.03)
+    # the core used more than the periphery in the methods arm is not enough: a value used once is
+    # likely to be used again whatever the place
+    assert h2(reuse_class=few, reuse_method=same)["verdict"] == "not supported"
+    more = {"required": True, "irr": 2.0, "irr_lower": 1.4, "irr_upper": 2.9, "p_less": 0.99}
+    assert h2(reuse_class=few, reuse_method=more)["verdict"] == "reversed"
+    assert h2(reuse_class=few, reuse_method={"required": True, "error": "no fit"})["verdict"] == "not estimable"
+    # no core value of the function arm ever come back to: decided by the rank-sum over chains
+    never = {"required": True, "separated": True, "irr": 0, "irr_lower": 0, "irr_upper": 0, "p_less": 0.0002}
+    assert h2(reuse_class=never, reuse_method=less)["arm_contrast"] == ["class", "method"]
+    # a history: its arms do not solve the same problems, so H2 is the core against the periphery
+    hist = {"required": False, "note": "a history"}
+    assert h2(reuse_class=hist, reuse_method=hist)["arm_contrast"] == []
+
+
+def test_h4_needs_fewer_existing_files_gone_back_into_java_and_wiring_alike():
+    e = estimates()
+    e["H4"]["existing_files"] = {"irr": 1.3, "irr_lower": 1.0, "irr_upper": 1.7, "p_less": 0.96}
+    assert verdict.decide(e, COND)["hypotheses"]["H4"]["verdict"] == "not supported"
+    e["H4"]["existing_files"] = {"error": "the existing files a change went back into were not measured"}
+    assert verdict.decide(e, COND)["hypotheses"]["H4"]["verdict"] == "not estimable"
+    e["H4"]["existing_files"] = {"not_applicable": True}                 # a history
+    assert verdict.decide(e, COND)["hypotheses"]["H4"]["verdict"] == "supported"
+    rows = prepare.reopen_rows([{"chain_id": "c", "arm": "officefloor", "cp": "3", "reopened": "2",
+                                 "reopened_classes": "1", "reopened_wiring": "1",
+                                 "existing_java_files": "2", "existing_wiring_files": "1"},
+                                {"chain_id": "c", "arm": "officefloor", "cp": "4", "reopened": "0",
+                                 "reopened_classes": "0", "reopened_wiring": "0"}])   # measured before the count
+    assert (rows[0]["existing_files"], rows[1]["existing_files"]) == (3, None)
+
+
+def test_h3_with_the_coupling_measures_put_back_is_reported_and_changes_no_verdict():
+    e = estimates()
+    e["reported"] = {"H3_with_coupling": {"margin": [0.8, 1.25], "measures": {
+        **e["H3"]["measures"], "m_fanout": measure(3.0, 1.6, 5.5, 0.99), "c_cbo": {"error": "does not vary"}}}}
+    out = verdict.decide(e, COND)
+    sens = out["sensitivity"]["H3_with_coupling"]
+    assert (sens["state"], sens["above"], sens["not_estimable"]) == ("against", ["m_fanout"], ["c_cbo"])
+    assert out["hypotheses"]["H3"]["verdict"] == "supported"
+    assert verdict.decide(estimates(), COND)["sensitivity"]["H3_with_coupling"]["state"] == "not testable"
+
+
+def test_the_lever_within_forced_tells_injected_private_fields_from_the_class_own():
+    places = {"cp2": {"files": {"A.java": {
+        "classes": [{"name": "A", "fields": {"service": "private", "LIMIT": "private", "open": "public"}}],
+        "methods": [{"type": "A", "name": "helper", "signature": "helper()", "access": "private"}]}}}}
+    r = {"unit": "cp2", "type": "A", "before_type": "A"}
+    assert tables.lever(r, ["service"], ["service"], [], places) == "injected"     # another class could declare it
+    assert tables.lever(r, ["service", "LIMIT"], ["service"], [], places) == "own"  # a private constant
+    assert tables.lever(r, ["service"], ["service"], ["helper"], places) == "own"   # a private method
+    assert tables.lever(r, ["open"], [], [], places) is None                         # not forced
+    assert tables.encapsulated(r, ["service"], [], places) is True                   # still forced: private
+
+    def host(lever, choice, added=4, forced=True):
+        return {"chain_id": "spring/r/chain1", "arm": "spring", "cp": 2, "type": "A", "before_type": "A",
+                "added": added, "net_added": added, "replacement": False, "class_new": False,
+                "choice_class": choice, "forced_enc": forced, "forced_lever": lever}
+    g = prepare.growth_by_lever([host("own", 0), host("injected", 2), host("injected", 0, added=2),
+                                 host("", "", added=10, forced="")])["spring"]
+    assert (g["forced"], g["own"], g["injected_elsewhere"], g["injected_only_here"], g["all"]) == (10, 4, 4, 2, 20)
+    assert g["opportunity_share"] == pytest.approx(0.6) and g["forced_share_of_growth"] == pytest.approx(0.5)
+
+
+def h8_estimates(ic, co):
+    return {**estimates(), "coupled_arm": co,
+            "H4": {**estimates()["H4"], "intrusion_class": ic}}
+
+
+def test_h8_run_d_needs_less_coming_back_more_coupling_compliance_and_the_amount():
+    less = {"irr": 0.5, "irr_lower": 0.3, "irr_upper": 0.8, "p_less": 0.004}
+    more = {"irr": 1.6, "irr_lower": 1.2, "irr_upper": 2.1, "p_greater": 0.01}
+    cond = {**COND, "contrast": "no-encapsulation", "compliance": {"share": 0.96, "introduced": 900}}
+    v = verdict.decide(h8_estimates(less, more), cond)["hypotheses"]
+    assert v["H8"]["verdict"] == "supported" and v["H8"]["p"] == pytest.approx(0.01)
+    assert all(v[k]["verdict"] == "descriptive only" for k in ("H1", "H2", "H3", "H4", "H5", "H6", "H7"))
+    same = {"irr": 1.0, "irr_lower": 0.8, "irr_upper": 1.3, "p_greater": 0.5}
+    assert verdict.decide(h8_estimates(less, same), cond)["hypotheses"]["H8"]["verdict"] == "not supported"
+    fewer = {"irr": 0.6, "irr_lower": 0.4, "irr_upper": 0.9, "p_greater": 0.99}
+    assert verdict.decide(h8_estimates(less, fewer), cond)["hypotheses"]["H8"]["verdict"] == "reversed"
+    # the instruction did not take: Run D is not read against Run A
+    low = {**cond, "compliance": {"share": 0.7, "introduced": 900}}
+    assert verdict.decide(h8_estimates(less, more), low)["hypotheses"]["H8"]["verdict"] == "descriptive only"
+    out = {**cond, "amount": {"in_band": False, "ratio": 1.6}}
+    assert verdict.decide(h8_estimates(less, more), out)["hypotheses"]["H8"]["verdict"] == "not supported"
+    assert "H8" not in verdict.decide(estimates(), COND)["hypotheses"]
+    members = [{"arm": "open", "introduced": "10", "introduced_private": "1"},
+               {"arm": "open", "introduced": "", "introduced_private": ""},
+               {"arm": "encapsulated", "introduced": "10", "introduced_private": "8"}]
+    assert prepare.compliance(members, "open") == {"arm": "open", "introduced": 10, "private": 1, "share": 0.9}
 
 
 def test_h7_forced_classes_that_gain_more_coupling_are_supported():

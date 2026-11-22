@@ -57,15 +57,20 @@ def h5_section(est: dict, hyp: dict, rep: dict) -> list[str]:
          "was bound to: at the class, another class holding injected dependencies of the same types (code "
          "bound to the class's own state, constants or methods has none); at the method, another method "
          "with a parameter or local of each type. The ratio of the alternatives at the end of the stream "
-         f"to its start, 90% interval, one-sided below {f((b.get('margin') or [None, None])[1])}.", "",
-         f"- **{h.get('state', h.get('verdict', '–'))}**"]
+         "to its start: a fall, one-sided below 1, at the class, 95% cluster-bootstrap interval (chains "
+         "resampled). The method level is reported.", "",
+         f"- **{h.get('verdict', '–')}** ({h.get('state', '–')})"]
     for lev in ("class", "method"):
         x = b.get(lev) or {}
         if x.get("all_forced"):
             L.append(f"- **At the {lev}: every placement forced** ({f(x.get('n'))} rows; no alternative anywhere)")
         else:
             L.append(f"- **At the {lev}: {ratio(x)}** (n = {f(x.get('n'))}"
-                     + (f"; one-sided p {f(x.get('p_upper'))}" if "p_upper" in x else "") + ")")
+                     + (f"; one-sided p {f(x.get('p_less'))}" if "p_less" in x else "")
+                     + (f"; {x['interval']}" if x.get("interval") else "") + ")")
+            L.append(f"- Reported, at the {lev} against the upper margin "
+                     f"{f((b.get('margin') or [None, None])[1])} (as H5 stood until 22 November 2026, 90% Wald "
+                     f"interval): {ratio(rep.get(f'H5_margin_{lev}'))}")
         for arm, sp in (rep.get(f"H5_spread_{lev}") or {}).items():
             if not sp:
                 continue
@@ -145,6 +150,18 @@ def h6_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
             L.append(f"- {arm} arm: " + ", ".join(f"{k} {f(g.get(k + '_share'))}" for k in
                                                   ("private", "package", "protected", "public", "unbound")
                                                   if g.get(k + "_share") is not None))
+    bl = (rd or {}).get("growth_by_lever") or {}
+    if bl:
+        L += ["", "Within the forced growth, whether the lever of injection was there: bound to the class's "
+              "own private state, constants or methods (no lever), or only to injected private fields, which "
+              "another class could declare too (the opportunity to duplicate the core; still forced, because "
+              "it was not exercised).", ""]
+        for arm, g in bl.items():
+            L.append(f"- {arm} arm: {f(g.get('forced'))} positions forced ({f(g.get('forced_share_of_growth'))} of "
+                     f"the growth, {f(g.get('placements'))} placements); own private members "
+                     f"{f(g.get('own_share'))}; injected only {f(g.get('opportunity_share'))} (another class "
+                     f"already holds the dependencies {f(g.get('injected_elsewhere_share'))}, none yet "
+                     f"{f(g.get('injected_only_here_share'))})")
     L += ["", "### Where coupling between classes came from", "",
           "Calls between classes each unit added (the tree after it less the tree before), over every class.", ""]
     for arm, c in ((rd or {}).get("coupling_added") or {}).items():
@@ -176,9 +193,12 @@ def h7_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
     L = ["", "## H7, forced changes couple (methods arm)", "",
          "Per unit and existing class it changed, the calls across the class's boundary the unit added "
          "(outward and inward). The ratio for a class with a placement forced at the class to one without, "
-         "at the same point in the stream; one-sided above 1.", "",
+         "at the same point in the stream and change size, with the class's intercept within the chain; "
+         "one-sided above 1, 95% cluster-bootstrap interval (chains resampled).", "",
          f"- **{h.get('verdict', '–')}**",
-         f"- **Forced: {ratio(fo)}** (n = {f(fo.get('n'))}, {fo.get('family', '–')}; one-sided p {f(fo.get('p_greater'))})",
+         f"- **Forced: {ratio(fo)}** (n = {f(fo.get('n'))}, {fo.get('family', '–')}; one-sided p "
+         f"{f(fo.get('p_greater'))}; {fo.get('interval', '–')}; the class's intercept "
+         f"{'kept' if fo.get('class_intercept') else 'not fitted'}); Wald: {ratio(fo.get('wald'))}",
          f"- Reported, forced by binding with no alternative (H5's): {ratio(rep.get('H7_forced_bind'))}; "
          f"forced without the change's size: {ratio(rep.get('H7_forced_without_size'))}"]
     for y, lab in (("opened", "calls reaching a member the unit exposed or widened"), ("new_out", "outward calls"),
@@ -195,6 +215,94 @@ def h7_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
                      f"exposed or widened member {f(x.get('opened_share'))} (exposed {f(x.get('exposed'))}, widened "
                      f"{f(x.get('widened'))}); members opened a row {f(x.get('members_opened'))}")
     return L
+
+
+def reuse_test_lines(e2: dict) -> list[str]:
+    """H2's arm contrast (22 November 2026): a core value come back to less in the function arm."""
+    L = []
+    for lev in ("class", "method"):
+        x = e2.get(f"reuse_{lev}") or {}
+        if not x:
+            continue
+        counts = (f"core records: methods arm {f(x.get('methods_records'))} ({f(x.get('methods_uses'))} uses), "
+                  f"function arm {f(x.get('function_records'))} ({f(x.get('function_uses'))} uses)")
+        if x.get("required"):
+            L.append(f"- **A core value come back to, function arm / methods arm, at the {lev}: {ratio(x)}** "
+                     f"(needed below 1; one-sided p {f(x.get('p_less'))}; {x.get('interval', '–')}; {counts})")
+        else:
+            L.append(f"- The arm contrast at the {lev} is not part of the test here: "
+                     f"{x.get('note') or x.get('error') or '–'}"
+                     + (f" ({counts}; at least {f(x.get('min_records'))} in each needed)" if "records" in x else ""))
+    return L
+
+
+def existing_files_lines(m3: dict) -> list[str]:
+    """H4's symmetric count (22 November 2026): the existing files a change went back into."""
+    x = m3.get("existing_files") or {}
+    if not x or x.get("not_applicable"):
+        return []
+    mean, java, wiring = x.get("mean") or {}, x.get("java") or {}, x.get("wiring") or {}
+    return [f"- **Existing files a change went back into (production Java and wiring alike), function arm / "
+            f"methods arm: {ratio(x)}** (needed below 1; one-sided p {f(x.get('p_less'))}; "
+            f"{x.get('interval', '–')}); per checkpoint: "
+            + "; ".join(f"{a} {f(v)} (Java {f(java.get(a))}, wiring {f(wiring.get(a))})" for a, v in mean.items())]
+
+
+def validation_section(rd: dict) -> list[str]:
+    """The instrument against the compiler (PLAN.md §4.8)."""
+    v = rd.get("validation") or {}
+    if not v:
+        return []
+    L = ["", "## Reported: the instrument against the compiler", "",
+         "The instrument resolves names without a symbol solver. On a sample of each chain's checkpoints "
+         "(every fifth and the last) the tree was given to javac, which does resolve them. Precision: of what "
+         "the instrument read, the share the compiler confirms. Recall: of what the compiler read that could "
+         "be followed, the share the instrument has. What the compiler itself could not resolve is counted "
+         "apart and held against neither.", "",
+         "| Arm | Checkpoints (chains) | Calls: precision, recall | Calls leaving the class: precision, recall | "
+         "Field reads: precision, recall | Bound names confirmed: method values, fields, class methods |",
+         "|---|---|---|---|---|---|"]
+    for arm, a in v.items():
+        L.append(f"| {arm} | {f(a.get('checkpoints'))} ({f(a.get('chains'))}) | "
+                 f"{f(a.get('calls_precision'))}, {f(a.get('calls_recall'))} (of {f(a.get('calls'))} and "
+                 f"{f(a.get('calls_compiler'))}) | {f(a.get('cross_precision'))}, {f(a.get('cross_recall'))} "
+                 f"(of {f(a.get('cross_calls'))} and {f(a.get('cross_compiler'))}) | "
+                 f"{f(a.get('reads_precision'))}, {f(a.get('reads_recall'))} (of {f(a.get('reads'))} and "
+                 f"{f(a.get('reads_compiler'))}) | {f(a.get('names_method_precision'))} of "
+                 f"{f(a.get('names_method'))}, {f(a.get('names_field_precision'))} of {f(a.get('names_field'))}, "
+                 f"{f(a.get('names_class_method_precision'))} of {f(a.get('names_class_method'))} |")
+    for arm, a in v.items():
+        L.append(f"- {arm}: methods matched between the two {f(a.get('methods_matched_share'))}, hosts "
+                 f"{f(a.get('hosts_matched_share'))}; strict precision (a call confirmed only on the compiler's "
+                 f"class, its ancestors and descendants, not its siblings): calls {f(a.get('calls_strict_precision'))}, "
+                 f"calls leaving the class {f(a.get('cross_strict_precision'))}; the instrument's calls the compiler left unresolved "
+                 f"(unverified) {f(a.get('calls_unverified'))}; the compiler's calls to an application method's "
+                 f"name it could not resolve {f(a.get('calls_unresolved'))}; its calls to a method with no body "
+                 f"in the tree (an interface's) {f(a.get('calls_no_body'))}; checkpoints read with the project's "
+                 f"libraries on the classpath {f(a.get('with_classpath'))} of {f(a.get('checkpoints'))}")
+    return L
+
+
+def h8_section(est: dict, hyp: dict, cond: dict) -> list[str]:
+    """H8, without encapsulation code disperses: Run D against Run A's same stack (PLAN.md §3.1a)."""
+    h = hyp.get("H8")
+    if not h:
+        return []
+    d = h.get("detail") or {}
+    comp = cond.get("compliance") or {}
+    amt = cond.get("amount") or {}
+    return ["", "## H8, without encapsulation code disperses (Run D against Run A)", "",
+            "The same stack, stream and agent, with the agent told to leave every field and method public. "
+            "Both parts are needed: its bound code is come back to less at the class (below 1), and its "
+            "changes add more calls and field reads across class boundaries at the same change size (above "
+            "1); 95% cluster-bootstrap intervals. Run D was run after Run A, not beside it, so anything "
+            "that changed between the two runs is in the contrast (PLAN.md §7).", "",
+            f"- **{h.get('verdict', '–')}** (p {f(h.get('p'))})",
+            f"- Compliance, the members its units introduced that are not private: {f(comp.get('share'))} "
+            f"of {f(comp.get('introduced'))} (at least {f(h.get('compliance_bar'))} needed)",
+            f"- **Later intrusion at the class, open / encapsulated: {ratio(d.get('intrusion_class'))}**",
+            f"- **Calls and field reads added across class boundaries, open / encapsulated: {ratio(d.get('coupled'))}**",
+            f"- Amount added, open / encapsulated: {f(amt.get('ratio'))} (in band: {f(amt.get('in_band'))})"]
 
 
 def redesign_section(rd: dict) -> list[str]:
@@ -508,8 +616,11 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           f"uses of the values that code was bound to (the core) against their uses of the rest the "
           f"place held, what stood by and what the change introduced (the periphery), as a rate ratio "
           f"per value. A later change counts each value once in each method its bound code is in.", "",
-          f"- **At the class (the private members the code was bound to): {ratio(e2.get('class'))}**",
-          f"- **At the method (its values): {ratio(e2.get('method'))}**",
+          f"- **At the class (the private members the code was bound to): {ratio(e2.get('class'))}**"
+          f" ({(e2.get('class') or {}).get('interval', '–')}; Wald: {ratio((e2.get('class') or {}).get('wald'))})",
+          f"- **At the method (its values): {ratio(e2.get('method'))}**"
+          f" ({(e2.get('method') or {}).get('interval', '–')}; Wald: {ratio((e2.get('method') or {}).get('wald'))})",
+          *reuse_test_lines(e2),
           f"- Reported, the function arm: class {ratio(rep.get('H2_core_function_arm_class'))}; method "
           f"{ratio(rep.get('H2_core_function_arm_method'))}",
           *core_lines(readings or {}),
@@ -566,6 +677,14 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
                  f"{f(at_class.get('min_classes'))} needed), the busiest holding "
                  f"{f(at_class.get('top_class_share'))} of them (at most {f(at_class.get('max_share'))}). "
                  f"They are reported below, each alone.")
+    sens = (ver.get("sensitivity") or {}).get("H3_with_coupling") or {}
+    if sens:
+        L.append(f"  - Reported, a sensitivity reading: H3's rule with the literature's coupling measures put "
+                 f"back (fan-out, CBO, RFC; read apart in this plan as reach): **{sens.get('state', '–')}** over "
+                 + (", ".join(sens.get("measures") or []) or "no measure")
+                 + (f"; wholly above the margin: {', '.join(sens['above'])}" if sens.get("above") else "")
+                 + (f"; not estimable: {', '.join(sens['not_estimable'])}" if sens.get("not_estimable") else "")
+                 + ". It changes no verdict.")
     sj = rep.get("shape_joint") or {}
     if sj.get("measures"):
         L.append("- Reported, the block as first registered, together in one model on method-level intrusion: "
@@ -602,8 +721,9 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           f"- **Their slope on the checkpoint index (interaction): {interval(m3.get('slope'))}**",
           f"- **Later intrusion where bound code was placed, function arm / methods arm: at the class "
           f"{ratio(m3.get('intrusion_class'))}; at the method {ratio(m3.get('intrusion_method'))}**",
-          f"- Reported, how much a core value is come back to, function arm / methods arm: at the class "
-          f"{ratio(rep.get('core_reuse_class'))}; at the method {ratio(rep.get('core_reuse_method'))}",
+          *existing_files_lines(m3),
+          f"- How much a core value is come back to, function arm / methods arm (H2's arm contrast): at the "
+          f"class {ratio(rep.get('core_reuse_class'))}; at the method {ratio(rep.get('core_reuse_method'))}",
           *reuse_lines(readings or {}),
           *[f"- Reported, {arm}: per checkpoint, classes its bound code goes back into {f(x.get('classes'))}, "
             f"wiring files changed again {f(x.get('wiring'))}" for arm, x in rs.items()],
@@ -637,12 +757,14 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           *h5_section(est, hyp, rep),
           *h6_section(est, hyp, rep, readings or {}),
           *h7_section(est, hyp, rep, readings or {}),
+          *h8_section(est, hyp, cond),
           *redesign_section(readings or {}),
           *surface_section(rep, readings or {}),
           *reader_section(rep, readings or {}),
           *readings_section(est, readings or {}),
           *landing_section({**(readings or {}), "_estimates": rep}),
           *literature_section(est, spec),
+          *validation_section(readings or {}),
           "", "## Provenance", "",
           "Checkpoint intercept in the model: " + (", ".join(
               f"{k} {f(v)}" for k, v in (est.get("checkpoint_intercept") or {}).items()) or "–") + ".", "",

@@ -179,6 +179,22 @@ analyses:
       # Run B (angular-officefloor, tanstack-spring): not started on 16 November 2026; added by amendment.
       # Run C (the no-injection control, a third arm): its stack not built on 16 November 2026.
 
+  # Run D (PLAN.md 3.1a, H8; registered 22 November 2026): the angular-spring stack with the agent
+  # told to leave everything public, against Run A's angular-spring. Run after the others, not beside
+  # Run A. Added here by dated amendment with its run id, before any of its backend Java is read, as:
+  #   - name: ui-no-encapsulation
+  #     corpus: ui
+  #     role: secondary
+  #     stream: ui
+  #     contrast: no-encapsulation     # its one test is H8; H1 to H7 are descriptive in it
+  #     methods_arm: encapsulated
+  #     function_arm: open
+  #     sources:
+  #       - {arm: encapsulated, frontend: angular, repo: officehq-angular-spring, run: 202610271-as, strategy: just-solve}
+  #       - {arm: open, frontend: angular, repo: officehq-angular-spring, run: <Run D's id>, strategy: just-solve}
+  # Not yet run end to end: check, on the development data, that nothing in steps 3 and 4 keys on the
+  # arm being named spring or officefloor before this entry is read.
+
   - name: pilot
     corpus: petclinic
     role: development

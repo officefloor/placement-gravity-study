@@ -57,8 +57,9 @@ h2 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
              left_class = byc + 1, left_method = bym + 2,
              core_class = 1 + (seq_len(n) %% 2), core_method = seq_len(n) %% 3,
              periphery_class = byc + 1, periphery_method = bym + 2,
-             uses_core_class = rnbinom(n, size = 2, mu = dr * 3 * (1 + (seq_len(n) %% 2))),
-             uses_core_method = rnbinom(n, size = 2, mu = dr * 3 * (seq_len(n) %% 3)),
+             # a core value of the function arm is come back to 0.3 times as much as the methods arm's
+             uses_core_class = rnbinom(n, size = 2, mu = dr * 3 * (1 + (seq_len(n) %% 2)) * (if (arm == "spring") 1 else 0.3)),
+             uses_core_method = rnbinom(n, size = 2, mu = dr * 3 * (seq_len(n) %% 3) * (if (arm == "spring") 1 else 0.3)),
              uses_periphery_class = rnbinom(n, size = 2, mu = dr * (byc + 1)),
              uses_periphery_method = rnbinom(n, size = 2, mu = dr * (bym + 2)),
              core_class_fields = rep(1, n), periphery_class_fields = byc + 1,
@@ -100,8 +101,13 @@ cap <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, func
 reopen <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
   r <- rpois(60, (if (arm == "spring") 3 else 1) * exp(cp_by))
   w <- if (arm == "spring") rep(0, 60) else rbinom(60, r, 0.5)
+  # the existing files a change goes back into: 3 Java files in the methods arm; 1.4 Java files and
+  # 0.7 wiring files in the function arm (0.7 times as many in all)
+  ej <- rpois(60, (if (arm == "spring") 3 else 1.4) * exp(cp_by))
+  ew <- if (arm == "spring") rep(0, 60) else rpois(60, 0.7)
   data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = 1:60,
-             reopened = r, reopened_classes = r - w, reopened_wiring = w)
+             reopened = r, reopened_classes = r - w, reopened_wiring = w,
+             existing_java_files = ej, existing_wiring_files = ew, existing_files = ej + ew)
 }))))
 write.csv(reopen, file.path(dir, "reopen.csv"), row.names = FALSE)
 write.csv(by, file.path(dir, "by.csv"), row.names = FALSE)
@@ -155,12 +161,15 @@ h7 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
   n <- 100
   forced <- rbinom(n, 1, 0.4) == 1
   cp <- sample(1:60, n, replace = TRUE)
-  mu <- if (arm == "spring") 1.5 * ifelse(forced, 2, 1) else rep(1.5, n)
+  # ten classes a chain, each with its own level of coupling (a busy class gains more whatever forced it)
+  k <- sample(1:10, n, replace = TRUE)
+  level <- exp(rnorm(10, 0, 0.4))[k]
+  mu <- (if (arm == "spring") 1.5 * ifelse(forced, 2, 1) else rep(1.5, n)) * level
   out <- rnbinom(n, size = 4, mu = mu * 0.6)
   inn <- rnbinom(n, size = 4, mu = mu * 0.4)
   op <- rbinom(n, out + inn, ifelse(forced & arm == "spring", 0.5, 0.2))
   data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = cp, unit = cp,
-             class = "C", forced = forced, chosen = !forced, new_out = out, new_in = inn,
+             class = paste0("C", k), forced = forced, chosen = !forced, new_out = out, new_in = inn,
              coupled = out + inn, opened = op, members_opened = rpois(n, ifelse(forced, 1, 0.5)))
 }))))
 write.csv(h7, file.path(dir, "h7.csv"), row.names = FALSE)
@@ -219,6 +228,7 @@ writeLines(jsonlite::toJSON(list(
   shape_kept = c("s1_long", "s4_cognitive", "s5_class_gini"), sinew_kept = c("s2_stuck", "s3_junction"),
   h3_measures = c("s1_long", "s4_cognitive", "m_cyclomatic", "c_gini", "c_wmc", "c_lcom_star"),
   reach = c("m_fanout"),
+  h3_sensitivity = c("s1_long", "s4_cognitive", "m_cyclomatic", "m_fanout", "c_gini", "c_wmc", "c_lcom_star"),
   literature = list(s1_long = list(level = "method", kind = "flag", source = "long"),
                     s4_cognitive = list(level = "method", kind = "level", source = "cognitive"),
                     c_gini = list(level = "class", kind = "plain", source = "Gini"),
@@ -249,6 +259,15 @@ check(e$reported$H2_left_class$irr_lower > 1 && e$reported$H2_left_method$irr_lo
       "the reading with what was introduced beside what stood by is estimated at both levels")
 check(!is.null(e$reported$core_reuse_class$irr) && !is.null(e$reported$core_reuse_method$irr),
       "how much a core value is come back to is compared between the arms")
+for (lev in c("class", "method")) {
+  x <- e$H2[[paste0("reuse_", lev)]]
+  check(isTRUE(x$required) && abs(log(x$irr) - log(0.3)) < 0.3 && x$irr_upper < 1 && x$p_less < 0.05 &&
+          x$interval == "cluster bootstrap",
+        paste("H2's arm contrast recovers a core value come back to 0.3 times as much in the function arm, at the", lev))
+}
+check(abs(log(e$H4$existing_files$irr) - log(0.7)) < 0.15 && e$H4$existing_files$irr_upper < 1 &&
+        e$H4$existing_files$interval == "cluster bootstrap",
+      "H4's symmetric count recovers the function arm going back into 0.7 times the existing files")
 check(e$H1$within_class$places == 48, "H1 within a class is read on the classes with runs at two checkpoints")
 for (lev in c("class", "method")) {
   m <- e$H2[[lev]]
@@ -326,8 +345,13 @@ check(!is.null(e$reported$H4_without_injected$slope$estimate), "H4 (bindings) wi
 check(!is.null(e$reported$bindings_without_injected_class$irr), "H2 without injected dependencies is estimated")
 for (lev in c("class", "method")) {
   x <- e$H5[[lev]]
-  check(!is.null(x$irr) && x$irr_upper < 1.25 && abs(log(x$irr) - log(1 / 3)) < 0.3,
-        paste("H5 recovers the falling alternatives, below the margin, at the", lev))
+  check(!is.null(x$irr) && x$irr_upper < 1 && x$p_less < 0.05 && abs(log(x$irr) - log(1 / 3)) < 0.45,
+        paste("H5 recovers the falling alternatives, below 1, at the", lev, "(ratio", signif(x$irr, 3), "interval",
+              signif(x$irr_lower, 3), signif(x$irr_upper, 3), "p", signif(x$p_less, 3), x$interval, ")"))
+  check(x$interval == "cluster bootstrap" && !is.null(x$wald$irr),
+        paste("H5 is decided on the cluster bootstrap, the Wald reading beside it, at the", lev))
+  check(e$reported[[paste0("H5_margin_", lev)]]$irr_upper < 1.25,
+        paste("H5 against the upper margin, as it stood, is reported, at the", lev))
   check(abs(log(e$reported[[paste0("H5_function_arm_", lev)]]$irr)) < 0.3,
         paste("the function arm's flat alternatives are reported, at the", lev))
   check(!is.null(e$reported[[paste0("H5_spread_", lev)]]$methods$forced), paste("the share forced is reported,", lev))
@@ -347,6 +371,15 @@ check(abs(log(e$reported$H6_function_arm$irr)) < 0.35, "the function arm's flat 
 check(!is.null(e$reported$H6_spread$methods$thirds_classes), "the spread per third is reported")
 check(abs(log(e$reported$H6_pair_coupling$irr) - log(3)) < 0.35, "the rising coupling of pairs changed together is recovered")
 check(abs(log(e$H7$forced$irr) - log(2)) < 0.25 && e$H7$forced$irr_lower > 1, "H7 recovers forced classes gaining twice the coupling")
+check(isTRUE(e$H7$forced$class_intercept) && e$H7$forced$interval == "cluster bootstrap",
+      "H7 carries the class's intercept within the chain and is decided on the cluster bootstrap")
+check(abs(log(e$coupled_arm$irr) - log(1 / 1.4)) < 0.3,
+      "the arms' ratio in calls added at the same change size (Run D's dispersion test) is estimated")
+check(e$H2$class$interval == "cluster bootstrap" && e$H4$intrusion_class$interval == "cluster bootstrap",
+      "H2 and H4's intrusion ratios are decided on the cluster bootstrap")
+check(setequal(names(e$reported$H3_with_coupling$measures),
+               c("s1_long", "s4_cognitive", "m_cyclomatic", "m_fanout", "c_gini", "c_wmc", "c_lcom_star")),
+      "H3's sensitivity reading puts the literature's coupling measures back")
 check(e$reported$H7_forced_opened$irr > e$H7$forced$irr, "H7: forced classes' coupling reaches opened members more, as simulated")
 check(abs(log(e$reported$H7_function_arm_forced$irr)) < 0.3, "the function arm's forced ratio, simulated 1, is reported")
 sx <- e$reported$surface$spring

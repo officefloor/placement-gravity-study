@@ -59,9 +59,10 @@ code has uncommitted changes, and each report lists the registered files changed
 **Working on the code.**
 
 - Tests: `.venv/bin/python -m pytest -q` and `Rscript analysis/selftest.R`.
-- After editing `instrument/Pull.java`, recompile it (`javac --release 17 -nowarn -d instrument/classes -cp lib/officefloorslim.jar instrument/Pull.java`, as `setup.sh` does).
+- After editing `instrument/Pull.java`, recompile it (`javac --release 17 -nowarn -d instrument/classes -cp lib/officefloorslim.jar instrument/Pull.java`, as `setup.sh` does); likewise `instrument/Check.java` (`javac --release 17 -nowarn -d instrument/classes instrument/Check.java`).
 - After changing what a measured table means (the instrument, `tables.py`, `chain.py`), raise `MEASURE_VERSION` in `placement_gravity/measure.py` and `HISTORY_VERSION` in `placement_gravity/history.py`: steps 3 and 3b otherwise reuse the old measurements silently.
-- Do not change the code while steps 3 or 3b run: step 3b starts a fresh Python process per repository, so a change mid-run mixes two versions of the measurement.
+- Do not change the code while steps 3, 3b or 4 run: step 3b starts a fresh Python process per repository, so a change mid-run mixes two versions of the measurement, and step 4 reads the analysis code as it stands when each analysis starts. Before editing, check that no run is in progress (`pgrep -af 'step[0-9]|placement_gravity|analyse.R'`); a rerun may have been started in the background by an earlier session.
+- Step 4 decides the confirmatory tests on a cluster bootstrap (1,000 refits each), which takes far longer than the models alone. The refits run on `PG_CORES` cores (four by default); each holds its own copy of the model, so more cores need more memory. Do not run the R self-test, or anything else heavy, beside step 3b: the machine has run out of memory that way and the kernel killed a measurement.
 - When chaining steps in one command, record each step's own exit status: a chain ending in `; echo exit $?` reports the last command's status, not a failed step's.
 - Step 3b clones each repository from GitHub (it needs the network); a full rerun of the pilot and the development histories takes about two hours, so keep the machine from sleeping (for example `systemd-inhibit --what=sleep:idle:handle-lid-switch`).
 - The diagram in PLAN.md §2 is `figures/placement-forces.svg`; it was first published as a private page (claude.ai/artifact/7ZQfbsMD3ygsJAbKzffYMJ) and the file in the repository is the record.
@@ -74,6 +75,8 @@ cloned into `~/placement-gravity-data/`. The streams are read at the commits `ru
 | Code | |
 |---|---|
 | `instrument/Pull.java` | The instrument: per addition, hosts, runs and their bindings (method and class), their bystanders (the pre-existing values visible where a run lands that it does not use, PLAN.md §4.3a), the values it introduces (§4.3b), birth bindings, moved code; the amount; with `--shape`, every method of a tree as the earlier studies read it (SinewSlim's length and assessment, junction counts). |
+| `instrument/Check.java` | The compiler's reading of a tree (javac's own API), to check the instrument against: what each method calls, reads and refers to (PLAN.md §4.8). |
+| `placement_gravity/validate.py` | The instrument's calls, field reads and bound names scored against the compiler's, on a sample of each chain's checkpoints (PLAN.md §4.8, reported). |
 | `refactor/` | RefactoringMiner 3.0.4 at each commit (`Refactorings.java`) and CodeTracker 2.6 histories (`Histories.java`), built by Maven. |
 | `placement_gravity/refactor.py` | RefactoringMiner's findings as the instrument's hints: renames, matches, moved code. |
 | `placement_gravity/crosscheck.py` | CodeTracker against the instrument's following of hosts. |

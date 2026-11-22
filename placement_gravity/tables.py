@@ -239,6 +239,23 @@ def encapsulated(r: dict, tf: list[str], tc: list[str], places: dict | None) -> 
             or any("private" in methods.get(v, set()) for v in tc))
 
 
+def lever(r: dict, tf: list[str], ti: list[str], tc: list[str], places: dict | None) -> str | None:
+    """Within forced by encapsulation, whether the lever of injection was there (decided by the
+    author on 22 November 2026). ``injected``: every private member the code was bound to is a field
+    holding an injected dependency, which another class could declare too, so the core could be
+    duplicated elsewhere; the choice exists as a construct and was not exercised (whether another
+    class already holds those dependencies is H5's ``choice_class``). ``own``: it was bound to a
+    private field of the class's own state, a private constant or a private method, which nothing
+    outside can reach. None where the placement was not forced by encapsulation."""
+    private = private_members(r, places) if (tf or tc) else None
+    if private is None:
+        return None
+    used = {v for v in tf if v in private} | {f"{m}()" for m in tc if f"{m}()" in private}
+    if not used:
+        return None
+    return "injected" if used <= set(ti) else "own"
+
+
 def forced(h: dict) -> bool | None:
     """A host's placement forced by encapsulation (``forced_enc``): True, False, or None where its
     code was not bound at the class."""
@@ -578,6 +595,9 @@ def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
             "private_class_members": (lambda x: None if x is None else " ".join(sorted(x)))(
                 private_members(r, measured.get("places"))),
             "bound_access": bound_access(r, tf, tc, measured.get("places")),
+            # within forced: bound only to injected private fields (the lever of injection was there,
+            # not exercised) or to the class's own private members
+            "forced_lever": lever(r, tf, ti, tc, measured.get("places")),
         })
         if shaped:
             rows[-1].update(shape.host_shape(rows[-1], shaped, in_class))
@@ -729,6 +749,11 @@ def addition_rows(arm: str, chain: str, measured: dict, hosts: list[dict],
             "reopened_classes": again.get(cp, {}).get("reopened_classes", 0),
             "reopened_wiring": again.get(cp, {}).get("reopened_wiring", 0),
             "reopened": sum(again.get(cp, {}).values()),
+            # the existing files the change went back into, whatever they hold and bound or not
+            # (H4's symmetric count, 22 November 2026): production Java files that existed, and
+            # wiring files that existed (not those the checkpoint adds)
+            "existing_java_files": measured.get("java_existing", {}).get(unit),
+            "existing_wiring_files": sum(1 for s, _ in measured.get("wiring_changes", {}).get(unit, []) if s != "A"),
             "wiring_nodes_added": w["after"]["nodes"] - w["before"]["nodes"],
             "wiring_edges_added": w["after"]["edges"] - w["before"]["edges"],
             "wiring_files": w["after"]["files"], "wiring_edges": w["after"]["edges"],

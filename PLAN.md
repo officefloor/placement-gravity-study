@@ -2,7 +2,8 @@
 
 > **Status: NOT YET REGISTERED. The tag `plan-v1` was withdrawn on 17 November 2026, before any
 > run named for analysis was read, while the hypotheses are worked out on the development chain
-> (§9, five revisions so far). It will be set again when that work is done; until then only the
+> (§9, five revisions so far, the last still growing: rows 72 to 80 follow a review of the plan on
+> 22 November 2026). It will be set again when that work is done; until then only the
 > development chain can be read.** As first registered, on 16 November 2026: the tag was first pushed on commit
 > `4bb8973` and moved the same day, before any run named for analysis was read, to this revision,
 > which adds bindings to injected dependencies reported apart (§4.3, §5). The instrument is piloted on
@@ -176,7 +177,9 @@ are **secondary**: each keeps its direction and rule and is decided on its own p
 correction. H3 and H6 are the existing literature's two ways of looking for the cause, by shape
 and by co-change, each predicted not to find it. (Until 21 November 2026, later, H6 was
 confirmatory, as *forced changes spread*, and Holm was over five; §9 row 67.) The readings
-(§4.2b–4.2e) are reported.
+(§4.2b–4.2e) are reported. **H8** (Run D, §3.1a; registered on 22 November 2026, §9 row 76) is
+the one test in which the cause is changed by hand: the same stack with the agent told to leave
+everything public. It is run after the others, on its own run, and decided on its own p.
 
 **Forced** (decided by the author on 21 November 2026, §9 row 65) means **forced by
 encapsulation**: a placement whose code was bound at the class to a member no other class can
@@ -188,6 +191,21 @@ unbound. The definition is the force itself and
 works the same with or without dependency injection, so corpus B, which mostly has none, gets the
 same contrast as corpus A. Forced by binding with no alternative (H5's class level, §4.2a) is
 reported beside it in H6 and H7, and stays H5's own measure.
+
+**An injected private field forces too** (decided by the author on 22 November 2026, §9 row 72,
+after a review of the plan found §4.3 and this definition at odds over it). §4.3 says a field
+holding an injected dependency can be declared by any class, so it need not pin code to this one.
+The author: "injection allows it to have choice as a construct, however convenience of connecting
+to what is already there shows the choice not exercised ... it is a lever to fix the encapsulation
+problem and it needs to be exercised, otherwise private encapsulation is the force." So a
+placement bound to a private injected field is forced, like any other bound to a private member.
+What injection gives is carved out **inside** forced and reported (§4.2b, *Growth by lever*): the
+forced growth bound only to injected private fields is the **opportunity** to duplicate the core
+in another class and avoid the concentration, which is the value of dependency injection; the
+forced growth bound to the class's own private state, constants and methods has no such lever.
+OfficeFloor does not have the problem: everything is injected as parameters, so the choice is
+there without being exercised by anyone (H4). H5 counts how far the lever has been used: its
+alternatives at the class are the other classes that already hold the same dependencies (§4.2a).
 
 - **H1, the periphery grows** (restated 17 November 2026, twice; renamed 19 November 2026, §9).
   Until then it was called *gravity compounds*: its test is unchanged, its reading is not. What
@@ -215,6 +233,20 @@ reported beside it in H6 and H7, and stays H5's own measure.
   above 1, at the class and at the method. With H1: a place gathers data, but what gathers is
   mostly periphery; what the next code is bound to is the few values code there was already
   bound to.
+  - **And a core value is come back to less in the function arm** (added to H2's test on 22
+    November 2026, decided by the author after a review of the plan, §9 row 77). The ratio above
+    can hardly fail by itself: a value one problem already used is likely to be used again,
+    whatever the place, as a library's borrowed books are borrowed again (§7, *H2 as restated
+    compares two kinds of value*). Both arms solve the same problems with the same data. So if the
+    core is only the problems' popular data, a core value is come back to as much in either arm;
+    if it is the place, it is come back to less where no place holds values privately. H2 needs
+    both: the ratio of core to periphery above 1 at the class and at the method in the methods
+    arm, **and** the uses of a core value, function arm against methods arm, below 1 (§5). The arm
+    contrast is needed at each level where both arms have at least 10 rows with a core; the
+    function arm is expected to form few cores at the class, and where it has too few to compare,
+    that is reported and that level's contrast is not needed. On a history (corpora B and C) the
+    arms do not solve the same problems, and H2 there is the ratio alone, direction and interval
+    only as before. Until then the arm contrast was reported beside H4.
   - *At the class, the core is the encapsulated part* (decided by the author on 22 November 2026,
     §9 row 71, after the development data): "Gravity comes from the force of no choice. Private
     forces that choice. Now if methods are made public over time, then that shows up in coupling
@@ -261,6 +293,14 @@ reported beside it in H6 and H7, and stays H5's own measure.
   conclude that method-level metrics stay useful predictors of maintenance with size as a
   covariate (size divided out does not neutralise it; size in the model does). H3 holds data fixed, not only size, and
   the problem; its method-level result is to be set against Chowdhury et al.
+  - *A sensitivity reading, with the coupling measures put back* (decided by the author on 22
+    November 2026, §9 row 75). Fan-out and CBO were taken out of H3 as reach after fan-out was
+    seen above the margin on the development chain (§7), and the literature counts them, with RFC,
+    among its structural metrics (Chidamber and Kemerer 1994). So H3's rule is also read over its
+    six measures **and** the method's fan-out and the class's CBO, RFC and fan-out, each alone,
+    where they vary. It is reported beside H3 with its state (not above, unresolved, against) and
+    the measures that lie wholly above the margin, and it changes no verdict: a reader who holds
+    that coupling is shape can read H3 that way.
   - *H2 and H3 were one hypothesis* (H2a and H2b) until 17 November 2026, supported only if both
     held (§9). They are now decided apart: one is a difference to be shown, the other an
     equivalence, and the second should not decide the first.
@@ -270,7 +310,17 @@ reported beside it in H6 and H7, and stays H5's own measure.
   stream, the function arm's bystanders are fewer, and their slope on the checkpoint index is
   flatter, than the methods arm's; and its bound code is **come back to less**, at the class and at
   the method (§4.4). (*As first registered:* its bindings are lower and their slope on host size
-  flatter; kept and reported beside it.) The total amount
+  flatter; kept and reported beside it.) **And its changes go back into fewer existing files,
+  production Java and wiring counted alike** (added on 22 November 2026, decided by the author
+  after a review of the plan, §9 row 78). The condition above counts the methods arm's return to
+  its handler and not the function arm's return to its wiring file (§7, *The function arm's
+  calling method is its wiring*), and a rule of the plan, that an injected parameter is not a
+  binding, decides how much of the function arm is followed at all. This count rests on no such
+  rule: per checkpoint, the files that existed before it and that it changed, whatever they hold
+  and whether its code was bound there or not. The function arm's rate has to be below the
+  methods arm's (§5). It is the count H4 first had as a condition (reopening, §4.4), without the
+  binding rule and with the wiring in it; on the development chain that count went against H4
+  before the binding rule and was unresolved with it (§6). The total amount
   (positions, tokens) of the function arm lies within 0.8 to 1.25 times the methods arm's, the
   band the flow-injection draft took from the conservation study's spread. The coupling that
   leaves the scopes appears as wiring (§4.5) and is reported, not hidden: injection is known to
@@ -282,16 +332,23 @@ reported beside it in H6 and H7, and stays H5's own measure.
     used alike in both. It is not a condition of H4: few of the function arm's rows have a core
     at the class (one on the development chain), so as a condition it would often not be
     estimable.
-- **H5, choice narrows** (added 19 November 2026, §9; the author's). In the methods arm, a bound
-  addition's **alternatives**, the other places in the code before its checkpoint that hold what
-  its code was bound to (§4.2a), do not rise as the stream goes on: they stay as they are or fall.
-  The author's expectation is that it is always the same place, or that places get restricted over
-  time, especially at the class; there may be choice early and less later. One-sided, as H3: the
-  ratio of the alternatives at the end of the stream to those at its start is shown below the
-  upper margin (1.25), at the class (the method level reported since 20 November 2026, row 64). A flat count passes; a fall is reported
-  with its size and does not count against. H5 is decided apart from H2: H2 is about what later
-  code comes back to a place for (binding), H5 about whether the placement had anywhere else to
-  go. It is the plan's title read directly: *whether it had a choice*.
+- **H5, choice narrows** (added 19 November 2026, §9; the author's; **a fall since 22 November
+  2026**, §9 row 73). In the methods arm, a bound addition's **alternatives**, the other places in
+  the code before its checkpoint that hold what its code was bound to (§4.2a), **fall** as the
+  stream goes on. The author's expectation is that it is always the same place, or that places
+  get restricted over time, especially at the class; there may be choice early and less later.
+  One-sided: the ratio of the alternatives at the end of the stream to those at its start is
+  shown **below 1**, at the class (the method level reported since 20 November 2026, row 64). A
+  flat count does not pass: it shows choice that stays as it was, not choice that narrows. A level
+  where every placement was forced from the start has no choice to narrow and is **not testable**
+  there (it is not a pass). H5 is decided apart from H2: H2 is about what later code comes back
+  to a place for (binding), H5 about whether the placement had anywhere else to go. It is the
+  plan's title read directly: *whether it had a choice*.
+  - *As it stood until 22 November 2026* (reported): one-sided as H3, the ratio shown below the
+    upper margin 1.25, so that a flat count passed, and a level where every placement was forced
+    passed with p 0. Replaced by the author after a review of the plan: a hypothesis named
+    *choice narrows* should not be supported by a count that does not move, and a pass with p 0
+    made the other three confirmatory tests easier under Holm.
   - *Reported beside it:* the share of placements with no alternative (forced), per arm and third
     of the stream; the function arm's ratio, and the arms' contrast (its injected parameters are
     not bindings, so its alternatives are expected to stay open); the alternatives themselves, by
@@ -443,13 +500,21 @@ reported beside it in H6 and H7, and stays H5's own measure.
 - H3: any shape measure followed by more intrusion, beyond the margin, with the problem, the
   bindings and the bystanders held fixed. That would mean that shape draws code in by itself. A
   shape measure followed by less is reported, and does not count against.
+- H2, the arm contrast: a core value come back to as much in the function arm as in the methods
+  arm. The core would then be the problems' shared data, used alike wherever it is put, and not
+  something the place does.
+- H4, the symmetric count: the function arm going back into as many existing files as the methods
+  arm, or more, once its wiring files are counted. Its coupling would then have moved, not gone.
 - H4: no difference between the arms in bystanders, in their growth or in later intrusion, or an amount
   outside the band (the difference is then a difference of amount, not placement), or a function arm that moves its coupling into the wiring:
   wiring per problem that rises over the run, or one configuration file that holds most of it
   (§4.5).
-- H5: alternatives that widen over the stream, beyond the margin, at the class or at the method:
-  code would then find more places to go as the system grows, and placement would loosen, not
-  narrow.
+- H5: alternatives at the class that do not fall over the stream. Flat, choice stays as it was;
+  rising (an interval wholly above 1, *reversed*), code finds more classes to go to as the system
+  grows, and placement loosens.
+- H8 (Run D, §3.1a): with nothing private, bound code come back to as much at the class, or no
+  more calls and field reads added across class boundaries. Encapsulation would then not be what
+  concentrates code, or removing it would not disperse it.
 - H7: a class a forced change goes into gaining no more calls across its boundary than one a
   change goes into unforced. Forcing would then concentrate code without coupling it, and the
   coupling between classes would come from elsewhere.
@@ -559,8 +624,32 @@ end's production Java of the four stacks of its Runs A and B, a front end × bac
   no placement can be forced by encapsulation (§2, *Forced*), so whatever the force does in Run
   A should be absent or weaker in Run D. Its run ids, the harness commit carrying the instruction,
   and the instruction's exact wording are added by a dated amendment before any of its backend
-  Java is read. Its predicted directions are fixed now, each against Run A's `angular-spring`,
-  each reported with a stated direction and none in the confirmatory family:
+  Java is read.
+  - **Its test is registered: H8, without encapsulation code disperses** (decided by the author
+    on 22 November 2026, after a review of the plan, §9 row 76; until then every reading of Run D
+    was reported). Forced against unforced within a run is a comparison of placements nobody
+    assigned; Run D is the one place where the cause itself, encapsulation, is taken away by
+    hand. H8, Run D (*open*) against Run A's `angular-spring` (*encapsulated*), needs both:
+    - *concentration weaker:* the open arm's bound code is come back to less at the class, the
+      rate ratio of later intrusion at the class (H4's model, §5) below 1;
+    - *dispersion stronger:* its units add more calls and field reads across class boundaries,
+      per existing class changed (H7's count, §4.2c), at the same change size and point in the
+      stream, the rate ratio above 1 (forced is not in this model: the instruction changes what
+      is forced).
+    Each one-sided with a 95% cluster-bootstrap interval (§5); p is the larger of the two.
+    Conditions: compliance, below, and the amount within its band. H8 is decided at α = 0.05 on
+    its own p: it is read on its own run, after the others, and is not in the Holm family of the
+    primary analysis. Below the compliance bar it is descriptive only. In Run D's analysis H1 to
+    H7 are descriptive: they are the arms' tests, not this run's.
+  - **Run D cannot be run beside Run A** (the author, 22 November 2026: "I can not currently run
+    it concurrently so will have to run separately at the end, so will have to accept this"). So
+    the contrast holds anything that changed between the two runs, the instruction among them:
+    the date, the machine's load, and above all the agent, if the model behind `claude-opus-5-5`
+    is not the same snapshot by then (§7). The harness commit and the model id Run D ran with are
+    recorded with its run ids; a different model id is reported as a second difference between
+    the runs, and H8 is then read as that.
+  Its other predicted directions are fixed now too, each against Run A's `angular-spring`, each
+  reported with a stated direction:
   - *Compliance, a condition of reading it:* at least 90% of the members its units introduce are
     not private (§4.2f, measure 1). Below that, the instruction did not take and Run D is
     reported descriptively, not read against Run A.
@@ -872,6 +961,16 @@ and C (§3.2).
   third, by the kind of the placement that added them: *forced* (bound at the class, no
   alternative), *chosen* (bound at the class, with alternatives), *unbound* (not bound at the
   class); and each one's share.
+- **Growth by lever** (reported; decided by the author on 22 November 2026, §2 *An injected
+  private field forces too*, §9 row 72): the forced growth of existing classes, per arm, by
+  whether the lever of injection was there. *Own:* the placement was bound to a private field of
+  the class's own state, a private constant or a private method; nothing outside can reach it.
+  *Injected only:* every private member it was bound to is a field holding an injected dependency
+  (§4.3), which another class could declare too; split into those where another class already
+  holds those dependencies (H5's alternatives at least one) and those where none does yet. The
+  injected-only share is the opportunity dependency injection gives to duplicate the core; it
+  stays forced, because the lever was not used. As built: `tables.lever` (`forced_lever` on each
+  host), `prepare.growth_by_lever`; `MEASURE_VERSION` 29, `HISTORY_VERSION` 13.
 - **Coupling accounting** (reported): per unit, the calls between classes in the whole tree after
   it less before it (`tables.coupling_rows`); summed per arm, with the share added in units with
   a forced placement, and the share added between the pairs of existing classes the unit changed
@@ -1534,6 +1633,56 @@ on the place an addition lands in, as it stood at *k* − 1, with the harness's 
   TCC counts direct field access only. Halstead's operands are identifiers and literals, its
   operators keywords and symbols, comments left out.
 
+### 4.8 The instrument against the compiler (reported)
+
+Added 22 November 2026 (§9 row 79; decided by the author after a review of the plan). The
+instrument reads names with no symbol solver (§7, *Lexical names*), and its fixtures are examples
+written with the answers in mind: they show it does what was meant, not that it is right on real
+code. Corpus A's code compiles, and a compiler does resolve every name. So on a sample of each
+chain's checkpoints, **every fifth and the last**, the tree is given to javac
+(`instrument/Check.java`, the JDK's own compiler API), and the two readings are set side by side:
+
+- **Calls** (H5's control flow, H6's coupling of pairs, H7's outcome): per method of the tree
+  before the checkpoint, the application's methods it calls, as the instrument follows them
+  (`flow.Graph`) and as the compiler resolves them. *Precision:* of the instrument's calls, the
+  share the compiler confirms. *Recall:* of the compiler's calls that can be followed (to a method
+  with a body in the tree), the share the instrument has. A call is a class and a name; a class
+  agrees with the compiler's when it is that class, an ancestor or a descendant of it. Reported
+  for all calls and for those that leave the method's class.
+- **Field reads** of other classes (H7): the same two shares.
+- **Bound names** (the bindings, §4.3): per host of the checkpoint, the names the instrument
+  counted as a parameter or local of the method, a field of its class, a method of its class;
+  of each kind, the share the compiler agrees is that, in the method after the change. Precision
+  only: the instrument counts names on the lines a change added, the compiler reads the method
+  whole.
+- **Not held against either:** what the compiler itself could not resolve (counted, *unverified*),
+  and the compiler's calls to a method with no body in the tree (an interface's).
+- **The classpath** is the project's own (`mvn dependency:build-classpath`, offline, on the pom
+  beside the production Java at the chain's head). Without it the libraries' types are errors to
+  javac, attribution goes on, and more is left unresolved; each row says which it had. Code that
+  a build step generates (MapStruct, Lombok) is not in the tree, for either reader.
+- **Where read:** corpus A. A history is read light (§3.2), a few files of a tree at a time, which
+  does not compile.
+- **Reported** per arm (`results/analysis/<analysis>/REPORT.md`), with no threshold: the shares
+  are how far the ruler can be trusted, for a reader to weigh. A difference in the shares between
+  the arms would bear on every contrast of the arms and is to be said where they are read.
+
+**A fault it found, before any run was read** (22 November 2026, §9 row 80). §4.2a says a call
+goes to the methods of that name "in that class, what it extends or implements, and what extends
+or implements it". As built, the two directions were followed together, so a class reached every
+class that shared any ancestor with it, a library's interface among them: on the pilot's Spring
+chain every repository was one family of 37 classes, and a call to one repository's `findById`
+was counted as a call to all the others'. On the tree before checkpoint 40 of each development
+chain, of the calls the instrument counted between classes, the compiler confirmed 329 of 676
+(Spring) and 283 of 678 (OfficeFloor). With a call's family corrected to its ancestors and
+descendants (`flow.Graph.family`): 329 of 333 and 283 of 288, and of the compiler's calls between
+classes that can be followed the instrument has 295 of 304 and 245 of 248. Every figure of §6 for
+H5 at the method, H6's coupling of pairs and H7 was computed with the fault and is superseded by
+the rerun at `MEASURE_VERSION` 29.
+
+As built: `instrument/Check.java`, `placement_gravity/validate.py`, `tests/test_validate.py`;
+`validation.csv` per chain (step 3), summed per arm in `readings.json` (`validation`).
+
 ## 5. Analysis
 
 - **Unit:** an addition run (Q2, H1, H4) or a problem and host whose code was bound there (Q3, H2,
@@ -1574,7 +1723,15 @@ on the place an addition lands in, as it stood at *k* − 1, with the harness's 
   later checkpoints plus the log of the number of values of that kind, so the model is of uses
   per value; the term is whether the record is the core's, added to the base model. It is
   supported when the incidence rate ratio of the core to the periphery has a 95% interval above 1
-  at both levels.
+  at both levels, and the arm contrast below holds.
+  - **The arm contrast** (22 November 2026, §9 row 77): the core's records of both arms, in the
+    base model with the arm term, the outcome and offset as above (uses per core value and later
+    checkpoint). The function arm's rate ratio has to have a 95% cluster-bootstrap interval below
+    1, at each level where each arm has at least 10 core records. Where the function arm has the
+    records and none of its core values is ever come back to, no ratio can be fitted (it is
+    nought): the arms' chains are then compared by a one-sided rank-sum test on each chain's uses
+    per core value and later checkpoint, and that is recorded. H2's p is the largest of its
+    parts: the two ratios of core to periphery and the arm contrasts that are needed.
   - **Reported beside it:** the same ratio in the function arm, where each function is handed its
     own data and little core is expected to form; and per arm, pooled over places, the share of
     bound uses that go to each chain's three most used values, the share that go to values no
@@ -1668,6 +1825,16 @@ on the place an addition lands in, as it stood at *k* − 1, with the harness's 
   - **Come back to less** (17 November 2026, §4.4): the arm term of the base model of H2 and H3,
     without the bindings (the arm itself changes them), on intrusion at the class and at the method.
     The function arm's rate ratio has to have a 95% interval below 1 at both levels.
+  - **Fewer existing files gone back into** (22 November 2026, §9 row 78): per checkpoint and
+    chain, the production Java files that existed before the checkpoint and that it modified,
+    renamed or deleted, plus the wiring files that existed and that it changed (`git diff` of the
+    agent's commit against its parent; a file the checkpoint adds is not counted). A Poisson
+    mixed model of that count on the arm (and the front end), with the chain's and the
+    checkpoint's intercepts, decided on the cluster bootstrap: the function arm's rate ratio has
+    to have a 95% interval below 1. It enters H4's p with the other four. Not read on a history.
+    As built: `chain.measure` (`java_existing`), `tables.addition_rows`
+    (`existing_java_files`, `existing_wiring_files`), `prepare.reopen_rows`, `analyse.R`
+    (`H4$existing_files`).
   - **Reported, how much a core value is come back to** (19 November 2026): the core's records of
     H2 (§4.4), both arms, in the base model with the arm term, at the class and at the method; the
     function arm's rate ratio per core value, with its interval. With it, per arm, the uses of
@@ -1766,16 +1933,18 @@ on the place an addition lands in, as it stood at *k* − 1, with the harness's 
   §3.3 are the same models with a term for the declared agent commit (within a repository) or for
   the corpus (between them), and the destination of unbound code as a binomial model on the same
   term.
-- **H5** (19 November 2026): per bound host and level, its alternatives (§4.2a) as a negative
-  binomial (nbinom2) mixed model on the checkpoint index scaled from 0 (the first checkpoint) to 1
-  (the last), with the chain's intercept, in the methods arm: exp(slope) is the ratio of the end
-  of the stream to its start. One-sided against the upper margin (1.25), 90% interval, at the class
-  and at the method, each needed; p is the larger of the two. A level where every placement was
-  forced (no alternative anywhere) cannot rise, cannot be fitted, and passes with p 0. Reported:
+- **H5** (19 November 2026; a fall since 22 November 2026, §9 row 73): per bound host and level,
+  its alternatives (§4.2a) as a negative binomial (nbinom2) mixed model on the checkpoint index
+  scaled from 0 (the first checkpoint) to 1 (the last), with the chain's intercept, in the methods
+  arm: exp(slope) is the ratio of the end of the stream to its start. One-sided **below 1**, with
+  the 95% cluster-bootstrap interval (below), **at the class**; the method level is reported
+  (row 64). Supported when the interval lies below 1; reversed when it lies wholly above 1. A
+  class level where every placement was forced (no alternative anywhere) cannot be fitted and is
+  not testable: it has no p and does not enter Holm. Reported: the reading against the upper
+  margin (1.25, 90% Wald interval), as H5 stood until then;
   the share forced and the mean alternatives per arm and third; the function arm's ratio; the arm
   × index interaction's arm term; the share of class rows bound to the class's own values; the
-  method values of no declared type. The verdicts are as H3's (unresolved: reaching above the
-  margin without lying above it).
+  method values of no declared type.
 - **H6** (20 November 2026): per unit that placed or edited code in an existing class, its spread
   (§4.2b) as a negative binomial (nbinom2) mixed model on whether the unit was forced and the index
   scaled from 0 to 1, with the chain's intercept, in the methods arm (*forced*: the ratio of the
@@ -1800,8 +1969,12 @@ on the place an addition lands in, as it stood at *k* − 1, with the harness's 
   forced and the index scaled from 0 to 1, with the chain's intercept, in the methods arm
   (*forced*: the ratio of a forced class's added calls to an unforced one's at the same point in
   the stream and of the same size: log(1 + positions the unit added to the class) and log(1 +
-  methods it changed there) in the model, §9 row 61; the ratio without them reported). One-sided above 1, 95% Wald interval; reversed if the interval lies wholly below 1.
-  Poisson where the negative binomial cannot be fitted, recorded. Reported: the same model for
+  methods it changed there) in the model, §9 row 61; the ratio without them reported). The model
+  also carries **an intercept for the class within its chain** (22 November 2026, §9 row 74): one
+  class is changed by many units, a busy class gains calls whatever forced it, and its rows are
+  not independent. One-sided above 1, 95% cluster-bootstrap interval (below); reversed if the
+  interval lies wholly below 1. Where the model cannot be fitted with the class's intercept it is
+  fitted without it, and as Poisson where the negative binomial cannot be fitted; both recorded. Reported: the same model for
   the calls reaching an exposed or widened member, for outward and inward calls apart, and for
   the members opened; the added calls on the index alone (rise); the function arm's forced ratio;
   the arm term with forced and the index in the model; per arm, forced against unforced rows, the
@@ -1818,8 +1991,24 @@ on the place an addition lands in, as it stood at *k* − 1, with the harness's 
   author group, with the number of units and repositories in each. A band with fewer than 10
   repositories for an author group is reported as too thin, not fitted. On corpus A: the four
   measures per arm, descriptive.
+- **The confirmatory tests are decided on a cluster bootstrap** (decided by the author on 22
+  November 2026, after a review of the plan, §9 row 74). Until then only H1 and H4's bystander
+  terms were; H2, H4's intrusion ratios, H5 and H7 took a Wald interval from a model with the
+  chain's intercept. That interval treats the rows of a chain as separate once the chain's level
+  is taken out, and they are not: the problems placed in one class share its later changes, the
+  two records of one row of H2 share its arrivals (§7), and one class is changed by many units.
+  Now, for each of them: chains are resampled with replacement within arm, the same model is
+  refitted on each resample (`spec$boot` refits, 1,000, seed 20261116; the resamples are drawn
+  first from the one seeded stream and the refits then run on several cores, so the result does
+  not depend on how many), the 95% interval is the 2.5th to the 97.5th percentile of the refits,
+  and the one-sided p is the share on the wrong side of 1, (k + 1) / (n + 1), as H1's. On a
+  history the repository is the chain. The Wald interval is reported beside each. With one chain
+  in an arm (the development chain) a resample is the data again, so the Wald reading is what
+  there is; so too if fewer than half the refits can be fitted; either is recorded. The secondary
+  hypotheses and every reported reading keep their Wald intervals.
 - **Multiplicity** (21 November 2026, §9 rows 66 and 67): the confirmatory family H2, H4, H5 and
-  H7, Holm-corrected at α = 0.05. H1, H3 and H6 are secondary, each decided at α = 0.05 on its
+  H7, Holm-corrected at α = 0.05 over those of the four that have a p (H5 has none where it is
+  not testable). H8 (Run D, §3.1a) is decided at α = 0.05 on its own p, on its own run. H1, H3 and H6 are secondary, each decided at α = 0.05 on its
   own p outside the correction and reported as secondary. (Until 20 November 2026, every
   hypothesis was in one Holm family: four, then five, six and seven; on 21 November 2026 the
   confirmatory family was H2, H4, H5, H6 and H7 until H6 was restated the same day.) All else is
@@ -1844,19 +2033,19 @@ binomial mixed model). These details are fixed with the code before any run is r
   crossings (the checkpoints it mutates or crosses), log(1 + host positions), whether the host is
   new, the act (the ui stream only; petclinic has no
   acts), the arm and, where present, the front end. **H2** is read on every bound problem and host of the methods arm,
-  with a one-sided Wald test at each level; **H3** on existing hosts with their shape at k − 1, by one
+  with a one-sided test at each level (a Wald test until 22 November 2026; the cluster bootstrap since, above); **H3** on existing hosts with their shape at k − 1, by one
   one-sided Wald test per shape measure against the upper margin (90% intervals; the two one-sided
   tests of the two-sided reading are reported). S4 enters as log(1 + cognitive complexity) and S5
   as the class Gini, both standardised; S1 to S3 as 0/1.
 - **The p-value of each hypothesis** for Holm is the larger of its parts: H1, of its three slopes
   (over all runs, within a class, within a method);
-  H2, of the class level and the method level; H3, of every shape measure's one-sided test; H4, of the arm
-  term, the interaction and the arm's rate ratio in intrusion at the class and at the method; H5, of
-  the class level and the method level; H6 and H7, each its forced ratio's. A hypothesis is
+  H2, of the class level and the method level and of the arm contrasts that are needed (row 77); H3, of every shape measure's one-sided test; H4, of the arm
+  term, the interaction, the arm's rate ratio in intrusion at the class and at the method and its rate ratio in existing files gone back into (row 78); H5, its
+  class level's (the method level is reported, row 64); H6 and H7, each its forced ratio's. A hypothesis is
   supported when its p (Holm-adjusted over the confirmatory four; its own for a secondary one) is at most 0.05 **and** its conditions hold (H4: the amount in its band and neither wiring
   condition against). The verdicts are supported, not supported, reversed (an interval wholly on
-  the wrong side), unresolved (H3, H5 and H6: an interval reaching above the upper margin), not testable (H3: no
-  shape measure varies) or descriptive only.
+  the wrong side), unresolved (H3 and H6: an interval reaching above the upper margin), not testable (H3: no
+  shape measure varies; H5: every placement forced) or descriptive only.
 - **The revisions of 16 November 2026** (§9) are built: the checkpoint intercept, the centred host
   size, the new-host term and the lagged formation term in `analysis/analyse.R` (its self-test
   simulates a level per checkpoint and recovers each effect); intrusion on a problem's own lines in
@@ -2360,7 +2549,12 @@ binomial mixed model). These details are fixed with the code before any run is r
   therefore read only against each other, never as absolute rates of concentration.
 - **Lexical names.** No symbol solver, as in the width harness (decided 16 November 2026). A local that shadows a field
   is already told apart by the method's own variables, and the pilot found no unresolved name in
-  418 runs. Names that resolve to nothing are reported per run.
+  418 runs. Names that resolve to nothing are reported per run. Since 22 November 2026 the
+  instrument's calls, field reads and bound names are checked against the compiler on corpus A
+  (§4.8), which found one fault at once (a call followed to sibling classes). The check covers
+  what the compiler can see: not generated code, not calls made by a framework, and not corpora B
+  and C, where the tree read does not compile; there the instrument is trusted as far as corpus A
+  shows it can be, on other code.
 - **Provenance.** Line tracking across moves is imperfect. CodeTracker reports about 99.9%
   method-level precision and recall, but statement-level provenance is weaker. Disagreements
   with `git blame` are reported.
@@ -2392,7 +2586,19 @@ binomial mixed model). These details are fixed with the code before any run is r
   nobody had used is likely, and H2 says how much more, not that it could have been otherwise.
 - **Two records of one row are not independent.** The core's and the periphery's records share
   the row's later arrivals, and the model has no term for the row. With the shared counts within
-  a class (below) this makes H2's interval too narrow.
+  a class (below) this made H2's Wald interval too narrow. Since 22 November 2026 H2 is decided
+  on the cluster bootstrap (§5), which resamples whole chains and so carries both; the Wald
+  interval is reported beside it.
+- **The bootstrap is over few chains.** A run has ten chains a stack. A percentile interval over
+  ten or twenty clusters is itself rough, and tends to be somewhat narrow; it is still the
+  honest unit, since a chain is what was run independently. The number of chains and of refits
+  that could be fitted is reported with every bootstrap interval.
+- **Run D is run after Run A, not beside it** (§3.1a). H8's contrast therefore holds whatever
+  changed between the two runs: most of all the agent, if the model served under the same id has
+  changed. Accepted by the author on 22 November 2026, as the run cannot be made concurrently.
+  The instruction is also more than the removal of `private`: an agent told not to encapsulate
+  may place code differently for that reason alone. Compliance (§3.1a) checks that the
+  instruction took, not that it did nothing else.
 - **H2 as it stood (reported) is opportunity by construction.** Where nothing stood by, nothing
   can be drawn by what stood by, so part of that rate ratio is given. It tests that accumulated
   data is taken up in proportion to its amount; it does not show that the later code could not have gone elsewhere
@@ -2686,7 +2892,45 @@ author's to set, on the plan and code as they then stand, and starts the experim
   1,000,000 tokens; undeclared commits kept apart; the 10-repository floor per band. The
   development histories hint the other way (growth of existing classes arriving forced: agent
   repository 0.70 of 193 positions, human 0.45 of 3,972, §6), on one agent repository.
-- *To finish before the tag (state on 22 November 2026):* the development rerun at
+- *Decided by the author on 22 November 2026 (later), on a review of the plan before the tag*
+  (§9 rows 72 to 76). The review's eight concerns and what was done with each:
+  **(1) H2 can hardly fail** (a value already used once is likely to be used again whatever the
+  place): explained to the author; nothing changed yet, and the arm contrast in core reuse stays
+  reported beside H4. **(2) An injected private field**: it forces; the injected part is carved
+  out inside forced as the opportunity injection gives (row 72). **(3) H5 is a fall**, below 1; a
+  level with every placement forced is not testable (row 73). **(4) H4 counts the methods arm's
+  return to its handler and not the function arm's return to its wiring**: explained to the
+  author; nothing changed yet (reopening with the wiring files stays reported). **(5) The
+  confirmatory tests are decided on a cluster bootstrap**, and H7 carries the class's intercept
+  (row 74). **(6) Run D's test is registered** as H8; it is run after the others, not beside Run
+  A, which the author accepts (row 76). **(7) H3's sensitivity reading** with the coupling
+  measures put back (row 75). **(8) No independent check of the instrument**: explained to the
+  author; nothing changed yet. The review's smaller point, that a git tag can be moved and an
+  outside deposit cannot: the author keeps the tag ("my whole experiment is a threat due to me
+  writing OfficeFloor, so will let the academic rigour of pre-registration happen for independent
+  replication, git tag is enough for me").
+- *Decided by the author on 22 November 2026 (later still):* "build 1, 4 and 8, then commit and
+  rerun". **(1)** H2 also needs a core value come back to less in the function arm (row 77).
+  **(4)** H4 also needs fewer existing files gone back into, Java and wiring alike (row 78).
+  **(8)** The instrument is checked against the compiler on corpus A (row 79, §4.8). The check
+  found a fault in the call graph at once, corrected (row 80). The drafter's choices in these,
+  not yet spoken to: for H2, 10 core records in each arm before a level's contrast is needed, and
+  the rank-sum test where the function arm's cores are never come back to; for H4, that the
+  count has to be *lower* (below 1), not merely no higher, and that a deleted or renamed file
+  counts as gone back into; for the check, every fifth checkpoint and the last, no threshold on
+  the shares, and the project's classpath taken offline from the chain's head.
+- *To finish before the tag (state on 22 November 2026, later):* the development rerun **again**,
+  at `MEASURE_VERSION` 29 and `HISTORY_VERSION` 13 (rows 72, 78 and 80 change the measured tables), with
+  the same four commands as below. The rerun started that morning at 28 and 12 is **not to be
+  used**: its step 3b and step 4 ran while rows 72 to 76 were being written into the code (step 4
+  ran with them uncommitted), and its reading of the agent development repository was killed for
+  want of memory while the R self-test ran beside it. Its measurements of the pilot's two chains
+  and of the two repositories of people's code were made before the code changed, but are at the
+  old version and will be redone. With the bootstrap (row 74) step 4 takes much longer than it
+  did: on the R self-test, 60 refits of seven models took about ten minutes on a loaded machine;
+  `PG_CORES` sets how many cores the refits use (four by default; each holds its own copy of the
+  model, so more cores need more memory).
+- *As it stood earlier on 22 November 2026:* the development rerun at
   `MEASURE_VERSION` 28 and `HISTORY_VERSION` 12 (rows 69 and 71): `./step3_measure.sh --analysis
   pilot`, `./step3b_histories.sh --analysis open-source-development --force`, `./step4_analyse.sh
   --analysis pilot open-source-development`, `./step5_report.sh`. Until it is done and committed,
@@ -2867,6 +3111,15 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 69 | Reported reading, *encapsulation and the reader*: agent against human units on private share of introduced members, growth arriving forced, members exposed or widened, and size of the class code lands in; with the system's size in tokens (continuous, and split at 200,000 and 1,000,000) and its interaction with the author; corpora B and C, corpus A descriptive | §2, §4.2f, §5, §7, §8, `chain.java_tokens`, `tables.member_rows`, `prepare.reader_rows`, `prepare.reader_summary`, `analyse.R` (`reader`), `report.reader_section` | The author's question, 22 November 2026 ("draft it as a reported reading"): whether encapsulation answers a human limit of comprehension that agents lack until a system outgrows their context. Operational form the drafter's. No hypothesis, measure of a hypothesis, model or rule changes |
 | 70 | Run D, the no-encapsulation run: `angular-spring` with the agent told to leave every field and method public, read against Run A's `angular-spring`; compliance (at least 90% of introduced members not private) a condition of reading it; predicted: no growth arriving forced and choice not narrowing, H2's core drawing less at the class, more cross-boundary calls and reads and a wider spread at the same change size, the amount within the band; reported, not confirmatory; run ids, harness commit and wording by dated amendment | §3.1a, §8 | Decided by the author on 22 November 2026, before the tag: encapsulation isolated by instruction on the stack where it can be removed (not OfficeFloor, where nothing is left to make public). Operational form and directions the drafter's |
 | 71 | H2's core at the class is the private members the code was bound to (private fields, constants and methods); the members it was bound to that others can reach join the periphery; the core with every member whatever its access reported beside it. Package and protected members reported descriptively as looser encapsulation. The drafter's open choices of §8 accepted by the author | §2, §4.4, §8, `tables.private_members`, `tables.outcome_rows` (`core_class`, `core_class_all`), `tables.bound_access`, `prepare.growth_by_access`, `prepare.h2_rows`, `analyse.R` (`H2_class_all`), `report.py`; `MEASURE_VERSION` 28, `HISTORY_VERSION` 12 | Decided by the author on 22 November 2026, after the development data, before the tag: "the forcing is about not being able to access outside the encapsulation, being the force". The test is unchanged in form (rate ratio per value above 1 at the class and the method) |
+| 72 | An injected private field forces, like any private member; within forced, the growth bound only to injected private fields is reported apart as the opportunity injection gives (with another class already holding the dependencies, or none yet), beside the growth bound to the class's own private members | §2, §4.2b, `tables.lever` (`forced_lever`), `prepare.growth_by_lever`, `report.py`; `MEASURE_VERSION` 29, `HISTORY_VERSION` 13 | Decided by the author on 22 November 2026, after a review of the plan found §4.3 (an injected field may not pin code) and *forced* (any private member) at odds: injection gives the choice as a construct, but it is a lever that has to be exercised, otherwise private encapsulation is the force. No test changes: *forced* already counted them |
+| 73 | H5 is a fall: the alternatives' ratio end to start below 1 at the class, one-sided; reversed when wholly above 1; a class level where every placement was forced is not testable and has no p. H5 against the upper margin 1.25, as it stood, is reported | §2, §5, `analyse.R` (`H5`, `H5_margin_*`), `verdict.h5`, `report.h5_section`, `selftest.R` | Decided by the author on 22 November 2026, on the review: a flat count supported *choice narrows*, and a level with nothing to narrow passed with p 0 and eased Holm for the others. Made knowing the development chain (0.16 [0.03, 0.92] at the class, Wald) and that the development histories, without injection, have every class placement forced and so will not be testable. Before the tag, so a revision |
+| 74 | H2, H4's intrusion ratios, H5 and H7 are decided on the cluster bootstrap H1 already used (chains resampled within arm, 1,000 refits, percentile 95% interval, one-sided p), the Wald interval reported beside each; H7's model carries an intercept for the class within its chain; the refits run on several cores, the resamples drawn first so the result does not depend on how many | §5, §7, `analyse.R` (`boot_irr`, `cluster_boot`, `fit7`), `report.py`, `selftest.R` | Decided by the author on 22 November 2026, on the review: the rows of a chain are not independent (problems in one class share its later changes; H2's two records of a row share its arrivals; one class is changed by many units), which §7 already said made the intervals too narrow. No direction or threshold changes |
+| 75 | A sensitivity reading of H3: its rule over its six measures with the method's fan-out and the class's CBO, RFC and fan-out put back, each alone; reported with its state, changing no verdict | §2, `prepare.H3_SENSITIVITY`, `analyse.R` (`H3_with_coupling`), `verdict.h3_with_coupling`, `report.py` | Decided by the author on 22 November 2026, on the review: fan-out left H3 after it was seen above the margin on the development chain (§7), and the literature counts coupling among its structural metrics |
+| 76 | Run D's test is registered: H8, without encapsulation code disperses. Run D against Run A's `angular-spring`: bound code come back to less at the class (below 1) and more calls and field reads added across class boundaries at the same change size (above 1), each on the cluster bootstrap, p the larger; conditions, compliance (at least 90% of introduced members not private) and the amount in its band; α = 0.05 on its own p, on its own run. Run after the others, not beside Run A | §2, §3.1a, §5, §7, `analyse.R` (`coupled_arm`), `prepare.compliance`, `verdict.h8`, `report.h8_section`; an analysis with `contrast: no-encapsulation` in `runs.yaml`, added with its run ids by dated amendment | Decided by the author on 22 November 2026, on the review: forced against unforced is not assigned by anyone, and Run D is where the cause is changed by hand. The author cannot run it concurrently and accepts that. Its code is tested on fixtures and on simulated data; it has not been run end to end, as no such run exists |
+| 77 | H2 also needs the arm contrast: a core value is come back to less in the function arm than in the methods arm, the rate ratio below 1 on the cluster bootstrap, at each level where each arm has at least 10 core records (a rank-sum over chains where the function arm's cores are never come back to); H2's p the largest of its parts. Until then reported beside H4. Not read on a history | §2, §5, `analyse.R` (`reuse`, `H2$reuse_*`), `verdict.h2`, `report.reuse_test_lines`, `selftest.R` | Decided by the author on 22 November 2026, on the review: within one arm a value already used is likely to be used again whatever the place, so the ratio of core to periphery could hardly fail; the arms solve the same problems, so the contrast between them is what the place adds. Made knowing the development chain (0.088 [0.024, 0.316] at the method; at the class the function arm had one core row). Before the tag, so a revision |
+| 78 | H4 also needs fewer existing files gone back into per checkpoint, production Java and wiring counted alike, bound or not: the function arm's rate ratio below 1 on the cluster bootstrap, in H4's p with the other four | §2, §5, `chain.measure` (`java_existing`), `tables.addition_rows`, `prepare.reopen_rows`, `analyse.R` (`H4$existing_files`), `verdict.h4`, `report.existing_files_lines`, `selftest.R`; `MEASURE_VERSION` 29 | Decided by the author on 22 November 2026, on the review: H4's intrusion counted the methods arm's return to its handler and not the function arm's return to its wiring, and rested on the rule that an injected parameter is not a binding. Made knowing the development chain's reopening counts (1.35 [1.01, 1.80] against H4 before the binding rule, classes only; 0.77 [0.52, 1.16] with the rule and the wiring files, §6), so H4 may well fail on it. Before the tag, so a revision |
+| 79 | The instrument checked against the compiler on corpus A: on every fifth checkpoint of a chain and its last, the precision and recall of its calls and field reads and the precision of its bound names, against javac's resolution; reported per arm, no threshold | §4.8, §7, `instrument/Check.java`, `placement_gravity/validate.py`, `measure.py` (`validation.csv`), `prepare.py`, `report.validation_section`, `setup.sh`, `tests/test_validate.py` | Decided by the author on 22 November 2026, on the review: the fixtures show the instrument does what was meant, not that it is right on real code. No measure of a hypothesis, model or rule changes |
+| 80 | **A fault, found by the check of row 79 before any run named for analysis was read:** a call was followed to every class sharing any ancestor with its receiver's class (siblings, and through a library's interface whole groups of unrelated classes), not only to that class's ancestors and descendants as §4.2a says. Corrected in `flow.Graph.family`. It inflated the calls counted between classes (about twofold on the two development trees looked at) and widened the control flow of H5's method level | §4.2a, §4.8, `flow.py`; `MEASURE_VERSION` 29, `HISTORY_VERSION` 13 | The figures of §6 for H5 at the method, H6's pairs and accountings, H7, surface and ripple were computed with it; they are development figures, superseded by the rerun. No rule changes: the code now does what the plan said |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

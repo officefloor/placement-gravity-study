@@ -118,15 +118,23 @@ class Graph:
         return self._access
 
     def family(self, c: str) -> set[str]:
-        """A class, what it extends or implements, and what extends or implements it."""
-        out, todo = {c}, deque([c])
-        while todo:
-            x = todo.popleft()
-            for y in self.supers.get(x, set()) | self.subs.get(x, set()):
-                if y not in out:
-                    out.add(y)
-                    todo.append(y)
-        return out
+        """A class, what it extends or implements (its ancestors), and what extends or implements it
+        (its descendants): where a call on it can go. Not its siblings. Until 22 November 2026 the two
+        directions were followed together, so that a class reached every class sharing any ancestor
+        with it, a library's interface among them (every repository of the pilot's Spring arm was
+        one family of 37); the check against the compiler found it (PLAN.md 4.8, 9 row 80)."""
+        cache = self.__dict__.setdefault("_family", {})
+        if c not in cache:
+            out = {c}
+            for edges in (self.supers, self.subs):
+                todo = deque([c])
+                while todo:
+                    for y in edges.get(todo.popleft(), ()):
+                        if y not in out:
+                            out.add(y)
+                            todo.append(y)
+            cache[c] = out
+        return cache[c]
 
     def reach(self, start: set[int], edges: list[set[int]]) -> set[int]:
         seen, todo = set(start), deque(start)

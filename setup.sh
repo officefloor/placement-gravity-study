@@ -51,4 +51,5 @@ fi
 (cd refactor && mvn -q -DskipTests package)
 mkdir -p instrument/classes
 javac --release 17 -nowarn -d instrument/classes -cp "$JAR" instrument/Pull.java
+javac --release 17 -nowarn -d instrument/classes instrument/Check.java   # the compiler check (PLAN.md 4.8)
 .venv/bin/python -m pytest -q tests

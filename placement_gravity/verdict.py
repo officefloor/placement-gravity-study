@@ -4,23 +4,31 @@
 - **H1** (the methods arm): the slope of the bystanders (PLAN.md §4.3a) on the checkpoint index
   above 0, over all runs and within a place: the class's bystanders within a class, the method's
   within a method. p = the largest of the three one-sided bootstrap p-values.
-- **H2** (the methods arm): where code was bound to a class or a method, the rate ratio, per value
-  that stood by there, of the later intrusions bound to what stood by, above 1 at the class and at
-  the method (one-sided Wald; p = the larger of the two; PLAN.md §4.4).
+- **H2** (the methods arm): where code was bound to a class or a method, the rate ratio of the
+  later intrusions' uses of a core value (one the code was bound to; at the class, a private one)
+  to their uses of a periphery value, above 1 at the class and at the method (one-sided, cluster
+  bootstrap over chains; PLAN.md §4.4); **and** (since 22 November 2026) a core value come back
+  to less in the function arm than in the methods arm, the rate ratio below 1, at each level
+  where both arms have the core records to compare (``reuse_class``, ``reuse_method``,
+  ``required``). p = the largest of the parts. On a history the arms do not solve the same
+  problems and the arm contrast is not read.
 - **H3** (one-sided): every shape measure kept shown not to raise later intrusion at its level, the
   method or the class: its rate ratio below the upper margin (1.25), by a one-sided test, each
   measure fitted alone with the bindings and the bystanders in the model. p = the largest of those p-values. A measure that lowers intrusion does
   not count against. The two-sided reading (within 0.8 to 1.25) is reported.
 - **H4**: the function arm's bystanders fewer half-way through the stream, their slope on the
   checkpoint index flatter, and its bound code come back to less, at the class and at the method
-  (p = the largest of the four one-sided p-values); the amount within its band; and neither wiring
-  condition against.
-- **H5** (one-sided, as H3; 19 November 2026): in the methods arm, the alternatives a bound
-  addition had (other places holding what its code was bound to) do not rise over the stream: the
-  ratio of the end of the stream to its start shown below the upper margin (1.25), at the class,
-  the encapsulation (20 November 2026: the method level shows the encapsulation's volume growing,
-  so it is reported, not tested). A class level where every placement was forced (no alternative
-  anywhere) cannot rise and passes, with p 0.
+  and (since 22 November 2026) its changes going back into fewer existing files, production Java
+  and wiring counted alike, the rate ratio below 1 (p = the largest of the five one-sided
+  p-values); the amount within its band; and neither wiring condition against.
+- **H5** (19 November 2026; a fall since 22 November 2026): in the methods arm, the alternatives a
+  bound addition had (other places holding what its code was bound to) **fall** over the stream:
+  the ratio of the end of the stream to its start below 1 (one-sided, cluster bootstrap), at the
+  class, the encapsulation (20 November 2026: the method level shows the encapsulation's volume
+  growing, so it is reported, not tested). Reversed if its interval lies wholly above 1. A class
+  level where every placement was forced (no alternative anywhere) has no choice to narrow: not
+  testable. (Until 22 November 2026: shown below the upper margin 1.25, so that a flat count
+  passed, and a level with every placement forced passed with p 0; reported.)
 - **H6, spread does not see it** (restated 21 November 2026, PLAN.md §9 row 67; one-sided, as
   H3): in the methods arm, a unit with a placement forced at the class does not place or edit code
   in more of the classes that existed before it than a unit without one, at the same change size
@@ -29,19 +37,29 @@
   it. (Until then, *forced changes spread*: the ratio above 1.) The spread's rise is reported.
 - **H7** (20 November 2026): in the methods arm, a class with a placement forced at the class
   gains more calls across its boundary (outward and inward) in that unit than one without, at the
-  same point in the stream: the rate ratio on forced above 1 (one-sided Wald). Reversed if its
-  interval lies wholly below 1. Whether those calls reach members the unit exposed or widened is
+  same point in the stream and of the same size, with the class's intercept: the rate ratio on
+  forced above 1 (one-sided, cluster bootstrap). Reversed if its interval lies wholly below 1. Whether those calls reach members the unit exposed or widened is
   reported.
 - **Two tiers** (decided by the author on 21 November 2026): the **confirmatory** family is the
   force and its two outlets, with the control: H2, H4, H5 and H7, Holm over the four at α = 0.05
   (H6 left it when restated, later the same day). H1, H3 and H6 are **secondary**: each keeps its
   rule and direction and is decided at α = 0.05 on its own p, outside the correction, and
   reported as secondary.
+- **H3 with the coupling measures put back** (a sensitivity reading, 22 November 2026;
+  ``sensitivity.H3_with_coupling``): H3's rule over its measures and the literature's coupling
+  measures the plan reads apart as reach (fan-out, CBO, RFC). It changes no verdict.
+- **H8, without encapsulation code disperses** (Run D against Run A's same stack, PLAN.md §3.1a;
+  an analysis with ``contrast: no-encapsulation``; decided on its own p at α = 0.05, on its own
+  run): the open arm's bound code is come back to less at the class (rate ratio below 1) and its
+  changes add more calls and field reads across class boundaries at the same change size (rate
+  ratio above 1); p = the larger of the two; with compliance (at least 90% of the members it
+  introduces not private) and the amount within its band as conditions. Below the compliance bar
+  it is descriptive only.
 
 Verdicts: ``supported``; ``not supported``; ``reversed`` (an interval wholly on the wrong side);
-``unresolved`` (H3, H5, H6: an interval reaching above the upper margin without lying above it);
-``not testable`` (H3: no shape measure varies); ``descriptive only`` (fewer than 6 chains in an
-arm, or the development analysis).
+``unresolved`` (H3, H6: an interval reaching above the upper margin without lying above it);
+``not testable`` (H3: no shape measure varies; H5: every placement forced); ``descriptive only``
+(fewer than 6 chains in an arm, or the development analysis).
 """
 
 from __future__ import annotations
@@ -58,6 +76,8 @@ SECONDARY = ("H1", "H3", "H6")
 #: class, concentration, WMC and lack of cohesion. Each is fitted alone. Not slimmable and
 #: junction are sinew measures, and fan-out and CBO measures of reach, reported apart.
 SHAPES = ("s1_long", "s4_cognitive", "m_cyclomatic", "c_gini", "c_wmc", "c_lcom_star")
+#: Run D's compliance bar (PLAN.md §3.1a): the share of introduced members that are not private.
+COMPLIANCE = 0.9
 
 
 def holm(ps: dict[str, float | None]) -> dict[str, float | None]:
@@ -90,9 +110,40 @@ def h2(est: dict) -> dict:
     c, m = x.get("class"), x.get("method")
     if not (_ok(c) and _ok(m)):
         return {"p": None, "verdict": "not estimable", "detail": x}
-    return {"p": max(c["p_greater"], m["p_greater"]),
-            "reversed": c["irr_upper"] < 1 or m["irr_upper"] < 1,
-            "conditions_met": c["irr_lower"] > 1 and m["irr_lower"] > 1, "detail": x}
+    # the arm contrast, where both arms have the cores to compare: a core value come back to less
+    # in the function arm
+    reuse = {lev: x.get(f"reuse_{lev}") for lev in ("class", "method")}
+    need = {lev: r for lev, r in reuse.items() if r and r.get("required")}
+    if any(not _ok(r) or "irr_upper" not in r for r in need.values()):
+        return {"p": None, "verdict": "not estimable", "detail": x}
+    return {"p": max(c["p_greater"], m["p_greater"], *(r["p_less"] for r in need.values())),
+            "reversed": c["irr_upper"] < 1 or m["irr_upper"] < 1 or any(r["irr_lower"] > 1 for r in need.values()),
+            "conditions_met": c["irr_lower"] > 1 and m["irr_lower"] > 1
+            and all(r["irr_upper"] < 1 for r in need.values()),
+            "arm_contrast": sorted(need), "detail": x}
+
+
+def shape_state(measures: dict, upper: float) -> str:
+    """H3's rule over a set of measures, each fitted alone: against, not above, or unresolved."""
+    if any(m.get("above", m["irr_lower"] > upper) for m in measures.values()):
+        return "against"            # a shape measure raises later intrusion beyond the margin
+    if all(m["irr_upper"] <= upper for m in measures.values()):
+        return "not above"
+    return "unresolved"
+
+
+def h3_with_coupling(est: dict) -> dict:
+    """The sensitivity reading of H3 (22 November 2026): its rule over its measures with the
+    literature's coupling measures put back (fan-out, CBO, RFC). Reported; it changes no verdict."""
+    b = (est.get("reported") or {}).get("H3_with_coupling") or {}
+    measures = {k: m for k, m in (b.get("measures") or {}).items() if _ok(m) and m.get("irr_upper") is not None}
+    failed = [k for k in (b.get("measures") or {}) if k not in measures]
+    if not measures:
+        return {"state": "not testable", "measures": [], "not_estimable": failed}
+    upper = (b.get("margin") or [0.8, 1.25])[1]
+    return {"state": shape_state(measures, upper), "measures": sorted(measures), "not_estimable": failed,
+            "above": sorted(k for k, m in measures.items() if m.get("above", m["irr_lower"] > upper)),
+            "p": max(m["p_upper"] for m in measures.values())}
 
 
 def h3(est: dict) -> dict:
@@ -105,12 +156,7 @@ def h3(est: dict) -> dict:
         return {"p": None, "verdict": "not testable", "state": "not testable", "dropped": dropped,
                 "detail": b}
     upper = b["margin"][1]
-    if any(m.get("above", m["irr_lower"] > upper) for m in measures.values()):
-        state = "against"           # a shape measure raises later intrusion beyond the margin
-    elif all(m["irr_upper"] <= upper for m in measures.values()):
-        state = "not above"
-    else:
-        state = "unresolved"
+    state = shape_state(measures, upper)
     # reported: the two-sided reading, as H3 stood until 17 November 2026
     two_sided = ("outside" if any(m.get("outside") for m in measures.values()) else
                  "within" if all(b["margin"][0] <= m["irr_lower"] and m["irr_upper"] <= upper
@@ -124,13 +170,18 @@ def h4(est: dict, cond: dict) -> dict:
     x = est.get("H4") or {}
     arm, slope = x.get("arm"), x.get("slope")
     ic, im = x.get("intrusion_class"), x.get("intrusion_method")
-    if not (_ok(arm) and _ok(slope) and _ok(ic) and _ok(im)):
+    # the existing files a change went back into, Java and wiring alike (not read on a history)
+    ef = x.get("existing_files") or {}
+    files = None if ef.get("not_applicable") else ef
+    if not (_ok(arm) and _ok(slope) and _ok(ic) and _ok(im)) or (files is not None and not _ok(files)):
         return {"p": None, "verdict": "not estimable", "detail": x}
     amount = cond.get("amount") or {}
     w = (cond.get("wiring") or {}).get("verdict") or {}
     wiring_against = bool(w.get("growth_against")) or bool(w.get("concentration_against"))
-    lower = arm["upper"] < 0 and slope["upper"] < 0 and ic["irr_upper"] < 1 and im["irr_upper"] < 1
-    return {"p": max(arm["p_less"], slope["p_less"], ic["p_less"], im["p_less"]),
+    lower = (arm["upper"] < 0 and slope["upper"] < 0 and ic["irr_upper"] < 1 and im["irr_upper"] < 1
+             and (files is None or files["irr_upper"] < 1))
+    return {"p": max(arm["p_less"], slope["p_less"], ic["p_less"], im["p_less"],
+                     *([files["p_less"]] if files is not None else [])),
             "reversed": arm["lower"] > 0,
             "amount_in_band": amount.get("in_band"), "wiring_against": wiring_against,
             "conditions_met": lower and amount.get("in_band") is True and not wiring_against,
@@ -139,23 +190,14 @@ def h4(est: dict, cond: dict) -> dict:
 
 def h5(est: dict) -> dict:
     x = est.get("H5") or {}
-    states, ps = {}, []
-    for lev in ("class",):           # the method level is reported (20 November 2026)
-        b = x.get(lev) or {}
-        if b.get("all_forced"):
-            states[lev], p = "not above", 0.0
-        elif not _ok(b) or "irr_upper" not in b:
-            return {"p": None, "verdict": "not estimable", "detail": x}
-        else:
-            upper = x["margin"][1]
-            states[lev] = ("against" if b["irr_lower"] > upper else
-                           "not above" if b["irr_upper"] <= upper else "unresolved")
-            p = b["p_upper"]
-        ps.append(p)
-    state = ("against" if "against" in states.values() else
-             "not above" if all(v == "not above" for v in states.values()) else "unresolved")
-    return {"p": max(ps), "state": state, "levels": states, "reversed": state == "against",
-            "conditions_met": state == "not above", "detail": x}
+    b = x.get("class") or {}         # the method level is reported (20 November 2026)
+    if b.get("all_forced"):          # no alternative anywhere: no choice to narrow
+        return {"p": None, "verdict": "not testable", "state": "every placement forced", "detail": x}
+    if not _ok(b) or "irr_upper" not in b or "p_less" not in b:
+        return {"p": None, "verdict": "not estimable", "detail": x}
+    return {"p": b["p_less"], "reversed": b["irr_lower"] > 1, "conditions_met": b["irr_upper"] < 1,
+            "state": "falls" if b["irr_upper"] < 1 else "rises" if b["irr_lower"] > 1 else "not shown to fall",
+            "detail": x}
 
 
 def h6(est: dict) -> dict:
@@ -179,6 +221,24 @@ def h7(est: dict) -> dict:
             "conditions_met": fo["irr_lower"] > 1, "detail": x}
 
 
+def h8(est: dict, cond: dict) -> dict:
+    """Run D, the no-encapsulation run, against Run A's same stack (PLAN.md §3.1a): without
+    encapsulation code disperses. The open arm is the analysis's function arm."""
+    ic = (est.get("H4") or {}).get("intrusion_class")
+    co = est.get("coupled_arm")
+    comp = (cond.get("compliance") or {}).get("share")
+    amount = cond.get("amount") or {}
+    out = {"tier": "registered, its own run", "compliance": comp, "compliance_bar": COMPLIANCE,
+           "amount_in_band": amount.get("in_band"), "detail": {"intrusion_class": ic, "coupled": co}}
+    if comp is None or comp < COMPLIANCE:
+        return {**out, "p": None, "verdict": "descriptive only", "state": "the instruction did not take"}
+    if not (_ok(ic) and _ok(co)):
+        return {**out, "p": None, "verdict": "not estimable"}
+    met = ic["irr_upper"] < 1 and co["irr_lower"] > 1 and amount.get("in_band") is True
+    return {**out, "p": max(ic["p_less"], co["p_greater"]),
+            "reversed": ic["irr_lower"] > 1 or co["irr_upper"] < 1, "conditions_met": met}
+
+
 def decide(est: dict, cond: dict) -> dict:
     parts = {"H1": h1(est), "H2": h2(est), "H3": h3(est), "H4": h4(est, cond), "H5": h5(est),
              "H6": h6(est), "H7": h7(est)}
@@ -195,12 +255,27 @@ def decide(est: dict, cond: dict) -> dict:
             v["verdict"] = "supported"
         elif v.get("reversed"):
             v["verdict"] = "reversed"
-        elif k in ("H3", "H5", "H6") and v.get("state") == "unresolved":
+        elif k in ("H3", "H6") and v.get("state") == "unresolved":
             v["verdict"] = "unresolved"
         else:
             v["verdict"] = "not supported"
-    return {"alpha": ALPHA, "descriptive_only": bool(cond.get("descriptive_only")),
-            "hypotheses": parts}
+    out = {"alpha": ALPHA, "descriptive_only": bool(cond.get("descriptive_only")),
+           "hypotheses": parts, "sensitivity": {"H3_with_coupling": h3_with_coupling(est)}}
+    if cond.get("contrast") == "no-encapsulation":
+        # Run D against Run A's same stack: its one test is H8, on its own p; H1 to H7 are the
+        # arms' test (the ui primary) and are descriptive here
+        for v in parts.values():
+            v["verdict"] = "descriptive only"
+        v = h8(est, cond)
+        v["p_holm"] = v["p"]
+        if cond.get("descriptive_only"):
+            v["verdict"] = "descriptive only"
+        elif "verdict" not in v:
+            v["verdict"] = ("supported" if v["p"] <= ALPHA and v["conditions_met"] else
+                            "reversed" if v["reversed"] else "not supported")
+        parts["H8"] = v
+        out["contrast"] = "no-encapsulation"
+    return out
 
 
 def main() -> None:

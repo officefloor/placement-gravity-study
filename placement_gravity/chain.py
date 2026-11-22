@@ -281,11 +281,16 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path, java_src: str = 
     cps = cps if light else checkpoints(repo, branch, base_ref)
     manifest, amounts, wires, shapes = [], [], {}, []
     wire_changes: dict[str, list] = {}
+    # the production Java files each unit changes that existed before it (modified, renamed or
+    # deleted): with the wiring files, the existing files a change has to go back into (H4)
+    java_existing: dict[str, int] = {}
     for c in cps:
         unit = f"cp{c.cp:02d}"
+        java_existing[unit] = 0
         for old, new in changed_java(repo, c.parent, c.commit, java_src):
             if keep and not keep(new or old):
                 continue
+            java_existing[unit] += old is not None
             path = new or old
             before = (str(materialise(repo, c.parent, old, work / unit / "before" / old))
                       if old else "-")
@@ -360,6 +365,7 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path, java_src: str = 
     if light:   # no amount is read on a history
         amount = {f"cp{c.cp:02d}": {"positions": 0, "methods": 0} for c in cps}
     return {"checkpoints": [c.__dict__ for c in cps], "records": records, "amount": amount,
-            "wiring": wires, "wiring_changes": wire_changes, "refactorings": found, "hints": len(hint_lines),
+            "wiring": wires, "wiring_changes": wire_changes, "java_existing": java_existing,
+            "refactorings": found, "hints": len(hint_lines),
             "shape": methods, "shape_problems": [r for r in shaped if r["kind"] == "problem"],
             "hints_unmatched": unmatched, "places": places}

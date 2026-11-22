@@ -42,11 +42,11 @@ import random
 import statistics
 from pathlib import Path
 
-from . import chain, history, literature, places, readings, runs, tables, wiring
+from . import chain, history, literature, places, readings, runs, tables, validate, wiring
 
 DATA = chain.ROOT / "data" / "analysis"
 SEED = 20261116
-#: Cluster-bootstrap refits for the H1 and H4 models (PLAN.md §5).
+#: Cluster-bootstrap refits for H1 and for the confirmatory tests (H2, H4, H5, H7; PLAN.md §5).
 BOOT = 1000
 MARGIN = [0.8, 1.25]
 AMOUNT_BAND = [0.8, 1.25]
@@ -66,6 +66,10 @@ FIRST = {"s1_long": ("method", "flag", "long: 26 or more code lines"),
 H3_MEASURES = ["s1_long", "s4_cognitive", "m_cyclomatic", "c_gini", "c_wmc", "c_lcom_star"]
 #: How far a place reaches out: read with the sinew measures, predicted above 1.
 REACH = ["m_fanout", "c_cbo", "c_fanout"]
+#: H3's sensitivity reading (22 November 2026): its measures with the literature's coupling measures
+#: put back, as the literature reads them among its shape metrics (Chidamber and Kemerer's CBO and
+#: RFC, fan-out).
+H3_SENSITIVITY = H3_MEASURES + ["m_fanout", "c_cbo", "c_rfc", "c_fanout"]
 SHAPE_LEVELS = ["s4_cognitive", "s5_class_gini"]
 METHODS_ARM, FUNCTION_ARM = "spring", "officefloor"
 
@@ -259,6 +263,51 @@ def growth_by_access(host_rows: list[dict]) -> dict:
         for k in [k for k in a if k != "total"]:
             a[f"{k}_share"] = a[k] / total if total else None
     return out
+
+
+def growth_by_lever(host_rows: list[dict]) -> dict:
+    """Per arm, the positions that placements forced by encapsulation added to classes that existed,
+    by whether the lever of injection was there (``tables.lever``, decided by the author on 22
+    November 2026): bound to the class's own private members (``own``); bound only to injected
+    private fields, with another class already holding those dependencies (``injected_elsewhere``,
+    H5's alternatives at least one) or with none yet (``injected_only_here``). The injected part is
+    the opportunity dependency injection gives to duplicate the core and avoid the concentration; it
+    is still forced, because the lever was not exercised. Shares are of the forced growth, with the
+    forced growth's share of all growth of existing classes."""
+    out: dict[str, dict] = {}
+    for h in host_rows:
+        if not tables.changed(h) or truth(h.get("class_new")):
+            continue
+        a = out.setdefault(h["arm"], {"own": 0, "injected_elsewhere": 0, "injected_only_here": 0,
+                                      "unknown": 0, "placements": 0, "all": 0})
+        a["all"] += added(h)
+        if not tables.forced(h):
+            continue
+        k = h.get("forced_lever")
+        if k == "injected":
+            n = num(h.get("choice_class"))
+            k = "injected_elsewhere" if n is not None and n >= 1 else "injected_only_here"
+        elif k != "own":
+            k = "unknown"           # measured before the lever was read
+        a[k] += added(h)
+        a["placements"] += 1
+    for a in out.values():
+        kinds = ("own", "injected_elsewhere", "injected_only_here", "unknown")
+        total = sum(a[k] for k in kinds)
+        a["forced"] = total
+        a["forced_share_of_growth"] = total / a["all"] if a["all"] else None
+        for k in kinds:
+            a[f"{k}_share"] = a[k] / total if total else None
+        a["opportunity_share"] = ((a["injected_elsewhere"] + a["injected_only_here"]) / total) if total else None
+    return out
+
+
+def compliance(members: list[dict], arm: str) -> dict:
+    """Run D's condition (PLAN.md §3.1a): of the fields and methods the open arm's units introduce,
+    the share that is not private, over all its chains."""
+    n = sum(int(num(m.get("introduced"), 0)) for m in members if m["arm"] == arm)
+    private = sum(int(num(m.get("introduced_private"), 0)) for m in members if m["arm"] == arm)
+    return {"arm": arm, "introduced": n, "private": private, "share": (n - private) / n if n else None}
 
 
 def coupling_accounting(pairs: list[dict], coupling: list[dict], h6: list[dict]) -> dict:
@@ -713,9 +762,16 @@ def capture_rows(additions: list[dict]) -> list[dict]:
 def reopen_rows(additions: list[dict]) -> list[dict]:
     """Per checkpoint: the classes its bound code goes back into and the wiring files it changes
     again (reported)."""
+    def files(a):
+        j, w = num(a.get("existing_java_files")), num(a.get("existing_wiring_files"))
+        return {"existing_java_files": None if j is None else int(j),
+                "existing_wiring_files": None if w is None else int(w),
+                # H4's symmetric count: every existing file the change went back into
+                "existing_files": None if j is None or w is None else int(j + w)}
     return [{"chain_id": a["chain_id"], "arm": a["arm"], "frontend": a.get("frontend", ""),
              "cp": int(a["cp"]), "reopened": int(a["reopened"]),
-             "reopened_classes": int(a["reopened_classes"]), "reopened_wiring": int(a["reopened_wiring"])}
+             "reopened_classes": int(a["reopened_classes"]), "reopened_wiring": int(a["reopened_wiring"]),
+             **files(a)}
             for a in additions if a.get("reopened") not in (None, "")]
 
 
@@ -842,7 +898,8 @@ def class_level(h2: list[dict]) -> dict:
             "testable": classes >= MIN_CLASSES and top is not None and top <= MAX_CLASS_SHARE}
 
 
-def amount(additions: list[dict], seed: int = SEED, resamples: int = 10_000) -> dict:
+def amount(additions: list[dict], seed: int = SEED, resamples: int = 10_000,
+           methods_arm: str = METHODS_ARM, function_arm: str = FUNCTION_ARM) -> dict:
     """H4's amount band, read on the **amount added**: each chain's positions at its final
     checkpoint less those of its base (PLAN.md §4.6); the ratio of the function arm's mean to the
     methods arm's, with a bootstrap interval (chains resampled within arm). The ratio of the totals
@@ -859,7 +916,7 @@ def amount(additions: list[dict], seed: int = SEED, resamples: int = 10_000) -> 
     for _, arm, v, t in final.values():
         by_arm.setdefault(arm, []).append(v)
         totals.setdefault(arm, []).append(t)
-    m, f = by_arm.get(METHODS_ARM, []), by_arm.get(FUNCTION_ARM, [])
+    m, f = by_arm.get(methods_arm, []), by_arm.get(function_arm, [])
     if not m or not f or statistics.fmean(m) == 0:
         return {"ratio": None, "interval": None, "in_band": None, "per_arm": by_arm}
     ratio = statistics.fmean(f) / statistics.fmean(m)
@@ -870,7 +927,7 @@ def amount(additions: list[dict], seed: int = SEED, resamples: int = 10_000) -> 
     return {"ratio": ratio, "interval": interval,
             "in_band": AMOUNT_BAND[0] <= ratio <= AMOUNT_BAND[1], "band": AMOUNT_BAND,
             "per_arm": {k: statistics.fmean(v) for k, v in by_arm.items()},
-            "ratio_total": statistics.fmean(totals[FUNCTION_ARM]) / statistics.fmean(totals[METHODS_ARM]),
+            "ratio_total": statistics.fmean(totals[function_arm]) / statistics.fmean(totals[methods_arm]),
             "per_arm_total": {k: statistics.fmean(v) for k, v in totals.items()}}
 
 
@@ -942,7 +999,8 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
     write_csv(out / "h7.csv", h7)
     write_csv(out / "surface.csv", surface_rows(table("boundary")))
     rippled = ripple(hosts, table("edges"))
-    r_units, r_classes = reader_rows(table("members"), hosts, h7, table("boundary"), table("refactorings"))
+    members = table("members")
+    r_units, r_classes = reader_rows(members, hosts, h7, table("boundary"), table("refactorings"))
     write_csv(out / "reader_units.csv", r_units)
     write_csv(out / "reader_classes.csv", r_classes)
     spec = {"analysis": name, "role": analysis["role"], "seed": SEED, "boot": BOOT,
@@ -960,6 +1018,8 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
             "class_level": at_class,
             "h3_measures": [k for k in H3_MEASURES if k in lit
                             and (lit[k]["level"] == "method" or at_class["testable"])],
+            "h3_sensitivity": [k for k in H3_SENSITIVITY if k in lit
+                               and (lit[k]["level"] == "method" or at_class["testable"])],
             "h3_all": H3_MEASURES, "reach": REACH, "checkpoints": len(streamed),
             "acts": any(r["act"] is not None for r in h1 + h2),
             "frontends": sorted({r["frontend"] for r in h1 if r["frontend"]})}
@@ -967,6 +1027,11 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
                   "descriptive_only": analysis["role"] == "development"
                   or any(len(v) < MIN_CHAINS for v in chains.values()) or len(chains) < 2,
                   "amount": amount(additions), "wiring": wiring_checks(additions)}
+    if analysis.get("contrast") == "no-encapsulation":      # Run D against Run A (PLAN.md 3.1a)
+        conditions["contrast"] = "no-encapsulation"
+        conditions["compliance"] = compliance(members, spec["function_arm"])
+        conditions["amount"] = amount(additions, methods_arm=spec["methods_arm"],
+                                      function_arm=spec["function_arm"])
     # the readings reported beside the hypotheses (PLAN.md 5): choice at a checkpoint, formation
     full = all(k in (additions[0] if additions else {}) for k in ("hosts", "hosts_existing", "binding_method"))
     chosen = readings.choice(additions, hosts) if full else []
@@ -986,6 +1051,8 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
         "co_change": co_change(paired),
         "growth": growth_accounting(hosts, len(streamed)),
         "growth_by_access": growth_by_access(hosts),
+        "growth_by_lever": growth_by_lever(hosts),
+        "validation": {} if past else validate.summary(table("validation")),
         "coupling_added": coupling_accounting(paired, coupled, h6),
         "encapsulation": encapsulation_summary(h7),
         "redesign": redesign(hosts, paired),

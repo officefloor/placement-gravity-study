@@ -16,12 +16,12 @@ import json
 import shutil
 from pathlib import Path
 
-from . import chain, crosscheck, lines, places, runs, shape, tables
+from . import chain, crosscheck, lines, places, runs, shape, tables, validate
 
 OUT = runs.RESULTS / "measure"
 WORK = chain.ROOT / ".tmp" / "measure"
 #: Bump when a table's meaning changes, so measured chains are redone.
-MEASURE_VERSION = 28
+MEASURE_VERSION = 29
 
 
 def write(path: Path, rows: list[dict]) -> None:
@@ -86,6 +86,9 @@ def measure_chain(reg: dict, analysis: dict, head: dict, streamed: dict, stacks:
     write(out / "members.csv", label(tables.member_rows(arm, name, measured), head))
     write(out / "landings.csv", label(places.landings(arm, name, h, measured["shape"]), head))
     write(out / "shape_series.csv", label(shape.series_rows(arm, name, measured["shape"]), head))
+    # the instrument against the compiler, on a sample of the chain's checkpoints (PLAN.md 4.8)
+    write(out / "validation.csv", label(validate.rows(arm, name, repo["path"], head["sha"], paths["java_src"],
+                                                      measured, work), head))
     (out / "codetracker.json").write_text(json.dumps(
         {k: v for k, v in cc.items() if k not in ("ct_identity", "ct_touched")}, indent=1) + "\n")
     (out / "meta.json").write_text(json.dumps(meta, indent=1) + "\n")

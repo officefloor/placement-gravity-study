@@ -18,7 +18,10 @@
 # and the method's over the runs in one method, the checkpoint index centred on the place's mean.
 # H2 and H3: negative binomial (nbinom2) mixed models per problem and host whose code was bound
 # there, at the class and at the method it was placed in, offset by the log of the later
-# checkpoints; Wald intervals. H2, in the methods arm: the later intrusions bound to what stood by
+# checkpoints. The tests of the confirmatory family (H2, H4's intrusion ratios, H5, H7) take their
+# interval and p from the same cluster bootstrap as H1 (chains resampled within arm, the model
+# refitted; 22 November 2026): rows of one chain share its classes and methods, which a Wald interval
+# does not see. The Wald reading is kept beside each (`wald`). Everything reported is Wald. H2, in the methods arm: the later intrusions bound to what stood by
 # at the placement, on the number that stood by (the rate ratio per bystander). H3: the shape
 # measures (long, complexity, concentration) shown not to raise it (one-sided, below the upper margin), on later intrusion at the method, with the bindings and the bystanders in the
 # model. H4 also reads the arm's rate ratio in later intrusion, without either in the model.
@@ -96,25 +99,33 @@ irr <- function(w) {
 }
 
 # Chains resampled with replacement within arm; the model refitted on each resample.
-cluster_boot <- function(d, formula, family, terms, B) {
+CORES <- suppressWarnings(as.integer(Sys.getenv("PG_CORES", "")))
+if (is.na(CORES) || CORES < 1) CORES <- max(1L, min(4L, parallel::detectCores() - 1L))
+cluster_boot <- function(d, formula, family, terms, B, nest = NULL) {
   ids <- unique(d$chain_id)
   strata <- split(ids, d$arm[match(ids, d$chain_id)])
   by_id <- split(d, d$chain_id)
-  draws <- matrix(NA_real_, nrow = B, ncol = length(terms), dimnames = list(NULL, terms))
-  for (b in seq_len(B)) {
-    pick <- unlist(lapply(strata, function(s) s[sample.int(length(s), length(s), replace = TRUE)]),
-                   use.names = FALSE)
+  # the resamples are drawn first, in order, from the one seeded stream; the refits, which draw
+  # nothing, then run on several cores (PG_CORES; by default at most four, each holding its own copy
+  # of the model, so more cores need more memory), so the result does not
+  # depend on how many there are
+  picks <- lapply(seq_len(B), function(b)
+    unlist(lapply(strata, function(s) s[sample.int(length(s), length(s), replace = TRUE)]), use.names = FALSE))
+  one <- function(pick) {
     db <- do.call(rbind, lapply(seq_along(pick), function(i) {
       x <- by_id[[pick[i]]]
       x$chain_id <- paste0(pick[i], "#", i)
+      # a place inside the chain (H7's class): a chain drawn twice is two chains, with its own places
+      if (!is.null(nest)) x$place <- paste(x$chain_id, x[[nest]], sep = "|")
       x
     }))
     fit <- fit_or_error(glmmTMB(formula, data = db, family = family))
-    if (!inherits(fit, "fit_error")) {
-      f <- fixef(fit)$cond
-      draws[b, ] <- f[terms]
-    }
+    if (inherits(fit, "fit_error")) rep(NA_real_, length(terms)) else unname(fixef(fit)$cond[terms])
   }
+  got <- parallel::mclapply(picks, function(pk) tryCatch(one(pk), error = function(e) rep(NA_real_, length(terms))),
+                            mc.cores = CORES)
+  draws <- matrix(NA_real_, nrow = B, ncol = length(terms), dimnames = list(NULL, terms))
+  for (b in seq_len(B)) if (is.numeric(got[[b]]) && length(got[[b]]) == length(terms)) draws[b, ] <- got[[b]]
   draws
 }
 
@@ -127,6 +138,24 @@ boot_summary <- function(fit, draws, term) {
        lower = unname(quantile(x, 0.025)), upper = unname(quantile(x, 0.975)),
        p_greater = (sum(x <= 0) + 1) / (n + 1), p_less = (sum(x >= 0) + 1) / (n + 1),
        refits = n, failed = nrow(draws) - n)
+}
+
+# A rate ratio decided on the cluster bootstrap (22 November 2026): the term's estimate from the
+# fit, its 95% percentile interval and one-sided p-values from the refits, as exp(); the Wald reading
+# beside it. With one chain an arm a resample is the data again, so the Wald reading is what there
+# is; so too when fewer than half the refits could be fitted. Either is recorded (`interval`).
+boot_irr <- function(fit, formula, d, family, term, nest = NULL) {
+  w <- irr(wald(fit, term))
+  if (!is.null(w$error)) return(w)
+  chains <- tapply(d$chain_id, as.character(d$arm), function(v) length(unique(v)))
+  if (min(chains) < 2) return(c(w, list(interval = "wald: one chain in an arm")))
+  draws <- cluster_boot(d, formula, family, term, spec$boot, nest)
+  if (sum(!is.na(draws[, term])) < max(2, spec$boot / 2))
+    return(c(w, list(interval = "wald: fewer than half the bootstrap refits could be fitted",
+                     failed = sum(is.na(draws[, term])))))
+  b <- boot_summary(fit, draws, term)
+  c(b, list(irr = exp(b$estimate), irr_lower = exp(b$lower), irr_upper = exp(b$upper),
+            level = 0.95, interval = "cluster bootstrap", wald = w))
 }
 
 # The model with random intercepts for the chain and the checkpoint; without the checkpoint's when
@@ -386,7 +415,7 @@ if (!is.null(h2)) {
     term <- paste0("bystanders_", lev)
     mk <- cored(hm, lev)
     note(paste0("H2_", lev), mk)
-    res$H2[[lev]] <- c(irr(wald(mk$fit, "core")), list(records = mk$n))
+    res$H2[[lev]] <- c(boot_irr(mk$fit, mk$formula, mk$data, nb, "core"), list(records = mk$n))
     res$reported[[paste0("H2_core_function_arm_", lev)]] <- irr(wald(cored(hf, lev)$fit, "core"))
     # reported: the core's width, its number of values per row (the sinew's width), per arm and over
     # the thirds of the stream
@@ -456,24 +485,59 @@ if (!is.null(h2)) {
         correlation = c(list(pooled = rho(d)), lapply(split(d, as.character(d$arm)), rho)))
     }
   }
+  # How much a core value is come back to, function arm against methods arm (H2's arm contrast): the
+  # core's records of both arms, uses per value and later checkpoint, in the base model with the arm
+  # term, decided on the cluster bootstrap. Needed at a level where each arm has at least MIN_CORE
+  # core records; where the function arm forms too few cores to compare, that is reported and the
+  # level's contrast is not needed. Where the function arm has the records and none of its core
+  # values is ever come back to, no ratio can be fitted (it is nought): the arms' chains are then
+  # compared by a rank-sum test on each chain's uses per value and later checkpoint.
+  MIN_CORE <- 10
+  reuse <- function(lev) {
+    long <- if (paste0("core_", lev) %in% names(h2)) core_long(h2, lev) else NULL
+    long <- if (is.null(long)) NULL else long[long$core == 1 & as.character(long$arm) %in% c(spec$methods_arm, spec$function_arm), ]
+    if (is.null(long) || nrow(long) == 0) return(list(required = FALSE, error = "no core to compare"))
+    fa <- as.character(long$arm) == spec$function_arm
+    out <- list(records = nrow(long), function_records = sum(fa), methods_records = sum(!fa),
+                function_uses = sum(long$uses[fa]), methods_uses = sum(long$uses[!fa]), min_records = MIN_CORE)
+    if (sum(fa) < MIN_CORE || sum(!fa) < MIN_CORE)
+      return(c(out, list(required = FALSE, note = "too few core records in an arm to compare")))
+    if (out$methods_uses == 0) return(c(out, list(required = TRUE, error = "the methods arm's core is never come back to")))
+    if (out$function_uses == 0) {
+      rate <- tapply(long$uses, long$chain_id, sum) / tapply(exp(long$log_later), long$chain_id, sum)
+      arm_of <- as.character(long$arm[match(names(rate), long$chain_id)])
+      rf <- rate[arm_of == spec$function_arm]
+      rm_ <- rate[arm_of == spec$methods_arm]
+      if (length(rf) < 2 || length(rm_) < 2) return(c(out, list(required = TRUE, error = "one chain in an arm")))
+      p <- suppressWarnings(wilcox.test(rf, rm_, alternative = "less", exact = FALSE)$p.value)
+      return(c(out, list(required = TRUE, separated = TRUE, irr = 0, irr_lower = 0, irr_upper = 0,
+                         p_less = p, p_greater = 1 - p,
+                         interval = "rank-sum over chains: no core value of the function arm was come back to")))
+    }
+    long$arm <- droplevels(long$arm)
+    m <- fit_cp(base(long, "uses"), long, nb)
+    c(boot_irr(m$fit, m$formula, m$data, nb, FARM), out, list(required = TRUE))
+  }
   # H4: for the same problems, the function arm's bound code is come back to less, at the class and
   # at the method (the base model without the bindings, which the arm itself changes)
   if (multi(as.character(h2$arm))) {
     for (lev in c("class", "method")) {
       ma <- fit_cp(base(h2, paste0("intrusion_", lev)), h2, nb)
       note(paste0("H4_intrusion_", lev), ma)
-      res$H4[[paste0("intrusion_", lev)]] <- irr(wald(ma$fit, FARM))
+      res$H4[[paste0("intrusion_", lev)]] <- boot_irr(ma$fit, ma$formula, ma$data, nb, FARM)
       # reported beside it: how much a core value is come back to, function arm against methods
       # arm. The core's records of both arms (PLAN.md 4.4), uses per value; both arms solve the
       # same problems, so a core that is only the problems' shared data would be used alike.
-      long <- if (paste0("core_", lev) %in% names(h2)) core_long(h2, lev) else NULL
-      long <- if (is.null(long)) NULL else long[long$core == 1, ]
-      res$reported[[paste0("core_reuse_", lev)]] <-
-        if (is.null(long) || !multi(as.character(long$arm)) || sum(long$uses) == 0)
-          list(error = "no core in both arms to compare") else
-          c(irr(wald(fit_cp(base(long, "uses"), long, nb)$fit, FARM)), list(records = nrow(long)))
+      # Since 22 November 2026 this is part of H2's test (res$H2$reuse_*): within one arm a value
+      # used once is likely to be used again whatever the place, so the core's advantage over the
+      # periphery there can hardly fail; the arms solve the same problems with the same data, so a
+      # core value come back to less in the function arm is the place, not the value's popularity.
+      res$H2[[paste0("reuse_", lev)]] <- reuse(lev)
+      res$reported[[paste0("core_reuse_", lev)]] <- res$H2[[paste0("reuse_", lev)]]
     }
   }
+  if (isFALSE(spec$problem_fixed)) for (lev in c("class", "method"))
+    res$H2[[paste0("reuse_", lev)]] <- list(required = FALSE, note = "a history: its arms do not solve the same problems")
   # any later change, bound or not (as first built), reported
   for (lev in c("class", "method")) {
     res$reported[[paste0("bindings_any_change_", lev)]] <- irr(wald(fit_cp(
@@ -581,6 +645,11 @@ if (!is.null(h2)) {
   res$H3 <- list(n = nrow(ex), n_class = res$reported$literature_class_rows, kept = h3k,
                  testable = length(h3k) > 0, margin = spec$margin)
   if (length(h3k) > 0) res$H3$measures <- res$reported$literature_shape[h3k]
+  # reported, a sensitivity reading of H3 (22 November 2026): its measures with the literature's
+  # coupling measures put back (fan-out, CBO, RFC), which the plan reads apart as reach
+  h3s <- intersect(spec$h3_sensitivity, names(res$reported$literature_shape))
+  res$reported$H3_with_coupling <- list(kept = h3s, margin = spec$margin,
+                                        measures = res$reported$literature_shape[h3s])
 
   # The sinew measures (reported, predicted above 1): not slimmable and junction are measures of
   # data flow, not of shape, so they are read apart from H3: each one's rate ratio in later
@@ -611,20 +680,23 @@ if (!is.null(h2)) {
 # code was bound to there (PLAN.md 4.2a). In the methods arm, a negative binomial model of that count
 # on the checkpoint index scaled from 0 (the first checkpoint) to 1 (the last), with the chain's
 # intercept: exp(slope) is the ratio of the alternatives at the end of the stream to those at its
-# start. H5 is one-sided, as H3: shown below the upper margin (1.25) at the class and at the method,
-# so a flat or falling count passes; a fall is reported with its size. The share forced (no other
-# place) is reported per arm and third; the function arm's slope and the arms' contrast too.
+# start. H5 is a fall (22 November 2026): the ratio shown below 1, one-sided, at the class, by the
+# cluster bootstrap; the method level is reported. A level where every placement was forced has no
+# choice to narrow and is not testable. The reading against the upper margin (1.25, as H5 stood
+# until then: a flat count passed) is reported. The share forced (no other place) is reported per
+# arm and third; the function arm's slope and the arms' contrast too.
 h5 <- read("h5.csv")
 if (!is.null(h5) && nrow(h5) > 0) {
   h5$arm <- as_arm(h5$arm)
   span <- max(spec$checkpoints - 1, 1)
   h5$x <- if (isFALSE(spec$problem_fixed)) h5$cp else (h5$cp - 1) / span
   res$H5 <- list(margin = spec$margin)
+  form5 <- function(d) as.formula(paste0("alternatives ~ x", if (multi(d$frontend)) " + frontend" else "",
+                                         " + (1 | chain_id)"))
   fit5 <- function(d) {
     if (nrow(d) < 3 || length(unique(d$cp)) < 2) return(structure(list(msg = "too few rows"), class = "fit_error"))
     if (all(d$alternatives == 0)) return(structure(list(msg = "every placement forced"), class = "fit_error"))
-    fe <- if (multi(d$frontend)) " + frontend" else ""
-    fit_or_error(glmmTMB(as.formula(paste0("alternatives ~ x", fe, " + (1 | chain_id)")), data = d, family = nbinom2()))
+    fit_or_error(glmmTMB(form5(d), data = d, family = nbinom2()))
   }
   for (lev in c("class", "method")) {
     d <- h5[h5$level == lev, ]
@@ -635,9 +707,11 @@ if (!is.null(h5) && nrow(h5) > 0) {
       thirds_forced = as.list(tapply(as.logical(x$forced), factor(cut(x$x, c(-Inf, 1/3, 2/3, Inf), labels = FALSE), levels = 1:3), mean)),
       thirds_alternatives = as.list(tapply(x$alternatives, factor(cut(x$x, c(-Inf, 1/3, 2/3, Inf), labels = FALSE), levels = 1:3), mean)))
     fm <- fit5(dm)
-    res$H5[[lev]] <- c(tost(fm, "x", spec$margin), list(n = nrow(dm)),
+    res$H5[[lev]] <- c(boot_irr(fm, form5(dm), dm, nbinom2(), "x"), list(n = nrow(dm)),
                        if (inherits(fm, "fit_error")) list(note = fm$msg) else list(),
                        list(all_forced = nrow(dm) > 0 && all(dm$alternatives == 0)))
+    # reported: against the upper margin, as H5 stood until 22 November 2026
+    res$reported[[paste0("H5_margin_", lev)]] <- tost(fm, "x", spec$margin)
     res$reported[[paste0("H5_function_arm_", lev)]] <- irr(wald(fit5(df), "x"))
     res$reported[[paste0("H5_spread_", lev)]] <- list(methods = forced(dm), "function" = forced(df))
     if (multi(as.character(d$arm)) && !all(d$alternatives == 0)) {
@@ -746,7 +820,9 @@ if (!is.null(h6) && nrow(h6) > 0) {
 # Per unit and class that existed before it that the unit changed, the calls across the class's
 # boundary the unit added, outward and inward (coupled; PLAN.md 4.2c). H7's test, in the methods
 # arm: a negative binomial model of coupled on whether a placement in the class was forced at the
-# class, with the index scaled from 0 to 1 and the chain's intercept (forced: the ratio of a forced
+# class, with the index scaled from 0 to 1, the chain's intercept and the class's within the chain
+# (22 November 2026: one class is changed by many units, and its rows are not independent; dropped,
+# and recorded, where the model cannot then be fitted), decided on the cluster bootstrap (forced: the ratio of a forced
 # class row's added coupling to another's, at the same point in the stream), one-sided above 1.
 # Reported: the same for the calls reaching a member the unit exposed or widened (opened), for the
 # outward and inward calls apart, and for the members the class opened; coupled's rise over the
@@ -760,21 +836,37 @@ if (!is.null(h7) && nrow(h7) > 0) {
   span7 <- max(spec$checkpoints - 1, 1)
   h7$x <- if (isFALSE(spec$problem_fixed)) h7$cp else (h7$cp - 1) / span7
   h7$forced <- as.numeric(as.logical(h7$forced))
+  if ("class" %in% names(h7)) h7$place <- paste(h7$chain_id, h7$class, sep = "|")
   fit7 <- function(d, y, rhs) {
     if (nrow(d) < 3 || length(unique(d$cp)) < 2) return(list(fit = structure(list(msg = "too few rows"), class = "fit_error")))
     if (all(d[[y]] == 0)) return(list(fit = structure(list(msg = paste("no", y)), class = "fit_error")))
     if (grepl("forced", rhs) && length(unique(d$forced)) < 2) return(list(fit = structure(list(msg = "forced does not vary"), class = "fit_error")))
     fe <- if (multi(d$frontend)) " + frontend" else ""
     f <- as.formula(paste0(y, " ~ ", rhs, fe, " + (1 | chain_id)"))
+    good <- function(m) !inherits(m, "fit_error") && isTRUE(m$sdr$pdHess) &&
+      all(is.finite(summary(m)$coefficients$cond[, "Std. Error"]))
+    if ("place" %in% names(d) && length(unique(d$place)) > length(unique(d$chain_id))) {
+      fp <- as.formula(paste0(y, " ~ ", rhs, fe, " + (1 | chain_id) + (1 | place)"))
+      nbp <- fit_or_error(glmmTMB(fp, data = d, family = nbinom2()))
+      if (good(nbp)) return(list(fit = nbp, family = "nbinom2", formula = fp, fam = nbinom2(),
+                                 class_intercept = TRUE, data = d))
+    }
     nb <- fit_or_error(glmmTMB(f, data = d, family = nbinom2()))
-    if (!inherits(nb, "fit_error") && isTRUE(nb$sdr$pdHess)) return(list(fit = nb, family = "nbinom2"))
-    list(fit = fit_or_error(glmmTMB(f, data = d, family = poisson())), family = "poisson")
+    if (good(nb)) return(list(fit = nb, family = "nbinom2", formula = f, fam = nbinom2(),
+                              class_intercept = FALSE, data = d))
+    list(fit = fit_or_error(glmmTMB(f, data = d, family = poisson())), family = "poisson", formula = f,
+         fam = poisson(), class_intercept = FALSE, data = d)
   }
-  one7 <- function(m, term, n) c(irr(wald(m$fit, term)), list(n = n, family = m$family))
+  one7 <- function(m, term, n) c(irr(wald(m$fit, term)), list(n = n, family = m$family,
+                                                              class_intercept = isTRUE(m$class_intercept)))
   dm <- h7[h7$arm == spec$methods_arm, ]
   df <- h7[h7$arm == spec$function_arm, ]
   sz7 <- SIZE(h7)
-  res$H7 <- list(forced = one7(fit7(dm, "coupled", paste0("forced + x", sz7)), "forced", nrow(dm)))
+  m7 <- fit7(dm, "coupled", paste0("forced + x", sz7))
+  res$H7 <- list(forced = c(
+    if (is.null(m7$formula)) irr(wald(m7$fit, "forced")) else
+      boot_irr(m7$fit, m7$formula, m7$data, m7$fam, "forced", nest = if (isTRUE(m7$class_intercept)) "class" else NULL),
+    list(n = nrow(dm), family = m7$family, class_intercept = isTRUE(m7$class_intercept))))
   res$reported$H7_forced_without_size <- one7(fit7(dm, "coupled", "forced + x"), "forced", nrow(dm))
   if ("forced_bind" %in% names(dm)) {
     db <- dm
@@ -788,6 +880,16 @@ if (!is.null(h7) && nrow(h7) > 0) {
   if (multi(as.character(h7$arm)) && !all(h7$coupled == 0)) {
     fa <- fit_or_error(glmmTMB(as.formula(paste0("coupled ~ forced + x + arm", sz7, " + (1 | chain_id)")), data = h7, family = nbinom2()))
     res$reported$H7_arm <- irr(wald(fa, FARM))
+    # the arms against each other in the calls added at the same change size, forced not in the
+    # model (the arm may change what is forced): the dispersion part of the no-encapsulation test
+    # (Run D, PLAN.md 3.1a), decided on the cluster bootstrap
+    ha <- h7
+    ha$arm <- droplevels(ha$arm)
+    mc <- fit7(ha, "coupled", paste0("x + arm", sz7))
+    res$coupled_arm <- c(
+      if (is.null(mc$formula)) irr(wald(mc$fit, FARM)) else
+        boot_irr(mc$fit, mc$formula, mc$data, mc$fam, FARM, nest = if (isTRUE(mc$class_intercept)) "class" else NULL),
+      list(n = nrow(ha), family = mc$family, class_intercept = isTRUE(mc$class_intercept)))
   }
 }
 
@@ -850,6 +952,22 @@ if (!is.null(reopen)) {
   fe_r <- if (multi(reopen$frontend)) " + frontend" else ""
   res$reported$reopen_classes <- irr(wald(fit_cp(paste0("reopened_classes ~ arm", fe_r), reopen, poisson())$fit, FARM))
   res$reported$reopen_with_wiring <- irr(wald(fit_cp(paste0("reopened ~ arm", fe_r), reopen, poisson())$fit, FARM))
+}
+# H4's symmetric count (22 November 2026): per checkpoint, the existing files the change went back
+# into, whatever they hold and bound or not: production Java files that existed and wiring files
+# that existed. The methods arm's return to its handler and the function arm's return to its wiring
+# are then counted alike. A Poisson mixed model on the arm with the chain's and the checkpoint's
+# intercepts, decided on the cluster bootstrap; the function arm's ratio has to lie below 1.
+res$H4$existing_files <- if (isFALSE(spec$problem_fixed)) list(not_applicable = TRUE) else
+  if (is.null(reopen) || !"existing_files" %in% names(reopen) || all(is.na(reopen$existing_files)))
+    list(error = "the existing files a change went back into were not measured") else {
+  d <- reopen[!is.na(reopen$existing_files) & as.character(reopen$arm) %in% c(spec$methods_arm, spec$function_arm), ]
+  d$arm <- droplevels(as_arm(as.character(d$arm)))
+  m <- fit_cp(paste0("existing_files ~ arm", if (multi(d$frontend)) " + frontend" else ""), d, poisson())
+  per <- function(col) as.list(tapply(d[[col]], as.character(d$arm), mean))
+  c(boot_irr(m$fit, m$formula, m$data, poisson(), FARM),
+    list(n = nrow(d), mean = per("existing_files"), java = per("existing_java_files"),
+         wiring = per("existing_wiring_files"), checkpoint_intercept = m$cp))
 }
 
 # ---------------------------------------------------------------- encapsulation and the reader (reported)
