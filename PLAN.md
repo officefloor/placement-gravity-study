@@ -3151,6 +3151,30 @@ author's to set, on the plan and code as they then stand, and starts the experim
   count has to be *lower* (below 1), not merely no higher, and that a deleted or renamed file
   counts as gone back into; for the check, every fifth checkpoint and the last, no threshold on
   the shares, and the project's classpath taken offline from the chain's head.
+- *Decided by the author on 23 November 2026, walking through the drafter's open choices of rows
+  72 to 85 one at a time* (each was built as the drafter chose; none changes the code):
+  **(1) H5 where every placement was forced is not testable**, not a pass (row 73): "B". The
+  cost accepted: on corpus B, mostly without injection, H5 will often not be testable; the share
+  forced is still reported. **(2) H2's arm contrast is needed at a level where each arm has at
+  least 10 core rows** (row 77): "A". The low bar is the stricter choice, since a contrast
+  resting on few rows is more likely to fail than to be skipped. **(3) The compiler check reads
+  every fifth checkpoint and the last** (row 79): "A", after asking why a compiler is needed at
+  all (the instrument guesses by name, the compiler does not, and the check found the fault of
+  row 80 the first time it ran). The check of bound names sees only the sampled checkpoints'
+  hosts and is thin for that reason. **(4) In H4's count a file's creation by an earlier
+  checkpoint counts as one earlier change** (row 82): "A ... any mutation needs to be counted".
+  The author's principle, recorded with it: "The point of additive architecture is that it adds
+  rather than mutates. So adding is a good thing when increasing functionality. It should not be
+  penalised as a cost." The count agrees: a file a checkpoint adds is never gone back into and
+  scores nothing; what scores is a later change to it, the first one included.
+  *Decided the day before and recorded with their rows:* 200 refits on a history (row 84); the
+  count of H4 and the wired functions' parameters apart (rows 82, 83); where the logic landed
+  (row 85). *Still the drafter's and not spoken to:* in H2's arm contrast, the rank-sum test
+  where the function arm's cores are never come back to; in H4's count, that a deleted or
+  renamed file counts as gone back into; in the compiler check, no threshold on the shares and
+  the classpath taken offline from the chain's head; in §4.9, the remainder that gives the
+  declarations. *Known and not corrected:* the instrument does not see a nested class reading a
+  field of the class around it (§6).
 - *To finish before the tag (state on 22 November 2026, later):* the development rerun **again**,
   at `MEASURE_VERSION` 29 and `HISTORY_VERSION` 13 (rows 72, 78 and 80 change the measured tables), with
   the same four commands as below. The rerun started that morning at 28 and 12 is **not to be
