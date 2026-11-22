@@ -291,6 +291,11 @@ What a checkpoint added, per checkpoint: its logic (the statements of method bod
 | Wiring (lines) | 2.150 (3.100, 2.350, 1.000) | 0.000 (0.000, 0.000, 0.000) | – | – |
 | Organisation in all (bodies, declarations, wiring) | 10.683 (11.350, 10.050, 10.650) | 6.915 (7.950, 5.200, 7.632) | 1.506 [1.294, 1.752] | 0.919 [0.506, 1.671] |
 | Imports (lines) | 4.800 (6.300, 4.350, 3.750) | 0.881 (1.400, 0.500, 0.737) | 5.442 [4.073, 7.270] | 1.366 [0.457, 4.079] |
+| Where logic landed: methods that existed | 2.083 (1.300, 1.400, 3.550) | 2.373 (1.550, 2.250, 3.368) | 0.672 [0.470, 0.960] | 2.477 [0.559, 10.979] |
+| Where logic landed: new called methods | 5.383 (3.100, 5.750, 7.300) | 6.729 (7.000, 7.000, 6.158) | 0.619 [0.480, 0.798] | 4.745 [1.948, 11.558] |
+| Where logic landed: new wired functions | 2.233 (3.350, 2.800, 0.550) | 0.000 (0.000, 0.000, 0.000) | – | – |
+| Existing methods a checkpoint added logic to | 0.867 (0.400, 0.450, 1.750) | 1.051 (0.800, 1.000, 1.368) | 0.756 [0.550, 1.038] | 6.978 [1.470, 33.118] |
+| New wired functions | 0.583 (0.950, 0.600, 0.200) | 0.000 (0.000, 0.000, 0.000) | – | – |
 | New called methods with logic (not wired functions) | 1.400 (1.050, 1.350, 1.800) | 1.492 (1.700, 1.400, 1.368) | 0.939 [0.721, 1.221] | 3.364 [1.168, 9.693] |
 | Handed along: parameters of new called methods | 1.483 (1.000, 1.600, 1.850) | 1.864 (2.350, 1.750, 1.474) | 0.796 [0.599, 1.057] | 4.788 [1.833, 12.508] |
 | Declared: injected parameters of new wired functions | 1.100 (1.700, 1.000, 0.600) | 0.000 (0.000, 0.000, 0.000) | – | – |

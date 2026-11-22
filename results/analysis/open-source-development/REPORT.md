@@ -4,8 +4,8 @@ Role: **development**. Chains: human 2, agent 1. **Descriptive only.**
 
 | Hypothesis | Tier | Verdict | p (Holm over the confirmatory; own p for secondary) |
 |---|---|---|---|
-| H1 | secondary | descriptive only | 0.000999 |
-| H2 | confirmatory | descriptive only | 0.003 |
+| H1 | secondary | descriptive only | 0.005 |
+| H2 | confirmatory | descriptive only | 0.015 |
 | H3 | secondary | descriptive only | 0.033 |
 | H4 | confirmatory | descriptive only | 1.000 |
 | H5 | confirmatory | descriptive only | – |
@@ -14,7 +14,7 @@ Role: **development**. Chains: human 2, agent 1. **Descriptive only.**
 
 ## H1, the periphery grows (methods arm)
 
-Runs that need a pre-existing value 1181 over 2 chains; the slope of log(1 + bystanders) on the checkpoint index, cluster-bootstrap 95% interval (1000 refits).
+Runs that need a pre-existing value 1181 over 2 chains; the slope of log(1 + bystanders) on the checkpoint index, cluster-bootstrap 95% interval (200 refits).
 
 - **Bystanders on the checkpoint index: 0.511 [0.375, 0.734]**
 - **Within a class, the class's bystanders: 0.995 [0.786, 1.424]** (97 classes with runs at two or more checkpoints)
@@ -107,7 +107,7 @@ Per bound addition, the other places in the code before its checkpoint that hold
 - Reported, methods arm at the class: 638 rows, 1 forced, 0 alternatives a row; over the thirds, forced 1, 1, 1; alternatives 0, 0, 0
 - Reported, function arm at the class: 25 rows, 0.520 forced, 3.480 alternatives a row; over the thirds, forced 0.389, 0.857, –; alternatives 3.444, 3.571, –
 - Reported, the function arm's ratio at the class: 6.530 [0.006, 7253.304]; function arm / methods arm: not estimated (standard error not computed: armagent)
-- **At the method: 1.819 [0.963, 22.979]** (n = 627; one-sided p 0.750; cluster bootstrap)
+- **At the method: 1.819 [0.963, 22.979]** (n = 627; one-sided p 0.796; cluster bootstrap)
 - Reported, at the method against the upper margin 1.250 (as H5 stood until 22 November 2026, 90% Wald interval): 1.819 [1.177, 2.811]
 - Reported, methods arm at the method: 627 rows, 0.437 forced, 5.482 alternatives a row; over the thirds, forced 0.297, 0.518, 0.470; alternatives 5.621, 3.947, 6.977
 - Reported, function arm at the method: 30 rows, 0.400 forced, 2.367 alternatives a row; over the thirds, forced 0.231, 0.529, –; alternatives 1.692, 2.882, –

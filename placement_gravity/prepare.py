@@ -48,6 +48,9 @@ DATA = chain.ROOT / "data" / "analysis"
 SEED = 20261116
 #: Cluster-bootstrap refits for H1 and for the confirmatory tests (H2, H4, H5, H7; PLAN.md §5).
 BOOT = 1000
+#: On a history (corpora B and C), which is read for direction and interval only and whose models
+#: are hundreds of times larger: fewer refits, the Wald interval beside each (PLAN.md §5).
+BOOT_HISTORY = 200
 MARGIN = [0.8, 1.25]
 AMOUNT_BAND = [0.8, 1.25]
 MIN_FLAGGED = 10
@@ -781,7 +784,9 @@ def reopen_rows(additions: list[dict]) -> list[dict]:
 
 SPLIT = ["logic_added", "organisation_added", "declaration_lines_added", "import_lines_added",
          "wiring_lines_added", "params_new_methods", "params_wired_functions", "params_called_methods",
-         "new_wired_functions", "new_called_methods", "birth_binding", "method_values_added", "fields_added"]
+         "new_wired_functions", "new_called_methods", "birth_binding", "method_values_added", "fields_added",
+         "logic_existing_methods", "logic_new_called_methods", "logic_new_wired_functions",
+         "existing_methods_edited"]
 
 
 def split_rows(additions: list[dict]) -> list[dict]:
@@ -1048,7 +1053,7 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
     r_units, r_classes = reader_rows(members, hosts, h7, table("boundary"), table("refactorings"))
     write_csv(out / "reader_units.csv", r_units)
     write_csv(out / "reader_classes.csv", r_classes)
-    spec = {"analysis": name, "role": analysis["role"], "seed": SEED, "boot": BOOT,
+    spec = {"analysis": name, "role": analysis["role"], "seed": SEED, "boot": BOOT_HISTORY if past else BOOT,
             "margin": MARGIN, "methods_arm": analysis.get("methods_arm", METHODS_ARM),
             "function_arm": analysis.get("function_arm", FUNCTION_ARM),
             # a history has no stream: its units are not problems every chain solves, so no model

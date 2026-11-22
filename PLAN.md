@@ -2,7 +2,7 @@
 
 > **Status: NOT YET REGISTERED. The tag `plan-v1` was withdrawn on 17 November 2026, before any
 > run named for analysis was read, while the hypotheses are worked out on the development chain
-> (§9, five revisions so far, the last still growing: rows 72 to 83 follow a review of the plan on
+> (§9, five revisions so far, the last still growing: rows 72 to 85 follow a review of the plan on
 > 22 November 2026). It will be set again when that work is done; until then only the
 > development chain can be read.** As first registered, on 16 November 2026: the tag was first pushed on commit
 > `4bb8973` and moved the same day, before any run named for analysis was read, to this revision,
@@ -1738,6 +1738,16 @@ operational form the drafter's). What each checkpoint added, per chain, in parts
   are not wired functions and hold logic: not a plain accessor, not a constructor that only
   assigns); the values callers pass new methods (birth bindings, §4.3); the parameters and
   locals it introduced and the fields it left in classes that existed (§4.3b).
+- **Where the logic landed** (added 22 November 2026, §9 row 85): the logic it added to methods
+  that existed, to new called methods, and to new wired functions; with the number of each, and
+  of existing methods it added logic to. On the development chain the function arm stopped
+  writing new functions as the stream went on and wrote called methods and edited existing ones
+  as the methods arm does (§6), so that by the last third the arms looked alike. Whether that is
+  the petclinic stream (its later checkpoints change earlier rules on one endpoint), the agent
+  falling back on the Java it knows best (§7), or the form helping only while there are new
+  steps to add, one chain cannot say. No direction is stated. It bears on H4: if the function
+  arm drifts towards the methods arm's way of working, the arms' differences narrow over the
+  stream, and H4's terms are read with these beside them.
 - **Declared, not handed along** (apart since row 83): the parameters of the **wired functions**
   it created. The framework injects them; no caller passes them, and nothing has to be placed
   near anything for them to arrive. The author: "the method signatures are just declarations of
@@ -1773,7 +1783,7 @@ instrument; the junction (§4.7) is the measure nearest to it and is read with t
 
 As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`,
 `prepare.split_summary` (`split.csv`, `readings.json`), `analyse.R` (`reported$split`),
-`report.split_section`; `MEASURE_VERSION` 30, and 31 with rows 82 and 83.
+`report.split_section`; `MEASURE_VERSION` 30, 31 with rows 82 and 83, and 32 with row 85.
 
 ## 5. Analysis
 
@@ -2098,7 +2108,16 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   first from the one seeded stream and the refits then run on several cores, so the result does
   not depend on how many), the 95% interval is the 2.5th to the 97.5th percentile of the refits,
   and the one-sided p is the share on the wrong side of 1, (k + 1) / (n + 1), as H1's. On a
-  history the repository is the chain. The Wald interval is reported beside each. With one chain
+  history the repository is the chain, and the refits are **200**, not 1,000 (decided by the
+  author on 22 November 2026, §9 row 84). One fit of these models was timed at 2 seconds on
+  1,800 rows, 22 to 50 seconds on 15,000 to 30,000 (about a ui analysis), 5.6 minutes on 200,000
+  and 37 minutes on 1,000,000 (where corpus B may lie): at 1,000 refits corpus B would take
+  weeks. With 200 each end of an interval is located to about a tenth of the interval's
+  half-width (a twenty-fifth with 1,000), and the smallest p is 0.005; a result that lies near 1
+  may fall either side by the draw, and is to be read as near 1. Corpora B and C are read for
+  direction and interval only and decide no hypothesis. The alternative was the Wald interval
+  alone, which is cheap and assumes what the bootstrap is there not to assume; it stays beside
+  each, and where the two differ, that is how much the assumption was worth. The Wald interval is reported beside each. With one chain
   in an arm (the development chain) a resample is the data again, so the Wald reading is what
   there is; so too if fewer than half the refits can be fitted; either is recorded. The secondary
   hypotheses and every reported reading keep their Wald intervals.
@@ -2655,6 +2674,21 @@ binomial mixed model). These details are fixed with the code before any run is r
     checkpoint. The values callers pass new methods 0.33 [0.11, 0.97], as before. The injected
     parameters of new wired functions 1.10 a checkpoint (1.7, 1.0, 0.6). Nothing was changed
     after these were seen.
+- **Where the logic landed, on the development chain, and the histories at 200 refits** (22
+  November 2026, `MEASURE_VERSION` 32; rows 84 and 85; one chain an arm, descriptive only; the
+  figures of the first paragraph were seen in scratch before row 85 was written, and the built
+  ones are the same). Per checkpoint, over the thirds of the stream. *OfficeFloor:* logic into
+  new wired functions 3.35, 2.80, 0.55 (new wired functions 0.95, 0.60, 0.20); into new called
+  methods 3.10, 5.75, 7.30; into methods that existed 1.30, 1.40, 3.55 (existing methods added
+  to 0.40, 0.45, 1.75). *Spring:* into new called methods 7.00, 7.00, 6.16; into methods that
+  existed 1.55, 2.25, 3.37 (0.80, 1.00, 1.37). So on this chain OfficeFloor stops writing new
+  functions and comes to work as Spring does, and in the last third the arms look alike. The
+  author had expected the reverse (Spring wiring in calls to methods that exist, OfficeFloor
+  writing new functions); Spring does put more into existing methods as the stream goes on, but
+  keeps writing new called methods throughout. *The histories with 200 refits:* H2 2.93
+  [2.58, 3.19] and 2.37 [2.34, 2.44], H7 0.82 [0.61, 0.88], the same to three figures as with
+  1,000 (two repositories, so neither means anything); step 4 for both analyses took five and
+  a half minutes, where it had taken twenty. Nothing was changed after these were seen.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
@@ -3321,6 +3355,8 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 81 | A reported reading, logic and organisation: each checkpoint's added code as logic, organisation in bodies, declarations, imports and wiring, with the state handed along; stated before any run is read: the logic the same in both arms (inside 0.8 to 1.25), the state handed along lower and flatter in the function arm; no direction for declarations or wiring. Brooks's essence and accident as its framing, with the drafter's cautions | §1, §4.9, `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`, `prepare.split_summary`, `analyse.R` (`split`), `report.split_section`, `selftest.R`; `MEASURE_VERSION` 30 | The author's, 22 November 2026: "the essential complexity is the logic contained in those methods. The method organisation is just to supply data to the logic of the methods. OfficeFloor removes this accidental complexity". Operational form the drafter's. No hypothesis, model of a hypothesis or rule changes. Made knowing the development chain's amount (1.08) and that H4's symmetric file count had just gone against H4 there (§6) |
 | 82 | H4's symmetric count is how well-trodden the files gone back into were: for each existing file a checkpoint changed, Java and wiring alike, the earlier checkpoints that had created or changed it, summed; a negative binomial model, the function arm's ratio below 1 on the cluster bootstrap. The plain number of existing files (row 78 as first built) is reported | §2, §5, §7, `chain.measure` (`java_changed`), `tables.trodden`, `prepare.reopen_rows`, `analyse.R` (`H4$trodden`, `reported$existing_files`), `verdict.h4`, `report.existing_files_lines`, `selftest.R`; `MEASURE_VERSION` 31 | Decided by the author on 22 November 2026 on the drafter's proposal, **after the plain count went against H4 on the development chain** (1.50 [1.16, 1.94]) and the chain's files had been looked at: OfficeFloor makes a new file a checkpoint and goes back into 49 files a few times each, Spring into one file at 43 of 59 checkpoints; a count of files scores dispersion, which the plan does not hold to be bad. Seen before it was built, in scratch and counting changes only: 12.1 a checkpoint in OfficeFloor against 21.9 in Spring. Before the tag, so a revision |
 | 83 | In the logic and organisation reading the parameters of new wired functions (injected, declared) are counted apart from those of new called methods with logic (handed by a caller); the stated direction for the state handed along is on the called methods' parameters and the values callers pass | §4.9, §7, `tables.organisation_split`, `prepare.SPLIT`, `analyse.R`, `report.split_section`, `selftest.R`; `MEASURE_VERSION` 31 | Decided by the author on 22 November 2026 on the drafter's proposal, **after the parameters of all new methods went against the stated direction on the development chain** (1.38 [1.06, 1.78]). Seen before it was built, in scratch: the arms wrote the same number of new called methods with logic (80 and 81), with 85 parameters in OfficeFloor and 100 in Spring; OfficeFloor's 35 wired functions carried 1.9 injected parameters each. A reported reading; no verdict depends on it |
+| 84 | On a history the cluster bootstrap has 200 refits, not 1,000; the Wald interval beside each as before | §5, `prepare.BOOT_HISTORY` | Decided by the author on 22 November 2026, after one fit was timed at the sizes expected: corpus B at 1,000 refits would take weeks. Corpora B and C are direction and interval only. No direction, threshold or model changes |
+| 85 | In the logic and organisation reading, where the logic landed: methods that existed, new called methods, new wired functions, with the number of each; no direction stated | §4.9, `tables.organisation_split`, `prepare.SPLIT`, `analyse.R`, `report.split_section`; `MEASURE_VERSION` 32 | The author's question on 22 November 2026, why the parameters of called methods rose in the function arm and fell in the methods arm on the development chain. Seen in scratch before it was built (§6): the function arm's new wired functions fell from 0.95 to 0.20 a checkpoint over the thirds as its new called methods and edits of existing methods rose. A reported reading; no verdict depends on it |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

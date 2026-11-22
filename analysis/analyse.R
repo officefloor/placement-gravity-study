@@ -1007,7 +1007,10 @@ if (!is.null(sp) && nrow(sp) > 0 && multi(sp$arm)) {
              organisation_all = "organisation_all", params_new_methods = "params_new_methods",
              params_called_methods = "params_called_methods", params_wired_functions = "params_wired_functions",
              new_called_methods = "new_called_methods", birth_binding = "birth_binding",
-             method_values_added = "method_values_added", fields_added = "fields_added")
+             method_values_added = "method_values_added", fields_added = "fields_added",
+             logic_existing_methods = "logic_existing_methods", logic_new_called_methods = "logic_new_called_methods",
+             logic_new_wired_functions = "logic_new_wired_functions", existing_methods_edited = "existing_methods_edited",
+             new_wired_functions = "new_wired_functions")
   parts <- parts[parts %in% names(sp)]
   res$reported$split <- lapply(parts, part)
   res$reported$split$wiring_lines <- as.list(tapply(sp$wiring_lines_added, as.character(sp$arm), mean))

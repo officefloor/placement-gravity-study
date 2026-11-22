@@ -685,3 +685,8 @@ def test_the_reader_section_reports_bands_and_models():
     text = "\n".join(report.reader_section(rep, rd))
     assert "encapsulation and the reader" in text and "private share 0.400 of 50 introduced" in text
     assert "author 0.500 [0.300, 0.800]" in text and "not fitted (too few rows: opened)" in text
+
+
+def test_a_history_is_bootstrapped_with_fewer_refits_than_a_paired_run():
+    # corpora B and C are read for direction and interval only, and their models are far larger
+    assert prepare.BOOT_HISTORY == 200 and prepare.BOOT == 1000

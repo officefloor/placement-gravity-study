@@ -1051,6 +1051,15 @@ def organisation_split(lines: dict | None, hosts: list[dict]) -> dict:
                                         if not h["injected"] and not only_organisation(h)),
            "new_wired_functions": sum(1 for h in new if h["injected"]),
            "new_called_methods": sum(1 for h in new if not h["injected"] and not only_organisation(h))}
+    # where the logic landed (22 November 2026): in methods that existed, in new called methods, or in
+    # new wired functions; and the existing methods it edited
+    def logic(h):
+        return max(h["net_added"] - h["organisation"], 0)
+    placed = [h for h in hosts if not h["replacement"] and h["net_added"] > 0]
+    out.update({"logic_existing_methods": sum(logic(h) for h in placed if not h["host_new"]),
+                "logic_new_called_methods": sum(logic(h) for h in placed if h["host_new"] and not h["injected"]),
+                "logic_new_wired_functions": sum(logic(h) for h in placed if h["host_new"] and h["injected"]),
+                "existing_methods_edited": sum(1 for h in placed if not h["host_new"])})
     if lines is None:
         return {**out, "declaration_lines_added": None, "import_lines_added": None, "wiring_lines_added": None}
     return {**out, "declaration_lines_added": max(lines["java"] - lines["imports"] - body, 0),

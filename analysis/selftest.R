@@ -128,6 +128,9 @@ split <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, fu
              wiring_lines_added = wl, params_new_methods = pr + (if (arm == "spring") 0 else rpois(60, 1)),
              params_called_methods = pr, params_wired_functions = if (arm == "spring") rep(0, 60) else rpois(60, 1),
              new_called_methods = rpois(60, 2), new_wired_functions = 0, birth_binding = rpois(60, 2),
+             logic_existing_methods = rpois(60, 3), logic_new_called_methods = rpois(60, 6),
+             logic_new_wired_functions = if (arm == "spring") rep(0, 60) else rpois(60, 3),
+             existing_methods_edited = rpois(60, 1),
              method_values_added = rpois(60, 5), fields_added = rpois(60, 0.5), organisation_all = dl + wl + 1)
 }))))
 write.csv(split, file.path(dir, "split.csv"), row.names = FALSE)
@@ -418,6 +421,8 @@ check(abs(log(rd$opened$author$irr) - log(1.5)) < 0.3, "reader: more members ope
 check(abs(log(rd$class_methods$author$irr)) < 0.3 && abs(log(rd$forced$author$irr)) < 0.3,
       "reader: class size and the forced share, simulated equal, are not told apart")
 sl <- e$reported$split
+check(!is.null(sl$logic_existing_methods$irr) && sl$logic_new_wired_functions$mean$spring == 0,
+      "where the logic landed is reported: existing methods, new called methods, new wired functions")
 check(abs(log(sl$logic$irr)) < 0.1 && sl$logic$p_tost < 0.05, "logic, simulated the same in both arms, is shown inside the margin")
 check(abs(log(sl$params_called_methods$level_95$irr) - log(0.4)) < 0.2 && sl$params_called_methods$level_95$irr_upper < 1,
       "the state handed to called methods, simulated 0.4 times in the function arm, is recovered")

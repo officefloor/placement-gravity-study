@@ -120,6 +120,9 @@ def test_a_checkpoint_is_split_into_logic_and_organisation():
     # the accessor's parameter is organisation; the wired function's are injected, not handed by a caller
     assert (s["params_called_methods"], s["params_wired_functions"]) == (3, 2)
     assert (s["new_called_methods"], s["new_wired_functions"]) == (1, 1)
+    # where the logic landed: the existing method's 10, the new called method's 3, the wired function's 5
+    assert (s["logic_existing_methods"], s["logic_new_called_methods"], s["logic_new_wired_functions"],
+            s["existing_methods_edited"]) == (10, 3, 5, 1)
     assert (s["declaration_lines_added"], s["import_lines_added"], s["wiring_lines_added"]) == (14, 5, 7)
     assert tables.organisation_split(None, hosts)["declaration_lines_added"] is None      # a history
     rows = prepare.split_rows([{"chain_id": "c", "arm": "officefloor", "cp": "2", "noop": "False", **s,
