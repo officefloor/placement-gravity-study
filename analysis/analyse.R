@@ -416,6 +416,11 @@ if (!is.null(h2)) {
         irr(wald(drawn(hf, lev, left, paste0("drawn_", lev, "_left"))$fit, left))
     }
   }
+  # reported: H2 at the class with every member the code was bound to in the core, private or not,
+  # as until 22 November 2026 (the core is now its private part: PLAN.md 4.4, the author's decision)
+  if ("core_class_all" %in% names(hm)) {
+    res$reported$H2_class_all <- irr(wald(cored(hm, "class_all")$fit, "core"))
+  }
   # reported: H2 at the class on its fields only (the class's methods not values), as it stood
   # until 19 November 2026, each later method still scored on its own
   if ("core_class_fields" %in% names(hm)) {
@@ -845,6 +850,53 @@ if (!is.null(reopen)) {
   fe_r <- if (multi(reopen$frontend)) " + frontend" else ""
   res$reported$reopen_classes <- irr(wald(fit_cp(paste0("reopened_classes ~ arm", fe_r), reopen, poisson())$fit, FARM))
   res$reported$reopen_with_wiring <- irr(wald(fit_cp(paste0("reopened ~ arm", fe_r), reopen, poisson())$fit, FARM))
+}
+
+# ---------------------------------------------------------------- encapsulation and the reader (reported)
+# PLAN.md 4.2f, 5: whether the author (on a history, declared agent commits against people) makes
+# fewer members private, has less growth arriving forced, opens more members and lets classes grow
+# larger, at the same system size and change size, and whether the difference changes with the
+# system's size (log tokens, centred; the author x size interaction). Modelled on the histories only
+# (spec$reader_models); corpus A reports the four measures per arm. Each model has the
+# repository's (chain's) intercept. Reported: the author contrast (odds or rate ratio, 95% Wald)
+# at the centre of log tokens, and the interaction per unit of log tokens (an e-fold larger system).
+ru <- read("reader_units.csv")
+rc <- read("reader_classes.csv")
+if (isTRUE(spec$reader_models) && !is.null(ru) && nrow(ru) > 0 && multi(ru$arm)) {
+  rr <- list()
+  centre <- mean(log(ru$tokens[!is.na(ru$tokens) & ru$tokens > 0]))
+  prep <- function(d) {
+    d <- d[!is.na(d$tokens) & d$tokens > 0, ]
+    d$arm <- as_arm(d$arm)
+    d$ltok <- log(d$tokens) - centre
+    d
+  }
+  two <- function(f, d, family, label) {
+    if (nrow(d) < 10 || !multi(as.character(d$arm)))
+      return(list(error = paste("too few rows:", label)))
+    m <- fit_or_error(glmmTMB(f, data = d, family = family))
+    list(author = irr(wald(m, FARM)), interaction = irr(wald(m, paste0(FARM, ":ltok"))),
+         size = irr(wald(m, "ltok")), n = nrow(d), repositories = length(unique(d$chain_id)))
+  }
+  SZ <- " + log1p(positions) + log1p(methods)"
+  u <- prep(ru)
+  u1 <- u[!is.na(u$introduced) & u$introduced > 0, ]
+  u1$kept <- u1$introduced - u1$private
+  rr$private <- two(as.formula(paste0("cbind(private, kept) ~ arm * ltok", SZ, " + (1 | chain_id)")),
+                    u1, binomial(), "private share")
+  u2 <- u[u$existing_positions > 0, ]
+  u2$free <- u2$existing_positions - u2$forced_positions
+  rr$forced <- two(as.formula(paste0("cbind(forced_positions, free) ~ arm * ltok", SZ, " + (1 | chain_id)")),
+                   u2, binomial(), "forced share")
+  if (!is.null(rc) && nrow(rc) > 0) {
+    cl <- prep(rc)
+    rr$opened <- two(as.formula(paste0("opened ~ arm * ltok", SZ, " + (1 | chain_id)")), cl, nbinom2(), "opened")
+    c4 <- cl[!is.na(cl$methods_before), ]
+    rr$class_methods <- two(as.formula(paste0("methods_before ~ arm * ltok", SZ, " + (1 | chain_id)")),
+                            c4, nbinom2(), "class size")
+  }
+  rr$centre_tokens <- exp(centre)
+  res$reported$reader <- rr
 }
 
 dir.create(dirname(out), recursive = TRUE, showWarnings = FALSE)

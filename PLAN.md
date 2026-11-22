@@ -215,6 +215,17 @@ reported beside it in H6 and H7, and stays H5's own measure.
   above 1, at the class and at the method. With H1: a place gathers data, but what gathers is
   mostly periphery; what the next code is bound to is the few values code there was already
   bound to.
+  - *At the class, the core is the encapsulated part* (decided by the author on 22 November 2026,
+    §9 row 71, after the development data): "Gravity comes from the force of no choice. Private
+    forces that choice. Now if methods are made public over time, then that shows up in coupling
+    freeing concentration by encapsulation. So to me the forcing is about not being able to access
+    outside the encapsulation, being the force." The class's core is the members the code was
+    bound to that no other class can reach: its private fields (private constants among them) and
+    private methods. The members it was bound to that others can reach join the periphery; opening
+    a member up shows in H7 (widening), not in the core. The method level is unchanged (a method's
+    own values are reachable from nowhere else). Reported beside it: the core as it stood until
+    then, every member the code was bound to whatever its access (on the development data: class
+    17.5 on the pilot, 3.15 on the histories, §6).
   - *As it stood from 17 to 19 November 2026* (data draws code in): the more data stood by, the
     more later code arrives bound to that data, as a rate ratio per value that stood by above 1.
     That is kept and reported beside it. It was replaced because it says uptake is in proportion
@@ -393,6 +404,20 @@ reported beside it in H6 and H7, and stays H5's own measure.
   where the code stands between the two forces (§4.2d). It is not checked against what developers
   later did: the author's interest is the forces, and developers work inside them (20 November
   2026).
+- **A reading: encapsulation and the reader** (added 22 November 2026, §9 row 69; the author's
+  question; reported, not among the tests). Encapsulation does two jobs: it keeps what a reader
+  must hold small (comprehension), and it keeps a change local (containment, Parnas). The author
+  asks whether the first is a human limit that agents do not share until a system outgrows their
+  context window. The force itself does not depend on the reader: a private member admits only
+  code inside its class, whoever writes it (§2, *Forced*; the claims are about code, §8). What may
+  depend on the reader is how much encapsulation is made and kept, and how much size a class is
+  let reach before it is split. The reading (§4.2f) compares declared agent commits with human
+  commits on four things, and asks whether the difference changes with the system's size against
+  a context window. Its stated direction, the author's question put as a prediction: agent
+  commits make fewer members private, widen more, and let classes grow larger than human commits
+  where the system fits in a context window, and the difference narrows where it does not. If
+  none of the four differs, encapsulation's use is the same for both readers and the question is
+  answered the other way; both outcomes are reported.
 - **Q1 is descriptive.** Its expected baseline (Steidl and Deissenboeck 2015) is that most
   growth is new methods. So the share of additions that land in an existing host is reported as
   found, with no direction predicted.
@@ -524,6 +549,31 @@ end's production Java of the four stacks of its Runs A and B, a front end × bac
   direction is fixed now: the most bindings of the three arms, as nothing is lifted off the flow
   (dependency injection weakens bindings, function injection removes them). Spring against
   OfficeFloor stays the primary contrast; the control is read against each.
+- **Run D** (the no-encapsulation run; decided by the author on 22 November 2026, drafted the
+  same day, §9 row 70): the `angular-spring` stack on the same stream, agent and harness, with
+  one instruction added to the agent's prompt: **do not encapsulate; leave every field and method
+  public**. It is a run of its own, never pooled. It is read against Run A's `angular-spring`
+  (the same front end, back end and stream, so the instruction is the only difference) and is
+  not run on OfficeFloor, where every dependency is injected and nothing is left to make public
+  (the author). It isolates encapsulation where Run C isolates injection: with nothing private,
+  no placement can be forced by encapsulation (§2, *Forced*), so whatever the force does in Run
+  A should be absent or weaker in Run D. Its run ids, the harness commit carrying the instruction,
+  and the instruction's exact wording are added by a dated amendment before any of its backend
+  Java is read. Its predicted directions are fixed now, each against Run A's `angular-spring`,
+  each reported with a stated direction and none in the confirmatory family:
+  - *Compliance, a condition of reading it:* at least 90% of the members its units introduce are
+    not private (§4.2f, measure 1). Below that, the instruction did not take and Run D is
+    reported descriptively, not read against Run A.
+  - *The force is absent:* the share of growth of existing classes arriving forced (§4.2b) near
+    0, and H5's choice of class not narrowing (the alternatives' ratio not below 1).
+  - *Concentration weaker:* H2's core draws less at the class (a lower rate ratio), since code
+    that needs a class's data may now go elsewhere.
+  - *Dispersion stronger:* more calls and field reads across class boundaries per unit (H7's
+    count, now unforced) and a wider spread (H6's measure), at the same change size.
+  - *The amount conserved:* Run D's amount added within 0.8 to 1.25 of Run A's (§4.6's band); the
+    code is placed differently, not made more or less.
+  - *The reader* (§4.2f): whether classes grow larger without encapsulation, reported without a
+    direction.
 - Every new rule in the stream declares the earlier rules it crosses (at least two from cp17),
   which gives the declared crossings of §4.4. They are read from the stream's
   `acceptance/DENSITY.md` at the tag `run-a` (§4.4, *As built*).
@@ -922,6 +972,44 @@ As built: `tables.boundary_rows` (`boundary.csv`), `tables.edge_rows` (`edges.cs
 `prepare.surface_rows` (`surface.csv`), `prepare.ripple`, `analyse.R` (`surface`),
 `report.surface_section`.
 
+### 4.2f Encapsulation and the reader (reported reading)
+
+Added 22 November 2026 (§9 row 69; the author's question, the operational form the drafter's;
+built the same day). Read on corpora B and C (§3.2, §3.3), where the author varies; on corpus
+A the author is one agent and every system is small, so it is reported there per arm only.
+
+- **The author of a unit.** *Agent:* a declared agent commit of corpus C (§3.3, the sampler's
+  signatures). *Human:* a commit of corpus B (before 29 June 2021). Corpus C's other commits
+  (undeclared, of unknown origin) are a third group, reported, never pooled with either.
+- **Four measures per unit**, each already computed or computable from the instrument's tables
+  (`Pull.java` VERSION 15 reports each field's and method's access):
+  1. *Encapsulation made:* of the fields and methods the unit introduces into classes, the share
+     that is private (a private constant among them, §2 *Forced*).
+  2. *Growth arriving forced:* of the positions the unit adds to classes that existed, the share
+     forced at the class (H6's growth accounting, §4.2b).
+  3. *Encapsulation opened:* per class row the unit changed, the members it exposed or widened
+     (H7's, §4.2c), forced and unforced apart.
+  4. *Size let reach:* the methods (and positions) of each existing class the unit adds code to,
+     at the unit's parent; and whether the unit splits a class (a new class taking fields and
+     methods from one that existed, as RefactoringMiner's Extract Class is read, §4.1).
+- **The system against a context window.** The size of the system at the unit's parent: the
+  tokens of its production Java (the amount's tokens, §4.6). Read continuously, as log(tokens),
+  and split at two fixed sizes, **200,000 and 1,000,000 tokens** (drafter's choice: the context
+  windows common among coding agents when this was written; an agent's own window is not
+  recorded in a commit, so the split is of the system, not of the agent).
+- **The question asked of them:** whether agent and human units differ on each measure, at the
+  same system size and change size, and whether the difference changes with the system's size
+  (the author × log(tokens) interaction). The author's prediction is in §2.
+
+As built (22 November 2026): the system's tokens per file in the tree index
+(`chain.java_tokens`, a lexer's approximation: comments dropped, a literal one token);
+`tables.member_rows` (`members.csv`: introduced members and their access, the system's files,
+classes, methods and tokens before each unit; `MEASURE_VERSION` 27, `HISTORY_VERSION` 11);
+`prepare.reader_rows` (`reader_units.csv`, `reader_classes.csv`) and `prepare.reader_summary`
+(per author group and band, in `readings.json`); the models in `analyse.R` (`reported$reader`,
+on a history only); `report.reader_section`. The R self-test recovers a simulated author effect,
+its narrowing with size and two nulls.
+
 ### 4.3 Bindings (Q2), the measure of gravitation
 
 Only **logic lines** carry the value of a change: a method's body statements. Signatures,
@@ -1240,11 +1328,16 @@ measures of §4.7. For a problem *p* and a host its bound code went into, at eac
 - **The core:** the pre-existing values *p*'s code there was bound to (the binding measure). At the
   method, the parameters and locals it used; at the class, the fields it used **and the class's
   methods it called** (decided by the author, 19 November 2026: a method of the class returns a
-  value or does a necessary bound piece of work, so a call to one is a core value).
+  value or does a necessary bound piece of work, so a call to one is a core value), **of those
+  only the private ones** (decided by the author, 22 November 2026, §2: the force is not being
+  able to reach outside the encapsulation). A member the code used that other classes can reach
+  (package, protected, public) is periphery. Access is read from the tree before the unit
+  (`tables.private_members`, as *forced* is); a class not in that tree has no core. Reported: the
+  core with every member the code was bound to, as until 22 November 2026.
 - **The periphery:** the rest of the data the place held once *p*'s code was in it: what stood by
   (§4.3a) and what *p* introduced (§4.3b); at the class also the class's methods *p*'s code did not
   call and those its checkpoint added (so that core and periphery are alike in kind; H1's
-  bystanders stay fields only).
+  bystanders stay fields only), and the members it was bound to that others can reach.
 - **A use:** a later intrusion, as defined above (bound there; neither declared nor crossing),
   whose code in that method, or that class, uses one of those values. **A value counts once**, not
   each time it is used. **At the class, each method the later change's bound code is in is scored
@@ -1713,6 +1806,18 @@ on the place an addition lands in, as it stood at *k* − 1, with the harness's 
   the members opened; the added calls on the index alone (rise); the function arm's forced ratio;
   the arm term with forced and the index in the model; per arm, forced against unforced rows, the
   calls added a row and the share reaching an exposed or widened member.
+- **Encapsulation and the reader** (22 November 2026, §4.2f; reported, not tested; built the
+  same day): on corpora B and C, per unit, (1) the private share of introduced members as a binomial
+  mixed model, (2) the forced share of positions added to existing classes as a binomial mixed
+  model weighted by positions, (3) members exposed or widened per class row and (4) the methods of
+  the class code lands in as negative binomial (nbinom2) mixed models; each on the author group
+  (agent, human; undeclared reported apart), log(tokens) of the system centred, their
+  interaction, and the change's size (log(1 + positions added), log(1 + methods changed)), with
+  the repository's intercept. Reported: each contrast with its 95% interval, the interaction, and
+  the measures in each of the three size bands (below 200,000 tokens, to 1,000,000, above) per
+  author group, with the number of units and repositories in each. A band with fewer than 10
+  repositories for an author group is reported as too thin, not fitted. On corpus A: the four
+  measures per arm, descriptive.
 - **Multiplicity** (21 November 2026, §9 rows 66 and 67): the confirmatory family H2, H4, H5 and
   H7, Holm-corrected at α = 0.05. H1, H3 and H6 are secondary, each decided at α = 0.05 on its
   own p outside the correction and reported as secondary. (Until 20 November 2026, every
@@ -2373,6 +2478,14 @@ binomial mixed model). These details are fixed with the code before any run is r
   H6 is read per run, never pooled (§3.1). The confirmatory hypotheses are not at risk in the same
   way: their tests are against 1, not a margin, and on the development chain H2, H5 at the class
   and H7 lie well away from it.
+- **Encapsulation and the reader confounds author with much else** (§4.2f). A declared agent
+  commit is merged by a person who may have reshaped it; undeclared commits may be assisted; the
+  agent and its window are not recorded per commit; corpus C's repositories are younger than
+  corpus B's, and big systems are older and more structured whoever writes in them. Agents
+  learned from human code, so they may make private members out of habit, not need. The system's
+  size is a stand-in for whether it fits a context window, and agents retrieve a few files a task,
+  so their working context is smaller than their window. The reading can show a difference and
+  how it moves with size; it cannot say why.
 - **H3's measures were chosen on the development chain.** Of the literature's measures, those
   taken into H3 are ones that lay below the margin there, or reached above it only at the class
   (§6); the one measure wholly above it, the method's fan-out, was put with the sinew measures,
@@ -2543,6 +2656,36 @@ author's to set, on the plan and code as they then stand, and starts the experim
   The experiment may run as one, written up as separate papers (the force and its outlets; why the
   literature's readings miss it). **(6) Power for the margin tests checked** (§7, *Power for H3
   and H6*).
+- *Decided by the author on 22 November 2026, walking through the drafter's open choices before the
+  tag* (each was listed above as not yet spoken to): **(1) H2 stays a rate per value** (the
+  author's question on its fit is closed). **(2) H2's core at the class is its encapsulated part**
+  (§2, §4.4, row 71). **(3) H5's choices accepted** (a level where every placement was forced
+  passes with p 0; both levels; the chain's intercept and no checkpoint intercept; untyped values
+  left out). **(4) Only private forces; package and protected are reachable**, and are reported
+  descriptively as a looser encapsulation ("private is most strict and forcing"): each placement
+  bound at the class carries the strictest access of the members it used (`tables.bound_access`),
+  and the growth of existing classes is reported by it (`prepare.growth_by_access`, beside H6's
+  growth accounting). **(5)
+  H7's operational form accepted** ("this is showing where encapsulation is not containing change
+  and the cost of it"). **(6) The split and concentrate thresholds accepted** as a report, left
+  open to other values in exploration. **(7) H6's margin and 90% interval accepted. (8) The
+  reader reading's choices accepted. (9) Run D's choices accepted.** With these, no drafter's
+  choice listed in this section is left unspoken to.
+- *Decided by the author on 22 November 2026:* a **no-encapsulation run** (Run D, §3.1a, row 70):
+  "prompt to the AI to not do encapsulation and leave everything public and be a specialty run of
+  its own done on angular/spring combination as for OfficeFloor this makes little sense as
+  everything is injected and nothing left to make public". The drafter's choices in it, not yet
+  spoken to: the name Run D; reading it against Run A's `angular-spring` only; the 90% compliance
+  condition; the five predicted directions; reported, not confirmatory. The run needs the
+  instruction added to the harness (`ui-long-degradation-test`), outside this repository.
+- *Asked by the author on 22 November 2026, drafted the same day:* "I'm wondering if encapsulation
+  is a human issue to keep context within the 25 lines of comprehension and that AI agents may not
+  require this until systems go beyond their context windows?" Drafted as a reported reading,
+  *encapsulation and the reader* (§2, §4.2f, §5, §7; row 69; "draft it as a reported reading").
+  The drafter's choices in it, not yet spoken to: the four measures; the split at 200,000 and
+  1,000,000 tokens; undeclared commits kept apart; the 10-repository floor per band. The
+  development histories hint the other way (growth of existing classes arriving forced: agent
+  repository 0.70 of 193 positions, human 0.45 of 3,972, §6), on one agent repository.
 - *The tag stays unset* (the author, 19 November 2026: "still to hold off, as I want to think about
   H2 in terms of placement choice"; H5 now carries choice).
 - *Not built, and said so where it matters:* the issue-linked unit of corpus B (§3.2); the ranks
@@ -2712,6 +2855,9 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 66 | Two tiers: confirmatory H2, H4, H5, H6, H7 (Holm over five); secondary H1, H3 (each on its own p, reported as secondary) | §2, §5, `verdict.py`, `report.py` | Decided by the author on 21 November 2026, on the drafter's proposal: the necessity is to find the force; a smaller family keeps power. Before the tag, so a revision |
 | 67 | H6 restated as *spread does not see it*: the forced ratio of co-change spread not above the upper margin 1.25 (one-sided, 90% interval, as H3), its measure, model and change-size terms unchanged; H6 secondary; the confirmatory family H2, H4, H5, H7 (Holm over four) | §2, §5, §8, `verdict.h6`, `report.h6_section`, `analyse.R` (H6 with `tost`), `selftest.R` | Decided by the author on 21 November 2026 (later), after seeing H6 under forced by encapsulation on the development chain (1.026 [0.380, 2.775]) and histories (0.845 [0.644, 1.108]): co-change, like shape, is the literature reading a symptom to find a cause, and cohesion has no shape to highlight. Recorded as decided after seeing development results. Before the tag, so a revision |
 | 68 | The full read's corrections (LITERATURE.md §10, *Full read*, 22 November 2026): Chowdhury et al. 2022b cited on the other side of size confounding (§1, §2 H3); Pescio's gravity described as attraction by mass, later co-change, with encapsulation a separation against it (§2); H7's prior work adds Pescio 2012, Taube-Schock et al., Schach et al., Steimann and Thies, Vidal et al.'s persistence; conservation framing adds Pescio Ch. 13 and Loth; H6 argues against a reading, not a finding, and the field handles change size only by dropping large transactions; Sun et al. on injection raising counted coupling at H4's wiring; Pescio 2024 as the prior, untested statement of "regardless of author". No measure, model or rule changes | §1, §2, §8 | The author's, 22 November 2026 ("apply the wording changes"). Kobori et al., Zhou et al., Page-Jones and Ousterhout's book not obtained; said where cited |
+| 69 | Reported reading, *encapsulation and the reader*: agent against human units on private share of introduced members, growth arriving forced, members exposed or widened, and size of the class code lands in; with the system's size in tokens (continuous, and split at 200,000 and 1,000,000) and its interaction with the author; corpora B and C, corpus A descriptive | §2, §4.2f, §5, §7, §8, `chain.java_tokens`, `tables.member_rows`, `prepare.reader_rows`, `prepare.reader_summary`, `analyse.R` (`reader`), `report.reader_section` | The author's question, 22 November 2026 ("draft it as a reported reading"): whether encapsulation answers a human limit of comprehension that agents lack until a system outgrows their context. Operational form the drafter's. No hypothesis, measure of a hypothesis, model or rule changes |
+| 70 | Run D, the no-encapsulation run: `angular-spring` with the agent told to leave every field and method public, read against Run A's `angular-spring`; compliance (at least 90% of introduced members not private) a condition of reading it; predicted: no growth arriving forced and choice not narrowing, H2's core drawing less at the class, more cross-boundary calls and reads and a wider spread at the same change size, the amount within the band; reported, not confirmatory; run ids, harness commit and wording by dated amendment | §3.1a, §8 | Decided by the author on 22 November 2026, before the tag: encapsulation isolated by instruction on the stack where it can be removed (not OfficeFloor, where nothing is left to make public). Operational form and directions the drafter's |
+| 71 | H2's core at the class is the private members the code was bound to (private fields, constants and methods); the members it was bound to that others can reach join the periphery; the core with every member whatever its access reported beside it. Package and protected members reported descriptively as looser encapsulation. The drafter's open choices of §8 accepted by the author | §2, §4.4, §8, `tables.private_members`, `tables.outcome_rows` (`core_class`, `core_class_all`), `tables.bound_access`, `prepare.growth_by_access`, `prepare.h2_rows`, `analyse.R` (`H2_class_all`), `report.py`; `MEASURE_VERSION` 28, `HISTORY_VERSION` 12 | Decided by the author on 22 November 2026, after the development data, before the tag: "the forcing is about not being able to access outside the encapsulation, being the force". The test is unchanged in form (rate ratio per value above 1 at the class and the method) |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

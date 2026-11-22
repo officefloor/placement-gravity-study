@@ -98,7 +98,7 @@ def test_later_code_bound_to_what_a_change_introduced():
     host = {"type": "A", "name": "f", "before_type": "A", "before_name": "f", "removed": 0,
             "replacement": False, "pre_positions": 5, "binding_method": 0, "binding_class": 1, "binding": 1,
             "net_added": 2, "host_new": False, "need_class_values": "", "by_class_values": "",
-            "need_method_values": "", "by_method_values": ""}
+            "need_method_values": "", "by_method_values": "", "private_class_members": "repo"}
     hosts = [{**host, "cp": 3, "host_new": True, "before_type": None, "before_name": None,
               "need_class_values": "repo", "by_class_values": "LIMIT",
               "introduced_method_values": "city n", "introduced_class_values": "cap"},
@@ -156,7 +156,8 @@ def test_at_the_class_each_later_method_is_scored_on_its_own_and_called_methods_
             "replacement": False, "pre_positions": 5, "binding_method": 0, "binding_class": 1, "binding": 1,
             "net_added": 2, "host_new": False, "need_class_values": "", "by_class_values": "",
             "need_method_values": "", "by_method_values": "",
-            "class_methods_pre": "check() audit()", "class_methods_added": "", "called_class_methods": ""}
+            "class_methods_pre": "check() audit()", "class_methods_added": "", "called_class_methods": "",
+            "private_class_members": "audit() check() repo"}
     hosts = [{**host, "cp": 3, "need_class_values": "repo", "called_class_methods": "check()"},
              {**host, "cp": 5, "name": "g", "before_name": "g", "need_class_values": "repo"},
              {**host, "cp": 5, "name": "h", "before_name": "h", "need_class_values": "repo",
@@ -165,6 +166,38 @@ def test_at_the_class_each_later_method_is_scored_on_its_own_and_called_methods_
     assert (r["core_class"], r["uses_core_class"]) == (2, 2)
     assert (r["periphery_class"], r["uses_periphery_class"]) == (1, 1)
     assert (r["core_class_fields"], r["uses_core_class_fields"], r["periphery_class_fields"]) == (1, 2, 0)
+
+
+def test_the_core_at_the_class_is_the_private_part_of_what_the_code_was_bound_to():
+    """Decided by the author on 22 November 2026: the force is not being able to reach outside the
+    encapsulation. cp3's code in A.f was bound to the private field `repo` and the public method
+    `check`. Only `repo` is core; `check` joins the periphery with `audit`. cp5's g uses repo and calls
+    check: one use of the core, one of the periphery. As until then, with both in the core: two and
+    nought, reported."""
+    host = {"type": "A", "name": "f", "before_type": "A", "before_name": "f", "removed": 0,
+            "replacement": False, "pre_positions": 5, "binding_method": 0, "binding_class": 1, "binding": 1,
+            "net_added": 2, "host_new": False, "need_class_values": "", "by_class_values": "",
+            "need_method_values": "", "by_method_values": "",
+            "class_methods_pre": "check() audit()", "class_methods_added": "", "called_class_methods": "",
+            "private_class_members": "audit() repo"}
+    hosts = [{**host, "cp": 3, "need_class_values": "repo", "called_class_methods": "check()"},
+             {**host, "cp": 5, "name": "g", "before_name": "g", "need_class_values": "repo",
+              "called_class_methods": "check()"}]
+    r = {(r["cp"], r["name"]): r for r in tables.outcome_rows("x", "c", hosts, {})}[(3, "f")]
+    assert (r["core_class"], r["uses_core_class"]) == (1, 1)
+    assert (r["periphery_class"], r["uses_periphery_class"]) == (2, 1)
+    assert (r["core_class_all"], r["uses_core_class_all"]) == (2, 2)
+    assert (r["periphery_class_all"], r["uses_periphery_class_all"]) == (1, 0)
+
+
+def test_private_members_are_read_from_the_tree_before_the_unit():
+    index = {"files": {"A.java": {"classes": [{"name": "A", "fields": {"repo": "private", "name": "public"}}],
+                                  "methods": [{"type": "A", "name": "check", "signature": "check()", "access": "public"},
+                                              {"type": "A", "name": "audit", "signature": "audit()", "access": "private"},
+                                              {"type": "A", "name": "audit", "signature": "audit(int)", "access": "public"}]}}}
+    r = {"unit": "cp03", "type": "A", "before_type": "A"}
+    assert tables.private_members(r, {"cp03": index}) == {"repo", "audit()"}
+    assert tables.private_members({**r, "type": "B", "before_type": "B"}, {"cp03": index}) is None
 
 
 def _m(type_, name, sig, params, types, calls=()):
@@ -352,3 +385,25 @@ def test_reading_another_class_s_field_is_coupling_and_a_field_made_public_is_wi
               "class_new": False, "forced_enc": True}]
     row = tables.encapsulation_rows("spring", "chain1", hosts, measured)[0]
     assert (row["new_out"], row["out_widened"], row["forced"]) == (1, 1, True)
+
+
+def test_bound_access_is_the_strictest_of_the_members_the_code_used():
+    index = {"files": {"A.java": {"classes": [{"name": "A", "fields": {"repo": "package", "name": "public"}}],
+                                  "methods": [{"type": "A", "name": "check", "signature": "check()", "access": "protected"},
+                                              {"type": "A", "name": "audit", "signature": "audit()", "access": "private"}]}}}
+    r = {"unit": "cp03", "type": "A", "before_type": "A"}
+    places = {"cp03": index}
+    assert tables.bound_access(r, ["name"], [], places) == "public"
+    assert tables.bound_access(r, ["name", "repo"], ["check"], places) == "package"
+    assert tables.bound_access(r, ["repo"], ["audit"], places) == "private"
+    assert tables.bound_access(r, [], [], places) is None
+
+
+def test_growth_by_access_shares_the_positions_added_to_existing_classes():
+    from placement_gravity import prepare
+    hosts = [{"arm": "s", "added": "6", "net_added": "6", "class_new": "False", "bound_access": "private"},
+             {"arm": "s", "added": "2", "net_added": "2", "class_new": "False", "bound_access": "package"},
+             {"arm": "s", "added": "2", "net_added": "2", "class_new": "False", "bound_access": ""},
+             {"arm": "s", "added": "9", "net_added": "9", "class_new": "True", "bound_access": "private"}]
+    g = prepare.growth_by_access(hosts)["s"]
+    assert (g["total"], g["private_share"], g["package_share"], g["unbound_share"]) == (10, 0.6, 0.2, 0.2)

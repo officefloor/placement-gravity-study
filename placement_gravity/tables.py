@@ -155,6 +155,64 @@ def choice(r: dict, tm: list[str], tf: list[str], ti: list[str], tc: list[str], 
     return out
 
 
+def member_access(r: dict, places: dict | None) -> dict[str, str] | None:
+    """The access of each member of a host's class in the tree before the unit: fields by name,
+    methods as "name()" (of a name's overloads, the strictest). None where the class is not in that
+    tree."""
+    index = (places or {}).get(r["unit"])
+    if index is None:
+        return None
+    here = flow.simple(r.get("before_type") or r["type"])
+    fields, methods = None, {}
+    for f in index.get("files", {}).values():
+        for c in f.get("classes", []):
+            if flow.simple(c["name"]) == here and "fields" in c:
+                fields = c["fields"]
+        for m in f.get("methods", []):
+            if flow.simple(m["type"]) == here:
+                n = f"{m.get('name') or m['signature'].split('(')[0]}()"
+                a = m.get("access", "public")
+                if n not in methods or ACCESS.get(a, 3) < ACCESS.get(methods[n], 3):
+                    methods[n] = a
+    if fields is None:
+        return None
+    return {**dict(fields), **methods}
+
+
+def bound_access(r: dict, tf: list[str], tc: list[str], places: dict | None) -> str | None:
+    """The strictest access among the class members the code was bound to (private, package,
+    protected, public): private is the encapsulation that forces; package and protected are looser,
+    reported descriptively (decided by the author on 22 November 2026). None where the code was not
+    bound at the class, or the class is not in the tree before."""
+    acc = member_access(r, places) if (tf or tc) else None
+    if acc is None:
+        return None
+    seen = [acc[v] for v in list(tf) + [f"{m}()" for m in tc] if v in acc]
+    return min(seen, key=lambda a: ACCESS.get(a, 3)) if seen else None
+
+
+def private_members(r: dict, places: dict | None) -> set[str] | None:
+    """The members of a host's class that no other class can reach, in the tree before the unit: its
+    private fields (a private constant among them) by name, and its private methods as "name()" (a
+    name with any private overload counts). None where the class is not in that tree."""
+    index = (places or {}).get(r["unit"])
+    if index is None:
+        return None
+    here = flow.simple(r.get("before_type") or r["type"])
+    fields, methods = None, {}
+    for f in index.get("files", {}).values():
+        for c in f.get("classes", []):
+            if flow.simple(c["name"]) == here and "fields" in c:
+                fields = c["fields"]
+        for m in f.get("methods", []):
+            if flow.simple(m["type"]) == here:
+                methods.setdefault(m.get("name") or m["signature"].split("(")[0], set()).add(m.get("access", "public"))
+    if fields is None:
+        return None
+    return ({v for v, a in fields.items() if a == "private"}
+            | {f"{n}()" for n, accs in methods.items() if "private" in accs})
+
+
 def encapsulated(r: dict, tf: list[str], tc: list[str], places: dict | None) -> bool | None:
     """Forced by encapsulation (PLAN.md §2, decided by the author on 21 November 2026): the code was
     bound at the class to a member no other class can reach, a private field (a constant among
@@ -297,6 +355,37 @@ def encapsulation_rows(arm: str, chain: str, hosts: list[dict], measured: dict) 
                 1 for (t, sig), acc in a1.items() if t == sc and acc != "private"
                 and ((t, sig) not in a0 or ACCESS.get(acc, 3) > ACCESS.get(a0[(t, sig)], 3)))
             out.append(row)
+    return out
+
+
+def member_rows(arm: str, chain: str, measured: dict) -> list[dict]:
+    """Encapsulation and the reader (PLAN.md 4.2f): per unit with a tree after it, the fields and
+    methods it introduced into the application's classes (a member of the tree after that was not
+    in the tree before, by class and signature, a field as "#name"; a renamed member counts as
+    introduced) and how many of them are private, fields apart; and the size of the system before
+    it: its files, classes, methods and tokens (``chain.java_tokens``), so that the unit can be read
+    against a context window."""
+    trees, after = _trees(measured)
+    out = []
+    for cp in sorted(trees):
+        index = trees[cp]
+        files = index.get("files", {})
+        row = {"arm": arm, "chain": chain, "cp": cp, "system_files": len(files),
+               "system_classes": sum(len(f.get("classes", [])) for f in files.values()),
+               "system_methods": sum(len(f.get("methods", [])) for f in files.values()),
+               "system_tokens": sum(int(f.get("tokens") or 0) for f in files.values())}
+        if cp in after:
+            a0, a1 = _graph(index).access(), _graph(trees[after[cp]]).access()
+            new = {k: v for k, v in a1.items() if k not in a0}
+            row.update({"introduced": len(new),
+                        "introduced_private": sum(1 for v in new.values() if v == "private"),
+                        "introduced_fields": sum(1 for k in new if k[1].startswith("#")),
+                        "introduced_private_fields": sum(1 for k, v in new.items()
+                                                         if k[1].startswith("#") and v == "private")})
+        else:
+            row.update({"introduced": None, "introduced_private": None, "introduced_fields": None,
+                        "introduced_private_fields": None})
+        out.append(row)
     return out
 
 
@@ -484,6 +573,11 @@ def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
             "called_class_methods": " ".join(m + "()" for m in tc),
             **choice(r, tm, tf, ti, tc, measured.get("places")),
             "forced_enc": encapsulated(r, tf, tc, measured.get("places")),
+            # H2's core at the class is what only this class can reach (decided by the author on 22
+            # November 2026): its private members, blank where the class is not in the tree before
+            "private_class_members": (lambda x: None if x is None else " ".join(sorted(x)))(
+                private_members(r, measured.get("places"))),
+            "bound_access": bound_access(r, tf, tc, measured.get("places")),
         })
         if shaped:
             rows[-1].update(shape.host_shape(rows[-1], shaped, in_class))
@@ -788,11 +882,18 @@ def outcome_rows(arm: str, chain: str, hosts: list[dict], streamed: dict[int, di
         core_m = set(h.get("need_method_values", "").split())
         core_f = set(h.get("need_class_values", "").split())
         called = set(h.get("called_class_methods", "").split())
-        core_c = core_f | called
+        bound_c = core_f | called
         methods_there = (set(h.get("class_methods_pre", "").split()) - called) \
             | set(h.get("class_methods_added", "").split())
         peri_m, peri_f = (stood_m | new_m) - core_m, (stood_c | new_c) - core_f
-        peri_c = (peri_f | methods_there) - core_c
+        # as until 22 November 2026, reported: the core is all the class's members the code was bound to
+        all_peri_c = (peri_f | methods_there) - bound_c
+        # the core is the encapsulated part of it (decided by the author on 22 November 2026: "the
+        # forcing is about not being able to access outside the encapsulation"): the private members
+        # the code was bound to; the members it was bound to that others can reach join the periphery
+        private = set((h.get("private_class_members") or "").split())
+        core_c = bound_c & private
+        peri_c = (all_peri_c | bound_c) - core_c
         intr_m = [j for j in later if k not in streamed.get(j, {}).get("mutates", [])
                   and k not in streamed.get(j, {}).get("crosses", [])]
         intr_c = [j for j in later_class if k not in streamed.get(j, {}).get("mutates", [])
@@ -828,6 +929,9 @@ def outcome_rows(arm: str, chain: str, hosts: list[dict], streamed: dict[int, di
             "left_class": len(stood_c | new_c), "left_method": len(stood_m | new_m),
             "drawn_class_left": left_c, "drawn_method_left": left_m,
             "core_class": len(core_c), "core_method": len(core_m),
+            "core_class_all": len(bound_c), "periphery_class_all": len(all_peri_c),
+            "uses_core_class_all": count_c(intr_c, bound_c),
+            "uses_periphery_class_all": count_c(intr_c, all_peri_c),
             "periphery_class": len(peri_c), "periphery_method": len(peri_m),
             "uses_core_class": count_c(intr_c, core_c),
             "uses_core_method": count(intr_m, uses_m, i, core_m),

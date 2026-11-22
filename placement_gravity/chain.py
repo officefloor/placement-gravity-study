@@ -187,6 +187,25 @@ def parse_wiring(texts: dict[str, str]) -> dict:
             "largest_file": largest, "largest_lines": largest_lines}
 
 
+#: A Java token, for the system's size against a context window (PLAN.md 4.2f): comments and
+#: whitespace are dropped; a string, text block or character literal is one token, as is each
+#: identifier, keyword, number and operator or separator.
+_TOKEN = re.compile(r'"""(?:.|\n)*?"""|"(?:\\.|[^"\\\n])*"|\'(?:\\.|[^\'\\\n])*\'|[A-Za-z_$][\w$]*'
+                    r'|\d[\w.]*|>>>=|<<=|>>=|>>>|->|::|\+\+|--|&&|\|\||[=!<>+\-*/%&|^]=|\.\.\.|\S')
+
+
+def java_tokens(text: str) -> int:
+    """The tokens of a Java source text (an approximation of a lexer: strings before comments, so a
+    "//" inside a string is not a comment)."""
+    out, i = 0, 0
+    for m in re.finditer(r'"""(?:.|\n)*?"""|"(?:\\.|[^"\\\n])*"|/\*.*?\*/|//[^\n]*', text, re.S):
+        out += len(_TOKEN.findall(text[i:m.start()]))
+        if not m.group().startswith("/"):
+            out += 1
+        i = m.end()
+    return out + len(_TOKEN.findall(text[i:]))
+
+
 def tree_places(repo: Path, cps: list, work: Path, java_src: str, wiring_root: str, light: bool,
                 keep, shapes: list[str]) -> dict:
     """Per unit, the places of the production tree before it: {"files": {path: record}, "flows":
@@ -221,7 +240,11 @@ def tree_places(repo: Path, cps: list, work: Path, java_src: str, wiring_root: s
     subprocess.run(["java", "-cp", CLASSPATH, "Pull", "--places", str(work / "places.tsv"),
                     str(work / "places.jsonl")], check=True)
     by_unit: dict[str, dict] = {}
+    roots = {line.split("\t")[0]: Path(line.split("\t")[1]) for line in listing}
     for r in (json.loads(l) for l in (work / "places.jsonl").read_text().splitlines() if l):
+        # the file's tokens, so the tree's size can be read against a context window (PLAN.md 4.2f)
+        src = roots[r["unit"]] / r["path"]
+        r["tokens"] = java_tokens(src.read_text(errors="replace")) if src.exists() else 0
         by_unit.setdefault(r["unit"], {})[r["path"]] = r
     out, running = {}, {}
     for c in cps:

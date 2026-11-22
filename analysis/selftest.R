@@ -186,6 +186,33 @@ sf <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
   rbind(cs, tr)
 }))))
 write.csv(sf, file.path(dir, "surface.csv"), row.names = FALSE)
+# encapsulation and the reader (PLAN.md 4.2f): 20 repositories an author group, systems from 20k to
+# 3M tokens; the officefloor group (standing for agents) makes members private at half the odds
+# where the system is at the centre, the gap closing by 0.25 on the log odds per unit of log tokens;
+# opens 1.5 times the members; lands in classes of the same size
+ru <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:20, function(ch) {
+  n <- 60
+  tokens <- round(exp(runif(n, log(2e4), log(3e6))))
+  lt <- log(tokens) - log(2.4e5)
+  ag <- arm == "officefloor"
+  introduced <- 1 + rpois(n, 4)
+  p <- plogis(0.8 + rnorm(1, 0, 0.2) + (if (ag) log(0.5) else 0) + (if (ag) 0.25 * lt else 0))
+  ex <- rpois(n, 12)
+  data.frame(chain_id = paste0(arm, "/repo", ch), arm = arm, unit = 1:n, cp = 1:n, tokens = tokens,
+             band = "", introduced = introduced, private = rbinom(n, introduced, p),
+             existing_positions = ex, forced_positions = rbinom(n, ex, 0.4), splits = 0,
+             positions = 1 + rpois(n, 10), methods = 1 + rpois(n, 2))
+}))))
+rcl <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:20, function(ch) {
+  n <- 80
+  tokens <- round(exp(runif(n, log(2e4), log(3e6))))
+  data.frame(chain_id = paste0(arm, "/repo", ch), arm = arm, unit = 1:n, cp = 1:n, class = paste0("C", 1:n),
+             tokens = tokens, band = "", opened = rpois(n, if (arm == "officefloor") 1.5 else 1),
+             forced = FALSE, methods_before = rnbinom(n, mu = 12, size = 3),
+             positions = 1 + rpois(n, 6), methods = 1 + rpois(n, 1))
+}))))
+write.csv(ru, file.path(dir, "reader_units.csv"), row.names = FALSE)
+write.csv(rcl, file.path(dir, "reader_classes.csv"), row.names = FALSE)
 writeLines(jsonlite::toJSON(list(
   analysis = "selftest", role = "development", seed = 20261116, boot = 60, margin = c(0.8, 1.25),
   methods_arm = "spring", function_arm = "officefloor", checkpoints = 60,
@@ -201,7 +228,7 @@ writeLines(jsonlite::toJSON(list(
                     c_wmc = list(level = "class", kind = "level", source = "CK"),
                     c_mi = list(level = "class", kind = "plain", source = "MI", reversed = TRUE),
                     c_god_class = list(level = "class", kind = "flag", source = "Lanza and Marinescu")),
-  acts = FALSE, frontends = list()), auto_unbox = TRUE), file.path(dir, "spec.json"))
+  acts = FALSE, frontends = list(), reader_models = TRUE), auto_unbox = TRUE), file.path(dir, "spec.json"))
 
 out <- file.path(dir, "estimates.json")
 script <- file.path(dirname(normalizePath(sub("--file=", "", grep("--file=", commandArgs(FALSE),
@@ -326,4 +353,12 @@ sx <- e$reported$surface$spring
 check(abs(sx$across$estimate - 0.7) < 0.1, "the exponent across classes is recovered")
 check(abs(sx$within$estimate - 1.3) < 0.25, "the exponent within a growing class is recovered")
 check(abs(sx$added_forced$estimate - 3) < 0.8, "the surface a forced change adds at the same volume is recovered")
+rd <- e$reported$reader
+check(abs(log(rd$private$author$irr) - log(0.5)) < 0.3 && rd$private$author$irr_upper < 1,
+      "reader: the simulated agents' lower odds of making a member private are recovered")
+check(abs(rd$private$interaction$estimate - 0.25) < 0.15 && rd$private$interaction$lower > 0,
+      "reader: the gap closing as the system grows is recovered")
+check(abs(log(rd$opened$author$irr) - log(1.5)) < 0.3, "reader: more members opened, as simulated")
+check(abs(log(rd$class_methods$author$irr)) < 0.3 && abs(log(rd$forced$author$irr)) < 0.3,
+      "reader: class size and the forced share, simulated equal, are not told apart")
 cat("analysis/analyse.R self-test passed\n")

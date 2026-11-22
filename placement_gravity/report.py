@@ -137,6 +137,14 @@ def h6_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
         L.append(f"- {arm} arm: {f(t.get('total'))} positions; forced {f(t.get('forced_share'))}, chosen "
                  f"{f(t.get('chosen_share'))}, unbound {f(t.get('unbound_share'))}; forced over the thirds "
                  + ", ".join(f((g.get("thirds") or {}).get(k, {}).get("forced_share")) for k in ("1", "2", "3")))
+    ba = (rd or {}).get("growth_by_access") or {}
+    if ba:
+        L += ["", "By the strictest access of the members the code was bound to at the class: private forces; "
+              "package and protected are a looser encapsulation (descriptive).", ""]
+        for arm, g in ba.items():
+            L.append(f"- {arm} arm: " + ", ".join(f"{k} {f(g.get(k + '_share'))}" for k in
+                                                  ("private", "package", "protected", "public", "unbound")
+                                                  if g.get(k + "_share") is not None))
     L += ["", "### Where coupling between classes came from", "",
           "Calls between classes each unit added (the tree after it less the tree before), over every class.", ""]
     for arm, c in ((rd or {}).get("coupling_added") or {}).items():
@@ -236,6 +244,41 @@ def surface_section(rep: dict, rd: dict) -> list[str]:
                      f"{f(g.get('calls_changed_later'))} reach a method changed later, {f(g.get('later_changes'))} "
                      f"later changes, {f(g.get('rippled'))} of them changing the caller too ({f(g.get('ripple_rate'))}; "
                      f"by chance {f(g.get('chance_rate'))}; ratio {f(g.get('ripple_ratio'))})")
+    return L
+
+
+def reader_section(rep: dict, rd: dict) -> list[str]:
+    """Encapsulation and the reader (PLAN.md §4.2f): the four measures per author group (arm) and size
+    band, and on a history the models of the author against system size."""
+    L = ["", "## Reported: encapsulation and the reader", "",
+         "Whether encapsulation answers a reader's limit: per author group (on a history, declared agent "
+         "commits against people), the private share of the members a unit introduces, the share of growth "
+         "of existing classes arriving forced, the members opened per class row changed, and the methods of "
+         "the classes code lands in; by the system's size in tokens against a context window (below 200k, "
+         "200k to 1M, above 1M). Predicted (the author's question): agents make fewer private, open more and "
+         "let classes grow larger where the system fits in a window, the difference narrowing where it "
+         "does not.", ""]
+    for arm, bands in ((rd or {}).get("reader") or {}).items():
+        for b, x in bands.items():
+            L.append(f"- {arm}, {b}: {f(x.get('units'))} units in {f(x.get('repositories'))} repositories"
+                     + (" (too thin)" if x.get("too_thin") and b != "all" else "")
+                     + f"; private share {f(x.get('private_share'))} of {f(x.get('introduced'))} introduced; "
+                     f"forced share {f(x.get('forced_share'))}; opened per class row {f(x.get('opened_per_row'))} "
+                     f"({f(x.get('class_rows'))} rows); class methods mean {f(x.get('class_methods_mean'))}, "
+                     f"median {f(x.get('class_methods_median'))}; splits per unit {f(x.get('splits_per_unit'))}; "
+                     f"median tokens {f(x.get('tokens_median'))}")
+    m = rep.get("reader") or {}
+    if m:
+        L.append(f"- Models (the author contrast at {f(m.get('centre_tokens'))} tokens, and its change per "
+                 "e-fold larger system):")
+        for k, label in (("private", "private share (odds ratio)"), ("forced", "forced share (odds ratio)"),
+                         ("opened", "members opened (rate ratio)"), ("class_methods", "class methods (rate ratio)")):
+            x = m.get(k) or {}
+            if "error" in x:
+                L.append(f"  - {label}: not fitted ({x['error']})")
+                continue
+            L.append(f"  - {label}: author {ratio(x.get('author'))}; × size {ratio(x.get('interaction'))}; "
+                     f"size {ratio(x.get('size'))} (n = {f(x.get('n'))}, {f(x.get('repositories'))} repositories)")
     return L
 
 
@@ -465,13 +508,15 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           f"uses of the values that code was bound to (the core) against their uses of the rest the "
           f"place held, what stood by and what the change introduced (the periphery), as a rate ratio "
           f"per value. A later change counts each value once in each method its bound code is in.", "",
-          f"- **At the class (its fields and the methods it calls): {ratio(e2.get('class'))}**",
+          f"- **At the class (the private members the code was bound to): {ratio(e2.get('class'))}**",
           f"- **At the method (its values): {ratio(e2.get('method'))}**",
           f"- Reported, the function arm: class {ratio(rep.get('H2_core_function_arm_class'))}; method "
           f"{ratio(rep.get('H2_core_function_arm_method'))}",
           *core_lines(readings or {}),
           f"- Reported, at the class on its fields only (as until 19 November 2026): "
           f"{ratio(rep.get('H2_class_fields'))}",
+          f"- Reported, at the class with every member the code was bound to as the core, private or not "
+          f"(as until 22 November 2026): {ratio(rep.get('H2_class_all'))}",
           *width_lines(rep),
           f"- Reported, H2 as it stood until 19 November 2026 (later intrusions bound to what stood by, per "
           f"value that stood by): class {ratio(rep.get('H2_bystanders_class'))}; method "
@@ -594,6 +639,7 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           *h7_section(est, hyp, rep, readings or {}),
           *redesign_section(readings or {}),
           *surface_section(rep, readings or {}),
+          *reader_section(rep, readings or {}),
           *readings_section(est, readings or {}),
           *landing_section({**(readings or {}), "_estimates": rep}),
           *literature_section(est, spec),

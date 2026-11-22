@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from placement_gravity import prepare, report, runs, verdict
+from placement_gravity import prepare, report, runs, tables, verdict
 
 
 # ---------------------------------------------------------------- step 2
@@ -323,7 +323,7 @@ def test_the_report_names_every_hypothesis_and_commit():
     cond = {**COND, "chains": {"spring": 9, "officefloor": 9}}
     heads = [{"arm": "spring", "run": "r", "chain": 1, "excluded": False, "sha": "a" * 40}]
     md = report.render("petclinic-primary", "primary", est, ver, cond, {"shape_counts": {}}, heads)
-    for k in ("H1", "H2", "H3", "H4", "supported", "`aaaaaaaaaaaa`", "s3_junction", "At the class (its fields and the methods it calls)", "H5, choice narrows", "H6, spread does not see it", "H7, forced changes couple", "Within a class",
+    for k in ("H1", "H2", "H3", "H4", "supported", "`aaaaaaaaaaaa`", "s3_junction", "At the class (the private members the code was bound to)", "H5, choice narrows", "H6, spread does not see it", "H7, forced changes couple", "Within a class",
               "the sinew measures", "s3_junction at the method 1.400 [1.100, 1.800]",
               "Later intrusion where bound code was placed"):
         assert k in md
@@ -493,3 +493,71 @@ def test_ripple_counts_later_changes_to_a_reached_method_that_also_change_the_ca
     # Owner changes in 2 of the chain's 4 units: by chance a half of the later changes would ripple
     assert (fo["chance_rate"], fo["ripple_ratio"]) == (0.5, 1.0)
     assert (r["unforced_existing"]["later_changes"], r["unforced_existing"]["rippled"]) == (1, 0)
+
+
+# ---------------------------------------------------------------- encapsulation and the reader (4.2f)
+
+def test_java_tokens_drop_comments_and_count_a_string_as_one():
+    from placement_gravity.chain import java_tokens
+    src = ('class A { // c\n  /* x */ private int x = 10; String s = "a // b"; '
+           'void f(){ x+=1; s=s+"\\""; char c = \'q\'; } }')
+    assert java_tokens(src) == 36
+    assert java_tokens('/* only */ // a comment\n') == 0
+    assert java_tokens('String t = """\nline // not a comment\n""";') == 5
+
+
+def _index(classes: dict, tokens: int) -> dict:
+    """A tree index: ``classes`` is {class: ({field: access}, [(signature, access)])}."""
+    return {"files": {f"{c}.java": {"tokens": tokens // len(classes),
+                                    "classes": [{"name": c, "fields": fs}],
+                                    "methods": [{"type": c, "name": s.split("(")[0], "signature": s,
+                                                 "access": a, "calls": [], "reads": []} for s, a in ms]}
+                      for c, (fs, ms) in classes.items()}, "flows": []}
+
+
+def test_member_rows_count_introduced_members_their_privacy_and_the_system_size():
+    before = _index({"A": ({"x": "private"}, [("f()", "public")])}, 1000)
+    after = _index({"A": ({"x": "private", "y": "private", "z": "public"}, [("f()", "public"), ("g()", "private")]),
+                    "B": ({}, [("h()", "public")])}, 1200)
+    rows = tables.member_rows("history", "r", {"places": {"cp01": before, "cp02": after}})
+    first, last = rows
+    assert (first["cp"], first["system_tokens"], first["system_classes"], first["system_methods"]) == (1, 1000, 1, 1)
+    assert (first["introduced"], first["introduced_private"]) == (4, 2)      # #y, #z, g(), h()
+    assert (first["introduced_fields"], first["introduced_private_fields"]) == (2, 1)
+    assert last["introduced"] is None and last["system_tokens"] == 1200      # no tree after the last unit
+
+
+def test_reader_rows_join_size_forcing_splits_and_tokens_per_unit_and_class():
+    members = [{"chain_id": "agent/r", "arm": "agent", "cp": "1", "position": "0.0", "system_tokens": "250000",
+                "introduced": "4", "introduced_private": "1"}]
+    hosts = [{"chain_id": "agent/r", "arm": "agent", "cp": "1", "type": "A", "added": "6", "net_added": "6", "class_new": "False",
+              "runs": "1", "edits": "0", "binding_field": "1", "binding_class": "1", "forced_enc": "True"},
+             {"chain_id": "agent/r", "arm": "agent", "cp": "1", "type": "N", "added": "4", "net_added": "4", "class_new": "True",
+              "runs": "1", "edits": "0"}]
+    h7 = [{"chain_id": "agent/r", "arm": "agent", "unit": 1, "cp": 0.0, "class": "A", "members_opened": 2,
+           "forced": True, "positions": 6, "methods": 1}]
+    boundary = [{"chain_id": "agent/r", "cp": "1", "class": "A", "methods_before": "14"}]
+    refs = [{"chain_id": "agent/r", "cp": "1", "kind": "Extract Class"}]
+    units, classes = prepare.reader_rows(members, hosts, h7, boundary, refs)
+    u = units[0]
+    assert (u["band"], u["introduced"], u["private"], u["splits"], u["positions"]) == ("200k to 1M", 4, 1, 1, 10)
+    assert u["existing_positions"] == 6
+    assert (classes[0]["opened"], classes[0]["methods_before"], classes[0]["band"]) == (2, 14, "200k to 1M")
+    s = prepare.reader_summary(units, classes)["agent"]
+    assert s["all"]["private_share"] == 0.25 and s["200k to 1M"]["too_thin"] is True
+    assert "below 200k" not in s
+
+
+def test_the_reader_section_reports_bands_and_models():
+    rd = {"reader": {"agent": {"all": {"units": 30, "repositories": 12, "too_thin": False, "private_share": 0.4,
+                                       "introduced": 50, "forced_share": 0.7, "class_rows": 20,
+                                       "opened_per_row": 0.5, "class_methods_mean": 12.0,
+                                       "class_methods_median": 10, "splits_per_unit": 0.0, "tokens_median": 3e5}}}}
+    rep = {"reader": {"centre_tokens": 2.4e5, "private": {"author": {"irr": 0.5, "irr_lower": 0.3, "irr_upper": 0.8},
+                                                          "interaction": {"irr": 1.3, "irr_lower": 1.1, "irr_upper": 1.5},
+                                                          "size": {"irr": 1.0, "irr_lower": 0.9, "irr_upper": 1.1},
+                                                          "n": 600, "repositories": 40},
+                      "opened": {"error": "too few rows: opened"}}}
+    text = "\n".join(report.reader_section(rep, rd))
+    assert "encapsulation and the reader" in text and "private share 0.400 of 50 introduced" in text
+    assert "author 0.500 [0.300, 0.800]" in text and "not fitted (too few rows: opened)" in text

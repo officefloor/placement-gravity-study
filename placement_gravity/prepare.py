@@ -241,6 +241,26 @@ def growth_accounting(host_rows: list[dict], checkpoints: int) -> dict:
     return out
 
 
+def growth_by_access(host_rows: list[dict]) -> dict:
+    """Per arm, the positions added to classes that existed by the strictest access of the members
+    the code was bound to at the class (private, package, protected, public), or not bound there,
+    and each one's share: private is the encapsulation that forces; package and protected are a
+    looser encapsulation, reported descriptively (decided by the author on 22 November 2026)."""
+    out: dict[str, dict] = {}
+    for h in host_rows:
+        if not tables.changed(h) or truth(h.get("class_new")):
+            continue
+        k = h.get("bound_access") or "unbound"
+        a = out.setdefault(h["arm"], {})
+        a[k] = a.get(k, 0) + added(h)
+    for a in out.values():
+        total = sum(v for v in a.values())
+        a["total"] = total
+        for k in [k for k in a if k != "total"]:
+            a[f"{k}_share"] = a[k] / total if total else None
+    return out
+
+
 def coupling_accounting(pairs: list[dict], coupling: list[dict], h6: list[dict]) -> dict:
     """What coupling between classes each unit added (H6's accounting, PLAN.md 4.2b): per arm, the
     calls between classes the units added in all (the tree after less the tree before, over every
@@ -368,6 +388,113 @@ def encapsulation_summary(h7: list[dict]) -> dict:
 def _values(h: dict) -> set[str]:
     """The class's own values a host's code was bound to: its fields and the class methods called."""
     return set((h.get("need_class_values") or "").split()) | set((h.get("called_class_methods") or "").split())
+
+
+#: The sizes a system is split at against a context window (PLAN.md 4.2f; the drafter's choice,
+#: 22 November 2026: the context windows common among coding agents when it was written).
+CONTEXT_BANDS = (200_000, 1_000_000)
+#: A band with fewer repositories (chains) than this for an author group is reported as too thin.
+READER_FLOOR = 10
+
+
+def band(tokens) -> str:
+    t = num(tokens)
+    if t is None:
+        return ""
+    return ("below 200k" if t < CONTEXT_BANDS[0] else
+            "200k to 1M" if t < CONTEXT_BANDS[1] else "above 1M")
+
+
+def reader_rows(members: list[dict], hosts: list[dict], h7: list[dict], boundary: list[dict],
+                refactorings: list[dict]) -> tuple[list[dict], list[dict]]:
+    """Encapsulation and the reader (PLAN.md 4.2f): one row per unit, with the members it
+    introduced and how many are private (measure 1), the positions it added to classes that
+    existed and how many of those by a placement forced at the class (measure 2), the classes it
+    split (RefactoringMiner's Extract Class), its change size, and the system's tokens before it;
+    and one row per unit and existing class it changed (H7's rows), with the members it exposed or
+    widened there (measure 3) and the class's methods before it (measure 4)."""
+    size: dict[tuple, dict] = {}
+    for h in hosts:
+        if not tables.changed(h):
+            continue
+        u = size.setdefault((h["chain_id"], int(h["cp"])), {"positions": 0, "methods": 0,
+                                                             "existing": 0, "forced": 0})
+        a = added(h)
+        u["positions"] += a
+        u["methods"] += 1
+        if not truth(h.get("class_new")):
+            u["existing"] += a
+            if tables.forced(h):
+                u["forced"] += a
+    splits: dict[tuple, int] = {}
+    for r in refactorings:
+        if r.get("kind") == "Extract Class":
+            k = (r["chain_id"], int(r["cp"]))
+            splits[k] = splits.get(k, 0) + 1
+    tokens: dict[tuple, float] = {}
+    units = []
+    for m in members:
+        k = (m["chain_id"], int(m["cp"]))
+        tokens[k] = num(m.get("system_tokens"))
+        s = size.get(k)
+        if s is None:            # a unit that changed no production method
+            continue
+        units.append({"chain_id": m["chain_id"], "arm": m["arm"], "unit": k[1],
+                      "cp": float(m["position"]) if m.get("position") not in (None, "") else k[1],
+                      "tokens": tokens[k], "band": band(tokens[k]),
+                      "introduced": num(m.get("introduced")), "private": num(m.get("introduced_private")),
+                      "existing_positions": round(s["existing"]), "forced_positions": round(s["forced"]),
+                      "splits": splits.get(k, 0), "positions": s["positions"], "methods": s["methods"]})
+    before = {(b["chain_id"], int(b["cp"]), b["class"]): num(b.get("methods_before")) for b in boundary}
+    classes = []
+    for r in h7:
+        k = (r["chain_id"], r["unit"])
+        t = tokens.get(k)
+        classes.append({"chain_id": r["chain_id"], "arm": r["arm"], "unit": r["unit"], "cp": r["cp"],
+                        "class": r["class"], "tokens": t, "band": band(t),
+                        "opened": r["members_opened"], "forced": r["forced"],
+                        "methods_before": before.get((r["chain_id"], r["unit"], r["class"])),
+                        "positions": r["positions"], "methods": r["methods"]})
+    return units, classes
+
+
+def _median(xs: list) -> float | None:
+    xs = sorted(xs)
+    if not xs:
+        return None
+    m = len(xs) // 2
+    return xs[m] if len(xs) % 2 else (xs[m - 1] + xs[m]) / 2
+
+
+def reader_summary(units: list[dict], classes: list[dict]) -> dict:
+    """Per author group (arm) and size band, and over all bands: the units and repositories (chains),
+    the private share of introduced members, the share of growth of existing classes arriving
+    forced, the members opened per class row, the methods of the classes code lands in (mean and
+    median) and the splits per unit; a band with fewer than ``READER_FLOOR`` repositories is marked
+    too thin."""
+    out: dict[str, dict] = {}
+    for arm in sorted({r["arm"] for r in units} | {r["arm"] for r in classes}):
+        a = out.setdefault(arm, {})
+        for b in ("all", "below 200k", "200k to 1M", "above 1M"):
+            us = [r for r in units if r["arm"] == arm and (b == "all" or r["band"] == b)]
+            cs = [r for r in classes if r["arm"] == arm and (b == "all" or r["band"] == b)]
+            if not us and not cs:
+                continue
+            chains = {r["chain_id"] for r in us} | {r["chain_id"] for r in cs}
+            intro = sum(r["introduced"] or 0 for r in us)
+            exist = sum(r["existing_positions"] for r in us)
+            sizes = [r["methods_before"] for r in cs if r["methods_before"] is not None]
+            a[b] = {"units": len(us), "repositories": len(chains), "too_thin": len(chains) < READER_FLOOR,
+                    "introduced": intro,
+                    "private_share": sum(r["private"] or 0 for r in us) / intro if intro else None,
+                    "forced_share": sum(r["forced_positions"] for r in us) / exist if exist else None,
+                    "class_rows": len(cs),
+                    "opened_per_row": sum(r["opened"] for r in cs) / len(cs) if cs else None,
+                    "class_methods_mean": sum(sizes) / len(sizes) if sizes else None,
+                    "class_methods_median": _median(sizes),
+                    "splits_per_unit": sum(r["splits"] for r in us) / len(us) if us else None,
+                    "tokens_median": _median([r["tokens"] for r in us if r["tokens"] is not None])}
+    return out
 
 
 def redesign(hosts: list[dict], pairs: list[dict], min_changes: int = 2,
@@ -626,6 +753,10 @@ def h2_rows(outcomes: list[dict], host_rows: list[dict], additions: list[dict],
             # reported: H2 at the class on its fields only, as until 19 November 2026
             **{k: int(o.get(k) or 0) for k in ("core_class_fields", "periphery_class_fields",
                                                "uses_core_class_fields", "uses_periphery_class_fields")},
+            # reported: H2 at the class with every member the code was bound to as the core, private
+            # or not, as until 22 November 2026 (the core is now the private part, PLAN.md 4.4)
+            **{k: int(o.get(k) or 0) for k in ("core_class_all", "periphery_class_all",
+                                               "uses_core_class_all", "uses_periphery_class_all")},
             "own_lines": num(o.get("own_lines")), "own_lost": num(o.get("own_lost")),
             "later_checkpoints": int(o["later_checkpoints"]),
             "binding": int(o["binding"]), "binding_no_param": int(h.get("binding_no_param", o["binding"])),
@@ -811,12 +942,18 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
     write_csv(out / "h7.csv", h7)
     write_csv(out / "surface.csv", surface_rows(table("boundary")))
     rippled = ripple(hosts, table("edges"))
+    r_units, r_classes = reader_rows(table("members"), hosts, h7, table("boundary"), table("refactorings"))
+    write_csv(out / "reader_units.csv", r_units)
+    write_csv(out / "reader_classes.csv", r_classes)
     spec = {"analysis": name, "role": analysis["role"], "seed": SEED, "boot": BOOT,
             "margin": MARGIN, "methods_arm": analysis.get("methods_arm", METHODS_ARM),
             "function_arm": analysis.get("function_arm", FUNCTION_ARM),
             # a history has no stream: its units are not problems every chain solves, so no model
             # carries an intercept for them, and the index is the unit's place from 0 to 1
             "problem_fixed": not past,
+            # encapsulation and the reader (PLAN.md 4.2f): modelled on the histories only, where
+            # the author varies; corpus A reports it per arm
+            "reader_models": past,
             "shape_kept": kept, "shape_counts": {**counts, **sinew_counts}, "sinew_kept": sinew,
             "literature": lit, "literature_counts": lit_counts,
             # H3's measures that vary; its class measures only where the class level does
@@ -848,10 +985,12 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
         "landings": places.summary(landed),
         "co_change": co_change(paired),
         "growth": growth_accounting(hosts, len(streamed)),
+        "growth_by_access": growth_by_access(hosts),
         "coupling_added": coupling_accounting(paired, coupled, h6),
         "encapsulation": encapsulation_summary(h7),
         "redesign": redesign(hosts, paired),
         "ripple": rippled,
+        "reader": reader_summary(r_units, r_classes),
         "own_lines": lost}, indent=1) + "\n")
     (out / "spec.json").write_text(json.dumps(spec, indent=1) + "\n")
     (out / "conditions.json").write_text(json.dumps(conditions, indent=1) + "\n")
