@@ -2686,6 +2686,15 @@ author's to set, on the plan and code as they then stand, and starts the experim
   1,000,000 tokens; undeclared commits kept apart; the 10-repository floor per band. The
   development histories hint the other way (growth of existing classes arriving forced: agent
   repository 0.70 of 193 positions, human 0.45 of 3,972, §6), on one agent repository.
+- *To finish before the tag (state on 22 November 2026):* the development rerun at
+  `MEASURE_VERSION` 28 and `HISTORY_VERSION` 12 (rows 69 and 71): `./step3_measure.sh --analysis
+  pilot`, `./step3b_histories.sh --analysis open-source-development --force`, `./step4_analyse.sh
+  --analysis pilot open-source-development`, `./step5_report.sh`. Until it is done and committed,
+  `results/analysis/` holds the results of 21 November 2026 (`MEASURE_VERSION` 26), without the
+  reader reading or the private core. Then its results go into §6 (the reader reading, H2 with the
+  private core beside the all-access core, growth by access) and are committed. A rerun was
+  started on 22 November 2026; check `results/analysis/*/estimates.json` for `reported.reader`
+  before running it again.
 - *The tag stays unset* (the author, 19 November 2026: "still to hold off, as I want to think about
   H2 in terms of placement choice"; H5 now carries choice).
 - *Not built, and said so where it matters:* the issue-linked unit of corpus B (§3.2); the ranks

@@ -56,6 +56,16 @@ Each step takes `--analysis NAME ...` to run only some analyses of `runs.yaml`. 
 refuse every other. They also refuse while the plan, the registry, the instrument or the analysis
 code has uncommitted changes, and each report lists the registered files changed since the tag. `./pilot.sh` regenerates the pilot report in `results/pilot/`: **do not run it** unless that is meant, since `results/pilot/PILOT.md` is the record of the pilot as it was on 15–16 November 2026, with the terms and hypothesis numbers of that day, and the instrument has changed since.
 
+**Working on the code.**
+
+- Tests: `.venv/bin/python -m pytest -q` and `Rscript analysis/selftest.R`.
+- After editing `instrument/Pull.java`, recompile it (`javac --release 17 -nowarn -d instrument/classes -cp lib/officefloorslim.jar instrument/Pull.java`, as `setup.sh` does).
+- After changing what a measured table means (the instrument, `tables.py`, `chain.py`), raise `MEASURE_VERSION` in `placement_gravity/measure.py` and `HISTORY_VERSION` in `placement_gravity/history.py`: steps 3 and 3b otherwise reuse the old measurements silently.
+- Do not change the code while steps 3 or 3b run: step 3b starts a fresh Python process per repository, so a change mid-run mixes two versions of the measurement.
+- When chaining steps in one command, record each step's own exit status: a chain ending in `; echo exit $?` reports the last command's status, not a failed step's.
+- Step 3b clones each repository from GitHub (it needs the network); a full rerun of the pilot and the development histories takes about two hours, so keep the machine from sleeping (for example `systemd-inhibit --what=sleep:idle:handle-lid-switch`).
+- The diagram in PLAN.md §2 is `figures/placement-forces.svg`; it was first published as a private page (claude.ai/artifact/7ZQfbsMD3ygsJAbKzffYMJ) and the file in the repository is the record.
+
 The petclinic chains are read from the harness's local clones (`~/compare/spring`,
 `~/compare/officefloor`) and published in `officefloor/spring-petclinic-rest`; the ui stacks are
 cloned into `~/placement-gravity-data/`. The streams are read at the commits `runs.yaml` pins.
