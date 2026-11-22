@@ -970,6 +970,37 @@ res$H4$existing_files <- if (isFALSE(spec$problem_fixed)) list(not_applicable = 
          wiring = per("existing_wiring_files"), checkpoint_intercept = m$cp))
 }
 
+# ---------------------------------------------------------------- logic and organisation (reported)
+# PLAN.md 4.9: per checkpoint and chain, the code a change added as logic (body statements) and as
+# organisation (accessors and constructor wiring in bodies; declarations outside them; the wiring),
+# and the state it handed along (the parameters of new methods, the values callers pass them, the
+# values and fields it introduces). The arms solve the same problems, so the logic is predicted the
+# same (its ratio inside the margin, 0.8 to 1.25, by the two one-sided tests) and the state handed
+# along lower in the function arm (below 1) and flatter over the stream. Each a negative binomial
+# mixed model on the arm with the chain's and the checkpoint's intercepts, Wald intervals; the
+# trend is the arm's interaction with the checkpoint index centred at the middle of the stream.
+sp <- read("split.csv")
+if (!is.null(sp) && nrow(sp) > 0 && multi(sp$arm)) {
+  sp$arm <- as_arm(sp$arm)
+  sp <- sp[as.character(sp$arm) %in% c(spec$methods_arm, spec$function_arm), ]
+  sp$arm <- droplevels(sp$arm)
+  sp$cp_c <- (sp$cp - (max(spec$checkpoints, 1) + 1) / 2) / max(spec$checkpoints - 1, 1)
+  fe_s <- if (multi(sp$frontend)) " + frontend" else ""
+  part <- function(y) {
+    if (all(sp[[y]] == 0)) return(list(error = paste("no", y)))
+    m <- fit_cp(paste0(y, " ~ arm", fe_s), sp, nbinom2())$fit
+    mt <- fit_cp(paste0(y, " ~ cp_c * arm", fe_s), sp, nbinom2())$fit
+    c(tost(m, FARM, spec$margin), list(level_95 = irr(wald(m, FARM)), trend = irr(wald(mt, paste0("cp_c:", FARM))),
+                                        mean = as.list(tapply(sp[[y]], as.character(sp$arm), mean))))
+  }
+  res$reported$split <- setNames(lapply(c("logic_added", "organisation_added", "declaration_lines_added",
+                                          "import_lines_added", "organisation_all", "params_new_methods",
+                                          "birth_binding", "method_values_added", "fields_added"), part),
+                                 c("logic", "organisation_in_bodies", "declarations", "imports", "organisation_all",
+                                   "params_new_methods", "birth_binding", "method_values_added", "fields_added"))
+  res$reported$split$wiring_lines <- as.list(tapply(sp$wiring_lines_added, as.character(sp$arm), mean))
+}
+
 # ---------------------------------------------------------------- encapsulation and the reader (reported)
 # PLAN.md 4.2f, 5: whether the author (on a history, declared agent commits against people) makes
 # fewer members private, has less growth arriving forced, opens more members and lets classes grow

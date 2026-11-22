@@ -78,6 +78,32 @@ def changed_java(repo: Path, a: str, b: str, java_src: str = JAVA_SRC
     return pairs
 
 
+#: A line that is only brackets and punctuation, or only a comment: not code.
+_NOT_CODE = re.compile(r"^[\s{}()\[\];,]*$|^\s*(//|/\*|\*)")
+
+
+def lines_added(repo: Path, a: str, b: str, java_src: str, wiring_root: str) -> dict:
+    """The code lines the diff a..b adds (logic or organisation, PLAN.md 4.9): in production Java,
+    every added line that is not blank, only brackets and punctuation, or only a comment (``java``),
+    those of them that are ``import`` or ``package`` lines (``imports``); and in the wiring, every
+    added line that is neither blank nor only a comment (``wiring``). A changed line is an added
+    line, as in the diff."""
+    out = {"java": 0, "imports": 0, "wiring": 0}
+    for root, key in ((java_src, "java"), (wiring_root, "wiring")):
+        path = ""
+        for line in git(repo, "diff", "-U0", "-M", a, b, "--", root).splitlines():
+            if line.startswith("+++ "):
+                path = line[6:]
+            elif line.startswith("+") and not line.startswith("+++"):
+                text = line[1:]
+                if key == "java" and path.endswith(".java") and not _NOT_CODE.match(text):
+                    out["java"] += 1
+                    out["imports"] += text.lstrip().startswith(("import ", "package "))
+                elif key == "wiring" and path.endswith((".yml", ".yaml")) and text.split("#", 1)[0].strip():
+                    out["wiring"] += 1
+    return out
+
+
 def materialise(repo: Path, rev: str, path: str, dest: Path) -> Path:
     dest.parent.mkdir(parents=True, exist_ok=True)
     data = subprocess.run(["git", "-C", str(repo), "show", f"{rev}:{path}"], check=True,
@@ -284,9 +310,12 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path, java_src: str = 
     # the production Java files each unit changes that existed before it (modified, renamed or
     # deleted): with the wiring files, the existing files a change has to go back into (H4)
     java_existing: dict[str, int] = {}
+    added_lines: dict[str, dict] = {}
     for c in cps:
         unit = f"cp{c.cp:02d}"
         java_existing[unit] = 0
+        if not light and not c.noop:      # logic and organisation (PLAN.md 4.9): corpus A only
+            added_lines[unit] = lines_added(repo, c.parent, c.commit, java_src, wiring_root)
         for old, new in changed_java(repo, c.parent, c.commit, java_src):
             if keep and not keep(new or old):
                 continue
@@ -366,6 +395,7 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path, java_src: str = 
         amount = {f"cp{c.cp:02d}": {"positions": 0, "methods": 0} for c in cps}
     return {"checkpoints": [c.__dict__ for c in cps], "records": records, "amount": amount,
             "wiring": wires, "wiring_changes": wire_changes, "java_existing": java_existing,
+            "lines_added": added_lines,
             "refactorings": found, "hints": len(hint_lines),
             "shape": methods, "shape_problems": [r for r in shaped if r["kind"] == "problem"],
             "hints_unmatched": unmatched, "places": places}

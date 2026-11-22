@@ -110,6 +110,20 @@ reopen <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, f
              existing_java_files = ej, existing_wiring_files = ew, existing_files = ej + ew)
 }))))
 write.csv(reopen, file.path(dir, "reopen.csv"), row.names = FALSE)
+# logic and organisation: the same logic in both arms; the function arm hands 0.4 times the
+# parameters to its new methods, and its rise over the stream is flat where the methods arm's doubles
+split <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
+  cp <- 1:60
+  lg <- rnbinom(60, size = 5, mu = 12 * exp(cp_by))
+  pr <- rnbinom(60, size = 5, mu = if (arm == "spring") 3 * exp(log(2) * (cp - 30.5) / 59) else rep(1.2, 60))
+  dl <- rpois(60, if (arm == "spring") 6 else 9)
+  wl <- if (arm == "spring") rep(0, 60) else rpois(60, 2)
+  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = cp, logic_added = lg,
+             organisation_added = rpois(60, 1), declaration_lines_added = dl, import_lines_added = rpois(60, 2),
+             wiring_lines_added = wl, params_new_methods = pr, birth_binding = rpois(60, 2),
+             method_values_added = rpois(60, 5), fields_added = rpois(60, 0.5), organisation_all = dl + wl + 1)
+}))))
+write.csv(split, file.path(dir, "split.csv"), row.names = FALSE)
 write.csv(by, file.path(dir, "by.csv"), row.names = FALSE)
 write.csv(cap, file.path(dir, "capture.csv"), row.names = FALSE)
 write.csv(h1, file.path(dir, "h1.csv"), row.names = FALSE)
@@ -394,4 +408,11 @@ check(abs(rd$private$interaction$estimate - 0.25) < 0.15 && rd$private$interacti
 check(abs(log(rd$opened$author$irr) - log(1.5)) < 0.3, "reader: more members opened, as simulated")
 check(abs(log(rd$class_methods$author$irr)) < 0.3 && abs(log(rd$forced$author$irr)) < 0.3,
       "reader: class size and the forced share, simulated equal, are not told apart")
+sl <- e$reported$split
+check(abs(log(sl$logic$irr)) < 0.1 && sl$logic$p_tost < 0.05, "logic, simulated the same in both arms, is shown inside the margin")
+check(abs(log(sl$params_new_methods$level_95$irr) - log(0.4)) < 0.2 && sl$params_new_methods$level_95$irr_upper < 1,
+      "the state handed to new methods, simulated 0.4 times in the function arm, is recovered")
+check(abs(log(sl$params_new_methods$trend$irr) - log(0.5)) < 0.35, "its flatter trend in the function arm is recovered")
+check(sl$declarations$irr > 1.25 && sl$wiring_lines$officefloor > 1.5 && sl$wiring_lines$spring == 0,
+      "declarations, simulated higher in the function arm, and the wiring lines are reported as they are")
 cat("analysis/analyse.R self-test passed\n")

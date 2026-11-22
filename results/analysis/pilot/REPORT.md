@@ -278,6 +278,27 @@ Later intrusion per standard deviation of the measure (a flag: present against a
 
 Left out by the variation rule (bound rows flagged or above zero, per arm): s1_long ({'officefloor': 1, 'spring': 22}), m_demeter ({'officefloor': 0, 'spring': 0}), m_duplicated ({'officefloor': 0, 'spring': 4}), c_tcc ({'officefloor': 0, 'spring': 80}), c_god_class ({'officefloor': 6, 'spring': 33}), c_data_class ({'officefloor': 0, 'spring': 0}), c_demeter ({'officefloor': 0, 'spring': 0}), c_duplicated ({'officefloor': 1, 'spring': 73}).
 
+## Reported: logic and organisation
+
+What a checkpoint added, per checkpoint: its logic (the statements of method bodies), and the organisation that supplies the logic with its data: accessors and constructor wiring in bodies, declarations outside them (signatures, fields, class headers, annotations), and the wiring; with the state it handed along. Stated before any run was read: the logic is the same in both arms (the ratio inside 0.8 to 1.25), and the state handed along is lower in the function arm (below 1) and flatter over the stream (the trend below 1). Declarations and wiring are reported as they fall.
+
+| Part | officefloor, per checkpoint (thirds) | spring, per checkpoint (thirds) | Function arm / methods arm (90%) | Its trend over the stream (95%) |
+|---|---|---|---|---|
+| Logic (body positions) | 9.700 (7.750, 9.950, 11.400) | 9.102 (8.550, 9.250, 9.526) | 1.056 [0.957, 1.166] | 1.513 [0.570, 4.018] |
+| Organisation in bodies (positions) | 0.583 (0.750, 0.500, 0.500) | 0.559 (0.750, 0.450, 0.474) | 1.043 [0.554, 1.965] | 1.065 [0.081, 14.043] |
+| Declarations (lines outside bodies) | 7.950 (7.500, 7.200, 9.150) | 6.356 (7.200, 4.750, 7.158) | 1.229 [1.077, 1.404] | 1.281 [0.772, 2.125] |
+| Wiring (lines) | 2.150 (3.100, 2.350, 1.000) | 0.000 (0.000, 0.000, 0.000) | – | – |
+| Organisation in all (bodies, declarations, wiring) | 10.683 (11.350, 10.050, 10.650) | 6.915 (7.950, 5.200, 7.632) | 1.506 [1.294, 1.752] | 0.919 [0.506, 1.671] |
+| Imports (lines) | 4.800 (6.300, 4.350, 3.750) | 0.881 (1.400, 0.500, 0.737) | 5.442 [4.073, 7.270] | 1.366 [0.457, 4.079] |
+| Handed along: parameters of new methods | 2.867 (3.050, 2.850, 2.700) | 2.085 (2.600, 1.950, 1.684) | 1.375 [1.063, 1.779] | 1.597 [0.573, 4.452] |
+| Handed along: values callers pass new methods | 0.067 (0.100, 0.050, 0.050) | 0.203 (0.050, 0.400, 0.158) | 0.328 [0.111, 0.970] | 0.256 [0.003, 24.355] |
+| Introduced: parameters and locals | 5.950 (5.150, 5.900, 6.800) | 5.085 (5.500, 4.700, 5.053) | 1.170 [0.927, 1.477] | 1.747 [0.704, 4.335] |
+| Introduced: fields left in existing classes | 0.433 (0.300, 0.450, 0.550) | 0.610 (0.450, 0.500, 0.895) | 0.710 [0.456, 1.106] | 0.554 [0.091, 3.369] |
+
+- Logic the same in both arms (two one-sided tests against 0.8 and 1.25): p 0.003
+- officefloor: organisation's share of logic and organisation together 0.524 (60 checkpoints)
+- spring: organisation's share of logic and organisation together 0.432 (59 checkpoints)
+
 ## Reported: the instrument against the compiler
 
 The instrument resolves names without a symbol solver. On a sample of each chain's checkpoints (every fifth and the last) the tree was given to javac, which does resolve them. Precision: of what the instrument read, the share the compiler confirms. Recall: of what the compiler read that could be followed, the share the instrument has. What the compiler itself could not resolve is counted apart and held against neither.

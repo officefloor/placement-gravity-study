@@ -775,6 +775,44 @@ def reopen_rows(additions: list[dict]) -> list[dict]:
             for a in additions if a.get("reopened") not in (None, "")]
 
 
+SPLIT = ["logic_added", "organisation_added", "declaration_lines_added", "import_lines_added",
+         "wiring_lines_added", "params_new_methods", "birth_binding", "method_values_added", "fields_added"]
+
+
+def split_rows(additions: list[dict]) -> list[dict]:
+    """Logic and organisation (PLAN.md 4.9): per checkpoint and chain, the parts of the code it
+    added and the state it handed along. Only checkpoints where the diff's lines were read."""
+    out = []
+    for a in additions:
+        if num(a.get("declaration_lines_added")) is None or truth(a.get("noop")):
+            continue
+        row = {"chain_id": a["chain_id"], "arm": a["arm"], "frontend": a.get("frontend", ""), "cp": int(a["cp"])}
+        row.update({k: int(num(a.get(k), 0)) for k in SPLIT})
+        # organisation in all: in bodies, declarations and wiring (imports apart: they follow the tools)
+        row["organisation_all"] = row["organisation_added"] + row["declaration_lines_added"] + row["wiring_lines_added"]
+        out.append(row)
+    return out
+
+
+def split_summary(rows: list[dict], checkpoints: int) -> dict:
+    """Per arm: each part per checkpoint, over the stream and over its thirds, and organisation's
+    share of logic and organisation together."""
+    out = {}
+    for arm in sorted({r["arm"] for r in rows}):
+        mine = [r for r in rows if r["arm"] == arm]
+
+        def mean(k, rs):
+            return sum(r[k] for r in rs) / len(rs) if rs else None
+        thirds = {str(t): [r for r in mine if min(int((r["cp"] - 1) / max(checkpoints, 1) * 3) + 1, 3) == t]
+                  for t in (1, 2, 3)}
+        a = {"checkpoints": len(mine), "per_checkpoint": {k: mean(k, mine) for k in SPLIT + ["organisation_all"]},
+             "thirds": {t: {k: mean(k, rs) for k in SPLIT + ["organisation_all"]} for t, rs in thirds.items()}}
+        logic, org = sum(r["logic_added"] for r in mine), sum(r["organisation_all"] for r in mine)
+        a["organisation_share"] = org / (logic + org) if logic + org else None
+        out[arm] = a
+    return out
+
+
 def h2_rows(outcomes: list[dict], host_rows: list[dict], additions: list[dict],
             streamed: dict) -> list[dict]:
     hosts = {(h["chain_id"], h["cp"], h["type"], h["signature"]): h for h in host_rows}
@@ -988,6 +1026,8 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
     write_csv(out / "capture.csv", captured)
     again = reopen_rows(additions)
     write_csv(out / "reopen.csv", again)
+    split = [] if past else split_rows(additions)
+    write_csv(out / "split.csv", split)
     write_csv(out / "h2.csv", h2)
     write_csv(out / "h5.csv", h5_rows(hosts, streamed))
     h6 = h6_rows(hosts, streamed)
@@ -1053,6 +1093,7 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
         "growth_by_access": growth_by_access(hosts),
         "growth_by_lever": growth_by_lever(hosts),
         "validation": {} if past else validate.summary(table("validation")),
+        "split": split_summary(split, len(streamed)),
         "coupling_added": coupling_accounting(paired, coupled, h6),
         "encapsulation": encapsulation_summary(h7),
         "redesign": redesign(hosts, paired),

@@ -248,6 +248,50 @@ def existing_files_lines(m3: dict) -> list[str]:
             + "; ".join(f"{a} {f(v)} (Java {f(java.get(a))}, wiring {f(wiring.get(a))})" for a, v in mean.items())]
 
 
+def split_section(rep: dict, rd: dict) -> list[str]:
+    """Logic and organisation (PLAN.md §4.9)."""
+    s, m = rd.get("split") or {}, rep.get("split") or {}
+    if not s:
+        return []
+    names = [("logic_added", "logic", "Logic (body positions)"),
+             ("organisation_added", "organisation_in_bodies", "Organisation in bodies (positions)"),
+             ("declaration_lines_added", "declarations", "Declarations (lines outside bodies)"),
+             ("wiring_lines_added", None, "Wiring (lines)"),
+             ("organisation_all", "organisation_all", "Organisation in all (bodies, declarations, wiring)"),
+             ("import_lines_added", "imports", "Imports (lines)"),
+             ("params_new_methods", "params_new_methods", "Handed along: parameters of new methods"),
+             ("birth_binding", "birth_binding", "Handed along: values callers pass new methods"),
+             ("method_values_added", "method_values_added", "Introduced: parameters and locals"),
+             ("fields_added", "fields_added", "Introduced: fields left in existing classes")]
+    arms = list(s)
+    L = ["", "## Reported: logic and organisation", "",
+         "What a checkpoint added, per checkpoint: its logic (the statements of method bodies), and the "
+         "organisation that supplies the logic with its data: accessors and constructor wiring in bodies, "
+         "declarations outside them (signatures, fields, class headers, annotations), and the wiring; with the "
+         "state it handed along. Stated before any run was read: the logic is the same in both arms (the ratio "
+         "inside 0.8 to 1.25), and the state handed along is lower in the function arm (below 1) and flatter "
+         "over the stream (the trend below 1). Declarations and wiring are reported as they fall.", "",
+         "| Part | " + " | ".join(f"{a}, per checkpoint (thirds)" for a in arms)
+         + " | Function arm / methods arm (90%) | Its trend over the stream (95%) |",
+         "|---|" + "---|" * (len(arms) + 2)]
+    for key, model, label in names:
+        cells = []
+        for a in arms:
+            th = s[a].get("thirds") or {}
+            cells.append(f"{f(s[a]['per_checkpoint'].get(key))} ("
+                         + ", ".join(f((th.get(t) or {}).get(key)) for t in ("1", "2", "3")) + ")")
+        x = m.get(model) or {} if model else {}
+        L.append(f"| {label} | " + " | ".join(cells) + f" | {ratio(x) if x else '–'} | "
+                 f"{ratio(x.get('trend')) if x else '–'} |")
+    L.append("")
+    lg = m.get("logic") or {}
+    L.append(f"- Logic the same in both arms (two one-sided tests against 0.8 and 1.25): p {f(lg.get('p_tost'))}")
+    for a in arms:
+        L.append(f"- {a}: organisation's share of logic and organisation together "
+                 f"{f(s[a].get('organisation_share'))} ({f(s[a].get('checkpoints'))} checkpoints)")
+    return L
+
+
 def validation_section(rd: dict) -> list[str]:
     """The instrument against the compiler (PLAN.md §4.8)."""
     v = rd.get("validation") or {}
@@ -764,6 +808,7 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           *readings_section(est, readings or {}),
           *landing_section({**(readings or {}), "_estimates": rep}),
           *literature_section(est, spec),
+          *split_section(rep, readings or {}),
           *validation_section(readings or {}),
           "", "## Provenance", "",
           "Checkpoint intercept in the model: " + (", ".join(

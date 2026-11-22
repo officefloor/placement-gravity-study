@@ -2,7 +2,7 @@
 
 > **Status: NOT YET REGISTERED. The tag `plan-v1` was withdrawn on 17 November 2026, before any
 > run named for analysis was read, while the hypotheses are worked out on the development chain
-> (§9, five revisions so far, the last still growing: rows 72 to 80 follow a review of the plan on
+> (§9, five revisions so far, the last still growing: rows 72 to 81 follow a review of the plan on
 > 22 November 2026). It will be set again when that work is done; until then only the
 > development chain can be read.** As first registered, on 16 November 2026: the tag was first pushed on commit
 > `4bb8973` and moved the same day, before any run named for analysis was read, to this revision,
@@ -68,6 +68,27 @@ This study turns the question round:
   **core**, and the rest, the **periphery**, is what it then has to sit beside. So the pull is
   the core's (H2), the growth is the periphery's and is its cost (H1), and a form that hands each
   function its own data forms no core (H4).
+
+- **Essence and accident** (the author's, 22 November 2026, §9 row 81). Brooks (1987) divides a
+  program's difficulty into the essential, which is the problem's, and the accidental, which is
+  the representation's. The author's claim: the essential complexity is **the logic**, what the
+  statements of the methods compute, with the data each piece of logic needs; the construct of
+  **methods calling each other and passing state** is accidental. "The method organisation is
+  just to supply data to the logic of the methods. OfficeFloor removes this accidental
+  complexity making it focus on the essential complexity of the function logic." The plan
+  already measures on that line without having named it: only a method's body statements carry
+  the value of a change, and signatures, declarations and wiring are organisation (§4.3); the
+  values a problem needs are the problem's, and what surrounds them is the placement's (§4.3a).
+  Three cautions, the drafter's. Brooks himself puts "invocations of functions" and the
+  relations among data in the essence, so this is the author's refinement, not Brooks's view:
+  *which* data a piece of logic needs is essential, *how it reaches it* is not. It is nearer
+  Moseley and Marks (2006), who hold that most complexity is accidental, chiefly state and
+  control, and should be kept apart from the essential logic. The order in which functions run
+  is still the problem's; OfficeFloor keeps it, in its wiring, so it moves that part of the
+  organisation and does not remove it, and the wiring is counted as the function arm's
+  organisation (§4.9). And organisation does more than supply data: it also names and groups
+  for a reader (§4.2f). The reading of §4.9 states the claim so that it can fail: the same logic
+  in both arms, and less state handed along in the function arm.
 
 That shared data gathers faster than code is known in aggregate: across versions of the Linux
 kernel, common coupling to global data grew far faster than the code did (Schach et al. 2002; Yu
@@ -1683,6 +1704,55 @@ the rerun at `MEASURE_VERSION` 29.
 As built: `instrument/Check.java`, `placement_gravity/validate.py`, `tests/test_validate.py`;
 `validation.csv` per chain (step 3), summed per arm in `readings.json` (`validation`).
 
+### 4.9 Logic and organisation (reported reading)
+
+Added 22 November 2026 (§9 row 81; the author's claim, §1 *Essence and accident*; the
+operational form the drafter's). What each checkpoint added, per chain, in parts:
+
+- **Logic:** the positions it added to method bodies that are neither moved code nor
+  organisation (the runs of §4.3).
+- **Organisation in bodies:** the positions the instrument reads as organisation: a plain
+  accessor's one statement, a constructor's assignment of a parameter to a field (§4.3).
+- **Declarations:** the code lines it added to production Java outside method bodies:
+  signatures, field declarations, class headers, annotations. Read as a remainder: the lines the
+  agent's commit adds (`git diff`; not blank, not only brackets and punctuation, not only a
+  comment, not `import` or `package` lines) less the positions added in bodies, moved code among
+  them, and not below nought.
+- **Imports:** its added `import` and `package` lines, apart, since they follow the tools.
+- **Wiring:** the lines it added to the OfficeFloor configuration (not blank, not only a
+  comment). The function arm's sequence of functions lives here, so this is its organisation.
+- **State handed along** (already measured): the parameters of the methods it created; the values
+  callers pass those methods (birth bindings, §4.3); the parameters and locals it introduced
+  and the fields it left in classes that existed (§4.3b).
+
+**Stated now, before any run named for analysis is read:**
+
+- *The essential part is conserved:* the logic added per checkpoint is the same in both arms, the
+  function arm's ratio inside 0.8 to 1.25 (the two one-sided tests, 90% interval).
+- *The state handed along is the methods arm's:* the parameters of new methods, and the values
+  callers pass them, are fewer in the function arm (ratio below 1) and rise less over the stream
+  (the arm's interaction with the checkpoint index below 1).
+- *No direction is stated for declarations or wiring.* OfficeFloor makes each function a class,
+  so it may add more declaration lines than Spring; that is the cost of its form and is to be
+  seen, not summed away. Organisation in all (bodies, declarations and wiring together) is
+  reported with its ratio and each arm's share of logic and organisation together.
+
+Each part is a negative binomial mixed model on the arm (and the front end) with the chain's and
+the checkpoint's intercepts, Wald intervals; the trend is the arm's interaction with the
+checkpoint index centred at the middle of the stream and scaled to the stream's length.
+Reported, with stated directions; it enters no verdict. Corpus A only: a history's diff is not
+read this way, and there are no arms that solve the same problems.
+
+*What it cannot say.* Lines are a crude measure of organisation: a signature of five parameters
+and one of none are one line each, which is why the parameters are counted beside the lines.
+Positions and lines are not the same unit, so the remainder that gives the declarations is
+approximate. A statement whose only work is to pass values on to another method is logic to the
+instrument; the junction (§4.7) is the measure nearest to it and is read with the sinew measures.
+
+As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`,
+`prepare.split_summary` (`split.csv`, `readings.json`), `analyse.R` (`reported$split`),
+`report.split_section`; `MEASURE_VERSION` 30.
+
 ## 5. Analysis
 
 - **Unit:** an addition run (Q2, H1, H4) or a problem and host whose code was bound there (Q3, H2,
@@ -2020,7 +2090,8 @@ binomial mixed model). These details are fixed with the code before any run is r
 
 - **Each analysis is read on its own** (`runs.yaml`): the ui primary, which is the study's test,
   and each petclinic analysis, a replication. An analysis with fewer than 6 chains in an arm is descriptive only.
-- **H1 and H4** are fitted on runs of added logic into **existing** methods: a new method has no
+- **H1 and H4 as first registered, on the bindings** (reported since 17 November 2026; H1 and H4
+  themselves are on the bystanders, above) are fitted on runs of added logic into **existing** methods: a new method has no
   prior size, so including new methods would make "more bindings in bigger hosts" true by
   construction. Gaussian mixed models of log(1 + bindings) on log(host positions) and the checkpoint
   index, random intercepts per chain and per checkpoint; H4 adds the arm and its interaction with host
@@ -2515,6 +2586,23 @@ binomial mixed model). These details are fixed with the code before any run is r
     agent repository and their figures are not read.
   - *Step 4 took 20 minutes* for both analyses on four cores, the histories' bootstraps being
     nearly all of it (1,791 rows for H2, 896 for H7).
+- **Logic and organisation on the development chain** (22 November 2026, `MEASURE_VERSION` 30,
+  §4.9; one chain an arm, descriptive only; its directions were stated before this was run, and
+  nothing was changed after). Per checkpoint, OfficeFloor against Spring. *Logic* 9.7 against
+  9.1 positions, ratio 1.06 [0.96, 1.17] (90%), inside the margin: **the logic is the same.**
+  *Organisation in bodies* 0.58 against 0.56. *Declarations* 8.0 against 6.4 lines, 1.23
+  [1.08, 1.40]. *Wiring* 2.2 lines against none (3.1, 2.4, 1.0 over the thirds). *Organisation
+  in all* 10.7 against 6.9, 1.51 [1.29, 1.75]; its share of logic and organisation together 52%
+  in OfficeFloor and 43% in Spring. *Imports* 4.8 against 0.9 lines. **The state handed along
+  went both ways:** the values callers pass new methods 0.07 against 0.20 a checkpoint, 0.33
+  [0.11, 0.97], as stated; the parameters of new methods 2.9 against 2.1, 1.38 [1.06, 1.78],
+  **against the stated direction**. A wired OfficeFloor function's parameters are injected by
+  the framework, not passed by a caller, and they are counted here as parameters like any
+  other; whether they are state handed along in the claim's sense is for the author, and the
+  count stays as built until then. No trend is resolved on one chain. So on this chain the
+  first half of the claim holds (the essential part is conserved) and the second does not show
+  in lines: OfficeFloor wrote more organisation per checkpoint, not less; what it has less of is
+  callers passing values to callees, and data standing by (H4).
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
@@ -2584,6 +2672,14 @@ binomial mixed model). These details are fixed with the code before any run is r
   core of H2), and a larger class may gain more calls whatever forced it; the index is in the
   model, and the class's size is not (the reading is about the force, and size is its result).
 
+- **The agent knows one arm far better than the other** (added 22 November 2026, from the review
+  of the plan). Spring is everywhere in what the agent learned from; OfficeFloor it knows from
+  the stack's scaffold and whatever documentation the harness gives it. So a difference between
+  the arms may be, in part, a difference between an idiom the agent has seen ten thousand times
+  and one it is following from an example: it may place code as the scaffold does because it has
+  nothing else to go on. The arm is therefore the framework *as the agent uses it*, not the
+  construct alone. What bears on it: Run D changes the construct inside Spring, the arm the agent
+  knows; and corpora B and C are people's and agents' code in the wild. It is not ruled out.
 - **Agent-written code (corpus A).** Placement by an agent may not be placement by people.
   Corpus B is the check, which is why it is drawn pre-AI. There is a specific reason for concern:
   AI agents' pull requests touch fewer files and spread less than human ones of similar size
@@ -2909,7 +3005,8 @@ author's to set, on the plan and code as they then stand, and starts the experim
   author's question on its fit is closed). **(2) H2's core at the class is its encapsulated part**
   (§2, §4.4, row 71). **(3) H5's choices accepted** (a level where every placement was forced
   passes with p 0; both levels; the chain's intercept and no checkpoint intercept; untyped values
-  left out). **(4) Only private forces; package and protected are reachable**, and are reported
+  left out; *of these, the pass with p 0 was withdrawn later the same day, row 73, and the class
+  level alone has been the test since row 64*). **(4) Only private forces; package and protected are reachable**, and are reported
   descriptively as a looser encapsulation ("private is most strict and forcing"): each placement
   bound at the class carries the strictest access of the members it used (`tables.bound_access`),
   and the growth of existing classes is reported by it (`prepare.growth_by_access`, beside H6's
@@ -3162,6 +3259,7 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 78 | H4 also needs fewer existing files gone back into per checkpoint, production Java and wiring counted alike, bound or not: the function arm's rate ratio below 1 on the cluster bootstrap, in H4's p with the other four | §2, §5, `chain.measure` (`java_existing`), `tables.addition_rows`, `prepare.reopen_rows`, `analyse.R` (`H4$existing_files`), `verdict.h4`, `report.existing_files_lines`, `selftest.R`; `MEASURE_VERSION` 29 | Decided by the author on 22 November 2026, on the review: H4's intrusion counted the methods arm's return to its handler and not the function arm's return to its wiring, and rested on the rule that an injected parameter is not a binding. Made knowing the development chain's reopening counts (1.35 [1.01, 1.80] against H4 before the binding rule, classes only; 0.77 [0.52, 1.16] with the rule and the wiring files, §6), so H4 may well fail on it. Before the tag, so a revision |
 | 79 | The instrument checked against the compiler on corpus A: on every fifth checkpoint of a chain and its last, the precision and recall of its calls and field reads and the precision of its bound names, against javac's resolution; reported per arm, no threshold | §4.8, §7, `instrument/Check.java`, `placement_gravity/validate.py`, `measure.py` (`validation.csv`), `prepare.py`, `report.validation_section`, `setup.sh`, `tests/test_validate.py` | Decided by the author on 22 November 2026, on the review: the fixtures show the instrument does what was meant, not that it is right on real code. No measure of a hypothesis, model or rule changes |
 | 80 | **A fault, found by the check of row 79 before any run named for analysis was read:** a call was followed to every class sharing any ancestor with its receiver's class (siblings, and through a library's interface whole groups of unrelated classes), not only to that class's ancestors and descendants as §4.2a says. Corrected in `flow.Graph.family`. It inflated the calls counted between classes (about twofold on the two development trees looked at) and widened the control flow of H5's method level | §4.2a, §4.8, `flow.py`; `MEASURE_VERSION` 29, `HISTORY_VERSION` 13 | The figures of §6 for H5 at the method, H6's pairs and accountings, H7, surface and ripple were computed with it; they are development figures, superseded by the rerun. No rule changes: the code now does what the plan said |
+| 81 | A reported reading, logic and organisation: each checkpoint's added code as logic, organisation in bodies, declarations, imports and wiring, with the state handed along; stated before any run is read: the logic the same in both arms (inside 0.8 to 1.25), the state handed along lower and flatter in the function arm; no direction for declarations or wiring. Brooks's essence and accident as its framing, with the drafter's cautions | §1, §4.9, `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`, `prepare.split_summary`, `analyse.R` (`split`), `report.split_section`, `selftest.R`; `MEASURE_VERSION` 30 | The author's, 22 November 2026: "the essential complexity is the logic contained in those methods. The method organisation is just to supply data to the logic of the methods. OfficeFloor removes this accidental complexity". Operational form the drafter's. No hypothesis, model of a hypothesis or rule changes. Made knowing the development chain's amount (1.08) and that H4's symmetric file count had just gone against H4 there (§6) |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

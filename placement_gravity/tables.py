@@ -752,6 +752,11 @@ def addition_rows(arm: str, chain: str, measured: dict, hosts: list[dict],
             # the existing files the change went back into, whatever they hold and bound or not
             # (H4's symmetric count, 22 November 2026): production Java files that existed, and
             # wiring files that existed (not those the checkpoint adds)
+            # logic and organisation (PLAN.md 4.9): the body positions the checkpoint added that are
+            # logic and those that are organisation (accessors, constructor wiring); the code lines it
+            # added outside method bodies (declarations: signatures, fields, class headers,
+            # annotations), its import lines, and its wiring lines; and the parameters of its new methods
+            **organisation_split(measured.get("lines_added", {}).get(unit), [h for h in hosts if h["cp"] == cp]),
             "existing_java_files": measured.get("java_existing", {}).get(unit),
             "existing_wiring_files": sum(1 for s, _ in measured.get("wiring_changes", {}).get(unit, []) if s != "A"),
             "wiring_nodes_added": w["after"]["nodes"] - w["before"]["nodes"],
@@ -984,6 +989,26 @@ def class_identities(hosts: list[dict]) -> dict[tuple[int, str], str]:
         current[h["type"]] = ident
         out[(h["cp"], h["type"])] = ident
     return out
+
+
+def organisation_split(lines: dict | None, hosts: list[dict]) -> dict:
+    """One checkpoint's added code as logic and organisation (PLAN.md 4.9). ``logic_added``: the
+    body positions it added that are neither moved code nor organisation. ``organisation_added``:
+    those the instrument reads as organisation (a plain accessor's statement, a constructor's
+    assignment of a parameter to a field). ``declaration_lines_added``: the code lines the diff adds
+    to production Java that are not import lines and not in a method's body (signatures, fields,
+    class headers, annotations), the diff's lines less the positions added, moved code among them,
+    and not below 0. ``import_lines_added`` and ``wiring_lines_added`` from the diff.
+    ``params_new_methods``: the parameters of the methods it created, the state handed to them.
+    The diff's counts are None where they were not read (a history, a no-op)."""
+    body = sum(h["added"] for h in hosts)
+    out = {"logic_added": sum(max(h["net_added"] - h["organisation"], 0) for h in hosts if not h["replacement"]),
+           "organisation_added": sum(h["organisation"] for h in hosts),
+           "params_new_methods": sum(max(int(h["params"]), 0) for h in hosts if h["host_new"])}
+    if lines is None:
+        return {**out, "declaration_lines_added": None, "import_lines_added": None, "wiring_lines_added": None}
+    return {**out, "declaration_lines_added": max(lines["java"] - lines["imports"] - body, 0),
+            "import_lines_added": lines["imports"], "wiring_lines_added": lines["wiring"]}
 
 
 def is_bound(h: dict) -> bool:

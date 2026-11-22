@@ -76,6 +76,7 @@ cloned into `~/placement-gravity-data/`. The streams are read at the commits `ru
 |---|---|
 | `instrument/Pull.java` | The instrument: per addition, hosts, runs and their bindings (method and class), their bystanders (the pre-existing values visible where a run lands that it does not use, PLAN.md §4.3a), the values it introduces (§4.3b), birth bindings, moved code; the amount; with `--shape`, every method of a tree as the earlier studies read it (SinewSlim's length and assessment, junction counts). |
 | `instrument/Check.java` | The compiler's reading of a tree (javac's own API), to check the instrument against: what each method calls, reads and refers to (PLAN.md §4.8). |
+| `placement_gravity/prepare.py` (`split_rows`) | Logic and organisation: each checkpoint's added code as logic, organisation in bodies, declarations, imports and wiring, with the state handed along (PLAN.md §4.9, reported; Brooks's essence and accident, §1). |
 | `placement_gravity/validate.py` | The instrument's calls, field reads and bound names scored against the compiler's, on a sample of each chain's checkpoints (PLAN.md §4.8, reported). |
 | `refactor/` | RefactoringMiner 3.0.4 at each commit (`Refactorings.java`) and CodeTracker 2.6 histories (`Histories.java`), built by Maven. |
 | `placement_gravity/refactor.py` | RefactoringMiner's findings as the instrument's hints: renames, matches, moved code. |

@@ -3,7 +3,7 @@ review, on tables with known answers."""
 
 import pytest
 
-from placement_gravity import prepare, readings
+from placement_gravity import prepare, readings, tables
 
 
 def test_spearman():
@@ -103,3 +103,48 @@ def test_bystanders_are_gathered_per_run_and_summarised():
     assert s["spring"]["bystanders"] == 7 and s["spring"]["thirds"] == [4, None, 10]   # the free run apart
     assert s["spring"]["pulled"] == 2 and s["spring"]["share_free"] == pytest.approx(1 / 3)
     assert s["spring"]["fields_added_per_addition"] == 2 and s["officefloor"]["need"] == 1
+
+
+def test_a_checkpoint_is_split_into_logic_and_organisation():
+    """PLAN.md 4.9: logic and organisation in bodies from the hosts; declarations as the diff's code
+    lines less imports and less the positions added in bodies; the parameters of new methods."""
+    def host(added, organisation=0, moved=0, new=False, params=0):
+        return {"added": added, "net_added": added - moved, "organisation": organisation,
+                "replacement": False, "host_new": new, "params": params}
+    hosts = [host(10), host(4, organisation=1, new=True, params=3), host(6, moved=6), host(1, organisation=1, new=True, params=1)]
+    s = tables.organisation_split({"java": 40, "imports": 5, "wiring": 7}, hosts)
+    assert (s["logic_added"], s["organisation_added"], s["params_new_methods"]) == (13, 2, 4)
+    assert (s["declaration_lines_added"], s["import_lines_added"], s["wiring_lines_added"]) == (14, 5, 7)
+    assert tables.organisation_split(None, hosts)["declaration_lines_added"] is None      # a history
+    rows = prepare.split_rows([{"chain_id": "c", "arm": "officefloor", "cp": "2", "noop": "False", **s,
+                                "birth_binding": 2, "method_values_added": 5, "fields_added": 0},
+                               {"chain_id": "c", "arm": "officefloor", "cp": "3", "noop": "False",
+                                "declaration_lines_added": ""}])
+    assert len(rows) == 1 and rows[0]["organisation_all"] == 2 + 14 + 7
+    summary = prepare.split_summary(rows, 60)["officefloor"]
+    assert summary["organisation_share"] == 23 / 36 and summary["thirds"]["1"]["logic_added"] == 13
+
+
+def test_the_diff_counts_code_lines_not_blank_lines_brackets_or_comments(tmp_path):
+    import subprocess
+    from placement_gravity import chain
+
+    def git(*a):
+        subprocess.run(["git", "-C", str(tmp_path), "-c", "user.name=t", "-c", "user.email=t@t", *a],
+                       check=True, capture_output=True)
+    git("init", "-q")
+    src = tmp_path / "src/main/java/a"
+    wire = tmp_path / "src/main/resources/officefloor"
+    src.mkdir(parents=True)
+    wire.mkdir(parents=True)
+    (src / "A.java").write_text("package a;\nclass A {\n}\n")
+    git("add", "-A")
+    git("commit", "-q", "-m", "base")
+    (src / "A.java").write_text("package a;\nimport java.util.List;\n\n// a comment\nclass A {\n"
+                                "    private int n;\n    int get() {\n        return n;\n    }\n}\n")
+    (wire / "flow.yml").write_text("# flows\nstep:\n  class: a.A\n\n  next: done\n")
+    git("add", "-A")
+    git("commit", "-q", "-m", "change")
+    n = chain.lines_added(tmp_path, "HEAD~1", "HEAD", "src/main/java/", "src/main/resources/officefloor/")
+    # the import, the field, the signature and the return; not the blank, the comment or the bracket
+    assert n == {"java": 4, "imports": 1, "wiring": 3}
