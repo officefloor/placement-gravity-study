@@ -5,12 +5,12 @@ Role: **development**. Chains: human 2, agent 1. **Descriptive only.**
 | Hypothesis | Tier | Verdict | p (Holm over the confirmatory; own p for secondary) |
 |---|---|---|---|
 | H1 | secondary | descriptive only | 0.000999 |
-| H2 | confirmatory | descriptive only | 3.85e-14 |
+| H2 | confirmatory | descriptive only | 0.003 |
 | H3 | secondary | descriptive only | 0.033 |
 | H4 | confirmatory | descriptive only | 1.000 |
-| H5 | confirmatory | descriptive only | 0.000 |
+| H5 | confirmatory | descriptive only | – |
 | H6 | secondary | descriptive only | 0.002 |
-| H7 | confirmatory | descriptive only | 0.465 |
+| H7 | confirmatory | descriptive only | 1.000 |
 
 ## H1, the periphery grows (methods arm)
 
@@ -34,13 +34,16 @@ Runs that need a pre-existing value 1181 over 2 chains; the slope of log(1 + bys
 
 Where code was bound to a class or a method (1077 of 1788 problem and host rows, both arms; 1036 in the methods arm): the later intrusions' uses of the values that code was bound to (the core) against their uses of the rest the place held, what stood by and what the change introduced (the periphery), as a rate ratio per value. A later change counts each value once in each method its bound code is in.
 
-- **At the class (its fields and the methods it calls): 3.150 [2.734, 3.629]**
-- **At the method (its values): 2.373 [1.900, 2.963]**
+- **At the class (the private members the code was bound to): 2.933 [2.578, 3.193]** (cluster bootstrap; Wald: 2.933 [2.518, 3.416])
+- **At the method (its values): 2.373 [2.339, 2.443]** (cluster bootstrap; Wald: 2.373 [1.900, 2.963])
+- The arm contrast at the class is not part of the test here: a history: its arms do not solve the same problems
+- The arm contrast at the method is not part of the test here: a history: its arms do not solve the same problems
 - Reported, the function arm: class 3.342 [0.915, 12.211]; method 1.14e-07 [0, –]
 - Reported, agent, how bound uses are spread: at the class 36 uses of 28 fields, 0.278 to a chain's three most used, 0.944 to fields no checkpoint introduced; of 14 fields introduced, 2 used by later bound code (0.143); at the method 71 uses of 70 values, 0.056 to the three most used, 0.958 to values no checkpoint introduced; of 128 introduced, 3 used later (0.023)
 - Reported, human, how bound uses are spread: at the class 1257 uses of 553 fields, 0.045 to a chain's three most used, 0.721 to fields no checkpoint introduced; of 389 fields introduced, 138 used by later bound code (0.355); at the method 1312 uses of 802 values, 0.028 to the three most used, 0.628 to values no checkpoint introduced; of 1704 introduced, 259 used later (0.152)
 - Reported, at the class on its fields only (as until 19 November 2026): 1.789 [1.536, 2.083]
-- Reported, human, the core's width at the class: 2.357 values a row (median 1, 636 rows); over the thirds of the stream 2.307, 2.201, 2.579
+- Reported, at the class with every member the code was bound to as the core, private or not (as until 22 November 2026): 3.150 [2.734, 3.629]
+- Reported, human, the core's width at the class: 2.046 values a row (median 1, 502 rows); over the thirds of the stream 2.158, 1.790, 2.213
 - Reported, agent, the core's width at the class: 1.840 values a row (median 1, 25 rows); over the thirds of the stream 1.840, –, –
 - Reported, human, the core's width at the method: 2.096 values a row (median 1, 624 rows); over the thirds of the stream 1.727, 2.651, 1.846
 - Reported, agent, the core's width at the method: 2.367 values a row (median 2, 30 rows); over the thirds of the stream 2.367, –, –
@@ -64,6 +67,7 @@ Where code was bound to a class or a method (1077 of 1788 problem and host rows,
   - s4_cognitive (method): 1.096 [0.976, 1.232], one-sided p 0.033 (two-sided TOST p 0.033)
   - c_gini (class): 1.091 [1.031, 1.154], one-sided p 3.59e-05 (two-sided TOST p 3.59e-05)
   - Left out by the variation rule: s1_long ({'agent': 8, 'human': 213}), m_cyclomatic ({'agent': 0, 'human': 0}), c_wmc ({'agent': 0, 'human': 0}), c_lcom_star ({'agent': 0, 'human': 0})
+  - Reported, a sensitivity reading: H3's rule with the literature's coupling measures put back (fan-out, CBO, RFC; read apart in this plan as reach): **not above** over c_gini, s4_cognitive. It changes no verdict.
 - Reported, the block as first registered, together in one model on method-level intrusion: s4_cognitive 1.109 [0.985, 1.248]; s5_class_gini 0.947 [0.869, 1.032]
 - Reported, that block on class-level intrusion: s4_cognitive 1.134 [1.049, 1.225]; s5_class_gini 1.167 [1.100, 1.239]
 - Reported, that block without the problem terms, the bindings and the bystanders: s4_cognitive 1.239 [1.123, 1.367]; s5_class_gini 0.968 [0.873, 1.073]
@@ -76,9 +80,9 @@ Where code was bound to a class or a method (1077 of 1788 problem and host rows,
 - **Function arm's bystanders (arm term, at checkpoint 0.5, the middle of the stream): -0.102 [-0.523, 0.314]**
 - **Their slope on the checkpoint index (interaction): 0.468 [0.244, 0.603]**
 - **Later intrusion where bound code was placed, function arm / methods arm: at the class 0.075 [0.027, 0.210]; at the method 0.072 [0.023, 0.228]**
-- Reported, how much a core value is come back to, function arm / methods arm: at the class 0.155 [0.043, 0.558]; at the method 1.81e-09 [0, –]
+- How much a core value is come back to, function arm / methods arm (H2's arm contrast): at the class 0.139 [0.039, 0.489]; at the method not estimated (one chain in an arm)
 - Reported, agent, uses per 100 values and later checkpoints: at the class core 0.082 (9 uses of 46 values in 25 rows), periphery 0.019; at the method core 0.000 (0 uses of 71 values in 30 rows), periphery 0.010
-- Reported, human, uses per 100 values and later checkpoints: at the class core 0.660 (1587 uses of 1499 values in 636 rows), periphery 0.192; at the method core 0.299 (766 uses of 1308 values in 624 rows), periphery 0.137
+- Reported, human, uses per 100 values and later checkpoints: at the class core 0.736 (1135 uses of 1027 values in 502 rows), periphery 0.201; at the method core 0.299 (766 uses of 1308 values in 624 rows), periphery 0.137
 - Reported, agent: per checkpoint, classes its bound code goes back into 0.364, wiring files changed again 0.000
 - Reported, human: per checkpoint, classes its bound code goes back into 0.884, wiring files changed again 0.000
 - Reported, reopening, function arm / methods arm: classes 0.422 [0.153, 1.164]; with wiring files 0.422 [0.153, 1.164]
@@ -96,18 +100,19 @@ Where code was bound to a class or a method (1077 of 1788 problem and host rows,
 
 ## H5, choice narrows (methods arm)
 
-Per bound addition, the other places in the code before its checkpoint that hold what its code was bound to: at the class, another class holding injected dependencies of the same types (code bound to the class's own state, constants or methods has none); at the method, another method with a parameter or local of each type. The ratio of the alternatives at the end of the stream to its start, 90% interval, one-sided below 1.250.
+Per bound addition, the other places in the code before its checkpoint that hold what its code was bound to: at the class, another class holding injected dependencies of the same types (code bound to the class's own state, constants or methods has none); at the method, another method with a parameter or local of each type. The ratio of the alternatives at the end of the stream to its start: a fall, one-sided below 1, at the class, 95% cluster-bootstrap interval (chains resampled). The method level is reported.
 
-- **not above**
+- **descriptive only** (every placement forced)
 - **At the class: every placement forced** (638 rows; no alternative anywhere)
 - Reported, methods arm at the class: 638 rows, 1 forced, 0 alternatives a row; over the thirds, forced 1, 1, 1; alternatives 0, 0, 0
 - Reported, function arm at the class: 25 rows, 0.520 forced, 3.480 alternatives a row; over the thirds, forced 0.389, 0.857, –; alternatives 3.444, 3.571, –
 - Reported, the function arm's ratio at the class: 6.530 [0.006, 7253.304]; function arm / methods arm: not estimated (standard error not computed: armagent)
-- **At the method: 1.560 [1.007, 2.417]** (n = 627; one-sided p 0.797)
-- Reported, methods arm at the method: 627 rows, 0.429 forced, 6.024 alternatives a row; over the thirds, forced 0.286, 0.518, 0.456; alternatives 6.863, 4.175, 7.263
+- **At the method: 1.819 [0.963, 22.979]** (n = 627; one-sided p 0.750; cluster bootstrap)
+- Reported, at the method against the upper margin 1.250 (as H5 stood until 22 November 2026, 90% Wald interval): 1.819 [1.177, 2.811]
+- Reported, methods arm at the method: 627 rows, 0.437 forced, 5.482 alternatives a row; over the thirds, forced 0.297, 0.518, 0.470; alternatives 5.621, 3.947, 6.977
 - Reported, function arm at the method: 30 rows, 0.400 forced, 2.367 alternatives a row; over the thirds, forced 0.231, 0.529, –; alternatives 1.692, 2.882, –
-- Reported, the function arm's ratio at the method: 50.751 [0.290, 8875.394]; function arm / methods arm: 0.169 [0.025, 1.121]
-- Reported, at the method by type alone over the whole tree (as first built): 4.927 [3.207, 7.571]; methods on a host's control flow, per arm: agent 665.033, human 66.997; by type over the whole tree: agent 92.700, human 28.845; calls to a name the application declares that were followed by their receiver's type: 0.518 (the rest have a receiver the instrument cannot read)
+- Reported, the function arm's ratio at the method: 50.751 [0.290, 8875.394]; function arm / methods arm: 0.202 [0.030, 1.333]
+- Reported, at the method by type alone over the whole tree (as first built): 4.927 [3.207, 7.571]; methods on a host's control flow, per arm: agent 559.300, human 61.206; by type over the whole tree: agent 92.700, human 28.845; calls to a name the application declares that were followed by their receiver's type: 0.511 (the rest have a receiver the instrument cannot read)
 - Reported, class rows bound to the class's own state, constants or methods: 1; method values of no declared type left out of the match: 1
 
 ## H6, spread does not see it (methods arm; secondary)
@@ -129,46 +134,56 @@ Positions added to classes that existed, by the placement that added them: force
 - human arm: 3972.000 positions; forced 0.453, chosen 0.088, unbound 0.459; forced over the thirds 0.476, 0.451, 0.425
 - agent arm: 193.000 positions; forced 0.699, chosen 0.000, unbound 0.301; forced over the thirds 0.773, 0.500, –
 
+By the strictest access of the members the code was bound to at the class: private forces; package and protected are a looser encapsulation (descriptive).
+
+- human arm: private 0.453, package 0.006, protected 0.026, public 0.039, unbound 0.476
+- agent arm: private 0.699, unbound 0.301
+
+Within the forced growth, whether the lever of injection was there: bound to the class's own private state, constants or methods (no lever), or only to injected private fields, which another class could declare too (the opportunity to duplicate the core; still forced, because it was not exercised).
+
+- human arm: 1800.000 positions forced (0.453 of the growth, 503 placements); own private members 1.000; injected only 0.000 (another class already holds the dependencies 0.000, none yet 0.000)
+- agent arm: 135.000 positions forced (0.699 of the growth, 25 placements); own private members 0.267; injected only 0.733 (another class already holds the dependencies 0.719, none yet 0.015)
+
 ### Where coupling between classes came from
 
 Calls between classes each unit added (the tree after it less the tree before), over every class.
 
-- human arm: 1053 calls added over 647 units; in units with a forced placement 330 (0.313), in the others 331; between existing classes changed together -18 (-0.017), of it in forced units -27 (-0.026)
-- agent arm: 178 calls added over 11 units; in units with a forced placement 123 (0.691), in the others 0; between existing classes changed together 4 (0.022), of it in forced units 4 (0.022)
+- human arm: 712 calls added over 647 units; in units with a forced placement 161 (0.226), in the others 256; between existing classes changed together -20 (-0.028), of it in forced units -29 (-0.041)
+- agent arm: 144 calls added over 11 units; in units with a forced placement 96 (0.667), in the others 0; between existing classes changed together 4 (0.028), of it in forced units 4 (0.028)
 
 ### Pairs of classes changed together
 
-- The coupling of pairs changed together more than once (calls between them before the unit) on the index: 1.616 [1.026, 2.545] (586 pairs, 1468 rows)
+- The coupling of pairs changed together more than once (calls between them before the unit) on the index: 1.636 [0.899, 2.975] (586 pairs, 1468 rows)
 - agent arm: 43 pairs of classes changed together, 1 more than once; of those, coupling rose in 1 and fell in 0
   - candidate for redistribution: `BillingWebhookEventHandler` and `PrepaidSubscriptionModelHandler` (agent/bytechefhq__bytechef), changed together 2 times, calls between them 0 → 1
-- human arm: 1240 pairs of classes changed together, 586 more than once; of those, coupling rose in 32 and fell in 26
+- human arm: 1240 pairs of classes changed together, 586 more than once; of those, coupling rose in 24 and fell in 22
   - candidate for redistribution: `CP2102SerialDevice` and `UsbSerialDevice` (human/felHR85__UsbSerial), changed together 8 times, calls between them 0 → 3
-  - candidate for redistribution: `CDCSerialDevice` and `CP2102SerialDevice` (human/felHR85__UsbSerial), changed together 7 times, calls between them 13 → 19
-  - candidate for redistribution: `CH34xSerialDevice` and `CP2102SerialDevice` (human/felHR85__UsbSerial), changed together 7 times, calls between them 3 → 12
   - candidate for redistribution: `FTDISerialDevice` and `UsbSerialDevice` (human/felHR85__UsbSerial), changed together 7 times, calls between them 2 → 3
   - candidate for redistribution: `SerialBuffer` and `UsbSerialDevice` (human/felHR85__UsbSerial), changed together 6 times, calls between them 0 → 4
   - candidate for redistribution: `FTDISerialDevice` and `FTDISerialDevice.FTDIUtilities` (human/felHR85__UsbSerial), changed together 6 times, calls between them 0 → 1
   - candidate for redistribution: `CH34xSerialDevice` and `UsbSerialDevice` (human/felHR85__UsbSerial), changed together 5 times, calls between them 1 → 3
   - candidate for redistribution: `Server` and `Server.Builder` (human/jmxtrans__jmxtrans), changed together 5 times, calls between them 2 → 3
   - candidate for redistribution: `SerialPortBuilder` and `UsbService` (human/felHR85__UsbSerial), changed together 5 times, calls between them 0 → 2
-  - candidate for redistribution: `BLED112SerialDevice` and `CP2102SerialDevice` (human/felHR85__UsbSerial), changed together 4 times, calls between them 12 → 15
+  - candidate for redistribution: `CDCSerialDevice` and `UsbSerialDevice` (human/felHR85__UsbSerial), changed together 4 times, calls between them 2 → 4
+  - candidate for redistribution: `UsbSerialDevice` and `UsbSerialDevice.WorkerThread` (human/felHR85__UsbSerial), changed together 4 times, calls between them 0 → 3
+  - candidate for redistribution: `PL2303SerialDevice` and `UsbSerialDevice` (human/felHR85__UsbSerial), changed together 4 times, calls between them 2 → 3
 
 ## H7, forced changes couple (methods arm)
 
-Per unit and existing class it changed, the calls across the class's boundary the unit added (outward and inward). The ratio for a class with a placement forced at the class to one without, at the same point in the stream; one-sided above 1.
+Per unit and existing class it changed, the calls across the class's boundary the unit added (outward and inward). The ratio for a class with a placement forced at the class to one without, at the same point in the stream and change size, with the class's intercept within the chain; one-sided above 1, 95% cluster-bootstrap interval (chains resampled).
 
 - **descriptive only**
-- **Forced: 1.125 [0.820, 1.545]** (n = 896, nbinom2; one-sided p 0.233)
-- Reported, forced by binding with no alternative (H5's): 1.207 [0.874, 1.668]; forced without the change's size: 1.654 [1.213, 2.256]
-- Reported, forced ratio of calls reaching a member the unit exposed or widened: 0.884 [0.604, 1.296]
-- Reported, forced ratio of outward calls: 1.073 [0.738, 1.561]
-- Reported, forced ratio of inward calls: 1.238 [0.749, 2.046]
-- Reported, forced ratio of the class's members exposed or widened: 0.826 [0.646, 1.057]
-- Reported, the rise of the calls added over the stream: 0.396 [0.228, 0.689]; the function arm's forced ratio: 0.524 [0.133, 2.070]; function arm / methods arm: 3.062 [1.071, 8.756]
-- Reported, agent arm, forced class rows: 13; calls added a row 8.154 (outward 7.231, inward 0.923); reaching an exposed or widened member 0.274 (exposed 29, widened 0); members opened a row 1.077
+- **Forced: 0.820 [0.613, 0.878]** (n = 896, nbinom2; one-sided p 1; cluster bootstrap; the class's intercept kept); Wald: 0.820 [0.584, 1.151]
+- Reported, forced by binding with no alternative (H5's): 0.980 [0.704, 1.365]; forced without the change's size: 1.235 [0.893, 1.710]
+- Reported, forced ratio of calls reaching a member the unit exposed or widened: 0.756 [0.504, 1.136]
+- Reported, forced ratio of outward calls: 0.676 [0.456, 1.003]
+- Reported, forced ratio of inward calls: 0.869 [0.501, 1.508]
+- Reported, forced ratio of the class's members exposed or widened: 0.910 [0.709, 1.169]
+- Reported, the rise of the calls added over the stream: 0.274 [0.145, 0.517]; the function arm's forced ratio: 0.494 [0.123, 1.985]; function arm / methods arm: 3.808 [1.122, 12.923]
+- Reported, agent arm, forced class rows: 13; calls added a row 7.615 (outward 6.769, inward 0.846); reaching an exposed or widened member 0.283 (exposed 28, widened 0); members opened a row 1.077
 - Reported, agent arm, unforced class rows: 9; calls added a row 5.111 (outward 2.556, inward 2.556); reaching an exposed or widened member 0.587 (exposed 27, widened 0); members opened a row 0.778
-- Reported, human arm, forced class rows: 354; calls added a row 1.969 (outward 1.483, inward 0.486); reaching an exposed or widened member 0.297 (exposed 205, widened 2); members opened a row 0.508
-- Reported, human arm, unforced class rows: 542; calls added a row 1.314 (outward 0.954, inward 0.360); reaching an exposed or widened member 0.388 (exposed 276, widened 0); members opened a row 0.504
+- Reported, human arm, forced class rows: 354; calls added a row 1.350 (outward 1.040, inward 0.311); reaching an exposed or widened member 0.305 (exposed 144, widened 2); members opened a row 0.508
+- Reported, human arm, unforced class rows: 542; calls added a row 1.220 (outward 0.871, inward 0.349); reaching an exposed or widened member 0.408 (exposed 270, widened 0); members opened a row 0.504
 
 ## Reported: split or concentrate (redesign reading)
 
@@ -203,18 +218,32 @@ Per unit and existing class it changed, the calls across the class's boundary th
 
 A class's surface (calls out and in) against its volume (methods). The exponent below 1: surface grows slower than volume, so concentrating saves communication; above 1: faster. Ripple: of the later changes to a method a unit's new call reached, the share that also changed the calling class.
 
-- human arm: exponent across the classes of the last tree 0.704 [0.586, 0.823] (231 classes); within a class as it grows 1.014 [0.868, 1.161] (175 classes, 891 changes)
-  - surface a change added, forced against unforced at the same methods added: 0.072 [-0.402, 0.547]; forced 0.347 calls for 0.184 methods; unforced 0.276 calls for 0.246 methods
-- agent arm: exponent across the classes of the last tree not estimated (too few classes); within a class as it grows 1.794 [-4.584, 8.172] (18 classes, 22 changes)
-  - surface a change added, forced against unforced at the same methods added: 1.878 [0.026, 3.730]; forced 3.308 calls for 1.154 methods; unforced 1 calls for 0.889 methods
-- Ripple, human arm, forced, opened: 193 new calls; 55 reach a method changed later, 72 later changes, 14 of them changing the caller too (0.194; by chance 0.079; ratio 2.459)
-- Ripple, human arm, forced, existing: 475 new calls; 97 reach a method changed later, 159 later changes, 23 of them changing the caller too (0.145; by chance 0.072; ratio 2.002)
-- Ripple, human arm, unforced, opened: 195 new calls; 73 reach a method changed later, 142 later changes, 23 of them changing the caller too (0.162; by chance 0.062; ratio 2.595)
-- Ripple, human arm, unforced, existing: 384 new calls; 90 reach a method changed later, 147 later changes, 18 of them changing the caller too (0.122; by chance 0.048; ratio 2.527)
-- Ripple, agent arm, forced, opened: 23 new calls; 1 reach a method changed later, 1 later changes, 0 of them changing the caller too (0.000; by chance 0.222; ratio 0.000)
-- Ripple, agent arm, forced, existing: 76 new calls; 0 reach a method changed later, 0 later changes, 0 of them changing the caller too (–; by chance –; ratio –)
+- human arm: exponent across the classes of the last tree 0.612 [0.507, 0.716] (231 classes); within a class as it grows 0.893 [0.758, 1.028] (175 classes, 891 changes)
+  - surface a change added, forced against unforced at the same methods added: -0.149 [-0.447, 0.148]; forced 0.045 calls for 0.184 methods; unforced 0.259 calls for 0.246 methods
+- agent arm: exponent across the classes of the last tree not estimated (too few classes); within a class as it grows 2.069 [-2.840, 6.977] (18 classes, 22 changes)
+  - surface a change added, forced against unforced at the same methods added: 1.522 [-0.267, 3.311]; forced 2.923 calls for 1.154 methods; unforced 1 calls for 0.889 methods
+- Ripple, human arm, forced, opened: 135 new calls; 34 reach a method changed later, 47 later changes, 5 of them changing the caller too (0.106; by chance 0.062; ratio 1.714)
+- Ripple, human arm, forced, existing: 318 new calls; 63 reach a method changed later, 121 later changes, 12 of them changing the caller too (0.099; by chance 0.045; ratio 2.188)
+- Ripple, human arm, unforced, opened: 189 new calls; 73 reach a method changed later, 142 later changes, 23 of them changing the caller too (0.162; by chance 0.062; ratio 2.595)
+- Ripple, human arm, unforced, existing: 342 new calls; 86 reach a method changed later, 142 later changes, 17 of them changing the caller too (0.120; by chance 0.049; ratio 2.444)
+- Ripple, agent arm, forced, opened: 22 new calls; 1 reach a method changed later, 1 later changes, 0 of them changing the caller too (0.000; by chance 0.222; ratio 0.000)
+- Ripple, agent arm, forced, existing: 70 new calls; 0 reach a method changed later, 0 later changes, 0 of them changing the caller too (–; by chance –; ratio –)
 - Ripple, agent arm, unforced, opened: 10 new calls; 0 reach a method changed later, 0 later changes, 0 of them changing the caller too (–; by chance –; ratio –)
 - Ripple, agent arm, unforced, existing: 10 new calls; 0 reach a method changed later, 0 later changes, 0 of them changing the caller too (–; by chance –; ratio –)
+
+## Reported: encapsulation and the reader
+
+Whether encapsulation answers a reader's limit: per author group (on a history, declared agent commits against people), the private share of the members a unit introduces, the share of growth of existing classes arriving forced, the members opened per class row changed, and the methods of the classes code lands in; by the system's size in tokens against a context window (below 200k, 200k to 1M, above 1M). Predicted (the author's question): agents make fewer private, open more and let classes grow larger where the system fits in a window, the difference narrowing where it does not.
+
+- agent, all: 9 units in 1 repositories; private share 0.474 of 211.000 introduced; forced share 0.699; opened per class row 0.955 (22 rows); class methods mean 16.136, median 14.500; splits per unit 0.000; median tokens 3368432.000
+- agent, above 1M: 9 units in 1 repositories (too thin); private share 0.474 of 211.000 introduced; forced share 0.699; opened per class row 0.955 (22 rows); class methods mean 16.136, median 14.500; splits per unit 0.000; median tokens 3368432.000
+- human, all: 489 units in 2 repositories; private share 0.440 of 3385.000 introduced; forced share 0.453; opened per class row 0.506 (896 rows); class methods mean 13.446, median 8.000; splits per unit 0.016; median tokens 33240.000
+- human, below 200k: 489 units in 2 repositories (too thin); private share 0.440 of 3385.000 introduced; forced share 0.453; opened per class row 0.506 (896 rows); class methods mean 13.446, median 8.000; splits per unit 0.016; median tokens 33240.000
+- Models (the author contrast at 32198.598 tokens, and its change per e-fold larger system):
+  - private share (odds ratio): author 5.35e-148 [4.82e-262, 5.93e-34]; × size 39899212759308999149133087375360.000 [12833173.988, 124049372377464998553713579242613900226657669534277697536.000]; size 1.078 [0.984, 1.180] (n = 306, 3 repositories)
+  - forced share (odds ratio): author 1386219681309400066925800242684847956605647393297141983639786235895141742272325075173483616800385577715070784460035295286001234826316814828043652190018431252921207772077435874388637384704.000 [880733477725537979349259836127273720834296905728.000, –]; × size 1.4e-40 [2.86e-70, 6.88e-11]; size 0.902 [0.832, 0.978] (n = 470, 3 repositories)
+  - members opened (rate ratio): author 212939.661 [5.01e-233, 905234635916168048494686407397847889543361941374082311943839795611974974019341437858600928997838138852043248900927122690658751403952270512856194998783338645223225851225082687533643512687242181028830594541335669365020965384719066667296955039744.000]; × size 0.085 [7.73e-53, 94073681822611600440075171839206547243576588238848.000]; size 0.913 [0.802, 1.040] (n = 918, 3 repositories)
+  - class methods (rate ratio): author 4e-92 [1.36e-254, 117680258228113004899213121684573114912712604806477342944090918792200192.000]; × size 34039313284661100544.000 [4.3e-16, 2694999432838650081469084111616027752865569581595361280.000]; size 1.270 [1.160, 1.391] (n = 918, 3 repositories)
 
 ## Reported readings: choice, formation, review
 

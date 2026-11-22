@@ -2473,6 +2473,48 @@ binomial mixed model). These details are fixed with the code before any run is r
   were seen before row 67 was drafted (H6 under encapsulation on both is its evidence); H7 on the
   histories leaves the contrast H6 leans on (force seen at the boundary, not in the spread)
   shown on the development chain only (§8).
+- **The development rerun under rows 72 to 80** (22 November 2026, commit `97fc46b`,
+  `MEASURE_VERSION` 29, `HISTORY_VERSION` 13; the development chain and the development
+  histories, all three repositories read; descriptive only, one chain an arm on the pilot and
+  three repositories on the histories). Every rule below was written before these were seen;
+  none was changed after.
+  - *Pilot.* H1, H3 and H4's bystander terms as before (0.015, 0.026, 0.023; cognitive 0.32,
+    cyclomatic 0.35; arm −1.59). **H2** with the private core 18.2 [12.5, 26.5] at the class
+    (17.5 with every member in the core), 20.3 at the method; **its arm contrast** at the method
+    0.088 [0.024, 0.316] (51 core rows and 185 uses in Spring, 22 and 4 in OfficeFloor); at the
+    class not needed, OfficeFloor having 3 core rows (none come back to) against Spring's 41.
+    **H4's symmetric count went against it:** existing files gone back into per checkpoint, 2.4
+    in OfficeFloor (1.9 Java, 0.5 wiring) against 1.6 in Spring (all Java), ratio 1.50
+    [1.16, 1.94]; so OfficeFloor's changes went back into more existing Java files than Spring's
+    even before its wiring is counted. Intrusion where bound, as before, 0.16 and 0.11. **H5 as a
+    fall** 0.16 [0.02, 1.28] at the class (95% Wald: with one chain an arm there is no bootstrap),
+    not shown to fall on this chain; against the old margin, 0.16 [0.03, 0.92]. **H7 with the
+    call graph corrected and the class's intercept** 1.44 [0.99, 2.09] (2.17 [1.44, 3.27] before
+    both; 1.62 without the change's size; outward 2.57 [1.44, 4.57]). H6 1.03 [0.45, 2.37]. H3
+    with the coupling measures put back: against, on the method's fan-out. *Growth by lever:* of
+    Spring's growth of existing classes 32% arrived forced; of that, 58% was bound to the class's
+    own private members and 42% only to injected private fields, every one of those with another
+    class already holding the same dependencies. OfficeFloor 2% forced. The amount added 1.08.
+  - *The compiler check on the pilot* (12 checkpoints a chain, all read with the project's
+    classpath): calls, precision 0.985 (Spring) and 0.986 (OfficeFloor), recall 0.971 and 0.986;
+    calls leaving the class, 0.985 and 0.984, recall 0.964 and 0.984; methods matched between the
+    two readers 99.4%. Bound names: every one confirmed (Spring 19 method values, 9 fields, 7
+    class methods; OfficeFloor 12, 1 and 2), few because only the sampled checkpoints' hosts are
+    checked. **Field reads of other classes are poorly recalled:** 7 of 19 in Spring and none of
+    12 in OfficeFloor; the one looked at is a nested class reading a field of the class around
+    it, which the instrument does not see, in code both conversions started with (so the same
+    miss is counted at every checkpoint). Not corrected; the instrument is unchanged.
+  - *Histories* (two repositories of people's code, 896 class rows; the agent repository, 11
+    units). H2 2.93 [2.58, 3.19] at the class and 2.37 [2.34, 2.44] at the method; H5 at the
+    class every placement forced, so not testable; H6 0.845 [0.673, 1.06]; **H7 0.82
+    [0.61, 0.88]**, Wald 0.82 [0.58, 1.15] (1.13 before the correction). The bootstrap there is
+    over two repositories, and its intervals are far too narrow to mean anything: with fewer than
+    six chains an analysis is descriptive, and that is the reason. Growth of existing classes
+    arriving forced: people 45% (all of it the class's own private members: no injection), the
+    agent repository 70% (73% of that injected only). The reader models (§4.2f) do not fit on one
+    agent repository and their figures are not read.
+  - *Step 4 took 20 minutes* for both analyses on four cores, the histories' bootstraps being
+    nearly all of it (1,791 rows for H2, 896 for H7).
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
