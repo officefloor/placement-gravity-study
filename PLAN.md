@@ -29,8 +29,9 @@ placement* (doi:10.5281/zenodo.23190619) says that the **problem fixes the amoun
 and only its placement varies. A measure of how big or complex a unit is therefore measures, first
 of all, how big the problem it solves is. Step 7 found that live-width profiles form a continuum,
 not families (best silhouette 0.23, unstable across seeds). The size-confounding literature
-(El Emam et al. 2001; Chowdhury et al. 2022b) found that many structural metrics carry little
-information once size is controlled.
+(El Emam et al. 2001; Zhou, Leung and Xu 2009, abstract only) found that many structural metrics carry little
+information once size is controlled; Chowdhury et al. (2022b) answer that, with size in the model
+as a covariate, method-level metrics still predict maintenance (LITERATURE.md §10, *Full read*).
 
 This study turns the question round:
 
@@ -53,9 +54,13 @@ This study turns the question round:
   That growth is the gravity.
   *Gravity* is also a word of Pescio's (*Notes on Software Design*, 2008–2012, chapters on mass,
   gravity and inertia in a "physics of software"; unrefereed essays, not measured), for the pull
-  that gathers things in a design. Those chapters have not been read, so how far his sense and
-  this study's overlap is not known; **check before quoting**. This study's sense is the one above,
-  measured per addition (LITERATURE.md §10, the novelty check of 20 November 2026).
+  that gathers things in a design. Read in full on 22 November 2026 (LITERATURE.md §10, *Full
+  read*): his gravity is attraction by mass, large functions and classes drawing more code (Ch. 2,
+  December 2008), which he later put down to co-change ("temporal and spatial entanglement");
+  access protection is for him a separation that works *against* gravity (Ch. 1), and his 2024
+  draft retires the word *force*. That is the preferential-attachment reading H2 holds fixed
+  (§7), not this study's mechanism. This study's sense is the one above: binding to particular
+  values, with size held fixed, measured per addition.
 - **Core and periphery** (stated 19 November 2026, §9). The last sentence was the reading until
   then. On the development chain the data that gathers is mostly not what later code comes for
   (§6): later code comes for a few values that code there was already bound to, the place's
@@ -241,8 +246,9 @@ reported beside it in H6 and H7, and stays H5's own measure.
   the result of Olbrich, Cruzes and Sjøberg (2010): god and brain classes change more and hold
   more defects, but less per line once size is controlled. The question is contested: Zhou, Leung
   and Xu (2009) find class size accounting for, or reversing, the association of many
-  object-oriented metrics with change-proneness, while Chowdhury et al. (2022b) report metrics
-  that still matter at the method once size is removed. H3 holds data fixed, not only size, and
+  object-oriented metrics with change-proneness, while Chowdhury et al. (2022b), read in full,
+  conclude that method-level metrics stay useful predictors of maintenance with size as a
+  covariate (size divided out does not neutralise it; size in the model does). H3 holds data fixed, not only size, and
   the problem; its method-level result is to be set against Chowdhury et al.
   - *H2 and H3 were one hypothesis* (H2a and H2b) until 17 November 2026, supported only if both
     held (§9). They are now decided apart: one is a difference to be shown, the other an
@@ -256,7 +262,9 @@ reported beside it in H6 and H7, and stays H5's own measure.
   flatter; kept and reported beside it.) The total amount
   (positions, tokens) of the function arm lies within 0.8 to 1.25 times the methods arm's, the
   band the flow-injection draft took from the conservation study's spread. The coupling that
-  leaves the scopes appears as wiring (§4.5) and is reported, not hidden.
+  leaves the scopes appears as wiring (§4.5) and is reported, not hidden: injection is known to
+  raise counted coupling (Sun et al. 2022, read in full: coupling rises as injection increases),
+  so a higher wiring count in the function arm is the expected direction, not a failure of H4.
   - *Reported beside it* (19 November 2026): how much a core value is come back to, function arm
     against methods arm (§5). It is where the arms differ most on the development chain (§6), and
     both arms solve the same problems, so a core that was only the problems' shared data would be
@@ -294,7 +302,13 @@ reported beside it in H6 and H7, and stays H5's own measure.
   **not above** the upper margin 1.25, one-sided, as H3. The author's reasoning: that literature,
   like the shape literature, reads a symptom to find a cause; cohesion has no shape to highlight,
   so the force of encapsulation does not show in how many classes a change touches. Where it
-  shows is what the force costs at the boundary (H7). H6 is secondary, beside H3: the existing
+  shows is what the force costs at the boundary (H7). H6 argues against that literature's
+  *reading*, that co-change reveals a cause (Gall et al.; Palomba et al.'s symptom framing), which
+  D'Ambros et al. themselves call an untested assumption; it contradicts no finding (LITERATURE.md
+  §10, *Full read*). None of the six papers read controls for change size: the field drops large
+  transactions (more than 30 entities, Zimmermann et al.; more than 100 classes, D'Ambros et al.).
+  Gall et al.'s subsystem that grows without coupling is an early instance of spread missing what
+  happens inside a unit. H6 is secondary, beside H3: the existing
   literature's two ways of looking, each predicted not to find the force. Its measure, model and
   terms are unchanged; only its direction and tier changed. *Seen before it was restated* (§6):
   on the development chain 1.026 [0.380, 2.775] (unresolved on one chain an arm); on the
@@ -347,10 +361,19 @@ reported beside it in H6 and H7, and stays H5's own measure.
     Page-Jones's connascence (1992, 1995) holds that a dependency across an encapsulation
     boundary is worse than one within it, the stronger the worse; Ousterhout (2018) argues for
     deep modules, much behind a small interface, and against information leakage across them.
-    Neither measures a change. Widening is measured per member across releases, not tied to the
-    change that caused it (Kobori, Matsushita and Inoue 2015; Vidal et al. 2016). That the amount
+    Neither measures a change. Nearer arguments, also unmeasured (read in full, 22 November 2026):
+    Pescio ("Ask not what an object is", 2012) that exposing a private part through get/set makes
+    an update non-local; Taube-Schock, Walker and Witten (2011) that limits on a module's size
+    push links across modules; Schach et al. that "coupling is a necessary consequence of
+    modularization". Steimann and Thies (2009) find that moving a class can be done in 85% of
+    cases with no access changed and 99% if access may change, so about one move in seven needs
+    widening. Widening is measured per member across releases, not tied to the change that caused
+    it (Kobori, Matsushita and Inoue 2015, not obtained; Vidal et al. 2016, read in full:
+    over-exposure is mostly set at a class's first version and 86% of over-exposed classes stay
+    so), which is why widening is expected to be rare and exposure the usual route. That the amount
     is conserved and placement divides it is a framing only (Tesler's law; Hatton 2014; Pescio's
-    *physics of software*), not a tested law; the study keeps it as framing and tests the
+    *physics of software*, Ch. 13: "we don't really change the mass of code"; Loth 2026,
+    Corollary 2.2.2, unrefereed), not a tested law; the study keeps it as framing and tests the
     forced/unforced contrast, not conservation itself (which H4's amount band only checks).
   - *Reported beside it:* the forced ratio for the calls that reach a member the change exposed
     (added, not private) or widened (made more open), for outward and inward calls apart, and for
@@ -2336,9 +2359,20 @@ binomial mixed model). These details are fixed with the code before any run is r
   checkpoint, one problem; one stream for both arms). It does not measure how hard a problem is,
   beyond the addition's size and its declared crossings. In corpus B a commit is not one problem,
   so H3 is not read there.
-- **Power for H3.** A test against a margin needs more data than a difference test. If an
-  interval is too wide to fall below the upper margin, H3 is reported as unresolved, not as
-  supported.
+- **Power for H3 and H6.** A test against a margin needs more data than a difference test. If an
+  interval is too wide to fall below the upper margin, H3 or H6 is reported as unresolved, not as
+  supported. *A rough check* (21 November 2026, the drafter's; normal approximation from the
+  development standard errors, scaled by the number of units, with no between-chain variance, so
+  optimistic): on log scale H6's standard deviation per unit is about 3.9 on the development chain
+  and 3.0 on the development histories, H3's cognitive measure 2.2 on the histories. With a true
+  forced ratio of 1.0, a run of 9 chains an arm (about 530 units in the methods arm) shows H6
+  below 1.25 with a chance of about 37% to 53%; about 1,100 to 1,900 units (19 to 32 chains) are
+  needed for 80%. At a true ratio of 0.85 the chance at 9 chains is 74% to 91%. So on one
+  petclinic run an unresolved H6 is the likely outcome even if spread does not see the force;
+  corpus B (two sets of 300 repositories) is where H6 has the units to resolve, and on corpus A
+  H6 is read per run, never pooled (§3.1). The confirmatory hypotheses are not at risk in the same
+  way: their tests are against 1, not a margin, and on the development chain H2, H5 at the class
+  and H7 lie well away from it.
 - **H3's measures were chosen on the development chain.** Of the literature's measures, those
   taken into H3 are ones that lay below the margin there, or reached above it only at the class
   (§6); the one measure wholly above it, the method's fan-out, was put with the sinew measures,
@@ -2377,7 +2411,7 @@ binomial mixed model). These details are fixed with the code before any run is r
 6. `./step1_setup.sh`, then for corpus A (petclinic, then the ui runs as they finish):
    `./step2_runs.sh`, `./step3_measure.sh`, `./step4_analyse.sh`, `./step5_report.sh`. Analyse
    once; the heads read are recorded in `results/heads.tsv`. Then corpus B and corpus C (§3.2, §3.3; their
-   steps are not yet built).
+   steps built on 18 November 2026: `./step2b_samples.sh`, `./step3b_histories.sh`).
 7. Write up, reporting every hypothesis whichever way it falls.
 
 **Before the tag `plan-v1` is set** (the list as it stood on 18 November 2026; the tag is the
@@ -2492,6 +2526,23 @@ author's to set, on the plan and code as they then stand, and starts the experim
   it: on the development histories H7 is 1.125 [0.820, 1.545], so the contrast the restatement
   leans on (force seen at the boundary, not in the spread) is so far shown on the development
   chain only (§6).
+- *Decided by the author on 21 November 2026 (evening), on the drafter's review of what a paper
+  would lack:* **(1) defects are out of scope.** "Defects are just errors and concentration and
+  dispersion just increase the risk of errors in different ways. It is not something that is part
+  of the force. The force is a detection to determine placement and whether likely too
+  concentrated or too dispersed." No reading ties forced placements to later fixes. **(2) No human
+  check of the forced label.** The study is of checks on code without human intervention ("looking
+  to understand the underlying physics of software"); the instrument's fixtures are its check
+  (§7). **(3) A full read of the literature** behind §10's abstract-based verdicts (LITERATURE.md
+  §10, *Full read*). **(4) The claims are about code, not authors.** "It is the physics of software
+  so should apply regardless of human or AI author". Pescio (*Forces*, 2024 draft, pp. 14–15)
+  states the principle ("none of the forces that can be actually observed ... will change at all:
+  only the efficiency of carrying out some work can be impacted by changing the actor"), untested;
+  this study tests it, with the author varied: corpora B and C test that it does; a
+  difference between human and agent code is reported, not a premise. **(5) Separate papers.**
+  The experiment may run as one, written up as separate papers (the force and its outlets; why the
+  literature's readings miss it). **(6) Power for the margin tests checked** (§7, *Power for H3
+  and H6*).
 - *The tag stays unset* (the author, 19 November 2026: "still to hold off, as I want to think about
   H2 in terms of placement choice"; H5 now carries choice).
 - *Not built, and said so where it matters:* the issue-linked unit of corpus B (§3.2); the ranks
@@ -2660,6 +2711,7 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 65 | *Forced* is forced by encapsulation: code bound at the class to a private field (a private constant among them) or a private method; a public constant does not force; forced by binding with no alternative reported beside it. Fields' access and reads of other classes' fields tracked, so public fields count in coupling, exposure and widening | §2, §4.2b, §4.2c, `Pull.java` (VERSION 15: `fields`, `constants`, `reads`), `flow.Graph`, `tables.encapsulated`, `tables.forced`, `prepare.py`, `analyse.R` | Decided by the author on 21 November 2026, on the drafter's proposal after the author asked what forced should mean where there is no injection (corpus B), and that public fields be tracked. Before the tag, so a revision |
 | 66 | Two tiers: confirmatory H2, H4, H5, H6, H7 (Holm over five); secondary H1, H3 (each on its own p, reported as secondary) | §2, §5, `verdict.py`, `report.py` | Decided by the author on 21 November 2026, on the drafter's proposal: the necessity is to find the force; a smaller family keeps power. Before the tag, so a revision |
 | 67 | H6 restated as *spread does not see it*: the forced ratio of co-change spread not above the upper margin 1.25 (one-sided, 90% interval, as H3), its measure, model and change-size terms unchanged; H6 secondary; the confirmatory family H2, H4, H5, H7 (Holm over four) | §2, §5, §8, `verdict.h6`, `report.h6_section`, `analyse.R` (H6 with `tost`), `selftest.R` | Decided by the author on 21 November 2026 (later), after seeing H6 under forced by encapsulation on the development chain (1.026 [0.380, 2.775]) and histories (0.845 [0.644, 1.108]): co-change, like shape, is the literature reading a symptom to find a cause, and cohesion has no shape to highlight. Recorded as decided after seeing development results. Before the tag, so a revision |
+| 68 | The full read's corrections (LITERATURE.md §10, *Full read*, 22 November 2026): Chowdhury et al. 2022b cited on the other side of size confounding (§1, §2 H3); Pescio's gravity described as attraction by mass, later co-change, with encapsulation a separation against it (§2); H7's prior work adds Pescio 2012, Taube-Schock et al., Schach et al., Steimann and Thies, Vidal et al.'s persistence; conservation framing adds Pescio Ch. 13 and Loth; H6 argues against a reading, not a finding, and the field handles change size only by dropping large transactions; Sun et al. on injection raising counted coupling at H4's wiring; Pescio 2024 as the prior, untested statement of "regardless of author". No measure, model or rule changes | §1, §2, §8 | The author's, 22 November 2026 ("apply the wording changes"). Kobori et al., Zhou et al., Page-Jones and Ousterhout's book not obtained; said where cited |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring
