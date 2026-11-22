@@ -110,10 +110,16 @@ def test_a_checkpoint_is_split_into_logic_and_organisation():
     lines less imports and less the positions added in bodies; the parameters of new methods."""
     def host(added, organisation=0, moved=0, new=False, params=0):
         return {"added": added, "net_added": added - moved, "organisation": organisation,
-                "replacement": False, "host_new": new, "params": params}
+                "replacement": False, "host_new": new, "params": params, "injected": injected}
+    injected = False
     hosts = [host(10), host(4, organisation=1, new=True, params=3), host(6, moved=6), host(1, organisation=1, new=True, params=1)]
-    s = tables.organisation_split({"java": 40, "imports": 5, "wiring": 7}, hosts)
-    assert (s["logic_added"], s["organisation_added"], s["params_new_methods"]) == (13, 2, 4)
+    injected = True
+    hosts.append(host(5, new=True, params=2))          # a wired function: its parameters are injected
+    s = tables.organisation_split({"java": 45, "imports": 5, "wiring": 7}, hosts)
+    assert (s["logic_added"], s["organisation_added"], s["params_new_methods"]) == (18, 2, 6)
+    # the accessor's parameter is organisation; the wired function's are injected, not handed by a caller
+    assert (s["params_called_methods"], s["params_wired_functions"]) == (3, 2)
+    assert (s["new_called_methods"], s["new_wired_functions"]) == (1, 1)
     assert (s["declaration_lines_added"], s["import_lines_added"], s["wiring_lines_added"]) == (14, 5, 7)
     assert tables.organisation_split(None, hosts)["declaration_lines_added"] is None      # a history
     rows = prepare.split_rows([{"chain_id": "c", "arm": "officefloor", "cp": "2", "noop": "False", **s,
@@ -122,7 +128,7 @@ def test_a_checkpoint_is_split_into_logic_and_organisation():
                                 "declaration_lines_added": ""}])
     assert len(rows) == 1 and rows[0]["organisation_all"] == 2 + 14 + 7
     summary = prepare.split_summary(rows, 60)["officefloor"]
-    assert summary["organisation_share"] == 23 / 36 and summary["thirds"]["1"]["logic_added"] == 13
+    assert summary["organisation_share"] == 23 / 41 and summary["thirds"]["1"]["logic_added"] == 18
 
 
 def test_the_diff_counts_code_lines_not_blank_lines_brackets_or_comments(tmp_path):

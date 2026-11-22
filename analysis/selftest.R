@@ -105,9 +105,14 @@ reopen <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, f
   # 0.7 wiring files in the function arm (0.7 times as many in all)
   ej <- rpois(60, (if (arm == "spring") 3 else 1.4) * exp(cp_by))
   ew <- if (arm == "spring") rep(0, 60) else rpois(60, 0.7)
+  # how well-trodden those files were: rising over the stream in both arms, half as much in the
+  # function arm
+  tj <- rnbinom(60, size = 3, mu = (if (arm == "spring") 1 else 0.4) * (1:60) / 3 * exp(cp_by))
+  tw <- if (arm == "spring") rep(0, 60) else rnbinom(60, size = 3, mu = 0.1 * (1:60) / 3)
   data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = 1:60,
              reopened = r, reopened_classes = r - w, reopened_wiring = w,
-             existing_java_files = ej, existing_wiring_files = ew, existing_files = ej + ew)
+             existing_java_files = ej, existing_wiring_files = ew, existing_files = ej + ew,
+             trodden_java = tj, trodden_wiring = tw, trodden = tj + tw)
 }))))
 write.csv(reopen, file.path(dir, "reopen.csv"), row.names = FALSE)
 # logic and organisation: the same logic in both arms; the function arm hands 0.4 times the
@@ -120,7 +125,9 @@ split <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, fu
   wl <- if (arm == "spring") rep(0, 60) else rpois(60, 2)
   data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = cp, logic_added = lg,
              organisation_added = rpois(60, 1), declaration_lines_added = dl, import_lines_added = rpois(60, 2),
-             wiring_lines_added = wl, params_new_methods = pr, birth_binding = rpois(60, 2),
+             wiring_lines_added = wl, params_new_methods = pr + (if (arm == "spring") 0 else rpois(60, 1)),
+             params_called_methods = pr, params_wired_functions = if (arm == "spring") rep(0, 60) else rpois(60, 1),
+             new_called_methods = rpois(60, 2), new_wired_functions = 0, birth_binding = rpois(60, 2),
              method_values_added = rpois(60, 5), fields_added = rpois(60, 0.5), organisation_all = dl + wl + 1)
 }))))
 write.csv(split, file.path(dir, "split.csv"), row.names = FALSE)
@@ -279,9 +286,11 @@ for (lev in c("class", "method")) {
           x$interval == "cluster bootstrap",
         paste("H2's arm contrast recovers a core value come back to 0.3 times as much in the function arm, at the", lev))
 }
-check(abs(log(e$H4$existing_files$irr) - log(0.7)) < 0.15 && e$H4$existing_files$irr_upper < 1 &&
-        e$H4$existing_files$interval == "cluster bootstrap",
-      "H4's symmetric count recovers the function arm going back into 0.7 times the existing files")
+check(abs(log(e$H4$trodden$irr) - log(0.5)) < 0.2 && e$H4$trodden$irr_upper < 1 &&
+        e$H4$trodden$interval == "cluster bootstrap",
+      "H4's symmetric count recovers the function arm going back into files half as well-trodden")
+check(abs(log(e$reported$existing_files$irr) - log(0.7)) < 0.15,
+      "the plain number of existing files gone back into, as first built, is reported")
 check(e$H1$within_class$places == 48, "H1 within a class is read on the classes with runs at two checkpoints")
 for (lev in c("class", "method")) {
   m <- e$H2[[lev]]
@@ -410,9 +419,11 @@ check(abs(log(rd$class_methods$author$irr)) < 0.3 && abs(log(rd$forced$author$ir
       "reader: class size and the forced share, simulated equal, are not told apart")
 sl <- e$reported$split
 check(abs(log(sl$logic$irr)) < 0.1 && sl$logic$p_tost < 0.05, "logic, simulated the same in both arms, is shown inside the margin")
-check(abs(log(sl$params_new_methods$level_95$irr) - log(0.4)) < 0.2 && sl$params_new_methods$level_95$irr_upper < 1,
-      "the state handed to new methods, simulated 0.4 times in the function arm, is recovered")
-check(abs(log(sl$params_new_methods$trend$irr) - log(0.5)) < 0.35, "its flatter trend in the function arm is recovered")
+check(abs(log(sl$params_called_methods$level_95$irr) - log(0.4)) < 0.2 && sl$params_called_methods$level_95$irr_upper < 1,
+      "the state handed to called methods, simulated 0.4 times in the function arm, is recovered")
+check(abs(log(sl$params_called_methods$trend$irr) - log(0.5)) < 0.35, "its flatter trend in the function arm is recovered")
+check(sl$params_new_methods$level_95$irr > sl$params_called_methods$level_95$irr && is.null(sl$params_wired_functions$irr),
+      "a wired function's injected parameters are counted apart (none in the methods arm, so no ratio)")
 check(sl$declarations$irr > 1.25 && sl$wiring_lines$officefloor > 1.5 && sl$wiring_lines$spring == 0,
       "declarations, simulated higher in the function arm, and the wiring lines are reported as they are")
 cat("analysis/analyse.R self-test passed\n")

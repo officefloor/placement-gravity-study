@@ -714,6 +714,7 @@ def addition_rows(arm: str, chain: str, measured: dict, hosts: list[dict],
     for r in measured.get("shape", []):
         heaviest[r["unit"]] = max(heaviest.get(r["unit"], 0), r.get("class_held", 0))
     again = reopened(hosts, measured.get("wiring_changes", {}))
+    worn = trodden(measured)
     rows = []
     for c in measured["checkpoints"]:
         cp, unit = c["cp"], f"cp{c['cp']:02d}"
@@ -757,6 +758,8 @@ def addition_rows(arm: str, chain: str, measured: dict, hosts: list[dict],
             # added outside method bodies (declarations: signatures, fields, class headers,
             # annotations), its import lines, and its wiring lines; and the parameters of its new methods
             **organisation_split(measured.get("lines_added", {}).get(unit), [h for h in hosts if h["cp"] == cp]),
+            # how well-trodden the files it went back into were (H4, 22 November 2026)
+            **worn.get(unit, {"trodden": None, "trodden_java": None, "trodden_wiring": None}),
             "existing_java_files": measured.get("java_existing", {}).get(unit),
             "existing_wiring_files": sum(1 for s, _ in measured.get("wiring_changes", {}).get(unit, []) if s != "A"),
             "wiring_nodes_added": w["after"]["nodes"] - w["before"]["nodes"],
@@ -991,6 +994,39 @@ def class_identities(hosts: list[dict]) -> dict[tuple[int, str], str]:
     return out
 
 
+def trodden(measured: dict) -> dict[str, dict]:
+    """How well-trodden the files a checkpoint went back into were (H4's symmetric count, PLAN.md
+    5): for each file that existed before the checkpoint and that it changed, production Java and
+    wiring alike, the number of earlier checkpoints of the chain that had created or changed that
+    file; summed over the files. A change that goes back into a file many problems have been put
+    in scores high; one that goes back into several files each touched once before scores low,
+    however many they are. A renamed file keeps its count. The code the chain started from is not
+    a checkpoint's, so a file's history before the stream is not counted. None where the files were
+    not listed (measured before this was read)."""
+    if "java_changed" not in measured:
+        return {}
+    seen: dict[str, int] = {}
+    out = {}
+    for c in measured["checkpoints"]:
+        unit = f"cp{c['cp']:02d}"
+        java = wire = 0
+        after: list[tuple[str | None, str | None]] = []
+        for old, new in measured["java_changed"].get(unit, []):
+            if old is not None:
+                java += seen.get(old, 0)
+            after.append((old, new))
+        for status, path in measured.get("wiring_changes", {}).get(unit, []):
+            if status != "A":
+                wire += seen.get(path, 0)
+            after.append((None if status == "A" else path, None if status == "D" else path))
+        for old, new in after:
+            n = (seen.pop(old, 0) if old is not None else 0) + 1
+            if new is not None:
+                seen[new] = n
+        out[unit] = {"trodden": java + wire, "trodden_java": java, "trodden_wiring": wire}
+    return out
+
+
 def organisation_split(lines: dict | None, hosts: list[dict]) -> dict:
     """One checkpoint's added code as logic and organisation (PLAN.md 4.9). ``logic_added``: the
     body positions it added that are neither moved code nor organisation. ``organisation_added``:
@@ -1002,9 +1038,19 @@ def organisation_split(lines: dict | None, hosts: list[dict]) -> dict:
     ``params_new_methods``: the parameters of the methods it created, the state handed to them.
     The diff's counts are None where they were not read (a history, a no-op)."""
     body = sum(h["added"] for h in hosts)
+    def only_organisation(h):          # a plain accessor, or a constructor that only assigns
+        return h["organisation"] > 0 and h["organisation"] >= h["added"]
+    new = [h for h in hosts if h["host_new"]]
     out = {"logic_added": sum(max(h["net_added"] - h["organisation"], 0) for h in hosts if not h["replacement"]),
            "organisation_added": sum(h["organisation"] for h in hosts),
-           "params_new_methods": sum(max(int(h["params"]), 0) for h in hosts if h["host_new"])}
+           "params_new_methods": sum(max(int(h["params"]), 0) for h in new),
+           # apart (22 November 2026): a wired function's parameters are injected by the framework and
+           # declare what its logic needs; a called method's are handed to it by a caller
+           "params_wired_functions": sum(max(int(h["params"]), 0) for h in new if h["injected"]),
+           "params_called_methods": sum(max(int(h["params"]), 0) for h in new
+                                        if not h["injected"] and not only_organisation(h)),
+           "new_wired_functions": sum(1 for h in new if h["injected"]),
+           "new_called_methods": sum(1 for h in new if not h["injected"] and not only_organisation(h))}
     if lines is None:
         return {**out, "declaration_lines_added": None, "import_lines_added": None, "wiring_lines_added": None}
     return {**out, "declaration_lines_added": max(lines["java"] - lines["imports"] - body, 0),

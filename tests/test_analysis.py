@@ -201,7 +201,7 @@ def estimates(**over):
          "H4": {"arm": boot(-0.5, -0.8, -0.2, 0.999, 0.001), "slope": boot(-0.2, -0.3, -0.1, 0.99, 0.002),
                 "intrusion_class": {"irr": 0.4, "irr_lower": 0.3, "irr_upper": 0.6, "p_less": 0.001},
                 "intrusion_method": {"irr": 0.5, "irr_lower": 0.3, "irr_upper": 0.8, "p_less": 0.003},
-                "existing_files": {"irr": 0.7, "irr_lower": 0.5, "irr_upper": 0.9, "p_less": 0.002}}}
+                "trodden": {"irr": 0.7, "irr_lower": 0.5, "irr_upper": 0.9, "p_less": 0.002}}}
     e.update(over)
     return e
 
@@ -288,7 +288,7 @@ def test_reversed_and_holm_failures():
     e["H4"] = {"arm": boot(-0.5, -0.8, -0.01, 0.98, 0.02), "slope": boot(-0.2, -0.3, -0.01, 0.98, 0.02),
                "intrusion_class": {"irr": 0.4, "irr_lower": 0.3, "irr_upper": 0.9, "p_less": 0.02},
                "intrusion_method": {"irr": 0.4, "irr_lower": 0.3, "irr_upper": 0.9, "p_less": 0.02},
-               "existing_files": {"irr": 0.7, "irr_lower": 0.5, "irr_upper": 0.9, "p_less": 0.02}}
+               "trodden": {"irr": 0.7, "irr_lower": 0.5, "irr_upper": 0.9, "p_less": 0.02}}
     e["H5"] = {"margin": [0.8, 1.25], "class": {"irr": 0.6, "irr_lower": 0.4, "irr_upper": 0.9, "p_less": 0.02}}
     up = {"irr": 1.5, "irr_lower": 1.1, "irr_upper": 2.0, "p_greater": 0.02}
     e["H6"] = {"margin": [0.8, 1.25], "forced": {"irr": 0.9, "irr_lower": 0.7, "irr_upper": 1.1, "p_upper": 0.02}}
@@ -405,20 +405,37 @@ def test_h2_needs_the_core_come_back_to_less_in_the_function_arm_where_the_arms_
     assert h2(reuse_class=hist, reuse_method=hist)["arm_contrast"] == []
 
 
-def test_h4_needs_fewer_existing_files_gone_back_into_java_and_wiring_alike():
+def test_h4_needs_less_trodden_files_gone_back_into_java_and_wiring_alike():
     e = estimates()
-    e["H4"]["existing_files"] = {"irr": 1.3, "irr_lower": 1.0, "irr_upper": 1.7, "p_less": 0.96}
+    e["H4"]["trodden"] = {"irr": 1.3, "irr_lower": 1.0, "irr_upper": 1.7, "p_less": 0.96}
     assert verdict.decide(e, COND)["hypotheses"]["H4"]["verdict"] == "not supported"
-    e["H4"]["existing_files"] = {"error": "the existing files a change went back into were not measured"}
+    e["H4"]["trodden"] = {"error": "trodden was not measured"}
     assert verdict.decide(e, COND)["hypotheses"]["H4"]["verdict"] == "not estimable"
-    e["H4"]["existing_files"] = {"not_applicable": True}                 # a history
+    e["H4"]["trodden"] = {"not_applicable": True}                 # a history
     assert verdict.decide(e, COND)["hypotheses"]["H4"]["verdict"] == "supported"
     rows = prepare.reopen_rows([{"chain_id": "c", "arm": "officefloor", "cp": "3", "reopened": "2",
                                  "reopened_classes": "1", "reopened_wiring": "1",
                                  "existing_java_files": "2", "existing_wiring_files": "1"},
                                 {"chain_id": "c", "arm": "officefloor", "cp": "4", "reopened": "0",
                                  "reopened_classes": "0", "reopened_wiring": "0"}])   # measured before the count
-    assert (rows[0]["existing_files"], rows[1]["existing_files"]) == (3, None)
+    assert (rows[0]["existing_files"], rows[1]["existing_files"], rows[0]["trodden"]) == (3, None, None)
+
+
+def test_trodden_counts_the_earlier_checkpoints_that_changed_each_file_gone_back_into():
+    measured = {"checkpoints": [{"cp": k} for k in (1, 2, 3, 4)],
+                "java_changed": {"cp01": [[None, "A.java"], ["Base.java", "Base.java"]],
+                                 "cp02": [["A.java", "A.java"], [None, "B.java"]],
+                                 "cp03": [["A.java", "A2.java"], ["B.java", "B.java"]],      # A renamed
+                                 "cp04": [["A2.java", "A2.java"], ["Base.java", None]]},      # Base deleted
+                "wiring_changes": {"cp01": [["A", "flow.yml"]], "cp02": [["M", "flow.yml"]],
+                                   "cp03": [], "cp04": [["M", "flow.yml"]]}}
+    t = tables.trodden(measured)
+    # cp1: Base had no checkpoint's change before (the code the chain started from is not counted)
+    assert t["cp01"] == {"trodden": 0, "trodden_java": 0, "trodden_wiring": 0}
+    assert t["cp02"] == {"trodden": 2, "trodden_java": 1, "trodden_wiring": 1}     # A (cp1), flow (cp1)
+    assert t["cp03"] == {"trodden": 3, "trodden_java": 3, "trodden_wiring": 0}     # A (cp1, cp2), B (cp2)
+    assert t["cp04"] == {"trodden": 6, "trodden_java": 4, "trodden_wiring": 2}     # A2 keeps A's 3; Base 1; flow 2
+    assert tables.trodden({"checkpoints": []}) == {}
 
 
 def test_h3_with_the_coupling_measures_put_back_is_reported_and_changes_no_verdict():

@@ -953,22 +953,29 @@ if (!is.null(reopen)) {
   res$reported$reopen_classes <- irr(wald(fit_cp(paste0("reopened_classes ~ arm", fe_r), reopen, poisson())$fit, FARM))
   res$reported$reopen_with_wiring <- irr(wald(fit_cp(paste0("reopened ~ arm", fe_r), reopen, poisson())$fit, FARM))
 }
-# H4's symmetric count (22 November 2026): per checkpoint, the existing files the change went back
-# into, whatever they hold and bound or not: production Java files that existed and wiring files
-# that existed. The methods arm's return to its handler and the function arm's return to its wiring
-# are then counted alike. A Poisson mixed model on the arm with the chain's and the checkpoint's
-# intercepts, decided on the cluster bootstrap; the function arm's ratio has to lie below 1.
-res$H4$existing_files <- if (isFALSE(spec$problem_fixed)) list(not_applicable = TRUE) else
-  if (is.null(reopen) || !"existing_files" %in% names(reopen) || all(is.na(reopen$existing_files)))
-    list(error = "the existing files a change went back into were not measured") else {
-  d <- reopen[!is.na(reopen$existing_files) & as.character(reopen$arm) %in% c(spec$methods_arm, spec$function_arm), ]
+# H4's symmetric count (22 November 2026): how well-trodden the files a change went back into were.
+# Per checkpoint, for each file that existed and that it changed, production Java and wiring alike,
+# bound or not, the earlier checkpoints of the chain that had created or changed that file, summed.
+# The methods arm's return to its handler and the function arm's return to its wiring are counted
+# alike, and going back into several files touched once before does not count as going back into
+# one that every problem has been put in. A negative binomial mixed model on the arm with the
+# chain's and the checkpoint's intercepts, decided on the cluster bootstrap; the function arm's
+# ratio has to lie below 1. As first built that day (reported): the plain number of existing files
+# gone back into, a Poisson model, which counts a change spread over small files as more.
+files_model <- function(col, family, cols) {
+  if (isFALSE(spec$problem_fixed)) return(list(not_applicable = TRUE))
+  if (is.null(reopen) || !col %in% names(reopen) || all(is.na(reopen[[col]])))
+    return(list(error = paste(col, "was not measured")))
+  d <- reopen[!is.na(reopen[[col]]) & as.character(reopen$arm) %in% c(spec$methods_arm, spec$function_arm), ]
   d$arm <- droplevels(as_arm(as.character(d$arm)))
-  m <- fit_cp(paste0("existing_files ~ arm", if (multi(d$frontend)) " + frontend" else ""), d, poisson())
-  per <- function(col) as.list(tapply(d[[col]], as.character(d$arm), mean))
-  c(boot_irr(m$fit, m$formula, m$data, poisson(), FARM),
-    list(n = nrow(d), mean = per("existing_files"), java = per("existing_java_files"),
-         wiring = per("existing_wiring_files"), checkpoint_intercept = m$cp))
+  if (all(d[[col]] == 0)) return(list(error = paste("no", col)))
+  m <- fit_cp(paste0(col, " ~ arm", if (multi(d$frontend)) " + frontend" else ""), d, family)
+  per <- function(x) as.list(tapply(d[[x]], as.character(d$arm), mean))
+  c(boot_irr(m$fit, m$formula, m$data, family, FARM),
+    list(n = nrow(d), mean = per(col), java = per(cols[1]), wiring = per(cols[2]), checkpoint_intercept = m$cp))
 }
+res$H4$trodden <- files_model("trodden", nbinom2(), c("trodden_java", "trodden_wiring"))
+res$reported$existing_files <- files_model("existing_files", poisson(), c("existing_java_files", "existing_wiring_files"))
 
 # ---------------------------------------------------------------- logic and organisation (reported)
 # PLAN.md 4.9: per checkpoint and chain, the code a change added as logic (body statements) and as
@@ -987,17 +994,22 @@ if (!is.null(sp) && nrow(sp) > 0 && multi(sp$arm)) {
   sp$cp_c <- (sp$cp - (max(spec$checkpoints, 1) + 1) / 2) / max(spec$checkpoints - 1, 1)
   fe_s <- if (multi(sp$frontend)) " + frontend" else ""
   part <- function(y) {
-    if (all(sp[[y]] == 0)) return(list(error = paste("no", y)))
+    per <- as.list(tapply(sp[[y]], as.character(sp$arm), mean))
+    # none at all in an arm (a wired function's parameters in the methods arm): no ratio to fit
+    if (any(unlist(per) == 0)) return(list(error = paste("no", y, "in an arm"), mean = per))
     m <- fit_cp(paste0(y, " ~ arm", fe_s), sp, nbinom2())$fit
     mt <- fit_cp(paste0(y, " ~ cp_c * arm", fe_s), sp, nbinom2())$fit
     c(tost(m, FARM, spec$margin), list(level_95 = irr(wald(m, FARM)), trend = irr(wald(mt, paste0("cp_c:", FARM))),
                                         mean = as.list(tapply(sp[[y]], as.character(sp$arm), mean))))
   }
-  res$reported$split <- setNames(lapply(c("logic_added", "organisation_added", "declaration_lines_added",
-                                          "import_lines_added", "organisation_all", "params_new_methods",
-                                          "birth_binding", "method_values_added", "fields_added"), part),
-                                 c("logic", "organisation_in_bodies", "declarations", "imports", "organisation_all",
-                                   "params_new_methods", "birth_binding", "method_values_added", "fields_added"))
+  parts <- c(logic = "logic_added", organisation_in_bodies = "organisation_added",
+             declarations = "declaration_lines_added", imports = "import_lines_added",
+             organisation_all = "organisation_all", params_new_methods = "params_new_methods",
+             params_called_methods = "params_called_methods", params_wired_functions = "params_wired_functions",
+             new_called_methods = "new_called_methods", birth_binding = "birth_binding",
+             method_values_added = "method_values_added", fields_added = "fields_added")
+  parts <- parts[parts %in% names(sp)]
+  res$reported$split <- lapply(parts, part)
   res$reported$split$wiring_lines <- as.list(tapply(sp$wiring_lines_added, as.character(sp$arm), mean))
 }
 

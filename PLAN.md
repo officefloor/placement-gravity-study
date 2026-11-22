@@ -2,7 +2,7 @@
 
 > **Status: NOT YET REGISTERED. The tag `plan-v1` was withdrawn on 17 November 2026, before any
 > run named for analysis was read, while the hypotheses are worked out on the development chain
-> (§9, five revisions so far, the last still growing: rows 72 to 81 follow a review of the plan on
+> (§9, five revisions so far, the last still growing: rows 72 to 83 follow a review of the plan on
 > 22 November 2026). It will be set again when that work is done; until then only the
 > development chain can be read.** As first registered, on 16 November 2026: the tag was first pushed on commit
 > `4bb8973` and moved the same day, before any run named for analysis was read, to this revision,
@@ -331,15 +331,27 @@ alternatives at the class are the other classes that already hold the same depen
   stream, the function arm's bystanders are fewer, and their slope on the checkpoint index is
   flatter, than the methods arm's; and its bound code is **come back to less**, at the class and at
   the method (§4.4). (*As first registered:* its bindings are lower and their slope on host size
-  flatter; kept and reported beside it.) **And its changes go back into fewer existing files,
+  flatter; kept and reported beside it.) **And its changes go back into less well-trodden files,
   production Java and wiring counted alike** (added on 22 November 2026, decided by the author
-  after a review of the plan, §9 row 78). The condition above counts the methods arm's return to
+  after a review of the plan, §9 row 78; the count changed the same day, row 82, below). The condition above counts the methods arm's return to
   its handler and not the function arm's return to its wiring file (§7, *The function arm's
   calling method is its wiring*), and a rule of the plan, that an injected parameter is not a
   binding, decides how much of the function arm is followed at all. This count rests on no such
   rule: per checkpoint, the files that existed before it and that it changed, whatever they hold
-  and whether its code was bound there or not. The function arm's rate has to be below the
-  methods arm's (§5). It is the count H4 first had as a condition (reopening, §4.4), without the
+  and whether its code was bound there or not; and for each such file, the earlier checkpoints
+  that had already created or changed it, summed: how well-trodden the files it went back into
+  were. The function arm's rate has to be below the methods arm's (§5).
+  - *As first built that day* (reported): the plain number of existing files gone back into. On
+    the development chain it went against H4 (1.50 [1.16, 1.94], §6). The author's reading of
+    that, borne out by the chain's files (§6): OfficeFloor makes about one new file a checkpoint
+    and goes back into many small files a few times each (49 files, the busiest at 24 of its
+    60 checkpoints and most at four or fewer), where Spring goes back into one file at 43 of its 59
+    checkpoints. A plain count of files scores the first as more, which is dispersion, and the
+    plan does not hold dispersion to be bad (§1); what H4 claims is that no place keeps being
+    come back to. **The count was changed after that was seen**, to one that tells a return to a
+    place every problem has been put in from a return to several places each touched once, and
+    on that chain the new count goes the function arm's way (§6). That order is recorded here
+    and in §7; the plain count stays reported so that a reader can weigh both. It is the count H4 first had as a condition (reopening, §4.4), without the
   binding rule and with the wiring in it; on the development chain that count went against H4
   before the binding rule and was unresolved with it (§6). The total amount
   (positions, tokens) of the function arm lies within 0.8 to 1.25 times the methods arm's, the
@@ -524,8 +536,9 @@ alternatives at the class are the other classes that already hold the same depen
 - H2, the arm contrast: a core value come back to as much in the function arm as in the methods
   arm. The core would then be the problems' shared data, used alike wherever it is put, and not
   something the place does.
-- H4, the symmetric count: the function arm going back into as many existing files as the methods
-  arm, or more, once its wiring files are counted. Its coupling would then have moved, not gone.
+- H4, the symmetric count: the function arm going back into files as well-trodden as the methods
+  arm's, or more, once its wiring files are counted: its endpoint's flow file would then be its
+  handler under another name, and its coupling would have moved, not gone.
 - H4: no difference between the arms in bystanders, in their growth or in later intrusion, or an amount
   outside the band (the difference is then a difference of amount, not placement), or a function arm that moves its coupling into the wiring:
   wiring per problem that rises over the run, or one configuration file that holds most of it
@@ -1721,18 +1734,27 @@ operational form the drafter's). What each checkpoint added, per chain, in parts
 - **Imports:** its added `import` and `package` lines, apart, since they follow the tools.
 - **Wiring:** the lines it added to the OfficeFloor configuration (not blank, not only a
   comment). The function arm's sequence of functions lives here, so this is its organisation.
-- **State handed along** (already measured): the parameters of the methods it created; the values
-  callers pass those methods (birth bindings, §4.3); the parameters and locals it introduced
-  and the fields it left in classes that existed (§4.3b).
+- **State handed along:** the parameters of the **called methods** it created (new methods that
+  are not wired functions and hold logic: not a plain accessor, not a constructor that only
+  assigns); the values callers pass new methods (birth bindings, §4.3); the parameters and
+  locals it introduced and the fields it left in classes that existed (§4.3b).
+- **Declared, not handed along** (apart since row 83): the parameters of the **wired functions**
+  it created. The framework injects them; no caller passes them, and nothing has to be placed
+  near anything for them to arrive. The author: "the method signatures are just declarations of
+  logic, not the placement organisation required in Spring." The parameters of all new methods
+  together, as first built, are reported beside.
 
 **Stated now, before any run named for analysis is read:**
 
 - *The essential part is conserved:* the logic added per checkpoint is the same in both arms, the
   function arm's ratio inside 0.8 to 1.25 (the two one-sided tests, 90% interval).
-- *The state handed along is the methods arm's:* the parameters of new methods, and the values
-  callers pass them, are fewer in the function arm (ratio below 1) and rise less over the stream
-  (the arm's interaction with the checkpoint index below 1).
-- *No direction is stated for declarations or wiring.* OfficeFloor makes each function a class,
+- *The state handed along is the methods arm's:* the parameters of new called methods, and the
+  values callers pass new methods, are fewer in the function arm (ratio below 1) and rise less
+  over the stream (the arm's interaction with the checkpoint index below 1). (As first stated,
+  hours earlier: the parameters of *all* new methods. On the development chain that went against
+  the direction, 1.38 [1.06, 1.78], every part of the excess being the injected parameters of
+  wired functions, §6. They were taken apart after that was seen, row 83.)
+- *No direction is stated for declarations, wiring or the wired functions' injected parameters.* OfficeFloor makes each function a class,
   so it may add more declaration lines than Spring; that is the cost of its form and is to be
   seen, not summed away. Organisation in all (bodies, declarations and wiring together) is
   reported with its ratio and each arm's share of logic and organisation together.
@@ -1751,7 +1773,7 @@ instrument; the junction (§4.7) is the measure nearest to it and is read with t
 
 As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`,
 `prepare.split_summary` (`split.csv`, `readings.json`), `analyse.R` (`reported$split`),
-`report.split_section`; `MEASURE_VERSION` 30.
+`report.split_section`; `MEASURE_VERSION` 30, and 31 with rows 82 and 83.
 
 ## 5. Analysis
 
@@ -1895,16 +1917,20 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   - **Come back to less** (17 November 2026, §4.4): the arm term of the base model of H2 and H3,
     without the bindings (the arm itself changes them), on intrusion at the class and at the method.
     The function arm's rate ratio has to have a 95% interval below 1 at both levels.
-  - **Fewer existing files gone back into** (22 November 2026, §9 row 78): per checkpoint and
-    chain, the production Java files that existed before the checkpoint and that it modified,
-    renamed or deleted, plus the wiring files that existed and that it changed (`git diff` of the
-    agent's commit against its parent; a file the checkpoint adds is not counted). A Poisson
-    mixed model of that count on the arm (and the front end), with the chain's and the
-    checkpoint's intercepts, decided on the cluster bootstrap: the function arm's rate ratio has
-    to have a 95% interval below 1. It enters H4's p with the other four. Not read on a history.
-    As built: `chain.measure` (`java_existing`), `tables.addition_rows`
-    (`existing_java_files`, `existing_wiring_files`), `prepare.reopen_rows`, `analyse.R`
-    (`H4$existing_files`).
+  - **Less well-trodden files gone back into** (22 November 2026, §9 rows 78 and 82): per
+    checkpoint and chain, for each file that existed before the checkpoint and that it changed
+    (a production Java file it modified, renamed or deleted; a wiring file it changed; `git diff`
+    of the agent's commit against its parent; a file the checkpoint adds is not gone back into),
+    the number of earlier checkpoints of the chain that had created or changed that file, summed
+    over the files. A renamed file keeps its count. The code a chain started from is no
+    checkpoint's, so a file's history before the stream is not counted. A negative binomial mixed
+    model of that count on the arm (and the front end), with the chain's and the checkpoint's
+    intercepts, decided on the cluster bootstrap: the function arm's rate ratio has to have a 95%
+    interval below 1. It enters H4's p with the other four. Not read on a history. Reported
+    beside it: the plain number of existing files gone back into (a Poisson model), as first
+    built. As built: `chain.measure` (`java_changed`, `java_existing`), `tables.trodden`,
+    `tables.addition_rows` (`trodden`, `existing_java_files`, `existing_wiring_files`),
+    `prepare.reopen_rows`, `analyse.R` (`H4$trodden`, `reported$existing_files`).
   - **Reported, how much a core value is come back to** (19 November 2026): the core's records of
     H2 (§4.4), both arms, in the base model with the arm term, at the class and at the method; the
     function arm's rate ratio per core value, with its interval. With it, per arm, the uses of
@@ -2111,7 +2137,7 @@ binomial mixed model). These details are fixed with the code before any run is r
 - **The p-value of each hypothesis** for Holm is the larger of its parts: H1, of its three slopes
   (over all runs, within a class, within a method);
   H2, of the class level and the method level and of the arm contrasts that are needed (row 77); H3, of every shape measure's one-sided test; H4, of the arm
-  term, the interaction, the arm's rate ratio in intrusion at the class and at the method and its rate ratio in existing files gone back into (row 78); H5, its
+  term, the interaction, the arm's rate ratio in intrusion at the class and at the method and its rate ratio in how well-trodden the files gone back into were (rows 78, 82); H5, its
   class level's (the method level is reported, row 64); H6 and H7, each its forced ratio's. A hypothesis is
   supported when its p (Holm-adjusted over the confirmatory four; its own for a secondary one) is at most 0.05 **and** its conditions hold (H4: the amount in its band and neither wiring
   condition against). The verdicts are supported, not supported, reversed (an interval wholly on
@@ -2603,6 +2629,32 @@ binomial mixed model). These details are fixed with the code before any run is r
   first half of the claim holds (the essential part is conserved) and the second does not show
   in lines: OfficeFloor wrote more organisation per checkpoint, not less; what it has less of is
   callers passing values to callees, and data standing by (H4).
+- **The development chain's files, and rows 82 and 83 on it** (22 November 2026; one chain an
+  arm, descriptive only).
+  - *Looked at in scratch, before rows 82 and 83 were written, and the reason for them.* New Java
+    files a checkpoint: 1.03 in OfficeFloor, 0.15 in Spring; Java files at the end 203 and 94, the
+    largest 15.5 and 51 kB. Existing files ever gone back into: 49 and 10; the busiest,
+    OfficeFloor's wiring file `owners.POST.yml` at 24 of 60 checkpoints and Spring's
+    `OwnerRestControllerV1.java` at 43 of 59; the three busiest files take 44% and 83% of the
+    returns. `OwnerMapper` (24 in each arm) and `Owner` (16 and 13) are gone back into alike:
+    the problem's own data growing. New methods that are not wired functions and hold logic: 80
+    and 81, with 85 and 100 parameters and 4 and 12 values passed by callers, in 32 classes in
+    OfficeFloor and 13 in Spring (36 of Spring's in the controller). OfficeFloor's 35 new wired
+    functions carry 1.9 injected parameters each. So OfficeFloor still writes methods that are
+    called in the ordinary way, as many as Spring; they sit in small classes of their own and
+    are handed existing state less often.
+  - *As built* (`MEASURE_VERSION` 31, `results/analysis/pilot/REPORT.md`). **H4's count, how
+    well-trodden the files gone back into were:** 13.4 a checkpoint in OfficeFloor (8.7 Java,
+    4.7 wiring; 5.3, 15.0, 19.9 over the thirds) against 21.7 in Spring (7.5, 22.1, 35.4), ratio
+    0.60 [0.49, 0.74]; the plain number of files, reported, 1.50 [1.16, 1.94] as before. A third
+    of OfficeFloor's count is its wiring: the endpoint's flow file is where it keeps going back.
+    **The parameters of new called methods** 1.48 against 1.86 a checkpoint, 0.80 [0.60, 1.06]
+    (90%): the stated direction, not resolved on one chain; **their trend went against the
+    stated direction**, 4.8 [1.8, 12.5]: OfficeFloor's rise over the thirds (1.0, 1.6, 1.85) as
+    Spring's fall (2.35, 1.75, 1.47). New called methods with logic 1.40 against 1.49 a
+    checkpoint. The values callers pass new methods 0.33 [0.11, 0.97], as before. The injected
+    parameters of new wired functions 1.10 a checkpoint (1.7, 1.0, 0.6). Nothing was changed
+    after these were seen.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
@@ -2672,6 +2724,13 @@ binomial mixed model). These details are fixed with the code before any run is r
   core of H2), and a larger class may gain more calls whatever forced it; the index is in the
   model, and the class's size is not (the reading is about the force, and size is its result).
 
+- **H4's symmetric count and the state handed along were both changed after the development
+  chain went against them** (22 November 2026, rows 82 and 83), within hours of being written.
+  In each case the first form counted something the claim is not about (a file count scores
+  dispersion; a parameter count scores injected parameters), the reason given does not rest on
+  the result, and the first form is still reported. But the order is as stated, both changes
+  favour the function arm on that chain, and the author wrote the framework. Of all the plan's
+  revisions these two are the ones a sceptical reader should weigh most.
 - **The agent knows one arm far better than the other** (added 22 November 2026, from the review
   of the plan). Spring is everywhere in what the agent learned from; OfficeFloor it knows from
   the stack's scaffold and whatever documentation the harness gives it. So a difference between
@@ -3260,6 +3319,8 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 79 | The instrument checked against the compiler on corpus A: on every fifth checkpoint of a chain and its last, the precision and recall of its calls and field reads and the precision of its bound names, against javac's resolution; reported per arm, no threshold | §4.8, §7, `instrument/Check.java`, `placement_gravity/validate.py`, `measure.py` (`validation.csv`), `prepare.py`, `report.validation_section`, `setup.sh`, `tests/test_validate.py` | Decided by the author on 22 November 2026, on the review: the fixtures show the instrument does what was meant, not that it is right on real code. No measure of a hypothesis, model or rule changes |
 | 80 | **A fault, found by the check of row 79 before any run named for analysis was read:** a call was followed to every class sharing any ancestor with its receiver's class (siblings, and through a library's interface whole groups of unrelated classes), not only to that class's ancestors and descendants as §4.2a says. Corrected in `flow.Graph.family`. It inflated the calls counted between classes (about twofold on the two development trees looked at) and widened the control flow of H5's method level | §4.2a, §4.8, `flow.py`; `MEASURE_VERSION` 29, `HISTORY_VERSION` 13 | The figures of §6 for H5 at the method, H6's pairs and accountings, H7, surface and ripple were computed with it; they are development figures, superseded by the rerun. No rule changes: the code now does what the plan said |
 | 81 | A reported reading, logic and organisation: each checkpoint's added code as logic, organisation in bodies, declarations, imports and wiring, with the state handed along; stated before any run is read: the logic the same in both arms (inside 0.8 to 1.25), the state handed along lower and flatter in the function arm; no direction for declarations or wiring. Brooks's essence and accident as its framing, with the drafter's cautions | §1, §4.9, `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`, `prepare.split_summary`, `analyse.R` (`split`), `report.split_section`, `selftest.R`; `MEASURE_VERSION` 30 | The author's, 22 November 2026: "the essential complexity is the logic contained in those methods. The method organisation is just to supply data to the logic of the methods. OfficeFloor removes this accidental complexity". Operational form the drafter's. No hypothesis, model of a hypothesis or rule changes. Made knowing the development chain's amount (1.08) and that H4's symmetric file count had just gone against H4 there (§6) |
+| 82 | H4's symmetric count is how well-trodden the files gone back into were: for each existing file a checkpoint changed, Java and wiring alike, the earlier checkpoints that had created or changed it, summed; a negative binomial model, the function arm's ratio below 1 on the cluster bootstrap. The plain number of existing files (row 78 as first built) is reported | §2, §5, §7, `chain.measure` (`java_changed`), `tables.trodden`, `prepare.reopen_rows`, `analyse.R` (`H4$trodden`, `reported$existing_files`), `verdict.h4`, `report.existing_files_lines`, `selftest.R`; `MEASURE_VERSION` 31 | Decided by the author on 22 November 2026 on the drafter's proposal, **after the plain count went against H4 on the development chain** (1.50 [1.16, 1.94]) and the chain's files had been looked at: OfficeFloor makes a new file a checkpoint and goes back into 49 files a few times each, Spring into one file at 43 of 59 checkpoints; a count of files scores dispersion, which the plan does not hold to be bad. Seen before it was built, in scratch and counting changes only: 12.1 a checkpoint in OfficeFloor against 21.9 in Spring. Before the tag, so a revision |
+| 83 | In the logic and organisation reading the parameters of new wired functions (injected, declared) are counted apart from those of new called methods with logic (handed by a caller); the stated direction for the state handed along is on the called methods' parameters and the values callers pass | §4.9, §7, `tables.organisation_split`, `prepare.SPLIT`, `analyse.R`, `report.split_section`, `selftest.R`; `MEASURE_VERSION` 31 | Decided by the author on 22 November 2026 on the drafter's proposal, **after the parameters of all new methods went against the stated direction on the development chain** (1.38 [1.06, 1.78]). Seen before it was built, in scratch: the arms wrote the same number of new called methods with logic (80 and 81), with 85 parameters in OfficeFloor and 100 in Spring; OfficeFloor's 35 wired functions carried 1.9 injected parameters each. A reported reading; no verdict depends on it |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

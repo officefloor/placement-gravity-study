@@ -248,7 +248,7 @@
       "irr_upper": 0.22831076446894,
       "interval": "wald: one chain in an arm"
      },
-     "existing_files": {
+     "trodden": {
       "not_applicable": true
      }
     },

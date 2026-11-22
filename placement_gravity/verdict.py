@@ -18,9 +18,9 @@
   not count against. The two-sided reading (within 0.8 to 1.25) is reported.
 - **H4**: the function arm's bystanders fewer half-way through the stream, their slope on the
   checkpoint index flatter, and its bound code come back to less, at the class and at the method
-  and (since 22 November 2026) its changes going back into fewer existing files, production Java
-  and wiring counted alike, the rate ratio below 1 (p = the largest of the five one-sided
-  p-values); the amount within its band; and neither wiring condition against.
+  and (since 22 November 2026) its changes going back into less well-trodden files, production
+  Java and wiring counted alike (``trodden``: the earlier checkpoints that had changed each file
+  it changed), the rate ratio below 1 (p = the largest of the five one-sided p-values); the amount within its band; and neither wiring condition against.
 - **H5** (19 November 2026; a fall since 22 November 2026): in the methods arm, the alternatives a
   bound addition had (other places holding what its code was bound to) **fall** over the stream:
   the ratio of the end of the stream to its start below 1 (one-sided, cluster bootstrap), at the
@@ -170,8 +170,8 @@ def h4(est: dict, cond: dict) -> dict:
     x = est.get("H4") or {}
     arm, slope = x.get("arm"), x.get("slope")
     ic, im = x.get("intrusion_class"), x.get("intrusion_method")
-    # the existing files a change went back into, Java and wiring alike (not read on a history)
-    ef = x.get("existing_files") or {}
+    # how well-trodden the files a change went back into, Java and wiring alike (not on a history)
+    ef = x.get("trodden") or {}
     files = None if ef.get("not_applicable") else ef
     if not (_ok(arm) and _ok(slope) and _ok(ic) and _ok(im)) or (files is not None and not _ok(files)):
         return {"p": None, "verdict": "not estimable", "detail": x}

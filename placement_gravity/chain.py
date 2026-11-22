@@ -310,16 +310,19 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path, java_src: str = 
     # the production Java files each unit changes that existed before it (modified, renamed or
     # deleted): with the wiring files, the existing files a change has to go back into (H4)
     java_existing: dict[str, int] = {}
+    java_changed: dict[str, list] = {}   # every production Java file a unit changes: [before, after]
     added_lines: dict[str, dict] = {}
     for c in cps:
         unit = f"cp{c.cp:02d}"
         java_existing[unit] = 0
+        java_changed[unit] = []
         if not light and not c.noop:      # logic and organisation (PLAN.md 4.9): corpus A only
             added_lines[unit] = lines_added(repo, c.parent, c.commit, java_src, wiring_root)
         for old, new in changed_java(repo, c.parent, c.commit, java_src):
             if keep and not keep(new or old):
                 continue
             java_existing[unit] += old is not None
+            java_changed[unit].append([old, new])
             path = new or old
             before = (str(materialise(repo, c.parent, old, work / unit / "before" / old))
                       if old else "-")
@@ -395,7 +398,7 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path, java_src: str = 
         amount = {f"cp{c.cp:02d}": {"positions": 0, "methods": 0} for c in cps}
     return {"checkpoints": [c.__dict__ for c in cps], "records": records, "amount": amount,
             "wiring": wires, "wiring_changes": wire_changes, "java_existing": java_existing,
-            "lines_added": added_lines,
+            "lines_added": added_lines, "java_changed": java_changed,
             "refactorings": found, "hints": len(hint_lines),
             "shape": methods, "shape_problems": [r for r in shaped if r["kind"] == "problem"],
             "hints_unmatched": unmatched, "places": places}

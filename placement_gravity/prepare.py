@@ -767,7 +767,11 @@ def reopen_rows(additions: list[dict]) -> list[dict]:
         return {"existing_java_files": None if j is None else int(j),
                 "existing_wiring_files": None if w is None else int(w),
                 # H4's symmetric count: every existing file the change went back into
-                "existing_files": None if j is None or w is None else int(j + w)}
+                "existing_files": None if j is None or w is None else int(j + w),
+                # how well-trodden those files were: H4's symmetric count
+                "trodden": None if num(a.get("trodden")) is None else int(num(a.get("trodden"))),
+                "trodden_java": None if num(a.get("trodden_java")) is None else int(num(a.get("trodden_java"))),
+                "trodden_wiring": None if num(a.get("trodden_wiring")) is None else int(num(a.get("trodden_wiring")))}
     return [{"chain_id": a["chain_id"], "arm": a["arm"], "frontend": a.get("frontend", ""),
              "cp": int(a["cp"]), "reopened": int(a["reopened"]),
              "reopened_classes": int(a["reopened_classes"]), "reopened_wiring": int(a["reopened_wiring"]),
@@ -776,7 +780,8 @@ def reopen_rows(additions: list[dict]) -> list[dict]:
 
 
 SPLIT = ["logic_added", "organisation_added", "declaration_lines_added", "import_lines_added",
-         "wiring_lines_added", "params_new_methods", "birth_binding", "method_values_added", "fields_added"]
+         "wiring_lines_added", "params_new_methods", "params_wired_functions", "params_called_methods",
+         "new_wired_functions", "new_called_methods", "birth_binding", "method_values_added", "fields_added"]
 
 
 def split_rows(additions: list[dict]) -> list[dict]:

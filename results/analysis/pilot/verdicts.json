@@ -192,11 +192,11 @@
    "verdict": "descriptive only"
   },
   "H4": {
-   "p": 0.998955448216659,
+   "p": 0.000999000999000999,
    "reversed": false,
    "amount_in_band": true,
    "wiring_against": false,
-   "conditions_met": false,
+   "conditions_met": true,
    "detail": {
     "model": {
      "n_runs": 147,
@@ -246,29 +246,29 @@
       "irr_upper": 0.42589529575939,
       "interval": "wald: one chain in an arm"
      },
-     "existing_files": {
-      "estimate": 0.405465108273026,
-      "se": 0.131761571214837,
-      "lower": 0.147217174145535,
-      "upper": 0.663713042400516,
+     "trodden": {
+      "estimate": -0.506061656215726,
+      "se": 0.106533817842357,
+      "lower": -0.714864102322297,
+      "upper": -0.297259210109154,
       "level": 0.95,
-      "p_greater": 0.00104455178334138,
-      "p_less": 0.998955448216659,
-      "irr": 1.50000000024729,
-      "irr_lower": 1.15860555488064,
-      "irr_upper": 1.9419896540835,
+      "p_greater": 0.99999898414453,
+      "p_less": 1.01585547044282e-06,
+      "irr": 0.602865199971103,
+      "irr_lower": 0.489258596385724,
+      "irr_upper": 0.742851432802751,
       "interval": "wald: one chain in an arm",
       "n": 120,
       "mean": {
-       "officefloor": 2.4,
-       "spring": 1.6
+       "officefloor": 13.4166666666667,
+       "spring": 21.6833333333333
       },
       "java": {
-       "officefloor": 1.9,
-       "spring": 1.6
+       "officefloor": 8.73333333333333,
+       "spring": 21.6833333333333
       },
       "wiring": {
-       "officefloor": 0.5,
+       "officefloor": 4.68333333333333,
        "spring": 0
       },
       "checkpoint_intercept": true
@@ -306,7 +306,7 @@
     }
    },
    "tier": "confirmatory",
-   "p_holm": 0.998955448216659,
+   "p_holm": 0.002997002997002997,
    "verdict": "descriptive only"
   },
   "H5": {
@@ -351,7 +351,7 @@
     }
    },
    "tier": "confirmatory",
-   "p_holm": 0.0869876917749966,
+   "p_holm": 0.0579917945166644,
    "verdict": "descriptive only"
   },
   "H6": {
@@ -409,7 +409,7 @@
     }
    },
    "tier": "confirmatory",
-   "p_holm": 0.0869876917749966,
+   "p_holm": 0.0579917945166644,
    "verdict": "descriptive only"
   }
  },

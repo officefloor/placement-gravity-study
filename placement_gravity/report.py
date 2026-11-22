@@ -236,16 +236,24 @@ def reuse_test_lines(e2: dict) -> list[str]:
     return L
 
 
-def existing_files_lines(m3: dict) -> list[str]:
-    """H4's symmetric count (22 November 2026): the existing files a change went back into."""
-    x = m3.get("existing_files") or {}
-    if not x or x.get("not_applicable"):
-        return []
-    mean, java, wiring = x.get("mean") or {}, x.get("java") or {}, x.get("wiring") or {}
-    return [f"- **Existing files a change went back into (production Java and wiring alike), function arm / "
-            f"methods arm: {ratio(x)}** (needed below 1; one-sided p {f(x.get('p_less'))}; "
-            f"{x.get('interval', '–')}); per checkpoint: "
-            + "; ".join(f"{a} {f(v)} (Java {f(java.get(a))}, wiring {f(wiring.get(a))})" for a, v in mean.items())]
+def existing_files_lines(m3: dict, rep: dict) -> list[str]:
+    """H4's symmetric count (22 November 2026): how well-trodden the files a change went back into
+    were; and, reported, the plain number of them, as first built."""
+    L = []
+    for x, label, need in ((m3.get("trodden") or {}, "**How well-trodden the files a change went back into were "
+                            "(for each existing file it changed, production Java and wiring alike, the earlier "
+                            "checkpoints that had changed it), function arm / methods arm: {r}**", True),
+                           (rep.get("existing_files") or {}, "Reported, the plain number of existing files gone "
+                            "back into (as first built: it counts a change spread over small files as more), "
+                            "function arm / methods arm: {r}", False)):
+        if not x or x.get("not_applicable"):
+            continue
+        mean, java, wiring = x.get("mean") or {}, x.get("java") or {}, x.get("wiring") or {}
+        L.append("- " + label.format(r=ratio(x))
+                 + (f" (needed below 1; one-sided p {f(x.get('p_less'))}; {x.get('interval', '–')})" if need else "")
+                 + "; per checkpoint: "
+                 + "; ".join(f"{a} {f(v)} (Java {f(java.get(a))}, wiring {f(wiring.get(a))})" for a, v in mean.items()))
+    return L
 
 
 def split_section(rep: dict, rd: dict) -> list[str]:
@@ -259,7 +267,10 @@ def split_section(rep: dict, rd: dict) -> list[str]:
              ("wiring_lines_added", None, "Wiring (lines)"),
              ("organisation_all", "organisation_all", "Organisation in all (bodies, declarations, wiring)"),
              ("import_lines_added", "imports", "Imports (lines)"),
-             ("params_new_methods", "params_new_methods", "Handed along: parameters of new methods"),
+             ("new_called_methods", "new_called_methods", "New called methods with logic (not wired functions)"),
+             ("params_called_methods", "params_called_methods", "Handed along: parameters of new called methods"),
+             ("params_wired_functions", "params_wired_functions", "Declared: injected parameters of new wired functions"),
+             ("params_new_methods", "params_new_methods", "Parameters of all new methods (as first built)"),
              ("birth_binding", "birth_binding", "Handed along: values callers pass new methods"),
              ("method_values_added", "method_values_added", "Introduced: parameters and locals"),
              ("fields_added", "fields_added", "Introduced: fields left in existing classes")]
@@ -269,8 +280,10 @@ def split_section(rep: dict, rd: dict) -> list[str]:
          "organisation that supplies the logic with its data: accessors and constructor wiring in bodies, "
          "declarations outside them (signatures, fields, class headers, annotations), and the wiring; with the "
          "state it handed along. Stated before any run was read: the logic is the same in both arms (the ratio "
-         "inside 0.8 to 1.25), and the state handed along is lower in the function arm (below 1) and flatter "
-         "over the stream (the trend below 1). Declarations and wiring are reported as they fall.", "",
+         "inside 0.8 to 1.25), and the state handed along (the parameters of new called methods, the values "
+         "callers pass new methods) is lower in the function arm (below 1) and flatter over the stream (the "
+         "trend below 1). Declarations, wiring and the injected parameters of wired functions are reported as "
+         "they fall.", "",
          "| Part | " + " | ".join(f"{a}, per checkpoint (thirds)" for a in arms)
          + " | Function arm / methods arm (90%) | Its trend over the stream (95%) |",
          "|---|" + "---|" * (len(arms) + 2)]
@@ -281,8 +294,9 @@ def split_section(rep: dict, rd: dict) -> list[str]:
             cells.append(f"{f(s[a]['per_checkpoint'].get(key))} ("
                          + ", ".join(f((th.get(t) or {}).get(key)) for t in ("1", "2", "3")) + ")")
         x = m.get(model) or {} if model else {}
-        L.append(f"| {label} | " + " | ".join(cells) + f" | {ratio(x) if x else '–'} | "
-                 f"{ratio(x.get('trend')) if x else '–'} |")
+        fitted = bool(x) and "error" not in x
+        L.append(f"| {label} | " + " | ".join(cells) + f" | {ratio(x) if fitted else '–'} | "
+                 f"{ratio(x.get('trend')) if fitted else '–'} |")
     L.append("")
     lg = m.get("logic") or {}
     L.append(f"- Logic the same in both arms (two one-sided tests against 0.8 and 1.25): p {f(lg.get('p_tost'))}")
@@ -765,7 +779,7 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           f"- **Their slope on the checkpoint index (interaction): {interval(m3.get('slope'))}**",
           f"- **Later intrusion where bound code was placed, function arm / methods arm: at the class "
           f"{ratio(m3.get('intrusion_class'))}; at the method {ratio(m3.get('intrusion_method'))}**",
-          *existing_files_lines(m3),
+          *existing_files_lines(m3, rep),
           f"- How much a core value is come back to, function arm / methods arm (H2's arm contrast): at the "
           f"class {ratio(rep.get('core_reuse_class'))}; at the method {ratio(rep.get('core_reuse_method'))}",
           *reuse_lines(readings or {}),

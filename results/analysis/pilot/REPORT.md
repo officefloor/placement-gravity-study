@@ -7,10 +7,10 @@ Role: **development**. Chains: officefloor 1, spring 1. **Descriptive only.**
 | H1 | secondary | descriptive only | 0.000999 |
 | H2 | confirmatory | descriptive only | 0.00039 |
 | H3 | secondary | descriptive only | 3.06e-06 |
-| H4 | confirmatory | descriptive only | 0.999 |
-| H5 | confirmatory | descriptive only | 0.087 |
+| H4 | confirmatory | descriptive only | 0.003 |
+| H5 | confirmatory | descriptive only | 0.058 |
 | H6 | secondary | descriptive only | 0.349 |
-| H7 | confirmatory | descriptive only | 0.087 |
+| H7 | confirmatory | descriptive only | 0.058 |
 
 ## H1, the periphery grows (methods arm)
 
@@ -82,7 +82,8 @@ Where code was bound to a class or a method (109 of 350 problem and host rows, b
 - **Function arm's bystanders (arm term, at checkpoint 30.5, the middle of the stream): -1.586 [-1.586, -1.586]**
 - **Their slope on the checkpoint index (interaction): -0.017 [-0.017, -0.017]**
 - **Later intrusion where bound code was placed, function arm / methods arm: at the class 0.162 [0.098, 0.268]; at the method 0.110 [0.029, 0.426]**
-- **Existing files a change went back into (production Java and wiring alike), function arm / methods arm: 1.500 [1.159, 1.942]** (needed below 1; one-sided p 0.999; wald: one chain in an arm); per checkpoint: officefloor 2.400 (Java 1.900, wiring 0.500); spring 1.600 (Java 1.600, wiring 0)
+- **How well-trodden the files a change went back into were (for each existing file it changed, production Java and wiring alike, the earlier checkpoints that had changed it), function arm / methods arm: 0.603 [0.489, 0.743]** (needed below 1; one-sided p 1.02e-06; wald: one chain in an arm); per checkpoint: officefloor 13.417 (Java 8.733, wiring 4.683); spring 21.683 (Java 21.683, wiring 0)
+- Reported, the plain number of existing files gone back into (as first built: it counts a change spread over small files as more), function arm / methods arm: 1.500 [1.159, 1.942]; per checkpoint: officefloor 2.400 (Java 1.900, wiring 0.500); spring 1.600 (Java 1.600, wiring 0)
 - How much a core value is come back to, function arm / methods arm (H2's arm contrast): at the class – [–, –]; at the method 0.088 [0.024, 0.316]
 - Reported, officefloor, uses per 100 values and later checkpoints: at the class core 0.000 (0 uses of 3 values in 3 rows), periphery 0.781; at the method core 0.395 (4 uses of 45 values in 22 rows), periphery 0.084
 - Reported, spring, uses per 100 values and later checkpoints: at the class core 14.459 (227 uses of 52 values in 41 rows), periphery 1.184; at the method core 10.126 (185 uses of 75 values in 51 rows), periphery 0.496
@@ -280,7 +281,7 @@ Left out by the variation rule (bound rows flagged or above zero, per arm): s1_l
 
 ## Reported: logic and organisation
 
-What a checkpoint added, per checkpoint: its logic (the statements of method bodies), and the organisation that supplies the logic with its data: accessors and constructor wiring in bodies, declarations outside them (signatures, fields, class headers, annotations), and the wiring; with the state it handed along. Stated before any run was read: the logic is the same in both arms (the ratio inside 0.8 to 1.25), and the state handed along is lower in the function arm (below 1) and flatter over the stream (the trend below 1). Declarations and wiring are reported as they fall.
+What a checkpoint added, per checkpoint: its logic (the statements of method bodies), and the organisation that supplies the logic with its data: accessors and constructor wiring in bodies, declarations outside them (signatures, fields, class headers, annotations), and the wiring; with the state it handed along. Stated before any run was read: the logic is the same in both arms (the ratio inside 0.8 to 1.25), and the state handed along (the parameters of new called methods, the values callers pass new methods) is lower in the function arm (below 1) and flatter over the stream (the trend below 1). Declarations, wiring and the injected parameters of wired functions are reported as they fall.
 
 | Part | officefloor, per checkpoint (thirds) | spring, per checkpoint (thirds) | Function arm / methods arm (90%) | Its trend over the stream (95%) |
 |---|---|---|---|---|
@@ -290,7 +291,10 @@ What a checkpoint added, per checkpoint: its logic (the statements of method bod
 | Wiring (lines) | 2.150 (3.100, 2.350, 1.000) | 0.000 (0.000, 0.000, 0.000) | – | – |
 | Organisation in all (bodies, declarations, wiring) | 10.683 (11.350, 10.050, 10.650) | 6.915 (7.950, 5.200, 7.632) | 1.506 [1.294, 1.752] | 0.919 [0.506, 1.671] |
 | Imports (lines) | 4.800 (6.300, 4.350, 3.750) | 0.881 (1.400, 0.500, 0.737) | 5.442 [4.073, 7.270] | 1.366 [0.457, 4.079] |
-| Handed along: parameters of new methods | 2.867 (3.050, 2.850, 2.700) | 2.085 (2.600, 1.950, 1.684) | 1.375 [1.063, 1.779] | 1.597 [0.573, 4.452] |
+| New called methods with logic (not wired functions) | 1.400 (1.050, 1.350, 1.800) | 1.492 (1.700, 1.400, 1.368) | 0.939 [0.721, 1.221] | 3.364 [1.168, 9.693] |
+| Handed along: parameters of new called methods | 1.483 (1.000, 1.600, 1.850) | 1.864 (2.350, 1.750, 1.474) | 0.796 [0.599, 1.057] | 4.788 [1.833, 12.508] |
+| Declared: injected parameters of new wired functions | 1.100 (1.700, 1.000, 0.600) | 0.000 (0.000, 0.000, 0.000) | – | – |
+| Parameters of all new methods (as first built) | 2.867 (3.050, 2.850, 2.700) | 2.085 (2.600, 1.950, 1.684) | 1.375 [1.063, 1.779] | 1.597 [0.573, 4.452] |
 | Handed along: values callers pass new methods | 0.067 (0.100, 0.050, 0.050) | 0.203 (0.050, 0.400, 0.158) | 0.328 [0.111, 0.970] | 0.256 [0.003, 24.355] |
 | Introduced: parameters and locals | 5.950 (5.150, 5.900, 6.800) | 5.085 (5.500, 4.700, 5.053) | 1.170 [0.927, 1.477] | 1.747 [0.704, 4.335] |
 | Introduced: fields left in existing classes | 0.433 (0.300, 0.450, 0.550) | 0.610 (0.450, 0.500, 0.895) | 0.710 [0.456, 1.106] | 0.554 [0.091, 3.369] |
