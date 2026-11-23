@@ -97,3 +97,17 @@ def test_every_fifth_checkpoint_and_the_last_are_checked_and_the_summary_gives_t
     assert (s["checkpoints"], s["chains"], s["with_classpath"]) == (2, 2, 1)
     assert (s["calls_precision"], s["calls_recall"], s["names_field_precision"]) == (0.95, 0.75, 1.0)
     assert s["reads_precision"] is None
+
+
+def test_the_tripwire_flags_low_agreement_and_a_gap_between_the_arms_and_fails_nothing():
+    good = {"calls_precision": 0.985, "calls_recall": 0.97, "cross_precision": 0.985, "cross_recall": 0.96}
+    assert validate.flags({"spring": good, "officefloor": good}) == []
+    low = {**good, "calls_recall": 0.88}
+    f = validate.flags({"spring": good, "officefloor": low})
+    assert f == ["recall of calls 0.880 in the officefloor arm, below 0.90",
+                 "recall of calls differs between the arms by more than 0.05: spring 0.970, officefloor 0.880"]
+    # above the mark in both arms, but the arms differ: every contrast of the arms is tilted
+    apart = {**good, "cross_precision": 0.92}
+    assert validate.flags({"spring": good, "officefloor": apart}) == [
+        "precision of calls leaving the class differs between the arms by more than 0.05: spring 0.985, officefloor 0.920"]
+    assert validate.flags({}) == [] and validate.flags({"spring": {"calls_precision": None}}) == []

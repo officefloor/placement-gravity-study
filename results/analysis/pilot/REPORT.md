@@ -316,6 +316,8 @@ The instrument resolves names without a symbol solver. On a sample of each chain
 |---|---|---|---|---|---|
 | officefloor | 12 (1) | 0.986, 0.986 (of 3802 and 3327) | 0.984, 0.984 (of 3342 and 2867) | –, 0.000 (of 0 and 12) | 1.000 of 12, 1.000 of 1, 1.000 of 2 |
 | spring | 12 (1) | 0.985, 0.971 (of 4774 and 4425) | 0.985, 0.964 (of 3900 and 3565) | 1.000, 0.368 (of 7 and 19) | 1.000 of 19, 1.000 of 9, 1.000 of 7 |
+
+- The tripwire is not set off: every share of calls is at least 0.90 in each arm, and none differs between the arms by more than 0.05.
 - officefloor: methods matched between the two 0.994, hosts 1.000; strict precision (a call confirmed only on the compiler's class, its ancestors and descendants, not its siblings): calls 0.986, calls leaving the class 0.984; the instrument's calls the compiler left unresolved (unverified) 17; the compiler's calls to an application method's name it could not resolve 489; its calls to a method with no body in the tree (an interface's) 477; checkpoints read with the project's libraries on the classpath 12 of 12
 - spring: methods matched between the two 0.994, hosts 1.000; strict precision (a call confirmed only on the compiler's class, its ancestors and descendants, not its siblings): calls 0.985, calls leaving the class 0.985; the instrument's calls the compiler left unresolved (unverified) 0; the compiler's calls to an application method's name it could not resolve 335; its calls to a method with no body in the tree (an interface's) 452; checkpoints read with the project's libraries on the classpath 12 of 12
 

@@ -221,6 +221,33 @@ def rows(arm: str, chain_name: str, repo: Path, rev: str, java_src: str, measure
     return out
 
 
+#: The tripwire (decided by the author on 23 November 2026, PLAN.md 4.8): no pass mark, but the
+#: report says so prominently where the instrument's calls agree with the compiler's on less than
+#: LOW of them in an arm, or where the arms differ by more than GAP. Nothing fails by it.
+LOW = 0.90
+GAP = 0.05
+TRIPPED = ("calls_precision", "calls_recall", "cross_precision", "cross_recall")
+
+
+def flags(summary_: dict) -> list[str]:
+    """What the tripwire catches in a summary: a share of calls below LOW in an arm, and a share
+    that differs between two arms by more than GAP (which would tilt every contrast of the arms)."""
+    names = {"calls_precision": "precision of calls", "calls_recall": "recall of calls",
+             "cross_precision": "precision of calls leaving the class",
+             "cross_recall": "recall of calls leaving the class"}
+    out = []
+    for k in TRIPPED:
+        have = {arm: a[k] for arm, a in summary_.items() if a.get(k) is not None}
+        for arm, v in sorted(have.items()):
+            if v < LOW:
+                out.append(f"{names[k]} {v:.3f} in the {arm} arm, below {LOW:.2f}")
+        if len(have) > 1 and max(have.values()) - min(have.values()) > GAP:
+            hi, lo = max(have, key=have.get), min(have, key=have.get)
+            out.append(f"{names[k]} differs between the arms by more than {GAP:.2f}: "
+                       f"{hi} {have[hi]:.3f}, {lo} {have[lo]:.3f}")
+    return out
+
+
 def summary(rows_: list[dict]) -> dict:
     """Per arm, over the checked checkpoints of all chains: each count summed, and the shares."""
     out: dict[str, dict] = {}

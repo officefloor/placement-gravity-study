@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from . import prepare, runs
+from . import prepare, runs, validate
 
 OUT = runs.RESULTS / "analysis"
 
@@ -196,6 +196,9 @@ def h7_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
          "at the same point in the stream and change size, with the class's intercept within the chain; "
          "one-sided above 1, 95% cluster-bootstrap interval (chains resampled).", "",
          f"- **{h.get('verdict', '–')}**",
+         *([f"- **Read with care: the instrument's calls did not agree well enough with the compiler's "
+            f"here** ({'; '.join(rd.get('validation_flags'))}; see the check below)."]
+           if (rd or {}).get("validation_flags") else []),
          f"- **Forced: {ratio(fo)}** (n = {f(fo.get('n'))}, {fo.get('family', '–')}; one-sided p "
          f"{f(fo.get('p_greater'))}; {fo.get('interval', '–')}; the class's intercept "
          f"{'kept' if fo.get('class_intercept') else 'not fitted'}); Wald: {ratio(fo.get('wald'))}",
@@ -334,6 +337,12 @@ def validation_section(rd: dict) -> list[str]:
                  f"{f(a.get('reads_compiler'))}) | {f(a.get('names_method_precision'))} of "
                  f"{f(a.get('names_method'))}, {f(a.get('names_field_precision'))} of {f(a.get('names_field'))}, "
                  f"{f(a.get('names_class_method_precision'))} of {f(a.get('names_class_method'))} |")
+    tripped = rd.get("validation_flags") or []
+    L.append("")
+    L.append("- **Read the calls with care (H5's flow at the method, H6's coupling, H7):** " + "; ".join(tripped) + "."
+             if tripped else
+             f"- The tripwire is not set off: every share of calls is at least {validate.LOW:.2f} in each arm, "
+             f"and none differs between the arms by more than {validate.GAP:.2f}.")
     for arm, a in v.items():
         L.append(f"- {arm}: methods matched between the two {f(a.get('methods_matched_share'))}, hosts "
                  f"{f(a.get('hosts_matched_share'))}; strict precision (a call confirmed only on the compiler's "

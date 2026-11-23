@@ -1089,6 +1089,7 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
     lost = {arm: {"lines": sum(r["own_lines"] or 0 for r in h2 if r["arm"] == arm),
                   "lost": sum(r["own_lost"] or 0 for r in h2 if r["arm"] == arm)}
             for arm in sorted({r["arm"] for r in h2})}
+    checked = {} if past else validate.summary(table("validation"))
     (out / "readings.json").write_text(json.dumps({
         "choice": readings.choice_summary(chosen),
         "formation_end": readings.formation_end(run_rows, additions, len(streamed)) if streamed else {},
@@ -1102,7 +1103,8 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
         "growth": growth_accounting(hosts, len(streamed)),
         "growth_by_access": growth_by_access(hosts),
         "growth_by_lever": growth_by_lever(hosts),
-        "validation": {} if past else validate.summary(table("validation")),
+        "validation": checked,
+        "validation_flags": validate.flags(checked),
         "split": split_summary(split, len(streamed)),
         "coupling_added": coupling_accounting(paired, coupled, h6),
         "encapsulation": encapsulation_summary(h7),

@@ -2,7 +2,7 @@
 
 > **Status: NOT YET REGISTERED. The tag `plan-v1` was withdrawn on 17 November 2026, before any
 > run named for analysis was read, while the hypotheses are worked out on the development chain
-> (§9, five revisions so far, the last still growing: rows 72 to 85 follow a review of the plan on
+> (§9, five revisions so far, the last still growing: rows 72 to 86 follow a review of the plan on
 > 22 November 2026). It will be set again when that work is done; until then only the
 > development chain can be read.** As first registered, on 16 November 2026: the tag was first pushed on commit
 > `4bb8973` and moved the same day, before any run named for analysis was read, to this revision,
@@ -1697,9 +1697,17 @@ chain's checkpoints, **every fifth and the last**, the tree is given to javac
   a build step generates (MapStruct, Lombok) is not in the tree, for either reader.
 - **Where read:** corpus A. A history is read light (§3.2), a few files of a tree at a time, which
   does not compile.
-- **Reported** per arm (`results/analysis/<analysis>/REPORT.md`), with no threshold: the shares
-  are how far the ruler can be trusted, for a reader to weigh. A difference in the shares between
-  the arms would bear on every contrast of the arms and is to be said where they are read.
+- **Reported** per arm (`results/analysis/<analysis>/REPORT.md`), with no pass mark: the shares
+  are how far the ruler can be trusted, for a reader to weigh.
+- **A tripwire, not a pass mark** (decided by the author on 23 November 2026, §9 row 86). Where a
+  share of calls (precision or recall, of all calls or of those leaving the class) is below
+  **0.90** in an arm, or differs between the arms by more than **0.05**, the report says so at
+  the check and at H7, whose outcome is those calls: *read with care*. Nothing fails by it and no
+  verdict changes. The difference between the arms is the one that matters most: an instrument
+  that reads one arm better than the other tilts every contrast of the arms. The two figures are
+  the drafter's, proposed after the development chain had been seen at about 0.985 and 0.97, and
+  rest on nothing but judgement; they were set so that the plan says beforehand what is done if
+  a run comes back much worse, not so as to be passed.
 
 **A fault it found, before any run was read** (22 November 2026, §9 row 80). §4.2a says a call
 goes to the methods of that name "in that class, what it extends or implements, and what extends
@@ -3169,11 +3177,14 @@ author's to set, on the plan and code as they then stand, and starts the experim
   scores nothing; what scores is a later change to it, the first one included.
   *Decided the day before and recorded with their rows:* 200 refits on a history (row 84); the
   count of H4 and the wired functions' parameters apart (rows 82, 83); where the logic landed
-  (row 85). *Still the drafter's and not spoken to:* in H2's arm contrast, the rank-sum test
-  where the function arm's cores are never come back to; in H4's count, that a deleted or
-  renamed file counts as gone back into; in the compiler check, no threshold on the shares and
-  the classpath taken offline from the chain's head; in §4.9, the remainder that gives the
-  declarations. *Known and not corrected:* the instrument does not see a nested class reading a
+  (row 85). *The smaller choices, walked through the same day:* **(5) the rank-sum test over
+  chains** where the function arm's cores are never come back to (row 77): "A", against calling
+  it not estimable or passing it untested. **(6) A deleted or a renamed file counts as gone
+  back into** (row 82): "A", every mutation being counted. **(7) The compiler check has no pass
+  mark but a tripwire** (row 86): "C"; and **the classpath is the chain's own at its head**, one
+  for the chain: "A". **(8) The declarations stay a remainder** (§4.9): "A"; to be counted
+  directly by a dated amendment if the figure comes to matter. With these, no drafter's choice
+  of rows 72 to 86 is left unspoken to. *Known and not corrected:* the instrument does not see a nested class reading a
   field of the class around it (§6).
 - *To finish before the tag (state on 22 November 2026, later):* the development rerun **again**,
   at `MEASURE_VERSION` 29 and `HISTORY_VERSION` 13 (rows 72, 78 and 80 change the measured tables), with
@@ -3381,6 +3392,7 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 83 | In the logic and organisation reading the parameters of new wired functions (injected, declared) are counted apart from those of new called methods with logic (handed by a caller); the stated direction for the state handed along is on the called methods' parameters and the values callers pass | §4.9, §7, `tables.organisation_split`, `prepare.SPLIT`, `analyse.R`, `report.split_section`, `selftest.R`; `MEASURE_VERSION` 31 | Decided by the author on 22 November 2026 on the drafter's proposal, **after the parameters of all new methods went against the stated direction on the development chain** (1.38 [1.06, 1.78]). Seen before it was built, in scratch: the arms wrote the same number of new called methods with logic (80 and 81), with 85 parameters in OfficeFloor and 100 in Spring; OfficeFloor's 35 wired functions carried 1.9 injected parameters each. A reported reading; no verdict depends on it |
 | 84 | On a history the cluster bootstrap has 200 refits, not 1,000; the Wald interval beside each as before | §5, `prepare.BOOT_HISTORY` | Decided by the author on 22 November 2026, after one fit was timed at the sizes expected: corpus B at 1,000 refits would take weeks. Corpora B and C are direction and interval only. No direction, threshold or model changes |
 | 85 | In the logic and organisation reading, where the logic landed: methods that existed, new called methods, new wired functions, with the number of each; no direction stated | §4.9, `tables.organisation_split`, `prepare.SPLIT`, `analyse.R`, `report.split_section`; `MEASURE_VERSION` 32 | The author's question on 22 November 2026, why the parameters of called methods rose in the function arm and fell in the methods arm on the development chain. Seen in scratch before it was built (§6): the function arm's new wired functions fell from 0.95 to 0.20 a checkpoint over the thirds as its new called methods and edits of existing methods rose. A reported reading; no verdict depends on it |
+| 86 | A tripwire on the compiler check: the report says *read with care*, at the check and at H7, where a share of the instrument's calls is below 0.90 in an arm or differs between the arms by more than 0.05; nothing fails by it | §4.8, `validate.flags`, `prepare.py` (`validation_flags`), `report.py`, `tests/test_validate.py` | Decided by the author on 23 November 2026, between no pass mark and a pass mark set after the development chain had been seen: the plan should say beforehand what is done if a run comes back much worse. The two figures are the drafter's. No measure, model or verdict changes |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring
