@@ -111,3 +111,46 @@ def test_the_tripwire_flags_low_agreement_and_a_gap_between_the_arms_and_fails_n
     assert validate.flags({"spring": good, "officefloor": apart}) == [
         "precision of calls leaving the class differs between the arms by more than 0.05: spring 0.985, officefloor 0.920"]
     assert validate.flags({}) == [] and validate.flags({"spring": {"calls_precision": None}}) == []
+
+
+NESTED = """package b;
+public class Outer {
+    private int total;
+    private String label;
+    int bump(int by) { return total + by; }
+    class Inner extends Base {
+        int size;
+        int run(int total2, String label) {
+            int n = total + size + bump(total2);      // the outer class's field and method, by bare name
+            return n + label.length() + inherited();  // label is the parameter, not the outer field
+        }
+        int again() { return Outer.this.total + Outer.this.bump(1) + this.size; }   // named with Outer.this
+    }
+    static class Tool {
+        int bump(int x) { return x; }
+        int use(int x) { return bump(x); }            // its own bump, not the outer class's
+    }
+}
+"""
+
+
+def test_a_nested_class_using_the_class_around_it_by_bare_name_is_followed(tmp_path):
+    """Pull VERSION 16: a field or a method of an enclosing class, used with no receiver."""
+    global SVC
+    keep = SVC
+    try:
+        SVC = NESTED.replace("public class Outer", "class Outer") + "\npublic class Svc {}\n"
+        index, theirs, t = tree(tmp_path)
+    finally:
+        SVC = keep
+    assert t["errors"] == 0
+    by = {(m["type"], m["name"]): m for f in index["files"].values() for m in f["methods"]}
+    run = by[("Outer.Inner", "run")]
+    assert run["reads"] == ["Outer|total"]                       # not label: that is its own parameter
+    assert "Outer|bump|1" in run["calls"] and "|inherited|0" in run["calls"]
+    assert by[("Outer.Tool", "use")]["calls"] == ["|bump|1"]      # its own class declares bump
+    again = by[("Outer.Inner", "again")]
+    assert (again["reads"], again["calls"]) == (["Outer|total"], ["Outer|bump|1"])
+    n = validate.calls(index, theirs)
+    assert (n["calls"], n["calls_confirmed"], n["calls_compiler"], n["calls_found"]) == (4, 4, 4, 4)
+    assert (n["reads"], n["reads_confirmed"], n["reads_compiler"], n["reads_found"]) == (2, 2, 2, 2)

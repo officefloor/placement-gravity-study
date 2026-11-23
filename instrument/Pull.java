@@ -96,7 +96,7 @@ import net.officefloor.sinewslim.javaparser.ParsedFile;
 public final class Pull {
 
 	/** Bump whenever a field's meaning changes. */
-	static final int VERSION = 15;
+	static final int VERSION = 16;
 
 	/** A removed position's text must be at least this long to mark an added one as moved. */
 	static final int MOVED_MIN_CHARS = 12;
@@ -1172,10 +1172,81 @@ public final class Pull {
 	 * receiver as in {@link #calls} (a local, parameter or field of a declared type, or a class named
 	 * for a static field); a field of its own class ({@code this.x}, or no receiver) is not listed.
 	 */
+	/** The classes around a method's own class, the nearest first: a nested class's enclosing classes. */
+	static List<TypeDeclaration<?>> enclosingTypes(Node callable) {
+		List<TypeDeclaration<?>> out = new ArrayList<>();
+		Node own = callable.findAncestor(TypeDeclaration.class).orElse(null);
+		Node t = own == null ? null : own.findAncestor(TypeDeclaration.class).orElse(null);
+		while (t != null) {
+			out.add((TypeDeclaration<?>) t);
+			t = t.findAncestor(TypeDeclaration.class).orElse(null);
+		}
+		return out;
+	}
+
+	static boolean declaresField(TypeDeclaration<?> t, String name) {
+		for (FieldDeclaration f : t.getFields()) {
+			for (com.github.javaparser.ast.body.VariableDeclarator v : f.getVariables()) {
+				if (v.getNameAsString().equals(name)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/** The simple name of a callable's own class ("" if it has none). */
+	static String ownTypeName(Node callable) {
+		Node own = callable.findAncestor(TypeDeclaration.class).orElse(null);
+		return own == null ? "" : ((TypeDeclaration<?>) own).getNameAsString();
+	}
+
+	/** The class a qualified this names ({@code Outer.this}) where that is not the callable's own; else null. */
+	static String outerThis(Expression e, String own) {
+		if (e instanceof ThisExpr te && te.getTypeName().isPresent()) {
+			String name = te.getTypeName().get().getIdentifier();
+			return name.equals(own) ? null : name;
+		}
+		return null;
+	}
+
+	/** Every name a callable declares itself: its parameters (a lambda's among them) and its locals. */
+	static Set<String> ownNames(Node callable) {
+		Set<String> out = new HashSet<>();
+		callable.findAll(com.github.javaparser.ast.body.Parameter.class).forEach(p -> out.add(p.getNameAsString()));
+		for (com.github.javaparser.ast.body.VariableDeclarator v : callable
+				.findAll(com.github.javaparser.ast.body.VariableDeclarator.class)) {
+			if (v.getParentNode().filter(n -> n instanceof FieldDeclaration).isEmpty()) {
+				out.add(v.getNameAsString());
+			}
+		}
+		return out;
+	}
+
 	static List<String> reads(M m) {
 		Map<String, String> vars = varTypes(m.node);
 		Map<String, String> fields = m.owner == null ? Map.of() : m.owner.fieldTypes;
 		Set<String> out = new TreeSet<>();
+		String own = ownTypeName(m.node);
+		// a nested class's use of a field of a class around it, by its bare name (VERSION 16): the name
+		// is not the method's own, nor a field of its own class, and an enclosing class declares it
+		List<TypeDeclaration<?>> around = enclosingTypes(m.node);
+		if (!around.isEmpty()) {
+			Set<String> mine = ownNames(m.node);
+			for (NameExpr n : m.node.findAll(NameExpr.class)) {
+				String x = n.getNameAsString();
+				if (mine.contains(x) || fields.containsKey(x)
+						|| m.owner != null && (m.owner.fields.contains(x) || m.owner.utilities.contains(x))) {
+					continue;
+				}
+				for (TypeDeclaration<?> t : around) {
+					if (declaresField(t, x)) {
+						out.add(t.getNameAsString() + "|" + x);
+						break;
+					}
+				}
+			}
+		}
 		for (FieldAccessExpr fa : m.node.findAll(FieldAccessExpr.class)) {
 			Expression sc = fa.getScope();
 			String recv = null;
@@ -1185,8 +1256,10 @@ public final class Pull {
 						: fields.containsKey(x) ? rawSimple(fields.get(x))
 						: Character.isUpperCase(x.charAt(0)) ? x : null;
 			} else if (sc instanceof FieldAccessExpr inner && inner.getScope() instanceof ThisExpr
-					&& fields.containsKey(inner.getNameAsString())) {
+					&& outerThis(inner.getScope(), own) == null && fields.containsKey(inner.getNameAsString())) {
 				recv = rawSimple(fields.get(inner.getNameAsString()));
+			} else if (outerThis(sc, own) != null) {
+				recv = outerThis(sc, own);          // Outer.this.field, from a nested class (VERSION 16)
 			}
 			if (recv != null && !recv.isEmpty()) {
 				out.add(recv + "|" + fa.getNameAsString());
@@ -1199,7 +1272,11 @@ public final class Pull {
 		Map<String, String> vars = varTypes(m.node);
 		Map<String, String> fields = m.owner == null ? Map.of() : m.owner.fieldTypes;
 		List<String> out = new ArrayList<>();
+		String own = ownTypeName(m.node);
 		java.util.function.Function<Expression, String> receiver = e -> {
+			if (outerThis(e, own) != null) {
+				return outerThis(e, own);           // Outer.this.method(), from a nested class (VERSION 16)
+			}
 			if (e == null || e instanceof ThisExpr || e instanceof com.github.javaparser.ast.expr.SuperExpr) {
 				return "";
 			}
@@ -1221,8 +1298,22 @@ public final class Pull {
 			}
 			return "?";
 		};
+		// a nested class's call, with no receiver, of a method of a class around it (VERSION 16): its own
+		// class declares no method of that name and an enclosing class does. (A method of that name
+		// inherited by the nested class would be the one Java calls; that cannot be told here.)
+		List<TypeDeclaration<?>> around = enclosingTypes(m.node);
 		for (MethodCallExpr c : m.node.findAll(MethodCallExpr.class)) {
-			out.add(receiver.apply(c.getScope().orElse(null)) + "|" + c.getNameAsString() + "|" + c.getArguments().size());
+			String recv = receiver.apply(c.getScope().orElse(null));
+			if (c.getScope().isEmpty() && !around.isEmpty()
+					&& (m.owner == null || !m.owner.methods.contains(c.getNameAsString()))) {
+				for (TypeDeclaration<?> t : around) {
+					if (!t.getMethodsByName(c.getNameAsString()).isEmpty()) {
+						recv = t.getNameAsString();
+						break;
+					}
+				}
+			}
+			out.add(recv + "|" + c.getNameAsString() + "|" + c.getArguments().size());
 		}
 		for (com.github.javaparser.ast.expr.MethodReferenceExpr r : m.node
 				.findAll(com.github.javaparser.ast.expr.MethodReferenceExpr.class)) {

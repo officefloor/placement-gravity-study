@@ -1,5 +1,6 @@
 """Corpora B and C: a repository's history read as units (PLAN.md 3.2, 3.3)."""
 
+import json
 import os
 import subprocess
 from pathlib import Path
@@ -180,3 +181,16 @@ def test_a_repository_read_by_an_older_version_is_read_again(tmp_path):
     assert not history.current(tmp_path)
     (tmp_path / "meta.json").write_text(json.dumps({"history_version": history.HISTORY_VERSION}))
     assert history.current(tmp_path)
+
+
+def test_tables_of_another_version_are_not_gathered(tmp_path):
+    """A repository that failed to be read again keeps its old tables; they are not analysed as new."""
+    analysis = {"name": "h", "sources": [{"arm": "human", "sample": "s", "commits": "all"}]}
+    for name, version in (("a__new", history.HISTORY_VERSION), ("b__old", history.HISTORY_VERSION - 1)):
+        d = tmp_path / "s" / name
+        d.mkdir(parents=True)
+        (d / "meta.json").write_text(json.dumps({"history_version": version}))
+        (d / "units.csv").write_text("cp,agent,date\n1,False,2020-01-01\n")
+        (d / "runs.csv").write_text("cp,arm,chain\n1,x,y\n")
+    rows = history.gather(analysis, "runs", tmp_path)
+    assert len(rows) == 1 and "a__new" in json.dumps(rows[0])

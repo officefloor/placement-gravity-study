@@ -199,9 +199,9 @@ Per unit and existing class it changed, the calls across the class's boundary th
 
 A class's surface (calls out and in) against its volume (methods). The exponent below 1: surface grows slower than volume, so concentrating saves communication; above 1: faster. Ripple: of the later changes to a method a unit's new call reached, the share that also changed the calling class.
 
-- officefloor arm: exponent across the classes of the last tree 0.729 [0.597, 0.861] (172 classes); within a class as it grows 0.819 [0.563, 1.075] (28 classes, 71 changes)
+- officefloor arm: exponent across the classes of the last tree 0.730 [0.597, 0.862] (172 classes); within a class as it grows 0.819 [0.563, 1.075] (28 classes, 71 changes)
   - surface a change added, forced against unforced at the same methods added: -1.182 [-2.741, 0.377]; forced -1 calls for -0.333 methods; unforced 0.691 calls for 0.809 methods
-- spring arm: exponent across the classes of the last tree 0.784 [0.602, 0.966] (64 classes); within a class as it grows 0.849 [0.721, 0.977] (5 classes, 84 changes)
+- spring arm: exponent across the classes of the last tree 0.781 [0.598, 0.964] (64 classes); within a class as it grows 0.849 [0.721, 0.977] (5 classes, 84 changes)
   - surface a change added, forced against unforced at the same methods added: 0.529 [0.106, 0.952]; forced 1 calls for 0.824 methods; unforced 0.560 calls for 1.160 methods
 - Ripple, officefloor arm, forced, opened: 2 new calls; 0 reach a method changed later, 0 later changes, 0 of them changing the caller too (–; by chance –; ratio –)
 - Ripple, officefloor arm, forced, existing: 1 new calls; 0 reach a method changed later, 0 later changes, 0 of them changing the caller too (–; by chance –; ratio –)
@@ -314,8 +314,8 @@ The instrument resolves names without a symbol solver. On a sample of each chain
 
 | Arm | Checkpoints (chains) | Calls: precision, recall | Calls leaving the class: precision, recall | Field reads: precision, recall | Bound names confirmed: method values, fields, class methods |
 |---|---|---|---|---|---|
-| officefloor | 12 (1) | 0.986, 0.986 (of 3802 and 3327) | 0.984, 0.984 (of 3342 and 2867) | –, 0.000 (of 0 and 12) | 1.000 of 12, 1.000 of 1, 1.000 of 2 |
-| spring | 12 (1) | 0.985, 0.971 (of 4774 and 4425) | 0.985, 0.964 (of 3900 and 3565) | 1.000, 0.368 (of 7 and 19) | 1.000 of 19, 1.000 of 9, 1.000 of 7 |
+| officefloor | 12 (1) | 0.986, 0.986 (of 3802 and 3327) | 0.984, 0.984 (of 3342 and 2867) | 1.000, 1.000 (of 12 and 12) | 1.000 of 12, 1.000 of 1, 1.000 of 2 |
+| spring | 12 (1) | 0.985, 0.971 (of 4774 and 4425) | 0.985, 0.964 (of 3900 and 3565) | 1.000, 1.000 (of 19 and 19) | 1.000 of 19, 1.000 of 9, 1.000 of 7 |
 
 - The tripwire is not set off: every share of calls is at least 0.90 in each arm, and none differs between the arms by more than 0.05.
 - officefloor: methods matched between the two 0.994, hosts 1.000; strict precision (a call confirmed only on the compiler's class, its ancestors and descendants, not its siblings): calls 0.986, calls leaving the class 0.984; the instrument's calls the compiler left unresolved (unverified) 17; the compiler's calls to an application method's name it could not resolve 489; its calls to a method with no body in the tree (an interface's) 477; checkpoints read with the project's libraries on the classpath 12 of 12

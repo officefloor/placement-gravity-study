@@ -44,7 +44,7 @@ from . import chain, lines, places, refactor, runs, tables
 OUT = runs.RESULTS / "measure" / "_history"
 WORK = chain.ROOT / ".tmp" / "history"
 SAMPLES = chain.ROOT / "samples"
-HISTORY_VERSION = 13
+HISTORY_VERSION = 14
 #: A unit changes at most this many lines of production Java (PLAN.md §3.2).
 MAX_LINES = 200
 #: No cap on the units read per repository (decided by the author, 18 November 2026): a
@@ -171,11 +171,18 @@ def in_arm(unit: dict, source: dict) -> bool:
 def gather(analysis: dict, table: str, root: Path | None = None) -> list[dict]:
     """A table of a history analysis: every measured repository of each source's sample, its rows
     kept where their unit is in the source's arm, labelled as the chains' rows are (the repository
-    is the chain). ``cp`` stays the unit's number; ``position`` is its place from 0 to 1."""
+    is the chain). ``cp`` stays the unit's number; ``position`` is its place from 0 to 1. A
+    repository whose tables were made by another ``HISTORY_VERSION`` is left out (23 November 2026:
+    with the network down every repository failed to be read again, step 3b ended without error,
+    and step 4 analysed the tables of the version before as if they were new)."""
     rows = []
     for source in analysis["sources"]:
         base = (root or OUT) / source["sample"]
         for d in sorted(p for p in base.iterdir() if p.is_dir()) if base.exists() else []:
+            # only tables made by this version: a repository that failed to be read again (it is
+            # listed in failed.txt) keeps its old tables, and they are not to be analysed as new
+            if d.name == "logs" or not current(d):
+                continue
             us = {u["cp"]: u for u in _read(d / "units.csv")}
             n = max(len(us), 1)
             for r in _read(d / f"{table}.csv"):

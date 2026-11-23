@@ -115,6 +115,8 @@ public class Check {
 	/** One method being read: what it refers to, as the compiler resolves it. */
 	static class M {
 		String type, name, signature;
+		/** The method's own class: a class around it is another class, as it is to the instrument. */
+		TypeElement owner;
 		int params;
 		boolean matchable;
 		Set<String> calls = new TreeSet<>(), reads = new TreeSet<>();
@@ -167,6 +169,8 @@ public class Check {
 			m.signature = m.name + "(" + node.getParameters().stream().map(v -> String.valueOf(v.getType()))
 					.collect(Collectors.joining(", ")) + ")";
 			m.matchable = true;
+			Element cls = getCurrentPath().getParentPath() == null ? null : trees.getElement(getCurrentPath().getParentPath());
+			m.owner = cls instanceof TypeElement ? (TypeElement) cls : null;
 			methods.push(m);
 			scan(node.getBody(), p); // the body only: the signature is organisation
 			methods.pop();
@@ -252,23 +256,35 @@ public class Check {
 				// its own class's field: unqualified, through this, or a static one however it is named
 				if (ownOrInherited(owner) && (own || e.getModifiers().contains(Modifier.STATIC))) {
 					m.ownFields.add(name);
-				} else if (!own) {
+				} else if (!simple(owner).isEmpty() && !(own && k == ElementKind.ENUM_CONSTANT)) {
+					// (a bare enum constant is a switch label, not a read)
+					// another class's field: named with its holder, or a class around this one by bare name
 					m.reads.add(kind(owner) + "|" + simple(owner) + "|" + name);
 				}
 			}
 		}
 
-		/** Whether the class that declares a member is the method's own, or one it extends or implements. */
+		/**
+		 * Whether the class that declares a member is the method's own, or one it extends or implements.
+		 * A class around the method's own is not: a nested class is a class of its own, to the instrument
+		 * and here. A class declared inside the method (local, anonymous) is read as the method's.
+		 */
 		boolean ownOrInherited(TypeElement owner) {
-			TreePath path = getCurrentPath();
-			while (path != null) {
+			M m = methods.peek();
+			TypeElement here = m == null ? null : m.owner;
+			if (here != null && (here.equals(owner) || inherits(here, owner, 0))) {
+				return true;
+			}
+			TreePath path = getCurrentPath();          // a class declared inside the method
+			while (path != null && inside > 0) {
+				if (path.getLeaf() instanceof MethodTree && path.getParentPath() != null
+						&& here != null && here.equals(trees.getElement(path.getParentPath()))) {
+					break;
+				}
 				if (path.getLeaf() instanceof ClassTree) {
 					Element c = trees.getElement(path);
-					if (c instanceof TypeElement) {
-						TypeElement here = (TypeElement) c;
-						if (here.equals(owner) || inherits(here, owner, 0)) {
-							return true;
-						}
+					if (c instanceof TypeElement && (c.equals(owner) || inherits((TypeElement) c, owner, 0))) {
+						return true;
 					}
 				}
 				path = path.getParentPath();

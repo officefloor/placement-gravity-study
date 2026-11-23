@@ -2,7 +2,7 @@
 
 > **Status: NOT YET REGISTERED. The tag `plan-v1` was withdrawn on 17 November 2026, before any
 > run named for analysis was read, while the hypotheses are worked out on the development chain
-> (§9, five revisions so far, the last still growing: rows 72 to 86 follow a review of the plan on
+> (§9, five revisions so far, the last still growing: rows 72 to 87 follow a review of the plan on
 > 22 November 2026). It will be set again when that work is done; until then only the
 > development chain can be read.** As first registered, on 16 November 2026: the tag was first pushed on commit
 > `4bb8973` and moved the same day, before any run named for analysis was read, to this revision,
@@ -1722,6 +1722,25 @@ classes that can be followed the instrument has 295 of 304 and 245 of 248. Every
 H5 at the method, H6's coupling of pairs and H7 was computed with the fault and is superseded by
 the rerun at `MEASURE_VERSION` 29.
 
+**A gap it found, closed before any run was read** (23 November 2026, §9 row 87). Field reads of
+other classes were poorly recalled on the development chain (7 of 19 and none of 12, §6). The
+one behind it: a nested class using a member of a class around it. The instrument read a field
+of another class only where the code named its holder through a typed value or a class's name,
+and took a call with no receiver, or on `this`, for a call to the method's own class. So it
+missed, from a nested class, `Outer.this.field` and `Outer.this.method()` (the case on the
+development chain, in code both conversions began with), and a field or a method of an
+enclosing class used by its bare name. Since `Pull.java` VERSION 16 a bare name that is not the
+callable's own, nor a member of its own class, and that an enclosing class declares, is that
+class's; `Outer.this` names it outright. A method of that name inherited by the nested class is
+the one Java would call and cannot be told from the text; the check shows how often that goes
+wrong on corpus A. The bindings are unchanged: a nested class is a class of its own (§4.4), so
+a field of the class around it is not one of its own fields, and using it is coupling between
+two classes (H7), not a binding. It was closed although small on corpus A (one line), because
+people's Java of before 2021, corpus B, is full of inner classes that use the class around them
+(listeners, iterators, builders, callbacks), and corpus B is where the compiler cannot check.
+The compiler's reader was corrected with it: it had taken a bare name of an enclosing class's
+field for the method's own.
+
 As built: `instrument/Check.java`, `placement_gravity/validate.py`, `tests/test_validate.py`;
 `validation.csv` per chain (step 3), summed per arm in `readings.json` (`validation`).
 
@@ -3184,8 +3203,9 @@ author's to set, on the plan and code as they then stand, and starts the experim
   mark but a tripwire** (row 86): "C"; and **the classpath is the chain's own at its head**, one
   for the chain: "A". **(8) The declarations stay a remainder** (§4.9): "A"; to be counted
   directly by a dated amendment if the figure comes to matter. With these, no drafter's choice
-  of rows 72 to 86 is left unspoken to. *Known and not corrected:* the instrument does not see a nested class reading a
-  field of the class around it (§6).
+  of rows 72 to 86 is left unspoken to. *Known, and corrected the same day at the author's word* ("yes build it and
+  re-measure"): the instrument did not see a nested class using a member of the class around it
+  (row 87, §4.8).
 - *To finish before the tag (state on 22 November 2026, later):* the development rerun **again**,
   at `MEASURE_VERSION` 29 and `HISTORY_VERSION` 13 (rows 72, 78 and 80 change the measured tables), with
   the same four commands as below. The rerun started that morning at 28 and 12 is **not to be
@@ -3393,6 +3413,7 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 84 | On a history the cluster bootstrap has 200 refits, not 1,000; the Wald interval beside each as before | §5, `prepare.BOOT_HISTORY` | Decided by the author on 22 November 2026, after one fit was timed at the sizes expected: corpus B at 1,000 refits would take weeks. Corpora B and C are direction and interval only. No direction, threshold or model changes |
 | 85 | In the logic and organisation reading, where the logic landed: methods that existed, new called methods, new wired functions, with the number of each; no direction stated | §4.9, `tables.organisation_split`, `prepare.SPLIT`, `analyse.R`, `report.split_section`; `MEASURE_VERSION` 32 | The author's question on 22 November 2026, why the parameters of called methods rose in the function arm and fell in the methods arm on the development chain. Seen in scratch before it was built (§6): the function arm's new wired functions fell from 0.95 to 0.20 a checkpoint over the thirds as its new called methods and edits of existing methods rose. A reported reading; no verdict depends on it |
 | 86 | A tripwire on the compiler check: the report says *read with care*, at the check and at H7, where a share of the instrument's calls is below 0.90 in an arm or differs between the arms by more than 0.05; nothing fails by it | §4.8, `validate.flags`, `prepare.py` (`validation_flags`), `report.py`, `tests/test_validate.py` | Decided by the author on 23 November 2026, between no pass mark and a pass mark set after the development chain had been seen: the plan should say beforehand what is done if a run comes back much worse. The two figures are the drafter's. No measure, model or verdict changes |
+| 87 | A nested class's use of a member of a class around it is followed: `Outer.this.field`, `Outer.this.method()`, and a field or a method of an enclosing class used by its bare name where the callable and its own class declare none of that name. The compiler's reader corrected likewise. The bindings are unchanged | §4.8, `Pull.java` VERSION 16 (`reads`, `calls`, `enclosingTypes`, `outerThis`), `Check.java`, `tests/test_validate.py`; `MEASURE_VERSION` 33, `HISTORY_VERSION` 14 | A gap the check of row 79 found (field reads recalled 7 of 19 and 0 of 12 on the development chain) and the same blind spot for calls, seen on reading the code. Decided by the author on 23 November 2026 on the drafter's recommendation, which had first been to leave it: it is one line on corpus A, but inner classes using the class around them are common in the people's Java of corpus B, where the compiler cannot check. No rule changes; before the tag, so a revision |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring
