@@ -810,9 +810,14 @@ if (!is.null(h6) && nrow(h6) > 0) {
     pm <- pairs[pairs$arm == spec$methods_arm & as.logical(pairs$in_tree), ]
     again <- pm[pm$pair %in% pm$pair[duplicated(pm$pair)], ]
     res$reported$H6_pair_coupling <- if (nrow(again) < 3 || length(unique(again$cp)) < 2 || all(again$coupling == 0))
-      list(error = "too few pairs changed together more than once") else
-      c(irr(wald(fit_or_error(glmmTMB(coupling ~ x + (1 | chain_id) + (1 | pair), data = again, family = nbinom2())), "x")),
-        list(n = nrow(again), pairs = length(unique(again$pair))))
+      list(error = "too few pairs changed together more than once") else {
+      # refitted without the chain's intercept where its standard error is not computed (PLAN.md 9
+      # row 88: on the development histories two chains carry it), as H3's class measures are
+      w <- wald(fit_or_error(glmmTMB(coupling ~ x + (1 | chain_id) + (1 | pair), data = again, family = nbinom2())), "x")
+      kept <- is.null(w$error)
+      if (!kept) w <- wald(fit_or_error(glmmTMB(coupling ~ x + (1 | pair), data = again, family = nbinom2())), "x")
+      c(irr(w), list(n = nrow(again), pairs = length(unique(again$pair)), chain_intercept = kept))
+    }
   }
 }
 

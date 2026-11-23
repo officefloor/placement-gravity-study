@@ -512,6 +512,25 @@ def test_h7_forced_classes_that_gain_more_coupling_are_supported():
     assert (s["forced"]["coupled"], s["forced"]["opened_share"], s["unforced"]["rows"]) == (4, 0.5, 0)
 
 
+def test_forced_coupling_is_sorted_into_contained_the_problem_reuse_and_other():
+    # row 88: a call joining two classes whose private data the change needed is the problem's own;
+    # one reaching a member already open is reuse; one reaching a member the change opened, the rest
+    def row(cp, c, forced, coupled):
+        return {"chain_id": "s/r/c1", "arm": "spring", "unit": cp, "class": c, "forced": forced, "coupled": coupled}
+
+    def edge(cp, a, b, kind, fa, fb):
+        return {"chain_id": "s/r/c1", "arm": "spring", "cp": cp, "caller_class": a, "callee_class": b,
+                "kind": kind, "caller_forced": str(fa), "callee_forced": str(fb)}
+    h7 = [row(2, "Owner", True, 1), row(2, "Pet", True, 1), row(3, "Vet", True, 0),
+          row(4, "Visit", True, 2), row(4, "Util", False, 1)]
+    edges = [edge(2, "Owner", "Pet", "exposed", True, True),       # problem, though Pet's member is new
+             edge(4, "Visit", "Clinic", "existing", True, False),  # reuse
+             edge(4, "Visit", "Util", "exposed", True, False)]     # other
+    s = prepare.coupling_source(h7, edges)["spring"]
+    assert (s["rows"], s["contained"], s["explained"], s["other"]) == (4, 1, 2, 1)
+    assert s["calls"]["forced"] == {"problem": 1, "reuse": 1, "other": 1}
+
+
 def h6(forced):
     return {"H6": {"margin": [0.8, 1.25], "forced": forced}}
 

@@ -2,7 +2,7 @@
 
 > **Status: NOT YET REGISTERED. The tag `plan-v1` was withdrawn on 17 November 2026, before any
 > run named for analysis was read, while the hypotheses are worked out on the development chain
-> (§9, five revisions so far, the last still growing: rows 72 to 87 follow a review of the plan on
+> (§9, five revisions so far, the last still growing: rows 72 to 88 follow a review of the plan on
 > 22 November 2026). It will be set again when that work is done; until then only the
 > development chain can be read.** As first registered, on 16 November 2026: the tag was first pushed on commit
 > `4bb8973` and moved the same day, before any run named for analysis was read, to this revision,
@@ -1040,6 +1040,21 @@ edited code in:
 As built: `instrument/Pull.java` (`access`, VERSION 14), `flow.Graph.cross_edges`,
 `flow.Graph.access`, `tables.encapsulation_rows` (`encapsulation.csv`), `prepare.h7_rows`
 (`h7.csv`), `prepare.encapsulation_summary`.
+
+**Where forced coupling came from (reported reading; added 23 November 2026, §9 row 88).** The
+author's reading of H7 on the development histories: well-encapsulated code that is forced into a
+class adds little coupling, and what it adds comes from the problem, not the placement. Each
+class a forced change went into is *contained* (no call added across its boundary), *problem or
+reuse* (every call it added either joins two classes whose private data the change needed, both
+forced in the unit, or reaches a member that was already open), or *other* (some call reaches a
+member the change opened, in a class whose data it did not need). The calls are counted once each
+by the same three sources, for unforced changes beside (whose problem share is nil by definition).
+No direction is stated and no verdict depends on it. The author's account of *other*, given before
+it was built: "it's likely coupling to the other class for utility functions, so not interested in
+the data". Seen on building it (§6): on the Spring pilot chain the *other* calls are accessors of
+data the change added to a domain class, mapper and utility methods, and calls into new exception
+classes. As built: `prepare.call_source`, `prepare.coupling_source` (`readings.json`,
+`coupling_source`), `report.h7_section`, from the calls of `edges.csv`; no table changes.
 
 *Prior work:* access excessiveness and its evolution are measured per member (Kobori et al. 2015,
 across releases; Vidal et al. 2016, over-exposed methods and classes, mostly from their first
@@ -3205,7 +3220,9 @@ author's to set, on the plan and code as they then stand, and starts the experim
   directly by a dated amendment if the figure comes to matter. With these, no drafter's choice
   of rows 72 to 86 is left unspoken to. *Known, and corrected the same day at the author's word* ("yes build it and
   re-measure"): the instrument did not see a nested class using a member of the class around it
-  (row 87, §4.8).
+  (row 87, §4.8). *Decided by the author the same evening, on H7 at `HISTORY_VERSION` 14:* where
+  forced coupling came from, as a reported reading (row 88, §4.2c), and the pairs model refitted
+  without the chain's intercept when its standard error is not computed (row 88): "B".
 - *To finish before the tag (state on 22 November 2026, later):* the development rerun **again**,
   at `MEASURE_VERSION` 29 and `HISTORY_VERSION` 13 (rows 72, 78 and 80 change the measured tables), with
   the same four commands as below. The rerun started that morning at 28 and 12 is **not to be
@@ -3414,6 +3431,7 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 85 | In the logic and organisation reading, where the logic landed: methods that existed, new called methods, new wired functions, with the number of each; no direction stated | §4.9, `tables.organisation_split`, `prepare.SPLIT`, `analyse.R`, `report.split_section`; `MEASURE_VERSION` 32 | The author's question on 22 November 2026, why the parameters of called methods rose in the function arm and fell in the methods arm on the development chain. Seen in scratch before it was built (§6): the function arm's new wired functions fell from 0.95 to 0.20 a checkpoint over the thirds as its new called methods and edits of existing methods rose. A reported reading; no verdict depends on it |
 | 86 | A tripwire on the compiler check: the report says *read with care*, at the check and at H7, where a share of the instrument's calls is below 0.90 in an arm or differs between the arms by more than 0.05; nothing fails by it | §4.8, `validate.flags`, `prepare.py` (`validation_flags`), `report.py`, `tests/test_validate.py` | Decided by the author on 23 November 2026, between no pass mark and a pass mark set after the development chain had been seen: the plan should say beforehand what is done if a run comes back much worse. The two figures are the drafter's. No measure, model or verdict changes |
 | 87 | A nested class's use of a member of a class around it is followed: `Outer.this.field`, `Outer.this.method()`, and a field or a method of an enclosing class used by its bare name where the callable and its own class declare none of that name. The compiler's reader corrected likewise. The bindings are unchanged | §4.8, `Pull.java` VERSION 16 (`reads`, `calls`, `enclosingTypes`, `outerThis`), `Check.java`, `tests/test_validate.py`; `MEASURE_VERSION` 33, `HISTORY_VERSION` 14 | A gap the check of row 79 found (field reads recalled 7 of 19 and 0 of 12 on the development chain) and the same blind spot for calls, seen on reading the code. Decided by the author on 23 November 2026 on the drafter's recommendation, which had first been to leave it: it is one line on corpus A, but inner classes using the class around them are common in the people's Java of corpus B, where the compiler cannot check. No rule changes; before the tag, so a revision |
+| 88 | Where forced coupling came from: contained, problem or reuse, other, per forced class row and per call (a reported reading). H6's coupling of pairs on the index refitted without the chain's intercept where its standard error is not computed | §4.2c, `prepare.coupling_source`, `report.h7_section`, `analyse.R` (`H6_pair_coupling`), `tests/test_analysis.py` | The author's reading of H7 on the development histories at `HISTORY_VERSION` 14, 23 November 2026 ("coupling is increasing only due to the problem, much like shape of solution does not describe the problem"), drafted as three sources the author named: no added coupling, coupling that joins two classes whose data the change needed, coupling through what was already exposed. The refit: at `HISTORY_VERSION` 14 the pairs model's standard error was not computed with two chains, and the author chose the fallback H3's class measures already use. No measure, table or verdict changes |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

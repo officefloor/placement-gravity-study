@@ -173,7 +173,9 @@ def h6_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
     pc = rep.get("H6_pair_coupling") or {}
     L += ["", "### Pairs of classes changed together", "",
           f"- The coupling of pairs changed together more than once (calls between them before the unit) on "
-          f"the index: {ratio(pc)}" + (f" ({f(pc.get('pairs'))} pairs, {f(pc.get('n'))} rows)" if "pairs" in pc else "")]
+          f"the index: {ratio(pc)}" + (f" ({f(pc.get('pairs'))} pairs, {f(pc.get('n'))} rows"
+                                       + ("" if pc.get("chain_intercept", True) else
+                                          "; refitted without the chain's intercept") + ")" if "pairs" in pc else "")]
     for arm, a in ((rd or {}).get("co_change") or {}).items():
         L.append(f"- {arm} arm: {f(a.get('pairs'))} pairs of classes changed together, "
                  f"{f(a.get('again'))} more than once; of those, coupling rose in {f(a.get('rose'))} "
@@ -217,6 +219,23 @@ def h7_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
                      f"{f(x.get('coupled'))} (outward {f(x.get('out'))}, inward {f(x.get('in'))}); reaching an "
                      f"exposed or widened member {f(x.get('opened_share'))} (exposed {f(x.get('exposed'))}, widened "
                      f"{f(x.get('widened'))}); members opened a row {f(x.get('members_opened'))}")
+    src = (rd or {}).get("coupling_source") or {}
+    if src:
+        L += ["", "### Where forced coupling came from (reported reading)", "",
+              "Each class a forced change went into: *contained* (no call added across its boundary); "
+              "*problem or reuse* (every call it added joins two classes whose private data the change needed, "
+              "or reaches a member that was already open); *other* (some call reaches a member the change "
+              "opened, in a class whose data it did not need: a utility, as the author reads it). The calls "
+              "are counted once each by the same sources.", ""]
+        for arm, a in src.items():
+            L.append(f"- {arm} arm, forced class rows {f(a.get('rows'))}: contained {f(a.get('contained'))} "
+                     f"({f(a.get('contained_share'))}), problem or reuse {f(a.get('explained'))} "
+                     f"({f(a.get('explained_share'))}), other {f(a.get('other'))} ({f(a.get('other_share'))})")
+            for lab in ("forced", "unforced"):
+                c = (a.get("calls") or {}).get(lab)
+                if c:
+                    L.append(f"  - calls of {lab} changes: problem {f(c.get('problem'))}, reuse "
+                             f"{f(c.get('reuse'))}, other {f(c.get('other'))}")
     return L
 
 

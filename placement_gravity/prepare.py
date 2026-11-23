@@ -437,6 +437,51 @@ def encapsulation_summary(h7: list[dict]) -> dict:
     return out
 
 
+#: Where a call across a class's boundary came from (PLAN.md 4.2c, row 88), in this order: the
+#: problem's own coupling (it joins two classes whose private data the change needed), reuse of what
+#: was already open, and the rest (a member the change opened, in a class whose data it did not need).
+SOURCES = ("problem", "reuse", "other")
+
+
+def call_source(e: dict) -> str:
+    """Where one added call across a class's boundary came from (``SOURCES``)."""
+    if truth(e["caller_forced"]) and truth(e["callee_forced"]):
+        return "problem"
+    return "reuse" if e["kind"] == "existing" else "other"
+
+
+def coupling_source(h7: list[dict], edges: list[dict]) -> dict:
+    """Is forced coupling the problem's own (PLAN.md 4.2c, row 88; the author, 23 November 2026)?
+    Per arm, the class rows forced by encapsulation: how many added no call across the class's
+    boundary (*contained*), how many added only calls of the problem or of reuse, and how many some
+    of the rest; and the calls themselves by source, each counted once, with the unforced
+    changes' calls beside (where the problem's own is nil by definition)."""
+    from . import flow
+    by_row: dict[tuple, list[str]] = {}
+    calls: dict[str, dict[str, dict[str, int]]] = {}
+    for e in edges:
+        s = call_source(e)
+        forced = truth(e["caller_forced"]) or truth(e["callee_forced"])
+        g = calls.setdefault(e["arm"], {}).setdefault("forced" if forced else "unforced", dict.fromkeys(SOURCES, 0))
+        g[s] += 1
+        for c in {e["caller_class"], e["callee_class"]}:
+            by_row.setdefault((e["chain_id"], int(e["cp"]), c), []).append(s)
+    out: dict[str, dict] = {}
+    for arm in sorted({r["arm"] for r in h7} | set(calls)):
+        rows = [r for r in h7 if r["arm"] == arm and r["forced"]]
+        kinds = [by_row.get((r["chain_id"], int(r["unit"]), flow.simple(r["class"])), []) for r in rows]
+        contained = sum(1 for r in rows if not r["coupled"])
+        explained = sum(1 for r, k in zip(rows, kinds) if r["coupled"] and k and "other" not in k)
+        n = len(rows)
+        out[arm] = {"rows": n, "contained": contained, "explained": explained,
+                    "other": n - contained - explained,
+                    "contained_share": contained / n if n else None,
+                    "explained_share": explained / n if n else None,
+                    "other_share": (n - contained - explained) / n if n else None,
+                    "calls": calls.get(arm, {})}
+    return out
+
+
 def _values(h: dict) -> set[str]:
     """The class's own values a host's code was bound to: its fields and the class methods called."""
     return set((h.get("need_class_values") or "").split()) | set((h.get("called_class_methods") or "").split())
@@ -1048,7 +1093,8 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
     h7 = h7_rows(table("encapsulation"), hosts)
     write_csv(out / "h7.csv", h7)
     write_csv(out / "surface.csv", surface_rows(table("boundary")))
-    rippled = ripple(hosts, table("edges"))
+    edges = table("edges")
+    rippled = ripple(hosts, edges)
     members = table("members")
     r_units, r_classes = reader_rows(members, hosts, h7, table("boundary"), table("refactorings"))
     write_csv(out / "reader_units.csv", r_units)
@@ -1108,6 +1154,7 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
         "split": split_summary(split, len(streamed)),
         "coupling_added": coupling_accounting(paired, coupled, h6),
         "encapsulation": encapsulation_summary(h7),
+        "coupling_source": coupling_source(h7, edges),
         "redesign": redesign(hosts, paired),
         "ripple": rippled,
         "reader": reader_summary(r_units, r_classes),
