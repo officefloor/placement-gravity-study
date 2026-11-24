@@ -21,7 +21,7 @@ from . import chain, crosscheck, lines, places, runs, shape, tables, validate
 OUT = runs.RESULTS / "measure"
 WORK = chain.ROOT / ".tmp" / "measure"
 #: Bump when a table's meaning changes, so measured chains are redone.
-MEASURE_VERSION = 36
+MEASURE_VERSION = 37
 
 
 def write(path: Path, rows: list[dict]) -> None:
@@ -84,6 +84,7 @@ def measure_chain(reg: dict, analysis: dict, head: dict, streamed: dict, stacks:
     write(out / "boundary.csv", label(tables.boundary_rows(arm, name, h, measured), head))
     write(out / "edges.csv", label(tables.edge_rows(arm, name, h, measured), head))
     write(out / "links.csv", label(tables.link_rows(arm, name, measured), head))
+    write(out / "containers.csv", label(tables.container_rows(arm, name, h, measured), head))
     write(out / "members.csv", label(tables.member_rows(arm, name, measured), head))
     write(out / "landings.csv", label(places.landings(arm, name, h, measured["shape"]), head))
     write(out / "shape_series.csv", label(shape.series_rows(arm, name, measured["shape"]), head))

@@ -460,6 +460,61 @@ def links_summary(rows: list[dict], checkpoints: int) -> dict:
     return out
 
 
+def container_summary(rows: list[dict], checkpoints: int, seed: int = SEED, resamples: int = 1000) -> dict:
+    """A filled ball or pebbles (a reported reading, PLAN.md 4.2g; no direction stated). Per arm and
+    kind of container (class; flow, the function arm's wiring files), for the concentrations, the
+    rest, and all: at each chain's last checkpoint, the containers' mean blocks, block size (volume
+    a block), largest block's share and internal links a block; and the **growth exponent**: within
+    each container over the checkpoints, log(blocks) on log(volume), pooled with each container's own
+    mean taken out, with a 95% percentile interval over containers resampled. Near 1 a container
+    grows by adding blocks (pebbles); near 0 by swelling the blocks it has (a filled ball)."""
+    import math
+    rows = [r for r in rows if num(r.get("volume"), 0) > 0]
+    out: dict = {}
+    for arm in sorted({r["arm"] for r in rows}):
+        for kind in ("class", "flow"):
+            rs = [r for r in rows if r["arm"] == arm and r["kind"] == kind]
+            if not rs:
+                continue
+            ident = lambda r: (r["chain_id"], r["container"])
+            series: dict[tuple, list[dict]] = {}
+            for r in rs:
+                series.setdefault(ident(r), []).append(r)
+            ever = {k for k, v in series.items() if any(truth(r["concentration"]) for r in v)}
+            last_cp = {}
+            for r in rs:
+                last_cp[r["chain_id"]] = max(last_cp.get(r["chain_id"], 0), int(r["cp"]))
+            a = {}
+            for group, keys in (("concentrations", ever), ("rest", set(series) - ever), ("all", set(series))):
+                end = [r for k in keys for r in series[k] if int(r["cp"]) == last_cp[r["chain_id"]]]
+                mean = lambda f: statistics.fmean(f(r) for r in end) if end else None
+                pts = []
+                for k in keys:
+                    xs = [(math.log(num(r["volume"])), math.log(num(r["blocks"]))) for r in series[k]]
+                    if len({x for x, _ in xs}) < 2:
+                        continue
+                    mx, my = statistics.fmean(x for x, _ in xs), statistics.fmean(y for _, y in xs)
+                    pts.append([(x - mx, y - my) for x, y in xs])
+
+                def slope(groups):
+                    sxx = sum(x * x for g in groups for x, _ in g)
+                    return sum(x * y for g in groups for x, y in g) / sxx if sxx else None
+                b = slope(pts)
+                rng = random.Random(seed)
+                draws = sorted(d for d in (slope(rng.choices(pts, k=len(pts))) for _ in range(resamples) if pts)
+                               if d is not None) if len(pts) > 1 else []
+                a[group] = {"containers_at_end": len(end),
+                            "blocks": mean(lambda r: num(r["blocks"])),
+                            "block_size": mean(lambda r: num(r["volume"]) / num(r["blocks"])),
+                            "largest_share": mean(lambda r: num(r["largest_share"], 0)),
+                            "internal_links_per_block": mean(lambda r: num(r["internal_links"]) / num(r["blocks"])),
+                            "growth_exponent": b, "growing_containers": len(pts),
+                            "interval": [draws[int(0.025 * (len(draws) - 1))], draws[int(0.975 * (len(draws) - 1))]]
+                            if draws else None}
+            out.setdefault(arm, {})[kind] = a
+    return out
+
+
 def calls_across_rows(enc: list[dict], host_rows: list[dict] | None = None) -> list[dict]:
     """Calls across the encapsulation (PLAN.md 4.2c; H8's dispersion): one row per unit and existing class it changed, with the
     calls across the class's boundary the unit added (``coupled``, outward and inward), how many of
@@ -1210,6 +1265,7 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
         "validation_flags": validate.flags(checked),
         "split": split_summary(split, len(streamed)),
         "links": links_summary(surfaced, len(streamed)),
+        "containers": {} if past else container_summary(table("containers"), len(streamed)),
         "coupling_added": coupling_accounting(paired, coupled, h7),
         "coupling_source": coupling_source(h5, edges),
         "redesign": redesign(hosts, paired),

@@ -508,3 +508,28 @@ def test_a_wiring_edge_weighs_one_more_where_it_carries_a_value(tmp_path):
     assert g.flow_weight({"class": "Check", "method": None, "output": "stop"}) == 1
     assert g.flow_weight({"class": "Load", "method": "service", "output": None}) == 2
     assert g.flow_weight({"class": "Check", "method": None, "output": None}) == 1
+
+
+def test_containers_count_blocks_volume_and_the_links_inside_and_out(tmp_path):
+    """A filled ball or pebbles (PLAN.md 4.2g): each class a container of blocks."""
+    import json
+    import subprocess
+    from placement_gravity import chain
+    src = tmp_path / "src" / "s"
+    src.mkdir(parents=True)
+    (src / "Owners.java").write_text(SPRING)
+    (src / "Repo.java").write_text(REPO)
+    (tmp_path / "places.tsv").write_text(f"cp01\t{tmp_path / 'src'}\n")
+    subprocess.run(["java", "-cp", chain.CLASSPATH, "Pull", "--places", str(tmp_path / "places.tsv"),
+                    str(tmp_path / "places.jsonl")], check=True)
+    files = {r["path"]: r for r in map(json.loads, (tmp_path / "places.jsonl").read_text().splitlines())}
+    shape = [{"unit": "cp01", "type": "s.Owners", "signature": "add(String)", "positions": 6},
+             {"unit": "cp01", "type": "s.Owners", "signature": "check(String)", "positions": 2}]
+    hosts = [{"cp": 1, "type": "s.Owners", "before_type": "s.Owners", "choice_class": 0, "replacement": False}]
+    rows = tables.container_rows("spring", "c", hosts, {"places": {"cp01": {"files": files, "flows": []}},
+                                                         "shape": shape})
+    o = next(r for r in rows if r["container"] == "Owners")
+    assert (o["blocks"], o["volume"], o["largest_share"], o["concentration"]) == (3, 8, 0.75, True)
+    # inside: add -> check, add -> #seen, check -> #seen; out: add -> Repo.count()
+    assert (o["internal_calls"], o["internal_state"], o["external_calls"]) == (1, 2, 1)
+    assert next(r for r in rows if r["container"] == "Repo")["concentration"] is False

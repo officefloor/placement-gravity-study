@@ -755,3 +755,15 @@ def test_h1_forced_rows_count_every_checkpoint_that_did_something():
           {"chain_id": "c", "level": "class", "forced": False, "cp": 3}]
     adds = [{"chain_id": "c", "arm": "spring", "cp": str(k), "noop": str(k == 4)} for k in (1, 2, 3, 4)]
     assert [(r["cp"], r["forced_class"]) for r in prepare.h1_forced_rows(h1, adds)] == [(1, 0), (2, 2), (3, 0)]
+
+
+def test_the_growth_exponent_tells_pebbles_from_a_filled_ball():
+    # pebbles: blocks grow with volume (exponent 1); a ball: blocks stay, volume swells (exponent 0)
+    def rows(arm, blocks_of):
+        return [{"arm": arm, "kind": "class", "chain_id": arm, "container": f"C{k}", "cp": str(cp),
+                 "concentration": "True", "volume": str(v), "blocks": str(blocks_of(v)), "largest_share": "0.5",
+                 "internal_links": "2"} for k in range(3) for cp, v in enumerate((10 * (k + 1), 20 * (k + 1), 40 * (k + 1)), 1)]
+    s = prepare.container_summary(rows("spring", lambda v: v // 10) + rows("officefloor", lambda v: 4), 3, resamples=50)
+    assert abs(s["spring"]["class"]["concentrations"]["growth_exponent"] - 1) < 1e-9
+    assert abs(s["officefloor"]["class"]["concentrations"]["growth_exponent"]) < 1e-9
+    assert s["spring"]["class"]["rest"]["containers_at_end"] == 0

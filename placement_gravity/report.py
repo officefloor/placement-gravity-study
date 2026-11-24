@@ -492,6 +492,32 @@ def surface_section(rep: dict, rd: dict) -> list[str]:
     return L
 
 
+def containers_section(rd: dict) -> list[str]:
+    """A filled ball or pebbles (PLAN.md §4.2g, a reported reading, no direction stated)."""
+    data = (rd or {}).get("containers") or {}
+    if not data:
+        return []
+    L = ["", "## Reported: a filled ball or pebbles", "",
+         "Each class (and, in the function arm, each wiring flow file) as a container of blocks of logic "
+         "(methods). At each chain's last checkpoint: blocks, volume a block, the largest block's share and "
+         "internal links a block. The growth exponent: within a container over the stream, log(blocks) on "
+         "log(volume); near 1 it grows by adding blocks (pebbles), near 0 by swelling the blocks it has (a "
+         "filled ball); 95% interval over containers resampled.", ""]
+    for arm, kinds in data.items():
+        for kind, groups in kinds.items():
+            for g in ("concentrations", "rest", "all"):
+                x = groups.get(g) or {}
+                if not x.get("containers_at_end") and not x.get("growing_containers"):
+                    continue
+                iv = x.get("interval") or [None, None]
+                L.append(f"- {arm}, {kind}, {g}: {f(x.get('containers_at_end'))} at the end; blocks "
+                         f"{f(x.get('blocks'))}, volume a block {f(x.get('block_size'))}, largest block "
+                         f"{f(x.get('largest_share'))}, internal links a block {f(x.get('internal_links_per_block'))}; "
+                         f"growth exponent {f(x.get('growth_exponent'))} [{f(iv[0])}, {f(iv[1])}] "
+                         f"({f(x.get('growing_containers'))} containers that grew)")
+    return L
+
+
 def reader_section(rep: dict, rd: dict) -> list[str]:
     """Encapsulation and the reader (PLAN.md §4.2f): the four measures per author group (arm) and size
     band, and on a history the models of the author against system size."""
@@ -907,6 +933,7 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           *coupling_source_section(readings or {}),
           *redesign_section(readings or {}),
           *surface_section(rep, readings or {}),
+          *containers_section(readings or {}),
           *reader_section(rep, readings or {}),
           *readings_section(est, readings or {}),
           *landing_section({**(readings or {}), "_estimates": rep}),

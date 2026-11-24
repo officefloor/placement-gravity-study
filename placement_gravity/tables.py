@@ -564,6 +564,59 @@ def link_rows(arm: str, chain: str, measured: dict) -> list[dict]:
     return rows
 
 
+def container_rows(arm: str, chain: str, hosts: list[dict], measured: dict) -> list[dict]:
+    """A filled ball or pebbles (a reported reading, PLAN.md 4.2g, 25 November 2026): per checkpoint,
+    in the tree before it, each **container** of blocks of logic: every class (``kind`` class), and in
+    the function arm each wiring flow file (``kind`` flow: the classes it wires, functions and the
+    methods beside them). Per container: its **blocks** (methods), its **volume** (the positions of
+    their bodies), the share of the volume in its largest block and the blocks' Gini, its **internal
+    links** (calls between its own blocks and their uses of its own fields holding state, and for a
+    flow its wiring edges) and its **external** call links (in and out). ``concentration``: a class
+    that code had been forced into (H1's forced placement at the class) at or before the checkpoint;
+    a flow is a concentration when one of its classes is."""
+    trees, _ = _trees(measured)
+    size = {(str(r["unit"]), flow.simple(r["type"]), r["signature"]): int(r.get("positions") or 0)
+            for r in measured.get("shape") or []}
+    forced_at: dict[str, int] = {}
+    for h in hosts:
+        if h.get("choice_class") == 0 and not h.get("replacement"):
+            c = flow.simple(_type(h.get("before_type") or h["type"]))
+            forced_at[c] = min(forced_at.get(c, h["cp"]), h["cp"])
+    rows = []
+    for cp in sorted(trees):
+        unit = f"cp{cp:02d}"
+        g = _graph(trees[cp])
+        links = g.links()
+        wl = ((measured.get("wiring") or {}).get(unit) or {}).get("before") or {}
+        wired_now = set(wl.get("links") or [])
+        by_class: dict[str, list[tuple[str, str]]] = {}
+        for m in g.methods:
+            k = (flow.simple(m["type"]), m["signature"])
+            by_class.setdefault(k[0], []).append(k)
+        groups = [("class", c, {c}) for c in sorted(by_class)]
+        groups += [("flow", "+".join(sorted(f)), set(f)) for f in g.flows if f & set(by_class)]
+        for kind, name, members in groups:
+            blocks = [k for c in sorted(members) for k in by_class.get(c, [])]
+            if not blocks:
+                continue
+            vols = [size.get((unit, k[0], k[1]), 0) for k in blocks]
+            volume = sum(vols)
+            inside = set(blocks)
+            calls_in = sum(1 for a, b in links["call"] if a in inside and b in inside)
+            state_in = sum(1 for a, f in links["state"] if a in inside and f[0] in members)
+            calls_out = sum(1 for a, b in links["call"] if (a in inside) != (b in inside))
+            flows_in = sum(1 for x in wired_now if ((wl.get("link_from") or {}).get(x) or {}).get("class") in members) \
+                if kind == "flow" else 0
+            rows.append({"arm": arm, "chain": chain, "cp": cp, "kind": kind, "container": name,
+                         "concentration": any(forced_at.get(c, cp + 1) <= cp for c in members),
+                         "blocks": len(blocks), "volume": volume,
+                         "largest_share": max(vols) / volume if volume else None,
+                         "gini": gini(vols), "internal_links": calls_in + state_in + flows_in,
+                         "internal_calls": calls_in, "internal_state": state_in, "internal_flow": flows_in,
+                         "external_calls": calls_out})
+    return rows
+
+
 #: RefactoringMiner's kinds that split a class or move members between classes (the redesign
 #: reading's check, PLAN.md 4.2d).
 SPLITS = {"Extract Class", "Extract Subclass"}

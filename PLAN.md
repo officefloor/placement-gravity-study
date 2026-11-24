@@ -1294,6 +1294,34 @@ classes, methods and tokens before each unit; `MEASURE_VERSION` 27, `HISTORY_VER
 on a history only); `report.reader_section`. The R self-test recovers a simulated author effect,
 its narrowing with size and two nulls.
 
+### 4.2g A filled ball or pebbles (reported reading)
+
+Added 25 November 2026 (§9 row 98; the author's question: "need to determine if dealing with a
+filled ball or is it full of smaller pebbles"). The blocks of logic are the methods; a
+**container** holds them: every class, and in the function arm also each wiring flow file (the
+classes it wires, its functions and the methods beside them), since OfficeFloor's function is
+usually a class of one method and its request flow is the nearer match to a Spring class. Per
+checkpoint, in the tree before it, per container:
+
+- **Blocks:** its methods. **Volume:** the positions of their bodies (§4.1). The share of the
+  volume in its largest block, and the blocks' Gini.
+- **Internal links:** calls between its own blocks, their uses of its own fields holding state
+  (§4.2c), and for a flow its wiring edges; **external** call links, in and out.
+- **Concentration:** a class code had been forced into (H1's forced placement at the class) at or
+  before the checkpoint; a flow whose classes include one. Reported apart from the rest, and with it.
+
+Reported per arm and kind of container, for the concentrations, the rest and all: at each chain's
+last checkpoint the mean blocks, volume a block, largest block's share and internal links a block;
+and the **growth exponent**, log(blocks) on log(volume) within each container over the stream
+(each container's own mean taken out, pooled), with a 95% interval over containers resampled
+(1,000, seed 20261116). Near 1, a container grows by adding blocks of about the same size:
+**pebbles**, joined by internal links. Near 0, it grows by swelling the blocks it has: **a filled
+ball**, whose cost the shape literature sees (H6). **No direction is stated** (the author: "no
+expectation"); it enters no verdict.
+
+As built: `tables.container_rows` (`containers.csv`), `prepare.container_summary`
+(`readings.json`, `containers`), `report.containers_section`; `MEASURE_VERSION` 37. Corpus A only.
+
 ### 4.3 Bindings (Q2), the measure of gravitation
 
 Only **logic lines** carry the value of a change: a method's body statements. Signatures,
@@ -3463,6 +3491,10 @@ author's to set, on the plan and code as they then stand, and starts the experim
   a wiring edge weighs 1, plus 1 where it carries a value ("1, +1 if it carries a value", against
   always 1); and the test runs on the weights with the plain count reported (against needing
   both). The author's earlier "the existence of the link is the coupling" is revised by this.
+- *Decided by the author on 25 November 2026:* a reported reading of whether a concentration is
+  **a filled ball or pebbles** (row 98, §4.2g): every class, the concentrations apart; in the function
+  arm the wiring flow files as containers too; no direction stated ("no expectation"). The pilot is
+  to be measured again at `MEASURE_VERSION` 37 for it.
 - *Done for rows 94 and 95:* the pilot measured again at `MEASURE_VERSION` 36 (§6). **H5 frozen**
   (the author, 24 November 2026, agreeing with the drafter): no further change to it before the ui
   runs are read. **A call made on an injected object is a call link**, confirmed by the author
@@ -3710,6 +3742,7 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 95 | **H5's links weighed**: a call 1 + 1 per parameter + 1 if it returns a value; a state link 1; a wiring edge 1 + 1 if it carries a value (a `next:` from a function that returns one, an output whose flow takes an argument); injection weighs nothing. H5's test (its shape unchanged) is read on the weight added; the plain count, the test until then, is reported beside | §2, §4.2c, §5, §8, `Pull.java` VERSION 18 (`returns`, `flows`), `chain.parse_wiring` (`link_from`), `flow.Graph.call_weight`, `flow.Graph.flow_weight`, `tables.link_rows`, `prepare.h5_rows`, `prepare.links_summary`, `analyse.R` (`weight_added`; `reported$H5_unweighted`), `selftest.R`, `report.h5_section`, `tests/`; `MEASURE_VERSION` 36 | The author's, 24 November 2026: "a method call is calculated as 1 for the call, +1 for every parameter, +1 if has return type. Then the wiring for function injection is just 1". **Made after H5 had gone against the function arm on the development chain** (1.25 [1.06, 1.47] times the links for the same logic, §6) and after the author had seen that the excess was the wiring between OfficeFloor's more numerous classes and methods. The +1 for an edge carrying a value is the drafter's, chosen by the author. The drafter's note, in §2: OfficeFloor's data passes mostly through injected values, which weigh nothing, so the weights credit the form exactly where the author's claim is. Before the tag, so a revision |
 | 96 | Confirmed: a call made on an injected object (a repository, a mapper, a store handed to a function or held in a Spring field the container fills) is a call link, weighed as any call; receiving the injected object is not surface | §4.2c, §8 | The author, 24 November 2026: "keep it counted", after the drafter laid out both readings. It had been the drafter's reading since row 89. **Decided after the development chain had been seen** (§6: many of the function arm's 3.34 call links a checkpoint across classes are such calls, and Spring has the same kind), on the principle that injection removes the finding of the target, not the call. No code changes |
 | 97 | The forces map redrawn: the numbering of row 93; H1 the force with the function arm forced less; H3 *encapsulation fills*; the dispersing branch now *coordinate*, its cost H5 surface against volume (weighed links per unit of logic); H8 Run D as a box that removes encapsulation; the confirmatory four named; a label that ran past its box shortened | §2, `figures/placement-forces.svg` | The author, 24 November 2026: "redraw the forces-map figure with the new numbering". A drawing only |
+| 98 | A reported reading, a filled ball or pebbles: per checkpoint each container of blocks of logic (every class; in the function arm also each wiring flow file) with its blocks (methods), volume, largest block's share, Gini, internal and external links, and whether it is a concentration; per arm and kind, the concentrations, the rest and all, at the end and by the growth exponent of blocks on volume within a container. No direction stated; no verdict depends on it | §4.2g, §8, `tables.container_rows`, `measure.py` (`containers.csv`), `prepare.container_summary`, `report.containers_section`, `tests/`; `MEASURE_VERSION` 37 | The author's, 25 November 2026: "I'm thinking more that we need the number of blocks of code (methods). Need to determine if dealing with a filled ball or is it full of smaller pebbles". The classes, the containers and no expectation chosen by the author from the drafter's options. Not yet computed on any chain |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring
