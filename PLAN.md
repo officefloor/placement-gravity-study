@@ -201,15 +201,14 @@ harness's to do, not this plan's.
 
 Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 November 2026).
 
-![Placement forces map: encapsulation is the force; choice narrows (H1) so changes become forced;
-a forced change concentrates (cost: size, H2, H3) or disperses (cost: coupling); shape (H6) and
-co-change spread (H7) are the literature's readings, predicted not to see it; function injection
-(H4) removes the force](figures/placement-forces.svg)
+![Placement forces map: encapsulation is the force; code is forced into a class and choice
+narrows, less often under function injection (H1); a forced change concentrates (cost: size, H2,
+H3) or reaches out, and the concentrations are coordinated by links (cost: coupling, the surface,
+H5); shape (H6) and co-change spread (H7) are the literature's readings, predicted not to see it;
+function injection forms no core (H4, the control); Run D removes encapsulation by hand
+(H8)](figures/placement-forces.svg)
 
-*The figure was drawn before 24 November 2026 and keeps that day's earlier numbering (§9 row 93):
-its H5 is H1 here, its H1 is H3, its H3 is H6, its H6 is H7, and its H7, *forced changes couple*,
-has been deleted (§9 row 90). H5 is now the surface that keeps the concentrations coordinated: the
-links between blocks of logic, against the logic they join.*
+*Redrawn on 24 November 2026 (§9 row 97) in the numbering of row 93, through row 96.*
 
 *How the hypotheses fit together* (a map, not a rule; the hypotheses below govern). A change
 bound to data no other class can reach is forced. It pays in size by concentrating, or in
@@ -3473,7 +3472,7 @@ author's to set, on the plan and code as they then stand, and starts the experim
   target, not the call. *As it stood for row 89:* the pilot measured again at `MEASURE_VERSION` 34 (`./step3_measure.sh
   --analysis pilot`, then `./step4_analyse.sh --analysis pilot open-source-development` and
   `./step5_report.sh`); the histories are not affected (`HISTORY_VERSION` 14 stands). Then H7's
-  development figures go into §6. The figure of §2 still shows the old H7. **H8 stays as it is**
+  development figures go into §6. The figure of §2 was redrawn the same day (row 97). **H8 stays as it is**
   (the author, 24 November 2026: "keep H8 as is"): its *dispersion stronger* reads where the
   coupling goes, the calls across the encapsulation, not how much coordination the logic needs,
   which is H7's links.
@@ -3710,6 +3709,7 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 94 | A reported reading beside H5: the call links a checkpoint added, split by caller (a wired function, a public method of a class the wiring declares, or any other method) and by whether the callee is in the caller's class; per arm and, for calls from other methods, over the thirds. No direction stated; no test changes | §4.2c, §6, `tables.link_rows`, `prepare.h5_rows`, `prepare.links_summary`, `report.h5_section`, `tests/`; `MEASURE_VERSION` 35 | The author's, 24 November 2026 ("add the breakdown"), **after H5 had gone against the form on the development chain** (§6): the drafter proposed it to see whether the function arm's calls come from the helper methods the agent wrote inside functions, which the author holds can be split out again (§1). H5's test is unchanged |
 | 95 | **H5's links weighed**: a call 1 + 1 per parameter + 1 if it returns a value; a state link 1; a wiring edge 1 + 1 if it carries a value (a `next:` from a function that returns one, an output whose flow takes an argument); injection weighs nothing. H5's test (its shape unchanged) is read on the weight added; the plain count, the test until then, is reported beside | §2, §4.2c, §5, §8, `Pull.java` VERSION 18 (`returns`, `flows`), `chain.parse_wiring` (`link_from`), `flow.Graph.call_weight`, `flow.Graph.flow_weight`, `tables.link_rows`, `prepare.h5_rows`, `prepare.links_summary`, `analyse.R` (`weight_added`; `reported$H5_unweighted`), `selftest.R`, `report.h5_section`, `tests/`; `MEASURE_VERSION` 36 | The author's, 24 November 2026: "a method call is calculated as 1 for the call, +1 for every parameter, +1 if has return type. Then the wiring for function injection is just 1". **Made after H5 had gone against the function arm on the development chain** (1.25 [1.06, 1.47] times the links for the same logic, §6) and after the author had seen that the excess was the wiring between OfficeFloor's more numerous classes and methods. The +1 for an edge carrying a value is the drafter's, chosen by the author. The drafter's note, in §2: OfficeFloor's data passes mostly through injected values, which weigh nothing, so the weights credit the form exactly where the author's claim is. Before the tag, so a revision |
 | 96 | Confirmed: a call made on an injected object (a repository, a mapper, a store handed to a function or held in a Spring field the container fills) is a call link, weighed as any call; receiving the injected object is not surface | §4.2c, §8 | The author, 24 November 2026: "keep it counted", after the drafter laid out both readings. It had been the drafter's reading since row 89. **Decided after the development chain had been seen** (§6: many of the function arm's 3.34 call links a checkpoint across classes are such calls, and Spring has the same kind), on the principle that injection removes the finding of the target, not the call. No code changes |
+| 97 | The forces map redrawn: the numbering of row 93; H1 the force with the function arm forced less; H3 *encapsulation fills*; the dispersing branch now *coordinate*, its cost H5 surface against volume (weighed links per unit of logic); H8 Run D as a box that removes encapsulation; the confirmatory four named; a label that ran past its box shortened | §2, `figures/placement-forces.svg` | The author, 24 November 2026: "redraw the forces-map figure with the new numbering". A drawing only |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring
