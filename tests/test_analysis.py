@@ -518,7 +518,8 @@ def test_h5_fewer_links_for_the_same_logic_and_a_widening_gap_are_both_needed():
 def test_h5_rows_join_the_links_to_the_logic_added():
     links = [{"chain_id": "s/r/c1", "arm": "spring", "cp": "2", "links_added": "5", "call_links_added": "3",
               "state_links_added": "2", "flow_links_added": "0", "call_links": "10", "state_links": "4",
-              "flow_links": "0", "methods": "7"},
+              "flow_links": "0", "methods": "7", "call_links_added_from_functions": "1",
+              "call_links_added_from_methods": "2"},
              {"chain_id": "s/r/c1", "arm": "spring", "cp": "3", "links_added": "1"}]     # no logic read
     split = [{"chain_id": "s/r/c1", "cp": 2, "logic_added": 9}]
     rows = prepare.h5_rows(links, split)

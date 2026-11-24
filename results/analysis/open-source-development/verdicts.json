@@ -3,47 +3,51 @@
  "descriptive_only": true,
  "hypotheses": {
   "H1": {
-   "p": 0.00497512437810945,
-   "reversed": false,
-   "conditions_met": true,
+   "p": null,
+   "verdict": "descriptive only",
+   "state": "every placement forced",
    "detail": {
-    "n_runs": 1181,
-    "n_chains": 2,
-    "cp": {
-     "estimate": 0.510537389210756,
-     "lower": 0.374763288071377,
-     "upper": 0.734059938752265,
-     "p_greater": 0.00497512437810945,
-     "p_less": 1,
-     "refits": 200,
-     "failed": 0
+    "margin": [
+     0.8,
+     1.25
+    ],
+    "class": {
+     "error": "every placement forced",
+     "n": 638,
+     "note": "every placement forced",
+     "all_forced": true
     },
-    "within_class": {
-     "estimate": 0.994990176513156,
-     "lower": 0.78558049690983,
-     "upper": 1.42443951953603,
-     "p_greater": 0.00497512437810945,
-     "p_less": 1,
+    "method": {
+     "estimate": 0.61098371147093,
+     "lower": -0.0380814230500663,
+     "upper": 3.16175407972058,
+     "p_greater": 0.208955223880597,
+     "p_less": 0.796019900497512,
      "refits": 200,
      "failed": 0,
-     "places": 97,
-     "checkpoint_intercept": false
-    },
-    "within_method": {
-     "estimate": 0.391004699837576,
-     "lower": 0.290708580763368,
-     "upper": 0.498776777856031,
-     "p_greater": 0.00497512437810945,
-     "p_less": 1,
-     "refits": 200,
-     "failed": 0,
-     "places": 221,
-     "checkpoint_intercept": false
+     "irr": 1.84224274303407,
+     "irr_lower": 0.962634557058383,
+     "irr_upper": 23.6119769155538,
+     "level": 0.95,
+     "interval": "cluster bootstrap",
+     "wald": {
+      "estimate": 0.61098371147093,
+      "se": 0.263364000350359,
+      "lower": 0.0947997559598328,
+      "upper": 1.12716766698203,
+      "level": 0.95,
+      "p_greater": 0.0101725719239091,
+      "p_less": 0.989827428076091,
+      "irr": 1.84224274303407,
+      "irr_lower": 1.09943867703956,
+      "irr_upper": 3.08690097514151
+     },
+     "n": 627,
+     "all_forced": false
     }
    },
-   "tier": "secondary",
-   "p_holm": 0.00497512437810945,
-   "verdict": "descriptive only"
+   "tier": "confirmatory",
+   "p_holm": null
   },
   "H2": {
    "p": 0.00497512437810945,
@@ -116,81 +120,50 @@
     }
    },
    "tier": "confirmatory",
-   "p_holm": 0.01492537313432835,
+   "p_holm": 0.0099502487562189,
    "verdict": "descriptive only"
   },
   "H3": {
-   "p": 0.0326048340643464,
-   "state": "not above",
-   "two_sided": "within",
-   "dropped": [
-    "s1_long",
-    "m_cyclomatic",
-    "c_wmc",
-    "c_lcom_star"
-   ],
+   "p": 0.00497512437810945,
+   "reversed": false,
    "conditions_met": true,
    "detail": {
-    "n": 956,
-    "n_class": 746,
-    "kept": [
-     "s4_cognitive",
-     "c_gini"
-    ],
-    "testable": true,
-    "margin": [
-     0.8,
-     1.25
-    ],
-    "measures": {
-     "s4_cognitive": {
-      "estimate": 0.0921152480633688,
-      "se": 0.0710635773381157,
-      "lower": -0.0247739348653772,
-      "upper": 0.209004430992115,
-      "level": 0.9,
-      "p_greater": 0.097446899276227,
-      "p_less": 0.902553100723773,
-      "irr": 1.09649118328461,
-      "irr_lower": 0.975530420518596,
-      "irr_upper": 1.23245045949642,
-      "p_upper": 0.0326048340643464,
-      "above": false,
-      "p_tost": 0.0326048340643464,
-      "outside": false,
-      "n": 956,
-      "at": "method",
-      "kind": "level",
-      "source": "Campbell 2018, cognitive complexity",
-      "reversed": false,
-      "class_intercept": false
-     },
-     "c_gini": {
-      "estimate": 0.0867902552864434,
-      "se": 0.0343417746216366,
-      "lower": 0.0303030627440945,
-      "upper": 0.143277447828792,
-      "level": 0.9,
-      "p_greater": 0.00574797931425785,
-      "p_less": 0.994252020685742,
-      "irr": 1.09066789390082,
-      "irr_lower": 1.03076687365911,
-      "irr_upper": 1.1540499459041,
-      "p_upper": 3.586413455931e-05,
-      "above": false,
-      "p_tost": 3.586413455931e-05,
-      "outside": false,
-      "n": 746,
-      "at": "class",
-      "kind": "plain",
-      "source": "concentration of the class's positions (Gini)",
-      "reversed": false,
-      "class_intercept": true
-     }
+    "n_runs": 1181,
+    "n_chains": 2,
+    "cp": {
+     "estimate": 0.510537389210756,
+     "lower": 0.374763288071377,
+     "upper": 0.734059938752265,
+     "p_greater": 0.00497512437810945,
+     "p_less": 1,
+     "refits": 200,
+     "failed": 0
+    },
+    "within_class": {
+     "estimate": 0.994990176513156,
+     "lower": 0.78558049690983,
+     "upper": 1.42443951953603,
+     "p_greater": 0.00497512437810945,
+     "p_less": 1,
+     "refits": 200,
+     "failed": 0,
+     "places": 97,
+     "checkpoint_intercept": false
+    },
+    "within_method": {
+     "estimate": 0.391004699837576,
+     "lower": 0.290708580763368,
+     "upper": 0.498776777856031,
+     "p_greater": 0.00497512437810945,
+     "p_less": 1,
+     "refits": 200,
+     "failed": 0,
+     "places": 221,
+     "checkpoint_intercept": false
     }
    },
    "tier": "secondary",
-   "p_holm": 0.0326048340643464,
+   "p_holm": 0.00497512437810945,
    "verdict": "descriptive only"
   },
   "H4": {
@@ -275,51 +248,88 @@
   "H5": {
    "p": null,
    "verdict": "descriptive only",
-   "state": "every placement forced",
+   "state": "a history",
    "detail": {
-    "margin": [
-     0.8,
-     1.25
-    ],
-    "class": {
-     "error": "every placement forced",
-     "n": 638,
-     "note": "every placement forced",
-     "all_forced": true
-    },
-    "method": {
-     "estimate": 0.598212398959512,
-     "lower": -0.0380814230500663,
-     "upper": 3.13456210256325,
-     "p_greater": 0.208955223880597,
-     "p_less": 0.796019900497512,
-     "refits": 200,
-     "failed": 0,
-     "irr": 1.8188644884993,
-     "irr_lower": 0.962634557058383,
-     "irr_upper": 22.9785713810869,
-     "level": 0.95,
-     "interval": "cluster bootstrap",
-     "wald": {
-      "estimate": 0.598212398959512,
-      "se": 0.264634576842764,
-      "lower": 0.0795381592836963,
-      "upper": 1.11688663863533,
-      "level": 0.95,
-      "p_greater": 0.0118944227099973,
-      "p_less": 0.988105577290003,
-      "irr": 1.8188644884993,
-      "irr_lower": 1.08278687711274,
-      "irr_upper": 3.05532704306997
-     },
-     "n": 627,
-     "all_forced": false
-    }
+    "not_applicable": true
    },
    "tier": "confirmatory",
    "p_holm": null
   },
   "H6": {
+   "p": 0.0326048340643464,
+   "state": "not above",
+   "two_sided": "within",
+   "dropped": [
+    "s1_long",
+    "m_cyclomatic",
+    "c_wmc",
+    "c_lcom_star"
+   ],
+   "conditions_met": true,
+   "detail": {
+    "n": 956,
+    "n_class": 746,
+    "kept": [
+     "s4_cognitive",
+     "c_gini"
+    ],
+    "testable": true,
+    "margin": [
+     0.8,
+     1.25
+    ],
+    "measures": {
+     "s4_cognitive": {
+      "estimate": 0.0921152480633688,
+      "se": 0.0710635773381157,
+      "lower": -0.0247739348653772,
+      "upper": 0.209004430992115,
+      "level": 0.9,
+      "p_greater": 0.097446899276227,
+      "p_less": 0.902553100723773,
+      "irr": 1.09649118328461,
+      "irr_lower": 0.975530420518596,
+      "irr_upper": 1.23245045949642,
+      "p_upper": 0.0326048340643464,
+      "above": false,
+      "p_tost": 0.0326048340643464,
+      "outside": false,
+      "n": 956,
+      "at": "method",
+      "kind": "level",
+      "source": "Campbell 2018, cognitive complexity",
+      "reversed": false,
+      "class_intercept": false
+     },
+     "c_gini": {
+      "estimate": 0.0867902552864434,
+      "se": 0.0343417746216366,
+      "lower": 0.0303030627440945,
+      "upper": 0.143277447828792,
+      "level": 0.9,
+      "p_greater": 0.00574797931425785,
+      "p_less": 0.994252020685742,
+      "irr": 1.09066789390082,
+      "irr_lower": 1.03076687365911,
+      "irr_upper": 1.1540499459041,
+      "p_upper": 3.586413455931e-05,
+      "above": false,
+      "p_tost": 3.586413455931e-05,
+      "outside": false,
+      "n": 746,
+      "at": "class",
+      "kind": "plain",
+      "source": "concentration of the class's positions (Gini)",
+      "reversed": false,
+      "class_intercept": true
+     }
+    }
+   },
+   "tier": "secondary",
+   "p_holm": 0.0326048340643464,
+   "verdict": "descriptive only"
+  },
+  "H7": {
    "p": 0.00231651286967686,
    "state": "not above",
    "conditions_met": true,
@@ -350,49 +360,10 @@
    "tier": "secondary",
    "p_holm": 0.00231651286967686,
    "verdict": "descriptive only"
-  },
-  "H7": {
-   "p": 1,
-   "reversed": true,
-   "conditions_met": false,
-   "detail": {
-    "forced": {
-     "estimate": -0.198704213033973,
-     "lower": -0.488951955588493,
-     "upper": -0.130562593437291,
-     "p_greater": 1,
-     "p_less": 0.00497512437810945,
-     "refits": 200,
-     "failed": 0,
-     "irr": 0.819792341364098,
-     "irr_lower": 0.613268790424277,
-     "irr_upper": 0.877601559131351,
-     "level": 0.95,
-     "interval": "cluster bootstrap",
-     "wald": {
-      "estimate": -0.198704213033973,
-      "se": 0.172966121776309,
-      "lower": -0.537711582261107,
-      "upper": 0.140303156193161,
-      "level": 0.95,
-      "p_greater": 0.874681643440129,
-      "p_less": 0.125318356559871,
-      "irr": 0.819792341364098,
-      "irr_lower": 0.584083350860918,
-      "irr_upper": 1.15062256434572
-     },
-     "n": 896,
-     "family": "nbinom2",
-     "class_intercept": true
-    }
-   },
-   "tier": "confirmatory",
-   "p_holm": 1.0,
-   "verdict": "descriptive only"
   }
  },
  "sensitivity": {
-  "H3_with_coupling": {
+  "H6_with_coupling": {
    "state": "not above",
    "measures": [
     "c_gini",

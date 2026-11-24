@@ -223,8 +223,8 @@ def h5_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
     for k, lab in (("arm", "Links added, function arm / methods arm, for the same logic"),
                    ("trend", "The gap over the stream (arm × checkpoint index)")):
         x = b.get(k) or {}
-        L.append(f"- **{lab}: {ratio(x)}** (one-sided p {f(x.get('p_less'))}; {x.get('interval', '–')}); "
-                 f"Wald: {ratio(x.get('wald'))}")
+        L.append(f"- **{lab}: {ratio(x)}** (one-sided p {f(x.get('p_less'))}; {x.get('interval', '–')})"
+                 + (f"; Wald: {ratio(x['wald'])}" if x.get("wald") else ""))
     L.append(f"- Links added a checkpoint: " + ", ".join(f"{a} {f(v)}" for a, v in (b.get("links_added") or {}).items())
              + "; logic added: " + ", ".join(f"{a} {f(v)}" for a, v in (b.get("logic_added") or {}).items()))
     for k, x in (rep.get("H5_kinds") or {}).items():
@@ -242,6 +242,13 @@ def h5_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
                  + ", ".join(f(th.get(t)) for t in ("1", "2", "3"))
                  + f"; links per position of logic {f(a.get('links_per_logic'))}; the tree's links per method at the "
                  f"end {f(a.get('tree_links_per_method'))}")
+        if a.get("call_links_added_from_functions") is not None:
+            ct = a.get("calls_from_methods_thirds") or {}
+            L.append(f"  - its call links by caller: from wired functions {f(a.get('call_links_added_from_functions'))}, "
+                     f"from other methods {f(a.get('call_links_added_from_methods'))} (over the thirds "
+                     + ", ".join(f(ct.get(t)) for t in ("1", "2", "3"))
+                     + f"); within the caller's class {f(a.get('call_links_added_within_class'))}, across classes "
+                     f"{f(a.get('call_links_added_across_classes'))}")
     return L
 
 

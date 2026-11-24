@@ -421,7 +421,8 @@ def h5_rows(links: list[dict], split: list[dict]) -> list[dict]:
         row.update({k: int(num(r.get(k), 0)) for k in (
             "links_added", "links_lost", "call_links_added", "state_links_added", "flow_links_added",
             "call_links_lost", "state_links_lost", "flow_links_lost", "call_links", "state_links",
-            "flow_links", "methods")})
+            "flow_links", "methods", "call_links_added_from_functions", "call_links_added_from_methods",
+            "call_links_added_within_class", "call_links_added_across_classes")})
         out.append(row)
     return out
 
@@ -442,7 +443,11 @@ def links_summary(rows: list[dict], checkpoints: int) -> dict:
         ends = list(last.values())
         out[arm] = {"checkpoints": len(rs),
                     **{k: mean(k, rs) for k in ("links_added", "call_links_added", "state_links_added",
-                                                 "flow_links_added", "links_lost", "logic_added")},
+                                                 "flow_links_added", "links_lost", "logic_added",
+                                                 "call_links_added_from_functions", "call_links_added_from_methods",
+                                                 "call_links_added_within_class", "call_links_added_across_classes")},
+                    "calls_from_methods_thirds": {str(t): mean("call_links_added_from_methods",
+                                                               [r for r in rs if third(r) == t]) for t in (1, 2, 3)},
                     "thirds": {str(t): mean("links_added", [r for r in rs if third(r) == t]) for t in (1, 2, 3)},
                     "links_per_logic": sum(r["links_added"] for r in rs) / logic if logic else None,
                     "tree_links_per_method": statistics.fmean(

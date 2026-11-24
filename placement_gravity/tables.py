@@ -515,8 +515,15 @@ def link_rows(arm: str, chain: str, measured: dict) -> list[dict]:
     link is counted once, however heavy. Java links compare the tree before the checkpoint with the
     tree before the next; the wiring compares the checkpoint's parent with its commit. The last
     checkpoint has no tree after it and no row. With the tree's totals before it (``*_links``) and its
-    methods."""
+    methods. The call links added are also split by their caller (a reported reading, 24 November
+    2026, PLAN.md 9 row 94): a **wired function** (a public method of a class the OfficeFloor wiring
+    declares, its parameters injected) or any other method; and by whether the callee is in the
+    caller's own class."""
     trees, after = _trees(measured)
+    wired: dict[str, set] = {}
+    for r in measured.get("shape") or []:
+        if r.get("injected"):
+            wired.setdefault(str(r["unit"]), set()).add((flow.simple(r["type"]), r["signature"]))
     rows = []
     for cp in sorted(trees):
         if cp not in after:
@@ -532,6 +539,12 @@ def link_rows(arm: str, chain: str, measured: dict) -> list[dict]:
             row[f"{kind}_links_added"] = len(b - a)
             row[f"{kind}_links_lost"] = len(a - b)
             row[f"{kind}_links"] = len(a)
+        new_calls = l1["call"] - l0["call"]
+        fns = wired.get(f"cp{after[cp]:02d}", set())
+        row["call_links_added_from_functions"] = sum(1 for a, _ in new_calls if a in fns)
+        row["call_links_added_from_methods"] = len(new_calls) - row["call_links_added_from_functions"]
+        row["call_links_added_within_class"] = sum(1 for a, b in new_calls if a[0] == b[0])
+        row["call_links_added_across_classes"] = len(new_calls) - row["call_links_added_within_class"]
         row["links_added"] = sum(row[f"{k}_links_added"] for k in ("call", "state", "flow"))
         row["links_lost"] = sum(row[f"{k}_links_lost"] for k in ("call", "state", "flow"))
         row["methods"] = len(g0.methods)

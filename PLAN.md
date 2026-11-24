@@ -1113,6 +1113,10 @@ the links it added and lost, each counted once however heavy:
   before the checkpoint with the tree before the next, as the calls below; the wiring compares
   the checkpoint's parent with its commit. The last checkpoint has no tree after it and no row.
 - Reported beside: each kind apart, the links lost, and the tree's links per method at the end.
+- *By caller* (a reported reading, 24 November 2026, §9 row 94): the call links added from a wired
+  function (a public method of a class the wiring declares) and from any other method, and those
+  within the caller's class and across classes. It shows whether the function arm's calls come from
+  its functions or from the helper methods written beside them.
 
 *What it cannot say.* How heavy a link is (the values it carries, how often it runs) is not read,
 by the author's choice. A call whose receiver cannot be read without a symbol solver is not
@@ -2848,6 +2852,33 @@ binomial mixed model). These details are fixed with the code before any run is r
   [2.58, 3.19] and 2.37 [2.34, 2.44], H7 0.82 [0.61, 0.88], the same to three figures as with
   1,000 (two repositories, so neither means anything); step 4 for both analyses took five and
   a half minutes, where it had taken twenty. Nothing was changed after these were seen.
+- **The development chain under rows 89 to 93** (24 November 2026, `MEASURE_VERSION` 34; the
+  numbers here are those of row 93; one chain an arm, so descriptive only). *H1:* the arm
+  contrast's level went the form's way, its trend did not show: placements forced at the class
+  0.15 a checkpoint in OfficeFloor against 0.44 in Spring, the ratio half-way through 0.25 [0.09,
+  0.65]; over the stream 7.5 [0.4, 156], too wide to read; Spring's fall in alternatives 0.16
+  [0.02, 1.28] as before. *H2:* the core draws at the class 18.2 [12.5, 26.5] and at the method
+  20.3 [11.8, 34.7]; a core value come back to in the function arm 0.09 [0.02, 0.32] as often at
+  the method. *H3:* the bystanders' slope 0.015, within a class 0.026, within a method 0.023.
+  *H4:* the function arm's bystanders lower half-way through (−1.59) and flatter (−0.017); later
+  intrusion 0.16 at the class and 0.11 at the method; the files gone back into 0.60 [0.49, 0.74]
+  as well-trodden. ***H5 went against the form:*** the function arm added **1.25 [1.06, 1.47]
+  times the links** for the same logic, and the gap did not widen (1.13 [0.64, 1.98]). By kind,
+  a checkpoint: call links 4.19 in OfficeFloor against 3.93 in Spring, state links 0.68 against
+  0.74, and the wiring's flow links 0.93 against none; so the function arm's calls between
+  methods were about as many as Spring's, and its wiring came on top. Its links rose over the
+  thirds (4.65, 6.20, 6.58), Spring's did not (4.30, 5.00, 4.72; its own rise 1.02 [0.52, 1.99]):
+  the stream's single endpoint gives Spring no call chain to deepen, and OfficeFloor's rise goes
+  with its drift towards called methods (§4.9, above). The links lost were higher in the function
+  arm (2.31 against 1.66 a checkpoint). *H6:* not above (cognitive 0.32, cyclomatic 0.35; the
+  class measures untestable, five classes). *H7:* 1.03 [0.45, 2.37], unresolved. *The histories*
+  (`HISTORY_VERSION` 14, read again under the new numbers): H1 at the class every placement
+  forced (not testable), H2 2.93 and 2.37, H4 0.075 and 0.072 in later intrusion, H7 0.845 [0.673,
+  1.061], not above. **Nothing in H5 was changed after it was seen.** The author's reading, given
+  before these were computed (§1, *The overview*): the calls a function gathers can be split out
+  again; to see whether that is where the function arm's calls are, a reported reading of its
+  call links by caller (a wired function or another method) and by class was added after this
+  (row 94), and the chain measured again.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
@@ -3386,7 +3417,8 @@ author's to set, on the plan and code as they then stand, and starts the experim
   the table at the head of §9; and H1 (as it then was) renamed *the encapsulation fills*, after the
   author asked whether the periphery is "the volume grows inside the encapsulation" (it is the
   encapsulation's state, seen from each new block, not its code).
-- *To finish for row 89:* the pilot measured again at `MEASURE_VERSION` 34 (`./step3_measure.sh
+- *To finish for row 94:* the pilot measured again at `MEASURE_VERSION` 35, as below, for the call
+  links by caller (row 89's run at 34 is done and in §6). *As it stood for row 89:* the pilot measured again at `MEASURE_VERSION` 34 (`./step3_measure.sh
   --analysis pilot`, then `./step4_analyse.sh --analysis pilot open-source-development` and
   `./step5_report.sh`); the histories are not affected (`HISTORY_VERSION` 14 stands). Then H7's
   development figures go into §6. The figure of §2 still shows the old H7. **H8 stays as it is**
@@ -3623,6 +3655,7 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 91 | §1 *The overview*: the author's account of the whole study (blocks of code essential; growth, concentration, separation and coupling; method structure the accident; function injection disperses without it), read against the hypotheses; and the author's claim that a function is easier to split and to review alone for cohesion, recorded in §1 and as the answer to H7's threat in §7. No measure, model or rule changes | §1, §7 | The author's, 24 November 2026 ("add the overview to §1"; the splitting claim given the same day). The drafter's addition: H7 counts links, not how tight they are, so it does not credit the function arm's looser control flow |
 | 92 | H5's arm contrast: per checkpoint, the placements forced at the class (bound there with no other place to go) fewer in the function arm half-way through **and** rising less over the stream (the arm term and its interaction with the index, both below 1, one cluster bootstrap), beside the methods arm's fall; p the largest of the three. Not read on a history | §2, §5, §8, `prepare.h5_forced_rows` (`h5_forced.csv`), `analyse.R` (`H5$contrast`; `boot_irrs` moved to the helpers), `verdict.h5`, `report.h5_section`, `selftest.R`, `tests/test_analysis.py` | The author's, 24 November 2026: "make H5 an arm contrast"; "it also potentially shows the accidental cost of the method structure in Spring handlers (and typical web app servers) over function injection of OfficeFloor". The form chosen from three, **after the development chain's H5 figures by arm had been seen** (the function arm 10 class rows in 60 checkpoints, 9 forced; the methods arm 48 in 59, 26 forced). Before the tag, so a revision |
 | 93 | **The hypotheses renumbered in the order of the story**: old H5 → H1, H2 → H2, H1 → H3, H4 → H4, H7 → H5, H3 → H6, H6 → H7, H8 → H8 (the table at the head of this section). H3 renamed *the encapsulation fills*. §1 to §5 and §7, the code, the tests, `README.md` and `LITERATURE.md` take the new numbers; §6, §8 and §9 keep those of their time; the figure keeps the old. The report lists the hypotheses H1 to H7 in order | throughout; `verdict.py` (the confirmatory family H1, H2, H4, H5; secondary H3, H6, H7), `analyse.R` and `selftest.R` (`res$H*`, the data files `h*.csv`), `prepare.py`, `report.py`, `tests/` | The author, 24 November 2026: "change the ordering of the HX to match the story order of what we are discovering". No test, measure, model or rule changes; only names. The results in `results/analysis/` keep the old numbers until they are made again |
+| 94 | A reported reading beside H5: the call links a checkpoint added, split by caller (a wired function, a public method of a class the wiring declares, or any other method) and by whether the callee is in the caller's class; per arm and, for calls from other methods, over the thirds. No direction stated; no test changes | §4.2c, §6, `tables.link_rows`, `prepare.h5_rows`, `prepare.links_summary`, `report.h5_section`, `tests/`; `MEASURE_VERSION` 35 | The author's, 24 November 2026 ("add the breakdown"), **after H5 had gone against the form on the development chain** (§6): the drafter proposed it to see whether the function arm's calls come from the helper methods the agent wrote inside functions, which the author holds can be split out again (§1). H5's test is unchanged |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

@@ -461,6 +461,10 @@ def test_links_count_calls_and_state_but_not_injection_or_constants(tmp_path):
                 "wiring": {"cp01": {"before": chain.NO_WIRING, "after": {**chain.NO_WIRING, "links": ["f|a|b"]}},
                            "cp02": {"before": {**chain.NO_WIRING, "links": ["f|a|b"]},
                                     "after": {**chain.NO_WIRING, "links": ["f|a|b"]}}}}
+    # add(String) a wired function in the tree after cp01 (as if OfficeFloor declared Owners)
+    measured["shape"] = [{"unit": "cp02", "type": "s.Owners", "signature": "add(String)", "injected": True}]
     r1, r2 = tables.link_rows("spring", "c", measured)
+    assert (r1["call_links_added_from_functions"], r1["call_links_added_from_methods"]) == (2, 0)
+    assert (r1["call_links_added_within_class"], r1["call_links_added_across_classes"]) == (1, 1)
     assert (r1["call_links_added"], r1["state_links_added"], r1["flow_links_added"], r1["links_added"]) == (2, 3, 1, 6)
     assert (r2["links_added"], r2["links_lost"], r2["call_links"], r2["methods"]) == (0, 0, 2, 4)

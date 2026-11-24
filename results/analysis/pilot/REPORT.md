@@ -4,31 +4,35 @@ Role: **development**. Chains: officefloor 1, spring 1. **Descriptive only.**
 
 | Hypothesis | Tier | Verdict | p (Holm over the confirmatory; own p for secondary) |
 |---|---|---|---|
-| H1 | secondary | descriptive only | 0.000999 |
+| H1 | confirmatory | descriptive only | 1.000 |
 | H2 | confirmatory | descriptive only | 0.00039 |
-| H3 | secondary | descriptive only | 3.06e-06 |
+| H3 | secondary | descriptive only | 0.000999 |
 | H4 | confirmatory | descriptive only | 0.003 |
-| H5 | confirmatory | descriptive only | 0.058 |
-| H6 | secondary | descriptive only | 0.349 |
-| H7 | confirmatory | descriptive only | 0.058 |
+| H5 | confirmatory | descriptive only | 1.000 |
+| H6 | secondary | descriptive only | 3.06e-06 |
+| H7 | secondary | descriptive only | 0.349 |
 
-## H1, the periphery grows (methods arm)
+## H1, choice narrows (and less often forced in the function arm)
 
-Runs that need a pre-existing value 91 over 1 chains; the slope of log(1 + bystanders) on the checkpoint index, cluster-bootstrap 95% interval (1000 refits).
+Per bound addition, the other places in the code before its checkpoint that hold what its code was bound to: at the class, another class holding injected dependencies of the same types (code bound to the class's own state, constants or methods has none); at the method, another method with a parameter or local of each type. The ratio of the alternatives at the end of the stream to its start: a fall, one-sided below 1, at the class, 95% cluster-bootstrap interval (chains resampled). The method level is reported.
 
-- **Bystanders on the checkpoint index: 0.015 [0.015, 0.015]**
-- **Within a class, the class's bystanders: 0.026 [0.026, 0.026]** (3 classes with runs at two or more checkpoints)
-- **Within a method, the method's bystanders: 0.023 [0.023, 0.023]** (11 methods)
-- Reported, within a place in the function arm: class 0.001 [0.001, 0.001]; method -0.001 [-0.001, -0.001]
-- Reported, method bystanders 0.004 [-0.006, 0.013]; class bystanders 0.016 [0.010, 0.022]
-- Reported, without injected dependencies 0.024 [0.016, 0.031]; without constants 0.003 [-0.005, 0.012]
-- Reported, the function arm's slope: -0.000263 [-0.011, 0.010]
-- Reported, officefloor: 56 of 168 runs need a pre-existing value (0.667 free); per such run, needed 1.554, bystanders 1.179 (method 0.929, class 0.250; without constants 1.036); over the thirds of the stream 1.455, 0.889, 1.167; fields left behind per addition 0.455; method values introduced per addition 6.491
-- Reported, spring: 91 of 162 runs need a pre-existing value (0.438 free); per such run, needed 1.407, bystanders 10.890 (method 2.582, class 8.308; without constants 5.934); over the thirds of the stream 5.917, 10.172, 14.579; fields left behind per addition 0.610; method values introduced per addition 5.085
-- Reported, H1 as first registered (bindings of runs into existing methods): on log(host positions) 0.030 [-0.042, 0.103]; on the checkpoint index 0.006 [0.002, 0.011]
-- Reported, bindings in the function arm: on host size 0.098 [-0.084, 0.279]
-- Reported, bindings at class level (methods arm): on class size -0.010 [-0.119, 0.100]
-- Reported, bindings without injected dependencies: on host size 0.080 [-0.000316, 0.160]; class level on class size -0.040 [-0.125, 0.045]
+- **descriptive only** (not shown to fall)
+- The arm contrast (since 24 November 2026): the placements forced at the class per checkpoint (bound there with no other place to go), function arm / methods arm half-way through the stream, and the gap over the stream; both one-sided below 1.
+- **Forced per checkpoint, function arm / methods arm: 0.247 [0.093, 0.654]** (one-sided p 0.002; wald: one chain in an arm; nbinom2)
+- **Its change over the stream (arm × checkpoint index): 7.483 [0.358, 156.260]** (one-sided p 0.903; wald: one chain in an arm; nbinom2)
+- Forced at the class a checkpoint: officefloor 0.150, spring 0.441; the methods arm's own rise over the stream 2.574 [0.662, 10.007]
+- **At the class: 0.162 [0.021, 1.277]** (n = 48; one-sided p 0.042; wald: one chain in an arm)
+- Reported, at the class against the upper margin 1.250 (as H1 stood until 22 November 2026, 90% Wald interval): 0.162 [0.029, 0.916]
+- Reported, methods arm at the class: 48 rows, 0.542 forced, 2.583 alternatives a row; over the thirds, forced 0.500, 0.333, 0.722; alternatives 3.500, 3.167, 1.278
+- Reported, function arm at the class: 10 rows, 0.900 forced, 0.100 alternatives a row; over the thirds, forced 1, 1, 0.857; alternatives 0, 0, 0.143
+- Reported, the function arm's ratio at the class: 22.363 [4.55e-05, 10984478.990]; function arm / methods arm: 0.000765 [3.43e-10, 1702.055]
+- **At the method: 4.750 [1.189, 18.975]** (n = 56; one-sided p 0.986; wald: one chain in an arm)
+- Reported, at the method against the upper margin 1.250 (as H1 stood until 22 November 2026, 90% Wald interval): 4.750 [1.486, 15.188]
+- Reported, methods arm at the method: 56 rows, 0.339 forced, 6.161 alternatives a row; over the thirds, forced 0.538, 0.350, 0.217; alternatives 3.385, 4.600, 9.087
+- Reported, function arm at the method: 27 rows, 0.222 forced, 9.667 alternatives a row; over the thirds, forced 0.250, 0.200, 0.222; alternatives 4.750, 12.400, 10
+- Reported, the function arm's ratio at the method: 2.301 [0.291, 18.224]; function arm / methods arm: 2.252 [0.324, 15.632]
+- Reported, at the method by type alone over the whole tree (as first built): 2.507 [0.728, 8.628]; methods on a host's control flow, per arm: officefloor 46.074, spring 50.518; by type over the whole tree: officefloor 39.926, spring 20.446; calls to a name the application declares that were followed by their receiver's type: 0.854 (the rest have a receiver the instrument cannot read)
+- Reported, class rows bound to the class's own state, constants or methods: 0.542; method values of no declared type left out of the match: 0
 
 ## H2, a core draws code in (methods arm)
 
@@ -61,21 +65,23 @@ Where code was bound to a class or a method (109 of 350 problem and host rows, b
 - Reported, per binding, existing hosts only: class 0.916 [0.808, 1.039]; method 0.949 [0.667, 1.350]
 - Reported, per binding, without injected dependencies: class 0.812 [0.696, 0.948]; method 0.922 [0.654, 1.301]
 
-## H3, shape does not draw code in
+## H3, the encapsulation fills (methods arm)
 
-- **not above** (one-sided: each rate ratio below 1.250); each measure fitted alone at its level, with the bindings and the bystanders in the model, 90% intervals: method measures on intrusion at the method (n = 77), class measures on intrusion at the class, one row per class and checkpoint with the class's size held fixed (n = 77); reported, two-sided (0.800 to 1.250): outside
-  - s4_cognitive (method): 0.321 [0.207, 0.496], one-sided p 1.43e-07 (two-sided TOST p 1.000)
-  - m_cyclomatic (method): 0.349 [0.219, 0.555], one-sided p 3.06e-06 (two-sided TOST p 0.998)
-  - Left out by the variation rule: s1_long ({'officefloor': 1, 'spring': 22})
-  - The class measures are not tested here: later arrivals in 5 distinct classes (at least 10 needed), the busiest holding 0.874 of them (at most 0.500). They are reported below, each alone.
-  - Reported, a sensitivity reading: H3's rule with the literature's coupling measures put back (fan-out, CBO, RFC; read apart in this plan as reach): **against** over m_cyclomatic, m_fanout, s4_cognitive; wholly above the margin: m_fanout. It changes no verdict.
-- Reported, the block as first registered, together in one model on method-level intrusion: s4_cognitive 0.393 [0.240, 0.645]; s5_class_gini 0.689 [0.419, 1.132]
-- Reported, that block on class-level intrusion: s4_cognitive 0.955 [0.798, 1.143]; s5_class_gini 1.509 [1.187, 1.920]
-- Reported, that block without the problem terms, the bindings and the bystanders: s4_cognitive 1.661 [1.009, 2.733]; s5_class_gini 0.731 [0.363, 1.473]
-- Reported, reach (how far a place reaches out; with the sinew measures, predicted above 1): m_fanout 4.977 [2.240, 11.057]; c_cbo 1.622 [0.687, 3.829]; c_fanout 1.622 [0.687, 3.829]
-- Reported, the sinew measures (data flow, not shape; predicted above 1), later intrusion with the bindings and the bystanders in the model: s3_junction at the method 1.732 [0.544, 5.510], at the class 0.611 [0.412, 0.906]; left out by the variation rule: s2_stuck ({'officefloor': 0, 'spring': 0})
-- Reported, junction × arm (s3_junction): 0.411 [0.027, 6.349]
-- Reported, junction × arm (s3_junction_injection_aware): 0.314 [0.020, 4.863]
+Runs that need a pre-existing value 91 over 1 chains; the slope of log(1 + bystanders) on the checkpoint index, cluster-bootstrap 95% interval (1000 refits).
+
+- **Bystanders on the checkpoint index: 0.015 [0.015, 0.015]**
+- **Within a class, the class's bystanders: 0.026 [0.026, 0.026]** (3 classes with runs at two or more checkpoints)
+- **Within a method, the method's bystanders: 0.023 [0.023, 0.023]** (11 methods)
+- Reported, within a place in the function arm: class 0.001 [0.001, 0.001]; method -0.001 [-0.001, -0.001]
+- Reported, method bystanders 0.004 [-0.006, 0.013]; class bystanders 0.016 [0.010, 0.022]
+- Reported, without injected dependencies 0.024 [0.016, 0.031]; without constants 0.003 [-0.005, 0.012]
+- Reported, the function arm's slope: -0.000263 [-0.011, 0.010]
+- Reported, officefloor: 56 of 168 runs need a pre-existing value (0.667 free); per such run, needed 1.554, bystanders 1.179 (method 0.929, class 0.250; without constants 1.036); over the thirds of the stream 1.455, 0.889, 1.167; fields left behind per addition 0.455; method values introduced per addition 6.491
+- Reported, spring: 91 of 162 runs need a pre-existing value (0.438 free); per such run, needed 1.407, bystanders 10.890 (method 2.582, class 8.308; without constants 5.934); over the thirds of the stream 5.917, 10.172, 14.579; fields left behind per addition 0.610; method values introduced per addition 5.085
+- Reported, H3 as first registered (bindings of runs into existing methods): on log(host positions) 0.030 [-0.042, 0.103]; on the checkpoint index 0.006 [0.002, 0.011]
+- Reported, bindings in the function arm: on host size 0.098 [-0.084, 0.279]
+- Reported, bindings at class level (methods arm): on class size -0.010 [-0.119, 0.100]
+- Reported, bindings without injected dependencies: on host size 0.080 [-0.000316, 0.160]; class level on class size -0.040 [-0.125, 0.045]
 
 ## H4, function injection forms no core
 
@@ -102,31 +108,45 @@ Where code was bound to a class or a method (109 of 350 problem and host rows, b
 - Reported, bindings without injected dependencies: arm -0.295 [-0.454, -0.137], slope -0.021 [-0.193, 0.151]
 - Reported, trajectory of the bindings (arm × checkpoint): 0.0007 [-0.007, 0.009]
 
-## H5, choice narrows (methods arm)
+## H5, surface against volume
 
-Per bound addition, the other places in the code before its checkpoint that hold what its code was bound to: at the class, another class holding injected dependencies of the same types (code bound to the class's own state, constants or methods has none); at the method, another method with a parameter or local of each type. The ratio of the alternatives at the end of the stream to its start: a fall, one-sided below 1, at the class, 95% cluster-bootstrap interval (chains resampled). The method level is reported.
+Per checkpoint, the links it added between blocks of logic (the surface: a method calling a method, a method using a field that holds state, a function wired to the next), each counted once, an injected dependency not among them; against the logic it added (the volume). The function arm's ratio half-way through the stream, for the same logic, below 1, **and** its interaction with the checkpoint index below 1 (the gap widens); one-sided, 95% cluster-bootstrap intervals (chains resampled).
 
-- **descriptive only** (not shown to fall)
-- **At the class: 0.162 [0.021, 1.277]** (n = 48; one-sided p 0.042; wald: one chain in an arm)
-- Reported, at the class against the upper margin 1.250 (as H5 stood until 22 November 2026, 90% Wald interval): 0.162 [0.029, 0.916]
-- Reported, methods arm at the class: 48 rows, 0.542 forced, 2.583 alternatives a row; over the thirds, forced 0.500, 0.333, 0.722; alternatives 3.500, 3.167, 1.278
-- Reported, function arm at the class: 10 rows, 0.900 forced, 0.100 alternatives a row; over the thirds, forced 1, 1, 0.857; alternatives 0, 0, 0.143
-- Reported, the function arm's ratio at the class: 22.363 [4.55e-05, 10984478.990]; function arm / methods arm: 0.000765 [3.43e-10, 1702.055]
-- **At the method: 4.750 [1.189, 18.975]** (n = 56; one-sided p 0.986; wald: one chain in an arm)
-- Reported, at the method against the upper margin 1.250 (as H5 stood until 22 November 2026, 90% Wald interval): 4.750 [1.486, 15.188]
-- Reported, methods arm at the method: 56 rows, 0.339 forced, 6.161 alternatives a row; over the thirds, forced 0.538, 0.350, 0.217; alternatives 3.385, 4.600, 9.087
-- Reported, function arm at the method: 27 rows, 0.222 forced, 9.667 alternatives a row; over the thirds, forced 0.250, 0.200, 0.222; alternatives 4.750, 12.400, 10
-- Reported, the function arm's ratio at the method: 2.301 [0.291, 18.224]; function arm / methods arm: 2.252 [0.324, 15.632]
-- Reported, at the method by type alone over the whole tree (as first built): 2.507 [0.728, 8.628]; methods on a host's control flow, per arm: officefloor 46.074, spring 50.518; by type over the whole tree: officefloor 39.926, spring 20.446; calls to a name the application declares that were followed by their receiver's type: 0.854 (the rest have a receiver the instrument cannot read)
-- Reported, class rows bound to the class's own state, constants or methods: 0.542; method values of no declared type left out of the match: 0
+- **descriptive only** (p 0.996)
+- **Links added, function arm / methods arm, for the same logic: 1.249 [1.063, 1.468]** (one-sided p 0.996; wald: one chain in an arm); Wald: not estimated (no data)
+- **The gap over the stream (arm × checkpoint index): 1.126 [0.642, 1.975]** (one-sided p 0.661; wald: one chain in an arm); Wald: not estimated (no data)
+- Links added a checkpoint: officefloor 5.797, spring 4.672; logic added: officefloor 9.610, spring 9.034
+- Reported, call links: function arm / methods arm 1.062 [0.801, 1.409], over the stream 1.520 [0.560, 4.126]; a checkpoint officefloor 4.186, spring 3.931
+- Reported, state links: function arm / methods arm 1.017 [0.514, 2.014], over the stream 1.718 [0.174, 16.919]; a checkpoint officefloor 0.678, spring 0.741
+- Reported, flow links: function arm / methods arm not estimated (no data), over the stream not estimated (no data); a checkpoint officefloor 0.932, spring 0
+- Reported, lost links: function arm / methods arm 2.116 [1.233, 3.632], over the stream 0.311 [0.053, 1.827]; a checkpoint officefloor 2.305, spring 1.655
+- Reported, without the logic in the model: arm 1.229 [0.904, 1.670], over the stream 1.344 [0.469, 3.854]; the methods arm's own rise over the stream 1.020 [0.522, 1.993]; links per e-fold logic 1.711 [1.409, 2.078]
+- Reported, officefloor: 59 checkpoints; links added a checkpoint 5.797 (call 4.186, state 0.678, flow 0.932; lost 2.305); over the thirds 4.650, 6.200, 6.579; links per position of logic 0.603; the tree's links per method at the end 1.701
+- Reported, spring: 58 checkpoints; links added a checkpoint 4.672 (call 3.931, state 0.741, flow 0.000; lost 1.655); over the thirds 4.300, 5.000, 4.722; links per position of logic 0.517; the tree's links per method at the end 1.779
 
-## H6, spread does not see it (methods arm; secondary)
+## H6, shape does not draw code in
+
+- **not above** (one-sided: each rate ratio below 1.250); each measure fitted alone at its level, with the bindings and the bystanders in the model, 90% intervals: method measures on intrusion at the method (n = 77), class measures on intrusion at the class, one row per class and checkpoint with the class's size held fixed (n = 77); reported, two-sided (0.800 to 1.250): outside
+  - s4_cognitive (method): 0.321 [0.207, 0.496], one-sided p 1.43e-07 (two-sided TOST p 1.000)
+  - m_cyclomatic (method): 0.349 [0.219, 0.555], one-sided p 3.06e-06 (two-sided TOST p 0.998)
+  - Left out by the variation rule: s1_long ({'officefloor': 1, 'spring': 22})
+  - The class measures are not tested here: later arrivals in 5 distinct classes (at least 10 needed), the busiest holding 0.874 of them (at most 0.500). They are reported below, each alone.
+  - Reported, a sensitivity reading: H6's rule with the literature's coupling measures put back (fan-out, CBO, RFC; read apart in this plan as reach): **against** over m_cyclomatic, m_fanout, s4_cognitive; wholly above the margin: m_fanout. It changes no verdict.
+- Reported, the block as first registered, together in one model on method-level intrusion: s4_cognitive 0.393 [0.240, 0.645]; s5_class_gini 0.689 [0.419, 1.132]
+- Reported, that block on class-level intrusion: s4_cognitive 0.955 [0.798, 1.143]; s5_class_gini 1.509 [1.187, 1.920]
+- Reported, that block without the problem terms, the bindings and the bystanders: s4_cognitive 1.661 [1.009, 2.733]; s5_class_gini 0.731 [0.363, 1.473]
+- Reported, reach (how far a place reaches out; with the sinew measures, predicted above 1): m_fanout 4.977 [2.240, 11.057]; c_cbo 1.622 [0.687, 3.829]; c_fanout 1.622 [0.687, 3.829]
+- Reported, the sinew measures (data flow, not shape; predicted above 1), later intrusion with the bindings and the bystanders in the model: s3_junction at the method 1.732 [0.544, 5.510], at the class 0.611 [0.412, 0.906]; left out by the variation rule: s2_stuck ({'officefloor': 0, 'spring': 0})
+- Reported, junction × arm (s3_junction): 0.411 [0.027, 6.349]
+- Reported, junction × arm (s3_junction_injection_aware): 0.314 [0.020, 4.863]
+
+## H7, spread does not see it (methods arm; secondary)
 
 Per unit that placed or edited code in classes that existed before it, those classes beyond the first (a new class is a free choice and is not counted): co-change spread, the change-coupling literature's measure. The ratio of the spread of a unit with a placement forced at the class (by encapsulation) to one without, at the same change size and point in the stream; one-sided, shown below the upper margin 1.250, 90% interval (restated 21 November 2026; until then *forced changes spread*, one-sided above 1).
 
 - **descriptive only** (unresolved)
 - **Forced: 1.026 [0.445, 2.365]** (n = 59, nbinom2; one-sided p below the margin 0.349)
-- Reported, forced by binding with no alternative (H5's): 0.913 [0.404, 2.064]; forced without the change's size: 3.656 [1.484, 9.007]
+- Reported, forced by binding with no alternative (H1's): 0.913 [0.404, 2.064]; forced without the change's size: 3.656 [1.484, 9.007]
 - Reported, the spread's rise over the stream (end against start): all units 0.622 [0.204, 1.895] (n = 59, poisson); forced units 0.811 [0.224, 2.932] (n = 30, poisson); unforced units 0.221 [0.013, 3.702] (n = 29, poisson)
 - Reported, methods arm: 59 units, 1.492 existing classes a unit (1.644 with new ones), 0.424 in more than one; units with a forced placement 0.508, their classes 1.767 against 1.207; over the thirds, all 1.550, 1.500, 1.421; forced 1.750, 1.889, 1.667; unforced 1.250, 1.182, 1.200
 - Reported, function arm: 42 units, 1.857 existing classes a unit (2.452 with new ones), 0.452 in more than one; units with a forced placement 0.071, their classes 2.667 against 1.795; over the thirds, all 1.400, 1.438, 2.562; forced 2, 3, 3; unforced 1.333, 1.333, 2.533
@@ -167,22 +187,16 @@ Calls between classes each unit added (the tree after it less the tree before), 
   - candidate for redistribution: `OwnerMapper` and `OwnerRestControllerV1` (spring/blind-202608100006/chain9), changed together 7 times, calls between them 0 → 6
   - candidate for redistribution: `Owner` and `OwnerMapper` (spring/blind-202608100006/chain9), changed together 2 times, calls between them 7 → 10
 
-## H7, forced changes couple (methods arm)
+## Reported: where forced coupling came from
 
-Per unit and existing class it changed, the calls across the class's boundary the unit added (outward and inward). The ratio for a class with a placement forced at the class to one without, at the same point in the stream and change size, with the class's intercept within the chain; one-sided above 1, 95% cluster-bootstrap interval (chains resampled).
+Each class a forced change went into: *contained* (no call added across its boundary); *problem or reuse* (every call it added joins two classes whose private data the change needed, or reaches a member that was already open); *other* (some call reaches a member the change opened, in a class whose data it did not need: a utility, as the author reads it). The calls are counted once each by the same sources.
 
-- **descriptive only**
-- **Forced: 1.436 [0.988, 2.088]** (n = 85, nbinom2; one-sided p 0.029; wald: one chain in an arm; the class's intercept kept); Wald: not estimated (no data)
-- Reported, forced by binding with no alternative (H5's): 1.088 [0.716, 1.654]; forced without the change's size: 1.616 [1.121, 2.329]
-- Reported, forced ratio of calls reaching a member the unit exposed or widened: 1.035 [0.574, 1.866]
-- Reported, forced ratio of outward calls: 2.571 [1.445, 4.574]
-- Reported, forced ratio of inward calls: 3e-10 [0, –]
-- Reported, forced ratio of the class's members exposed or widened: 0.424 [0.101, 1.775]
-- Reported, the rise of the calls added over the stream: 2.151 [1.116, 4.145]; the function arm's forced ratio: 0.664 [0.189, 2.340]; function arm / methods arm: 1.235 [0.902, 1.689]
-- Reported, officefloor arm, forced class rows: 3; calls added a row 1.000 (outward 0.333, inward 0.667); reaching an exposed or widened member 0.667 (exposed 2, widened 0); members opened a row 0.333
-- Reported, officefloor arm, unforced class rows: 69; calls added a row 1.986 (outward 1.522, inward 0.464); reaching an exposed or widened member 0.321 (exposed 44, widened 0); members opened a row 0.971
-- Reported, spring arm, forced class rows: 34; calls added a row 2.412 (outward 2.412, inward 0.000); reaching an exposed or widened member 0.256 (exposed 21, widened 0); members opened a row 0.206
-- Reported, spring arm, unforced class rows: 51; calls added a row 1.569 (outward 1.059, inward 0.510); reaching an exposed or widened member 0.400 (exposed 32, widened 0); members opened a row 1.078
+- officefloor arm, forced class rows 3: contained 1 (0.333), problem or reuse 0 (0.000), other 2 (0.667)
+  - calls of forced changes: problem 0, reuse 1, other 2
+  - calls of unforced changes: problem 0, reuse 87, other 32
+- spring arm, forced class rows 34: contained 2 (0.059), problem or reuse 14 (0.412), other 18 (0.529)
+  - calls of forced changes: problem 0, reuse 61, other 21
+  - calls of unforced changes: problem 0, reuse 41, other 13
 
 ## Reported: split or concentrate (redesign reading)
 
@@ -253,7 +267,7 @@ Agreement is Spearman's rho, over the places landed in, of the complexity rank w
 
 ## Reported: the literature's shape measures, each alone
 
-Later intrusion per standard deviation of the measure (a flag: present against absent), with the problem, the bindings and what stood by held fixed. Method measures on intrusion at the method, class measures on intrusion at the class, one row per class a checkpoint's bound code went into (77 rows), with the class's size held fixed and an intercept for the class (†: refitted without it). Read as H3 is: below 1.25 does not draw code in. A measure marked reversed is one where higher is better; its ratio is for the worse shape.
+Later intrusion per standard deviation of the measure (a flag: present against absent), with the problem, the bindings and what stood by held fixed. Method measures on intrusion at the method, class measures on intrusion at the class, one row per class a checkpoint's bound code went into (77 rows), with the class's size held fixed and an intercept for the class (†: refitted without it). Read as H6 is: below 1.25 does not draw code in. A measure marked reversed is one where higher is better; its ratio is for the worse shape.
 
 | Measure | Level | Source | n | Rate ratio (90% interval) | One-sided p | Against 1.25 |
 |---|---|---|---|---|---|---|
@@ -275,7 +289,7 @@ Later intrusion per standard deviation of the measure (a flag: present against a
 | c_halstead | class | Halstead 1977, volume | 77 | 0.144 [0.014, 1.522] | 0.066 | reaches above |
 | c_mi (reversed) | class | Maintainability Index | 77 | 0.098 [0.021, 0.452] | 0.003 | below |
 
-**Read the class rows with care.** Later arrivals fall in 5 distinct classes here, and the busiest holds 0.874 of them. A class measure then mostly describes that one class as it changes over the stream, so an association with later arrivals may be coincidental. These rows are not part of H3 in this analysis.
+**Read the class rows with care.** Later arrivals fall in 5 distinct classes here, and the busiest holds 0.874 of them. A class measure then mostly describes that one class as it changes over the stream, so an association with later arrivals may be coincidental. These rows are not part of H6 in this analysis.
 
 Left out by the variation rule (bound rows flagged or above zero, per arm): s1_long ({'officefloor': 1, 'spring': 22}), m_demeter ({'officefloor': 0, 'spring': 0}), m_duplicated ({'officefloor': 0, 'spring': 4}), c_tcc ({'officefloor': 0, 'spring': 80}), c_god_class ({'officefloor': 6, 'spring': 33}), c_data_class ({'officefloor': 0, 'spring': 0}), c_demeter ({'officefloor': 0, 'spring': 0}), c_duplicated ({'officefloor': 1, 'spring': 73}).
 
@@ -323,7 +337,7 @@ The instrument resolves names without a symbol solver. On a sample of each chain
 
 ## Provenance
 
-Checkpoint intercept in the model: H1 no, H4 no, H2_class yes, H2_method yes, H4_intrusion_class no, H4_intrusion_method yes, shape_joint no.
+Checkpoint intercept in the model: H3 no, H4 no, H2_class yes, H2_method yes, H4_intrusion_class no, H4_intrusion_method yes, shape_joint no, H5 yes.
 
 Versions: {"R": "R version 4.5.2 (2025-10-31)", "glmmTMB": "1.1.14", "TMB": "1.9.19"}. Seed 20261116.
 
