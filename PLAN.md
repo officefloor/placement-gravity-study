@@ -66,7 +66,7 @@ This study turns the question round:
   then. On the development chain the data that gathers is mostly not what later code comes for
   (§6): later code comes for a few values that code there was already bound to, the place's
   **core**, and the rest, the **periphery**, is what it then has to sit beside. So the pull is
-  the core's (H2), the growth is the periphery's and is its cost (H1), and a form that hands each
+  the core's (H2), the growth is the periphery's and is its cost (H3), and a form that hands each
   function its own data forms no core (H4).
 
 - **Essence and accident** (the author's, 22 November 2026, §9 row 81). Brooks (1987) divides a
@@ -100,9 +100,9 @@ This study turns the question round:
   also expand out to many functions to disperse the blocks of code. However, it does not have the
   same accidental complexity of method tight coupling that it's control flow allows with function
   injection." Read against the hypotheses: encapsulation's force gathers the blocks into one place
-  (H5, H2) and what gathers there has its cost (H1); separating them takes coupling, the surface
-  that keeps the concentrations coordinated, and H7 counts it against the blocks it joins; function
-  injection disperses the blocks without that coupling (H4, H7). H7 counts links, not how tight
+  (H1, H2) and what gathers there has its cost (H3); separating them takes coupling, the surface
+  that keeps the concentrations coordinated, and H5 counts it against the blocks it joins; function
+  injection disperses the blocks without that coupling (H4, H5). H5 counts links, not how tight
   they are: a wiring edge counts as much as a method call, so the test does not credit the
   function arm for its looser control flow, and is the harder for it.
   - *Splitting, and the reviewer* (the author, the same day; a claim, not tested): "it is much
@@ -136,7 +136,7 @@ dragging the rest along (Parnas 1972). Which is better depends on how the proble
 together, and that is only known afterwards. What can be measured at the time of each change is
 whether the placement was **chosen** or **forced**. The claim under test is that forced
 placement, not concentration as such, is what does the harm. As the hypotheses now stand (§2, §9),
-the part of that claim tested is the mechanism: a place gathers data (H1), and later code comes
+the part of that claim tested is the mechanism: a place gathers data (H3), and later code comes
 there for the few values earlier code was bound to, its core, not for the rest that gathered (H2). The study measures what is drawn in, not the harm
 done.
 
@@ -148,7 +148,7 @@ in the problems that happened to be sampled; at worst it is noise. The concern g
 assistants, which may be given larger and harder problems, so a change in the shape of their code
 need not mean a change in how well it is written. This study therefore reads shape only where the
 problem is fixed: one checkpoint is one problem, and both arms solve the same stream. It also
-**tests** the claim rather than assuming it. H3 asks whether the shape measures the earlier studies
+**tests** the claim rather than assuming it. H6 asks whether the shape measures the earlier studies
 used predict later intrusion once the problem, the bindings and the bystanders are held fixed (§2, §4.7).
 
 ### 1.1 What this plan absorbs (16 November 2026)
@@ -157,16 +157,16 @@ Three plans read the same runs with measures of the solution's shape. None has r
 unregistered drafts. The SinewSlim analysis plan's file says it is a draft, but its rule makes
 registration the commit of the file, and that commit was pushed on 31 October 2026 with a message
 calling it registered; it is therefore withdrawn by a dated amendment on its own branch, not
-simply closed. Their measures enter this plan as the shape competitors of H3, or as checks, so one
+simply closed. Their measures enter this plan as the shape competitors of H6, or as checks, so one
 registration covers them:
 
 - **The flow-injection-containment draft** (`flow-injection-containment-experiment`, 20 October
   2026; closed by its own commit). Its junction share (P1) becomes the host-level junction measure
-  of §4.7 (since 17 November 2026 a sinew measure, read apart from H3). Its conservation check (P2) is §4.6, with its band. Its trajectory (P5) is H1's checkpoint
+  of §4.7 (since 17 November 2026 a sinew measure, read apart from H6). Its conservation check (P2) is §4.6, with its band. Its trajectory (P5) is H3's checkpoint
   slope, read per arm. Its god-unit count (P3) and its gated-condition lever (P4) are dropped.
 - **The ui harness's SinewSlim analysis plan** (branch `sinewslim-analysis-plan`, 31 October 2026).
-  Its not-slimmable methods (H1) become a measure of §4.7 (since 17 November 2026 a sinew measure,
-  read apart from H3). Its mechanism (H2, behaviour
+  Its not-slimmable methods (H3) become a measure of §4.7 (since 17 November 2026 a sinew measure,
+  read apart from H6). Its mechanism (H2, behaviour
   added inside existing methods) is what Q1 and the bindings measure. Its wiring test (H4) becomes H4's
   wiring condition. Its go/no-go bar for OfficeFloorSlim is a product decision and stays in the
   harness, outside this study.
@@ -201,33 +201,34 @@ harness's to do, not this plan's.
 
 Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 November 2026).
 
-![Placement forces map: encapsulation is the force; choice narrows (H5) so changes become forced;
-a forced change concentrates (cost: size, H2, H1) or disperses (cost: coupling); shape (H3) and
-co-change spread (H6) are the literature's readings, predicted not to see it; function injection
+![Placement forces map: encapsulation is the force; choice narrows (H1) so changes become forced;
+a forced change concentrates (cost: size, H2, H3) or disperses (cost: coupling); shape (H6) and
+co-change spread (H7) are the literature's readings, predicted not to see it; function injection
 (H4) removes the force](figures/placement-forces.svg)
 
-*The figure was drawn before H7 was restated on 24 November 2026 (§9 rows 89, 90) and still shows
-it as *forced changes couple*, which has since been deleted. H7 is now the surface that keeps the concentrations coordinated: the
+*The figure was drawn before 24 November 2026 and keeps that day's earlier numbering (§9 row 93):
+its H5 is H1 here, its H1 is H3, its H3 is H6, its H6 is H7, and its H7, *forced changes couple*,
+has been deleted (§9 row 90). H5 is now the surface that keeps the concentrations coordinated: the
 links between blocks of logic, against the logic they join.*
 
 *How the hypotheses fit together* (a map, not a rule; the hypotheses below govern). A change
 bound to data no other class can reach is forced. It pays in size by concentrating, or in
 coupling by dispersing; the readings (§4.2d, §4.2e) show where code stands between the two. The
-rivals are the literature's two ways of looking, by shape (H3) and by co-change (H6), and the
+rivals are the literature's two ways of looking, by shape (H6) and by co-change (H7), and the
 change's size and unavoidable tail coupling, held fixed. The control is the construct that holds
 no state privately (H4). Drawn on 21 November 2026, through row 67; the figures on it are the
 development chain's (§6).
 
 **Two tiers** (decided by the author on 21 November 2026, §9 row 66). The study's necessity is to
-find the force. The **confirmatory** family is the force and its two outlets, with the control:
-**H5** (the force forms: choice of class narrows, and the function arm is forced less), **H2** (concentration: a core draws code in),
-**H7** (the surface: for the same logic, fewer links between blocks of logic under function
-injection, and the gap widening; restated 24 November 2026, §9 row 89) and **H4** (the control:
-function injection removes the force). Holm over these four. **H1** (the periphery grows, the
-cost of concentration), **H3** (shape does not draw code in) and **H6** (spread does not see it)
-are **secondary**: each keeps its direction and rule and is decided on its own p, outside the
-correction. H3 and H6 are the existing literature's two ways of looking for the cause, by shape
-and by co-change, each predicted not to find it. (Until 21 November 2026, later, H6 was
+find the force. The **confirmatory** family is the force and its two outlets, with the control,
+each comparing the forms: **H1** (the force forms: choice of class narrows, and the function arm
+is forced less), **H2** (concentration: a core draws code in), **H4** (the control: function
+injection forms no core) and **H5** (the surface: for the same logic, fewer links between blocks
+of logic under function injection, and the gap widening; restated 24 November 2026, §9 row 89).
+Holm over these four. **H3** (the encapsulation fills, the cost of concentration), **H6** (shape
+does not draw code in) and **H7** (spread does not see it) are **secondary**: each keeps its direction and rule and is decided on its own p, outside the
+correction. H6 and H7 are the existing literature's two ways of looking for the cause, by shape
+and by co-change, each predicted not to find it. (Until 21 November 2026, later, H7 was
 confirmatory, as *forced changes spread*, and Holm was over five; §9 row 67.) The readings
 (§4.2b–4.2e) are reported. **H8** (Run D, §3.1a; registered on 22 November 2026, §9 row 76) is
 the one test in which the cause is changed by hand: the same stack with the agent told to leave
@@ -241,8 +242,8 @@ consumption"): a private constant forces, a public one does not. A placement bou
 only to members other classes can reach is *unforced* (chosen); one not bound at the class is
 unbound. The definition is the force itself and
 works the same with or without dependency injection, so corpus B, which mostly has none, gets the
-same contrast as corpus A. Forced by binding with no alternative (H5's class level, §4.2a) is
-reported beside it in H6, and stays H5's own measure.
+same contrast as corpus A. Forced by binding with no alternative (H1's class level, §4.2a) is
+reported beside it in H7, and stays H1's own measure.
 
 **An injected private field forces too** (decided by the author on 22 November 2026, §9 row 72,
 after a review of the plan found §4.3 and this definition at odds over it). §4.3 says a field
@@ -256,25 +257,54 @@ forced growth bound only to injected private fields is the **opportunity** to du
 in another class and avoid the concentration, which is the value of dependency injection; the
 forced growth bound to the class's own private state, constants and methods has no such lever.
 OfficeFloor does not have the problem: everything is injected as parameters, so the choice is
-there without being exercised by anyone (H4). H5 counts how far the lever has been used: its
+there without being exercised by anyone (H4). H1 counts how far the lever has been used: its
 alternatives at the class are the other classes that already hold the same dependencies (§4.2a).
 
-- **H1, the periphery grows** (restated 17 November 2026, twice; renamed 19 November 2026, §9).
-  Until then it was called *gravity compounds*: its test is unchanged, its reading is not. What
-  rises is mostly periphery (H2): not what draws code to a place, but what code drawn there has
-  to sit beside, the cost of the core. In the methods arm, the
-  bystanders of an addition (§4.3a) rise with the checkpoint index (positive slope, 95% interval
-  above 0). They rise over all additions, and **within a place**: among the additions that go into
-  one class, the later ones find more of the class's data standing by, and likewise within one
-  method. The place itself gathers data; the rise is not code moving to places that hold more.
-  - *Constants count* (decided 17 November 2026; the reason the author's, 19 November 2026). A
-    constant left in a class binds code to that class, and is typically why code is put there; it
-    belongs in a file of its own that any place can use. So a constant gathering in a class is part
-    of what H1 predicts, and H1 read without constants is a reading, not a test of it.
-  - *As first registered:* the addition's bindings rise with its host's size and with the checkpoint
-    index. That is kept and reported beside it. It was replaced because the bindings an addition has
-    are largely the data its problem needs, and because nearly every Spring run into an existing
-    method already has one (the ceiling the pilot found).
+- **H1, choice narrows** (added 19 November 2026, §9; the author's; **a fall since 22 November
+  2026**, §9 row 73). In the methods arm, a bound addition's **alternatives**, the other places in
+  the code before its checkpoint that hold what its code was bound to (§4.2a), **fall** as the
+  stream goes on. The author's expectation is that it is always the same place, or that places
+  get restricted over time, especially at the class; there may be choice early and less later.
+  One-sided: the ratio of the alternatives at the end of the stream to those at its start is
+  shown **below 1**, at the class (the method level reported since 20 November 2026, row 64). A
+  flat count does not pass: it shows choice that stays as it was, not choice that narrows. A level
+  where every placement was forced from the start has no choice to narrow and is **not testable**
+  there (it is not a pass). H1 is decided apart from H2: H2 is about what later code comes back
+  to a place for (binding), H1 about whether the placement had anywhere else to go. It is the
+  plan's title read directly: *whether it had a choice*.
+  - **And the function arm is forced less** (the arm contrast, added 24 November 2026, §9 row 92;
+    the author's, so that every confirmatory test points at the difference between the forms):
+    per checkpoint, the placements forced at the class (bound there with no other place to go)
+    are **fewer in the function arm** half-way through the stream (the rate ratio below 1) **and
+    rise less** over it (the arm's interaction with the checkpoint index below 1), shaped as H4
+    and H5. Every checkpoint counts, so a form that binds code at the class less often scores
+    lower. The author: "it also potentially shows the accidental cost of the method structure in
+    Spring handlers (and typical web app servers) over function injection of OfficeFloor". Not
+    read on a history, whose arms do not solve the same problems; there H1 is the fall alone.
+  - *Why not the fall in the function arm* (seen before it was written, §9 row 92): on the
+    development chain the function arm bound code at the class 10 times in 60 checkpoints, the
+    methods arm 48 times in 59; but 9 of the function arm's 10 had no other place to go (the
+    methods arm's share forced 0.54), with 0.1 alternatives a row from the start. Its choice has
+    nothing to narrow from, so a contrast of the two falls would rest on ten rows nearly all nought,
+    and a contrast of the share forced would go against the form. The difference is how often the
+    force happens at all, not how much choice is left when it does.
+  - *As it stood until 22 November 2026* (reported): one-sided as H6, the ratio shown below the
+    upper margin 1.25, so that a flat count passed, and a level where every placement was forced
+    passed with p 0. Replaced by the author after a review of the plan: a hypothesis named
+    *choice narrows* should not be supported by a count that does not move, and a pass with p 0
+    made the other three confirmatory tests easier under Holm.
+  - *Reported beside it:* the share of placements with no alternative (forced), per arm and third
+    of the stream; the function arm's ratio, and the arms' contrast (its injected parameters are
+    not bindings, so its alternatives are expected to stay open); the alternatives themselves, by
+    name, for each row.
+  - *H1 is tested at the class only* (decided by the author on 20 November 2026, §9 row 64): "H1
+    for method shows increase volume of the encapsulation so it should only be read at the
+    encapsulation level of the class". The method level is reported.
+  - *The author's reading of H1 on the development chain* (20 November 2026, after seeing it, §6):
+    new functionality enlarges the area of methods, but binding forces that area into a class. So
+    the choice of class narrows while the methods in the class multiply under that forcing, and at
+    the method the alternatives on a request's flow widen. H1 and its test are unchanged by this;
+    it is the reason for H7.
 - **H2, a core draws code in** (restated 19 November 2026, §9). In the methods arm, where an
   addition was bound to a **class** or a **method**, the data of that place is of two kinds
   (§4.4): its **core**, the values the addition was bound to, and its **periphery**, the rest the
@@ -282,7 +312,7 @@ alternatives at the class are the other classes that already hold the same depen
   other problems comes there **for the core**. Holding the problem fixed (its checkpoint, the
   addition's size and the earlier rules it declares it crosses) and the host's size, later
   intrusions use a core value more than they use a periphery value: the rate ratio per value is
-  above 1, at the class and at the method. With H1: a place gathers data, but what gathers is
+  above 1, at the class and at the method. With H3: a place gathers data, but what gathers is
   mostly periphery; what the next code is bound to is the few values code there was already
   bound to.
   - **And a core value is come back to less in the function arm** (added to H2's test on 22
@@ -306,7 +336,7 @@ alternatives at the class are the other classes that already hold the same depen
     outside the encapsulation, being the force." The class's core is the members the code was
     bound to that no other class can reach: its private fields (private constants among them) and
     private methods. The members it was bound to that others can reach join the periphery; opening
-    a member up shows in H7 (widening), not in the core. The method level is unchanged (a method's
+    a member up shows in H5 (widening), not in the core. The method level is unchanged (a method's
     own values are reachable from nowhere else). Reported beside it: the core as it stood until
     then, every member the code was bound to whatever its access (on the development data: class
     17.5 on the pilot, 3.15 on the histories, §6).
@@ -321,41 +351,26 @@ alternatives at the class are the other classes that already hold the same depen
     cross-problem intrusion follows where it was placed. That is kept and reported beside it. It
     was replaced because it is not the number of bindings a problem has that draws later code, but the
     data lying where the problem's code was put.
-- **H3, shape does not draw code in** (made one-sided 17 November 2026; its measures set 18
-  November 2026, §9). With the problem held fixed, and the bindings and the bystanders in the
-  model, the shape of the place the addition landed in does not raise the intrusion that follows
-  there, at the method or at the class. The shape measures are the literature's (§4.7, §4.7a):
-  - **at the method:** long (S1), cognitive complexity (S4) and cyclomatic complexity;
-  - **at the class:** concentration (the Gini of S5), weight (WMC) and lack of cohesion (LCOM*).
-
-  Not among them: not slimmable and junction (S2, S3), the author's sinew measures of how data
-  flows through a method; and fan-out and CBO, which measure how far a place reaches out and are
-  read with them (§5, *The sinew measures*). Each of H3's measures is fitted by itself, and its
-  effect is shown to lie below the upper margin of §5 (1.25). A shape
-  that is followed by *less* intrusion does not count against: the belief under test is that large
-  and complex code attracts change, and nobody holds that it repels it. Such an effect is reported
-  with its size.
-  - *As it stood until then* (shape adds nothing): each effect within the margin on both sides,
-    0.8 to 1.25. That reading is kept and reported beside it.
-  This makes confirmatory
-  the result of Olbrich, Cruzes and Sjøberg (2010): god and brain classes change more and hold
-  more defects, but less per line once size is controlled. The question is contested: Zhou, Leung
-  and Xu (2009) find class size accounting for, or reversing, the association of many
-  object-oriented metrics with change-proneness, while Chowdhury et al. (2022b), read in full,
-  conclude that method-level metrics stay useful predictors of maintenance with size as a
-  covariate (size divided out does not neutralise it; size in the model does). H3 holds data fixed, not only size, and
-  the problem; its method-level result is to be set against Chowdhury et al.
-  - *A sensitivity reading, with the coupling measures put back* (decided by the author on 22
-    November 2026, §9 row 75). Fan-out and CBO were taken out of H3 as reach after fan-out was
-    seen above the margin on the development chain (§7), and the literature counts them, with RFC,
-    among its structural metrics (Chidamber and Kemerer 1994). So H3's rule is also read over its
-    six measures **and** the method's fan-out and the class's CBO, RFC and fan-out, each alone,
-    where they vary. It is reported beside H3 with its state (not above, unresolved, against) and
-    the measures that lie wholly above the margin, and it changes no verdict: a reader who holds
-    that coupling is shape can read H3 that way.
-  - *H2 and H3 were one hypothesis* (H2a and H2b) until 17 November 2026, supported only if both
-    held (§9). They are now decided apart: one is a difference to be shown, the other an
-    equivalence, and the second should not decide the first.
+- **H3, the encapsulation fills** (restated 17 November 2026, twice; renamed 19 November 2026, §9,
+  and 24 November 2026, §9 row 93). Until 19 November it was called *gravity compounds*, and until
+  24 November *the periphery grows*: its test is unchanged, its reading is not. Inside an
+  encapsulation every method can reach every field, so the state a class gathers is visible to
+  every new block put there, needed or not: what a reader has to hold, and where later state
+  links (H5) come from. What
+  rises is mostly periphery (H2): not what draws code to a place, but what code drawn there has
+  to sit beside, the cost of the core. In the methods arm, the
+  bystanders of an addition (§4.3a) rise with the checkpoint index (positive slope, 95% interval
+  above 0). They rise over all additions, and **within a place**: among the additions that go into
+  one class, the later ones find more of the class's data standing by, and likewise within one
+  method. The place itself gathers data; the rise is not code moving to places that hold more.
+  - *Constants count* (decided 17 November 2026; the reason the author's, 19 November 2026). A
+    constant left in a class binds code to that class, and is typically why code is put there; it
+    belongs in a file of its own that any place can use. So a constant gathering in a class is part
+    of what H3 predicts, and H3 read without constants is a reading, not a test of it.
+  - *As first registered:* the addition's bindings rise with its host's size and with the checkpoint
+    index. That is kept and reported beside it. It was replaced because the bindings an addition has
+    are largely the data its problem needs, and because nearly every Spring run into an existing
+    method already has one (the ceiling the pilot found).
 - **H4, function injection forms no core** (restated 17 November 2026; renamed 19 November 2026,
   §9, from *keeps the space open*; its test is unchanged). Each function is handed its own data,
   so no place holds values that every later problem has to come to. On the same
@@ -396,102 +411,7 @@ alternatives at the class are the other classes that already hold the same depen
     used alike in both. It is not a condition of H4: few of the function arm's rows have a core
     at the class (one on the development chain), so as a condition it would often not be
     estimable.
-- **H5, choice narrows** (added 19 November 2026, §9; the author's; **a fall since 22 November
-  2026**, §9 row 73). In the methods arm, a bound addition's **alternatives**, the other places in
-  the code before its checkpoint that hold what its code was bound to (§4.2a), **fall** as the
-  stream goes on. The author's expectation is that it is always the same place, or that places
-  get restricted over time, especially at the class; there may be choice early and less later.
-  One-sided: the ratio of the alternatives at the end of the stream to those at its start is
-  shown **below 1**, at the class (the method level reported since 20 November 2026, row 64). A
-  flat count does not pass: it shows choice that stays as it was, not choice that narrows. A level
-  where every placement was forced from the start has no choice to narrow and is **not testable**
-  there (it is not a pass). H5 is decided apart from H2: H2 is about what later code comes back
-  to a place for (binding), H5 about whether the placement had anywhere else to go. It is the
-  plan's title read directly: *whether it had a choice*.
-  - **And the function arm is forced less** (the arm contrast, added 24 November 2026, §9 row 92;
-    the author's, so that every confirmatory test points at the difference between the forms):
-    per checkpoint, the placements forced at the class (bound there with no other place to go)
-    are **fewer in the function arm** half-way through the stream (the rate ratio below 1) **and
-    rise less** over it (the arm's interaction with the checkpoint index below 1), shaped as H4
-    and H7. Every checkpoint counts, so a form that binds code at the class less often scores
-    lower. The author: "it also potentially shows the accidental cost of the method structure in
-    Spring handlers (and typical web app servers) over function injection of OfficeFloor". Not
-    read on a history, whose arms do not solve the same problems; there H5 is the fall alone.
-  - *Why not the fall in the function arm* (seen before it was written, §9 row 92): on the
-    development chain the function arm bound code at the class 10 times in 60 checkpoints, the
-    methods arm 48 times in 59; but 9 of the function arm's 10 had no other place to go (the
-    methods arm's share forced 0.54), with 0.1 alternatives a row from the start. Its choice has
-    nothing to narrow from, so a contrast of the two falls would rest on ten rows nearly all nought,
-    and a contrast of the share forced would go against the form. The difference is how often the
-    force happens at all, not how much choice is left when it does.
-  - *As it stood until 22 November 2026* (reported): one-sided as H3, the ratio shown below the
-    upper margin 1.25, so that a flat count passed, and a level where every placement was forced
-    passed with p 0. Replaced by the author after a review of the plan: a hypothesis named
-    *choice narrows* should not be supported by a count that does not move, and a pass with p 0
-    made the other three confirmatory tests easier under Holm.
-  - *Reported beside it:* the share of placements with no alternative (forced), per arm and third
-    of the stream; the function arm's ratio, and the arms' contrast (its injected parameters are
-    not bindings, so its alternatives are expected to stay open); the alternatives themselves, by
-    name, for each row.
-  - *H5 is tested at the class only* (decided by the author on 20 November 2026, §9 row 64): "H5
-    for method shows increase volume of the encapsulation so it should only be read at the
-    encapsulation level of the class". The method level is reported.
-  - *The author's reading of H5 on the development chain* (20 November 2026, after seeing it, §6):
-    new functionality enlarges the area of methods, but binding forces that area into a class. So
-    the choice of class narrows while the methods in the class multiply under that forcing, and at
-    the method the alternatives on a request's flow widen. H5 and its test are unchanged by this;
-    it is the reason for H6.
-- **H6, spread does not see it** (restated 21 November 2026, later, §9 row 67; the author's).
-  Co-change spread, the measure of the change-coupling literature (logical coupling, Gall, Hajek
-  and Jazayeri 1998; co-change rules, Zimmermann et al. 2005; change coupling and defects,
-  D'Ambros, Lanza and Robbes 2009; Shotgun Surgery from co-change, Palomba et al. 2015;
-  LITERATURE.md §4), is not wider where a placement was forced by encapsulation than where none
-  was, at the same change size and point in the stream: the forced ratio of the spread (below) is
-  **not above** the upper margin 1.25, one-sided, as H3. The author's reasoning: that literature,
-  like the shape literature, reads a symptom to find a cause; cohesion has no shape to highlight,
-  so the force of encapsulation does not show in how many classes a change touches. Where it
-  shows is what the force costs at the boundary (§4.2c; the surface, H7). H6 argues against that literature's
-  *reading*, that co-change reveals a cause (Gall et al.; Palomba et al.'s symptom framing), which
-  D'Ambros et al. themselves call an untested assumption; it contradicts no finding (LITERATURE.md
-  §10, *Full read*). None of the six papers read controls for change size: the field drops large
-  transactions (more than 30 entities, Zimmermann et al.; more than 100 classes, D'Ambros et al.).
-  Gall et al.'s subsystem that grows without coupling is an early instance of spread missing what
-  happens inside a unit. H6 is secondary, beside H3: the existing
-  literature's two ways of looking, each predicted not to find the force. Its measure, model and
-  terms are unchanged; only its direction and tier changed. *Seen before it was restated* (§6):
-  on the development chain 1.026 [0.380, 2.775] (unresolved on one chain an arm); on the
-  development histories 0.845 [0.644, 1.108]; without the change's size 3.656 and 1.987, which is
-  what the spread follows.
-  - *As first drafted* (20 November 2026, §9 rows 56-58), **H6, forced changes spread**: in the methods arm,
-  a change with no choice has to be made in more classes at once: the number of classes that
-  existed before it that a unit places or edits code in (its **spread**, §4.2b) is wider in a unit
-  where a placement was forced at the class (bound there with no other class holding what it was
-  bound to, §4.2a) than in one where none was, at the same point in the stream. One-sided. A new
-  class is a free choice and is not counted (decided by the author on 20 November 2026, after the
-  development chain, §9). As first drafted, H6 also needed the spread to rise over the stream; the
-  author decided the same day to focus on forced and to track forced and unforced units apart, so
-  the rise is reported, in each apart (§9). The author's
-  reasoning: things that change together should stay together, so a change that keeps having to
-  go into two classes because it has no choice shows that the two lack cohesion, and that
-  placement (in particular which class encapsulates which fields) should be redistributed between
-  them. H6 joins H5 (choice) to its cost across classes, as H2 joins binding to its cost within
-  one.
-  - *Reported beside it:* the spread's rise over the stream, over all units and in forced and in
-    unforced units apart; the spread per arm and third, with new classes beside it; the function
-    arm's forced ratio, rise and the arms' contrast (a function placed by its wiring is not forced into a class by fields, so
-    its spread is expected to stay flat); and the **coupling of pairs of classes changed
-    together**: the calls between the two before each unit that changes both, on the index, for
-    pairs changed together more than once, expected to rise (coupling growing between classes
-    that keep changing together). The pairs most often changed together whose coupling rose are
-    listed by name, the candidates for redesign.
-  - *Accounted beside it* (the author, 20 November 2026): where the **growth of existing classes**
-    came from (the share of positions added by placements forced at the class, chosen there, or not
-    bound there), and where **coupling between classes** came from (the calls between classes each
-    unit added, the share of it in units with a forced placement and between classes changed
-    together). Together these say how much of the growth in size, and of the growth in coupling,
-    arrived by forcing: by absorbing into a class, or by spreading to the classes holding the
-    other data.
-- **H7, surface against volume** (restated 24 November 2026, §9 row 89; the author's). The force of
+- **H5, surface against volume** (restated 24 November 2026, §9 row 89; the author's). The force of
   encapsulation makes concentrations (H2); coupling is the surface that keeps those concentrations
   coordinated. The author: "volume being encapsulated complexity and surface being coupling", and
   "the method calling structure is possibly considered accidental complexity and the essential
@@ -523,7 +443,7 @@ alternatives at the class are the other classes that already hold the same depen
     function arm writing fewer wired functions and more called methods as the stream went on,
     which brings the calling structure back inside it (§7). The links themselves had not been
     measured.
-  - *Until 24 November 2026 H7 was* **forced changes couple**: in the methods arm, a class a
+  - *Until 24 November 2026 H5 was* **forced changes couple**: in the methods arm, a class a
     forced change goes into gains more calls across its boundary than one an unforced change goes
     into. Deleted that day at the author's word (§9 row 90); its test and readings are gone from
     the code, and its measure, the calls across the encapsulation (§4.2c), stays for H8.
@@ -546,8 +466,93 @@ alternatives at the class are the other classes that already hold the same depen
     *physics of software*, Ch. 13: "we don't really change the mass of code"; Loth 2026,
     Corollary 2.2.2, unrefereed), not a tested law; the study keeps it as framing and tests how
     the same logic is joined (the links), not conservation itself (which H4's amount band and §4.9's
-    logic only check). Ousterhout's deep module is the nearest to H7: much volume behind little
+    logic only check). Ousterhout's deep module is the nearest to H5: much volume behind little
     surface.
+- **H6, shape does not draw code in** (made one-sided 17 November 2026; its measures set 18
+  November 2026, §9). With the problem held fixed, and the bindings and the bystanders in the
+  model, the shape of the place the addition landed in does not raise the intrusion that follows
+  there, at the method or at the class. The shape measures are the literature's (§4.7, §4.7a):
+  - **at the method:** long (S1), cognitive complexity (S4) and cyclomatic complexity;
+  - **at the class:** concentration (the Gini of S5), weight (WMC) and lack of cohesion (LCOM*).
+
+  Not among them: not slimmable and junction (S2, S3), the author's sinew measures of how data
+  flows through a method; and fan-out and CBO, which measure how far a place reaches out and are
+  read with them (§5, *The sinew measures*). Each of H6's measures is fitted by itself, and its
+  effect is shown to lie below the upper margin of §5 (1.25). A shape
+  that is followed by *less* intrusion does not count against: the belief under test is that large
+  and complex code attracts change, and nobody holds that it repels it. Such an effect is reported
+  with its size.
+  - *As it stood until then* (shape adds nothing): each effect within the margin on both sides,
+    0.8 to 1.25. That reading is kept and reported beside it.
+  This makes confirmatory
+  the result of Olbrich, Cruzes and Sjøberg (2010): god and brain classes change more and hold
+  more defects, but less per line once size is controlled. The question is contested: Zhou, Leung
+  and Xu (2009) find class size accounting for, or reversing, the association of many
+  object-oriented metrics with change-proneness, while Chowdhury et al. (2022b), read in full,
+  conclude that method-level metrics stay useful predictors of maintenance with size as a
+  covariate (size divided out does not neutralise it; size in the model does). H6 holds data fixed, not only size, and
+  the problem; its method-level result is to be set against Chowdhury et al.
+  - *A sensitivity reading, with the coupling measures put back* (decided by the author on 22
+    November 2026, §9 row 75). Fan-out and CBO were taken out of H6 as reach after fan-out was
+    seen above the margin on the development chain (§7), and the literature counts them, with RFC,
+    among its structural metrics (Chidamber and Kemerer 1994). So H6's rule is also read over its
+    six measures **and** the method's fan-out and the class's CBO, RFC and fan-out, each alone,
+    where they vary. It is reported beside H6 with its state (not above, unresolved, against) and
+    the measures that lie wholly above the margin, and it changes no verdict: a reader who holds
+    that coupling is shape can read H6 that way.
+  - *H2 and H6 were one hypothesis* (H2a and H2b) until 17 November 2026, supported only if both
+    held (§9). They are now decided apart: one is a difference to be shown, the other an
+    equivalence, and the second should not decide the first.
+- **H7, spread does not see it** (restated 21 November 2026, later, §9 row 67; the author's).
+  Co-change spread, the measure of the change-coupling literature (logical coupling, Gall, Hajek
+  and Jazayeri 1998; co-change rules, Zimmermann et al. 2005; change coupling and defects,
+  D'Ambros, Lanza and Robbes 2009; Shotgun Surgery from co-change, Palomba et al. 2015;
+  LITERATURE.md §4), is not wider where a placement was forced by encapsulation than where none
+  was, at the same change size and point in the stream: the forced ratio of the spread (below) is
+  **not above** the upper margin 1.25, one-sided, as H6. The author's reasoning: that literature,
+  like the shape literature, reads a symptom to find a cause; cohesion has no shape to highlight,
+  so the force of encapsulation does not show in how many classes a change touches. Where it
+  shows is what the force costs at the boundary (§4.2c; the surface, H5). H7 argues against that literature's
+  *reading*, that co-change reveals a cause (Gall et al.; Palomba et al.'s symptom framing), which
+  D'Ambros et al. themselves call an untested assumption; it contradicts no finding (LITERATURE.md
+  §10, *Full read*). None of the six papers read controls for change size: the field drops large
+  transactions (more than 30 entities, Zimmermann et al.; more than 100 classes, D'Ambros et al.).
+  Gall et al.'s subsystem that grows without coupling is an early instance of spread missing what
+  happens inside a unit. H7 is secondary, beside H6: the existing
+  literature's two ways of looking, each predicted not to find the force. Its measure, model and
+  terms are unchanged; only its direction and tier changed. *Seen before it was restated* (§6):
+  on the development chain 1.026 [0.380, 2.775] (unresolved on one chain an arm); on the
+  development histories 0.845 [0.644, 1.108]; without the change's size 3.656 and 1.987, which is
+  what the spread follows.
+  - *As first drafted* (20 November 2026, §9 rows 56-58), **H7, forced changes spread**: in the methods arm,
+  a change with no choice has to be made in more classes at once: the number of classes that
+  existed before it that a unit places or edits code in (its **spread**, §4.2b) is wider in a unit
+  where a placement was forced at the class (bound there with no other class holding what it was
+  bound to, §4.2a) than in one where none was, at the same point in the stream. One-sided. A new
+  class is a free choice and is not counted (decided by the author on 20 November 2026, after the
+  development chain, §9). As first drafted, H7 also needed the spread to rise over the stream; the
+  author decided the same day to focus on forced and to track forced and unforced units apart, so
+  the rise is reported, in each apart (§9). The author's
+  reasoning: things that change together should stay together, so a change that keeps having to
+  go into two classes because it has no choice shows that the two lack cohesion, and that
+  placement (in particular which class encapsulates which fields) should be redistributed between
+  them. H7 joins H1 (choice) to its cost across classes, as H2 joins binding to its cost within
+  one.
+  - *Reported beside it:* the spread's rise over the stream, over all units and in forced and in
+    unforced units apart; the spread per arm and third, with new classes beside it; the function
+    arm's forced ratio, rise and the arms' contrast (a function placed by its wiring is not forced into a class by fields, so
+    its spread is expected to stay flat); and the **coupling of pairs of classes changed
+    together**: the calls between the two before each unit that changes both, on the index, for
+    pairs changed together more than once, expected to rise (coupling growing between classes
+    that keep changing together). The pairs most often changed together whose coupling rose are
+    listed by name, the candidates for redesign.
+  - *Accounted beside it* (the author, 20 November 2026): where the **growth of existing classes**
+    came from (the share of positions added by placements forced at the class, chosen there, or not
+    bound there), and where **coupling between classes** came from (the calls between classes each
+    unit added, the share of it in units with a forced placement and between classes changed
+    together). Together these say how much of the growth in size, and of the growth in coupling,
+    arrived by forcing: by absorbing into a class, or by spreading to the classes holding the
+    other data.
 - **A reading: split or concentrate** (added 20 November 2026, §9; the author's; reported, not
   among the confirmatory tests). Encapsulation forces code into a class
   (concentration); the counter force is to separate it into more encapsulated units, which opens
@@ -590,42 +595,42 @@ alternatives at the class are the other classes that already hold the same depen
 
 **What would count against.**
 
-- H1: no slope, or a negative one, over all additions or within a class or a method. The
-  surroundings of a problem's data would then be a constant cost of the form, not something that
-  grows. A rise over all additions with none within a place would mean that code moves
-  to fuller places, not that places fill.
-- H2: later code using a periphery value as much as a core value, at the class or at the method.
-  The data of a place would then be taken up alike, and the place would have no core.
-- H3: any shape measure followed by more intrusion, beyond the margin, with the problem, the
-  bindings and the bystanders held fixed. That would mean that shape draws code in by itself. A
-  shape measure followed by less is reported, and does not count against.
-- H2, the arm contrast: a core value come back to as much in the function arm as in the methods
-  arm. The core would then be the problems' shared data, used alike wherever it is put, and not
-  something the place does.
-- H4, the symmetric count: the function arm going back into files as well-trodden as the methods
-  arm's, or more, once its wiring files are counted: its endpoint's flow file would then be its
-  handler under another name, and its coupling would have moved, not gone.
-- H4: no difference between the arms in bystanders, in their growth or in later intrusion, or an amount
-  outside the band (the difference is then a difference of amount, not placement), or a function arm that moves its coupling into the wiring:
-  wiring per problem that rises over the run, or one configuration file that holds most of it
-  (§4.5).
-- H5: alternatives at the class that do not fall over the stream. Flat, choice stays as it was;
+- H1: alternatives at the class that do not fall over the stream. Flat, choice stays as it was;
   rising (an interval wholly above 1, *reversed*), code finds more classes to go to as the system
   grows, and placement loosens. Or a function arm forced as often as the methods arm, or more,
   or forced more and more as the methods arm is: the force would then belong to the problems, not
   to the method structure.
-- H8 (Run D, §3.1a): with nothing private, bound code come back to as much at the class, or no
-  more calls and field reads added across class boundaries. Encapsulation would then not be what
-  concentrates code, or removing it would not disperse it.
-- H7: as many links for the same logic in the function arm as in the methods arm, or a gap that
+- H2: later code using a periphery value as much as a core value, at the class or at the method.
+  The data of a place would then be taken up alike, and the place would have no core.
+- H2, the arm contrast: a core value come back to as much in the function arm as in the methods
+  arm. The core would then be the problems' shared data, used alike wherever it is put, and not
+  something the place does.
+- H3: no slope, or a negative one, over all additions or within a class or a method. The
+  surroundings of a problem's data would then be a constant cost of the form, not something that
+  grows. A rise over all additions with none within a place would mean that code moves
+  to fuller places, not that places fill.
+- H4: no difference between the arms in bystanders, in their growth or in later intrusion, or an amount
+  outside the band (the difference is then a difference of amount, not placement), or a function arm that moves its coupling into the wiring:
+  wiring per problem that rises over the run, or one configuration file that holds most of it
+  (§4.5).
+- H4, the symmetric count: the function arm going back into files as well-trodden as the methods
+  arm's, or more, once its wiring files are counted: its endpoint's flow file would then be its
+  handler under another name, and its coupling would have moved, not gone.
+- H5: as many links for the same logic in the function arm as in the methods arm, or a gap that
   does not widen over the stream. Function injection would then move the coordination into the
   wiring rather than remove it, and the calling structure would not be the accidental complexity
   the author holds it to be. (Until 24 November 2026: a class a forced change goes into gaining no
   more calls across its boundary than one a change goes into unforced.)
-- H6: a spread wider where a placement was forced than where none was, beyond the margin, at the
+- H6: any shape measure followed by more intrusion, beyond the margin, with the problem, the
+  bindings and the bystanders held fixed. That would mean that shape draws code in by itself. A
+  shape measure followed by less is reported, and does not count against.
+- H7: a spread wider where a placement was forced than where none was, beyond the margin, at the
   same change size. Co-change would then see the force of encapsulation, and the change-coupling
-  literature would find what this study says it misses. (As first drafted, H6 was the opposite:
+  literature would find what this study says it misses. (As first drafted, H7 was the opposite:
   a spread no wider where forced would have refuted it.)
+- H8 (Run D, §3.1a): with nothing private, bound code come back to as much at the class, or no
+  more calls and field reads added across class boundaries. Encapsulation would then not be what
+  concentrates code, or removing it would not disperse it.
 
 Every one of these outcomes is reported whichever way it points.
 
@@ -634,7 +639,7 @@ Every one of these outcomes is reported whichever way it points.
 ### 3.1 Corpus A: the paired streams (confirmatory)
 
 **The ui runs are the primary test** (decided by the author, 18 November 2026, §9). The verdicts
-on H1 to H4 that the study reports as its test are those of the ui analysis (§3.1a): Spring
+on the hypotheses (H1 to H4 as first registered) that the study reports as its test are those of the ui analysis (§3.1a): Spring
 against OfficeFloor over its Runs A and B. The petclinic runs are **secondary**: read first,
 because they exist, each as a replication with its own verdicts, and none of them the study's
 test.
@@ -645,7 +650,7 @@ test.
   (§6). That is a property of the stream, and it makes petclinic a weak test of exactly the
   levels the hypotheses are about. The ui stream has many endpoints and 250 checkpoints.
 - *What had been seen.* This was decided after the development chain of petclinic showed H2 at
-  the method resting on one method, and H3's class measures untestable there (§6). No ui run's
+  the method resting on one method, and H6's class measures untestable there (§6). No ui run's
   backend Java had been read. So the choice of the primary corpus was made knowing how the
   weaker one looks, and not knowing how the primary one does.
 - *What it costs.* The primary test waits on Run B (§3.1a). With Run A alone the arm cannot be
@@ -743,8 +748,8 @@ end's production Java of the four stacks of its Runs A and B, a front end × bac
     Each one-sided with a 95% cluster-bootstrap interval (§5); p is the larger of the two.
     Conditions: compliance, below, and the amount within its band. H8 is decided at α = 0.05 on
     its own p: it is read on its own run, after the others, and is not in the Holm family of the
-    primary analysis. Below the compliance bar it is descriptive only. In Run D's analysis H1 to
-    H7 are descriptive: they are the arms' tests, not this run's.
+    primary analysis. Below the compliance bar it is descriptive only. In Run D's analysis H3 to
+    H5 are descriptive: they are the arms' tests, not this run's.
   - **Run D cannot be run beside Run A** (the author, 22 November 2026: "I can not currently run
     it concurrently so will have to run separately at the end, so will have to accept this"). So
     the contrast holds anything that changed between the two runs, the instruction among them:
@@ -758,11 +763,11 @@ end's production Java of the four stacks of its Runs A and B, a front end × bac
     not private (§4.2f, measure 1). Below that, the instruction did not take and Run D is
     reported descriptively, not read against Run A.
   - *The force is absent:* the share of growth of existing classes arriving forced (§4.2b) near
-    0, and H5's choice of class not narrowing (the alternatives' ratio not below 1).
+    0, and H1's choice of class not narrowing (the alternatives' ratio not below 1).
   - *Concentration weaker:* H2's core draws less at the class (a lower rate ratio), since code
     that needs a class's data may now go elsewhere.
   - *Dispersion stronger:* more calls and field reads across class boundaries per unit (§4.2c's
-    calls across the encapsulation, now unforced) and a wider spread (H6's measure), at the same change size.
+    calls across the encapsulation, now unforced) and a wider spread (H7's measure), at the same change size.
   - *The amount conserved:* Run D's amount added within 0.8 to 1.25 of Run A's (§4.6's band); the
     code is placed differently, not made more or less.
   - *The reader* (§4.2f): whether classes grow larger without encapsulation, reported without a
@@ -821,20 +826,20 @@ Additions are commits linked to an issue labelled as a feature or enhancement, o
 changed lines** of production Java, with refactorings removed by RefactoringMiner. Commits linked
 to issues are known to be a biased subset (Bird et al. 2009), and tangling remains at the reported
 7–20% (Herzig et al. 2016). In corpus B a commit is not reliably one problem and the problem is not
-held fixed. Corpus B is therefore read only as a check on the **direction of H1 and H2**; H3,
+held fixed. Corpus B is therefore read only as a check on the **direction of H3 and H2**; H6,
 H4 and the junction × arm reading are not read there.
 
-**Extended 18 November 2026** (§9; drafted, not yet built). H1 and H2 as they now stand need only
+**Extended 18 November 2026** (§9; drafted, not yet built). H3 and H2 as they now stand need only
 a history, so more can be read here than the first draft allowed:
 
-- **H1**, over all additions and within a class and a method. There are no checkpoints, so the
+- **H3**, over all additions and within a class and a method. There are no checkpoints, so the
   index is the commit's place in the order of the repository's commits read, from 0 to 1.
 - **H2**, at the class and at the method. With no stream to declare which later changes are meant
   to touch an earlier one, every later arrival counts.
 - **Where bound and unbound code lands** (§5), as on corpus A.
-- **H3, weaker.** The problem cannot be held fixed, so each shape measure is read with only the
+- **H6, weaker.** The problem cannot be held fixed, so each shape measure is read with only the
   addition's size, the place's size, the bindings and the bystanders held fixed. Reported, and not
-  called H3.
+  called H6.
 - **Not read:** H4 (there are no arms), the junction × arm reading, the wiring.
 - **Two units.** The issue-linked feature commit above stays the unit for reading corpus B by
   itself. For the comparison with corpus C a second unit is read in both: **every commit that is
@@ -893,15 +898,15 @@ repository of corpus B or C is read:
   destinations (existing method, new method of an existing class, new class) but not the ranks.
   CodeTracker is not run; a method is followed by the instrument's chaining of RefactoringMiner's
   renames and moves.
-- **H6 is read on corpora B and C** as H5 is (20 November 2026): a unit is a commit, its
-  pairs' coupling and the calls across a class's boundary read on the same running index. (H7
+- **H7 is read on corpora B and C** as H1 is (20 November 2026): a unit is a commit, its
+  pairs' coupling and the calls across a class's boundary read on the same running index. (H5
   was too until its restatement of 24 November 2026; it now compares arms solving the same
   problems and is not read on a history.)
-- **H5 is read on corpora B and C too** (decided by the author, 19 November 2026). Its places
+- **H1 is read on corpora B and C too** (decided by the author, 19 November 2026). Its places
   need the whole tree, so one index is kept running through a history: the whole production tree
   before the first unit, then, before each later unit, the files that differ between the previous
   unit's parent and this one's (merges and commits that are not units included, as a diff of
-  trees), so the index is the tree at each unit's parent (`chain.tree_places`). H5 there is read
+  trees), so the index is the tree at each unit's parent (`chain.tree_places`). H1 there is read
   in the methods arm as on corpus A, on the unit's place from 0 to 1, with the repository's
   intercept.
 - **The issue-linked unit** is not built: a unit records the issues its message names, and the
@@ -963,7 +968,7 @@ it wrote.
   - *Predicted*, from Ogenrwot and Businge (2026), who find agents' pull requests touching fewer
     files: a declared agent commit's unbound code enters an existing class more often, and its
     bound code lands among more bystanders, than the commits it is compared with.
-- H1 and H2 are read on corpus C as on corpus B, on all its commits, with the share that is
+- H3 and H2 are read on corpus C as on corpus B, on all its commits, with the share that is
   declared agent as a term.
 - **Read after corpus A**, and only when its steps are built and this section is fixed by a tag.
 
@@ -1000,7 +1005,7 @@ runs, each run being contiguous positions of one host.
 - **Interleaving:** the number of runs per host. An addition split across a host's statements
   is placed against the host's order.
 
-### 4.2a Choice (H5): the other places that could have held the code
+### 4.2a Choice (H1): the other places that could have held the code
 
 Added 19 November 2026 (§9). For each bound addition to a host (§4.3), at each level where its code
 was bound, the **alternatives** are the other places in the code **before its checkpoint** (the
@@ -1037,9 +1042,9 @@ tree at *k − 1*, every production Java file) that hold what the code was bound
   history (§3.2).
 
 As built: `instrument/Pull.java` (the declared types of each method's values and of each class's
-fields; `--places`, the places of a tree), `tables.choice`, `prepare.h5_rows` (`h5.csv`).
+fields; `--places`, the places of a tree), `tables.choice`, `prepare.h1_rows` (`h1.csv`).
 
-### 4.2b Spread (H6): the classes a change has to go into
+### 4.2b Spread (H7): the classes a change has to go into
 
 Added 20 November 2026 (§9). The **unit** is a checkpoint on corpus A and a commit on corpora B
 and C (§3.2).
@@ -1073,7 +1078,7 @@ and C (§3.2).
   the class's own state, a private constant or a private method; nothing outside can reach it.
   *Injected only:* every private member it was bound to is a field holding an injected dependency
   (§4.3), which another class could declare too; split into those where another class already
-  holds those dependencies (H5's alternatives at least one) and those where none does yet. The
+  holds those dependencies (H1's alternatives at least one) and those where none does yet. The
   injected-only share is the opportunity dependency injection gives to duplicate the core; it
   stays forced, because the lever was not used. As built: `tables.lever` (`forced_lever` on each
   host), `prepare.growth_by_lever`; `MEASURE_VERSION` 29, `HISTORY_VERSION` 13.
@@ -1083,12 +1088,12 @@ and C (§3.2).
   together (in forced units and in the others).
 
 As built: `tables.pair_rows` (`pairs.csv` per chain or repository), `tables.coupling_rows`
-(`coupling.csv`), `prepare.h6_rows` (`h6.csv`), `prepare.pair_rows`, `prepare.co_change`,
+(`coupling.csv`), `prepare.h7_rows` (`h7.csv`), `prepare.pair_rows`, `prepare.co_change`,
 `prepare.growth_accounting`, `prepare.coupling_accounting`.
 
-### 4.2c Links (H7), and coupling across the encapsulation
+### 4.2c Links (H5), and coupling across the encapsulation
 
-**Links between blocks of logic** (H7's measure since 24 November 2026, §9 row 89). Per checkpoint,
+**Links between blocks of logic** (H5's measure since 24 November 2026, §9 row 89). Per checkpoint,
 the links it added and lost, each counted once however heavy:
 
 - **Call links:** a method to a method it calls, followed as in §4.2a, in its own class or another,
@@ -1116,12 +1121,12 @@ link, so a class that wraps its fields in accessors moves links from one kind to
 without changing their number.
 
 As built: `instrument/Pull.java` (`own`, `state`, VERSION 17), `chain.parse_wiring` (`links`),
-`flow.Graph.links`, `tables.link_rows` (`links.csv`), `prepare.h7_rows` (`h7.csv`),
-`prepare.links_summary`, `analyse.R` (`H7`), `verdict.h7`, `report.h7_section`; `MEASURE_VERSION`
+`flow.Graph.links`, `tables.link_rows` (`links.csv`), `prepare.h5_rows` (`h5.csv`),
+`prepare.links_summary`, `analyse.R` (`H5`), `verdict.h5`, `report.h5_section`; `MEASURE_VERSION`
 34. Corpus A only: a history's logic is not read (§4.9).
 
 **Calls across the encapsulation** (H8's dispersion; also read by the ripple, surface against
-volume, the reader and where forced coupling came from. It was the old H7's measure until that
+volume, the reader and where forced coupling came from. It was the old H5's measure until that
 hypothesis was deleted on 24 November 2026, §9 row 90). Added 20 November
 2026 (§9). Per unit and class that existed before it that the unit placed or edited code in:
 
@@ -1145,10 +1150,10 @@ hypothesis was deleted on 24 November 2026, §9 row 90). Added 20 November
 
 As built: `instrument/Pull.java` (`access`, VERSION 14), `flow.Graph.cross_edges`,
 `flow.Graph.access`, `tables.encapsulation_rows` (`encapsulation.csv`), `prepare.calls_across_rows`
-(`calls_across.csv`; `h7.csv` until 24 November 2026).
+(`calls_across.csv`; `h5.csv` until 24 November 2026).
 
 **Where forced coupling came from (reported reading; added 23 November 2026, §9 row 88).** The
-author's reading of the old H7 on the development histories: well-encapsulated code that is forced into a
+author's reading of the old H5 on the development histories: well-encapsulated code that is forced into a
 class adds little coupling, and what it adds comes from the problem, not the placement. Each
 class a forced change went into is *contained* (no call added across its boundary), *problem or
 reuse* (every call it added either joins two classes whose private data the change needed, both
@@ -1160,11 +1165,11 @@ it was built: "it's likely coupling to the other class for utility functions, so
 the data". Seen on building it (§6): on the Spring pilot chain the *other* calls are accessors of
 data the change added to a domain class, mapper and utility methods, and calls into new exception
 classes. As built: `prepare.call_source`, `prepare.coupling_source` (`readings.json`,
-`coupling_source`), `report.h7_section`, from the calls of `edges.csv`; no table changes.
+`coupling_source`), `report.h5_section`, from the calls of `edges.csv`; no table changes.
 
 *Prior work:* access excessiveness and its evolution are measured per member (Kobori et al. 2015,
 across releases; Vidal et al. 2016, over-exposed methods and classes, mostly from their first
-version), with no link to the change that widened them. H7 reads widening at the change, and only
+version), with no link to the change that widened them. H5 reads widening at the change, and only
 as it is reached by the change's new calls.
 
 ### 4.2d Split or concentrate (reported reading)
@@ -1215,7 +1220,7 @@ Added 20 November 2026 (§9 row 63; the author's). The exchange between the two 
   class leaks. Read against the function arm and against size scaling (Lopes and Ossher 2015,
   §7), not against 1 alone. Per change: the surface it added against the methods it added, forced
   against unforced at the same methods added.
-- **Ripple:** for each call a unit added across a class's boundary (H7's, §4.2c), the later units
+- **Ripple:** for each call a unit added across a class's boundary (H5's, §4.2c), the later units
   that change the method it reaches, and the share of those that also change the calling class:
   the cost of dispersion paid again later. Against chance (decided by the author, 20 November
   2026): the share of the chain's units that change the calling class anyway, so that a ripple
@@ -1240,9 +1245,9 @@ A the author is one agent and every system is small, so it is reported there per
   1. *Encapsulation made:* of the fields and methods the unit introduces into classes, the share
      that is private (a private constant among them, §2 *Forced*).
   2. *Growth arriving forced:* of the positions the unit adds to classes that existed, the share
-     forced at the class (H6's growth accounting, §4.2b).
+     forced at the class (H7's growth accounting, §4.2b).
   3. *Encapsulation opened:* per class row the unit changed, the members it exposed or widened
-     (H7's, §4.2c), forced and unforced apart.
+     (H5's, §4.2c), forced and unforced apart.
   4. *Size let reach:* the methods (and positions) of each existing class the unit adds code to,
      at the unit's parent; and whether the unit splits a class (a new class taking fields and
      methods from one that existed, as RefactoringMiner's Extract Class is read, §4.1).
@@ -1301,9 +1306,9 @@ by Lombok's `@RequiredArgsConstructor` (final fields) or `@AllArgsConstructor`; 
 from the parameter of a method annotated for injection (setter injection). A constructor parameter of
 a class the container does not manage is data, and a constant (`static final`) still bindings.
 
-- **The primary measure keeps them:** an injected field is a class binding, and H1 to H4 are read on
-  all bindings.
-- **Reported beside it** (§5): H1, at method level and at class level, H4 and H2, each with the
+- **The primary measure keeps them:** an injected field is a class binding, and H2, H3, H4 and H6 (H1 to H4 as first registered)
+  are read on all bindings.
+- **Reported beside it** (§5): H3, at method level and at class level, H4 and H2, each with the
   bindings to injected dependencies left out (`binding_no_injected`, `binding_class_no_injected`).
 
 **Pull is graded by where the value comes from** (stated 16 November 2026, §9). The expected
@@ -1333,11 +1338,11 @@ addition held by its *own* host's pre-existing data, at the commit where it is p
 
 **Forced / chosen:** a run is forced when its bindings are 1 or more, and chosen otherwise. The cuts
 2, 3 and 4 are reported beside it. Because the pilot finds 93% of Spring's runs into existing
-methods forced at 1, H2 is tested on the binding count, with the cut as a reading aid. H1 and H4 are
-read on the bystanders (§4.3a). The binding-based readings of H1 as first registered (at method level
+methods forced at 1, H2 is tested on the binding count, with the cut as a reading aid. H3 and H4 are
+read on the bystanders (§4.3a). The binding-based readings of H3 as first registered (at method level
 in both arms, and at class level in Spring: class bindings against the class's size) are reported.
 
-### 4.3a Bystanders (H1, H2, H4), the measure of what gravity gathers
+### 4.3a Bystanders (H3, H2, H4), the measure of what gravity gathers
 
 Added 17 November 2026 (§9). For each run of added logic, at the point where it starts, the
 pre-existing values **visible** there are split in two:
@@ -1415,9 +1420,9 @@ check, `LITERATURE.md` §10):
 - **Lack of cohesion** (LCOM, Chidamber and Kemerer 1994) sums, over a class, the methods that do
   not share fields. A class-level bystander is close to one addition's part of that sum: the
   fields its code did not use. They differ in what they are for. LCOM* describes the class as it
-  stands and is one of H3's shape measures (§4.7a); the bystanders are what one addition found
+  stands and is one of H6's shape measures (§4.7a); the bystanders are what one addition found
   there, and what later additions then use is H2's outcome. A class can have many bystanders for
-  every addition and yet a low LCOM*, if its methods share a few fields among many; and H3 is
+  every addition and yet a low LCOM*, if its methods share a few fields among many; and H6 is
   read with the bystanders in the model, so LCOM* is asked what it adds to them.
 
 ### 4.3b Introduced (reported), the third kind of value
@@ -1565,7 +1570,7 @@ accessor, binds nothing: it is the problem's data growing, the same in both arms
   is removed; which checkpoints are bound there is the instrument's reading.
 - **Own lines:** as above; reported for information, and not part of any hypothesis.
 - At each level the same three-way split applies: declared, crossed, or intrusion.
-- **H2** is read at the class and at the method, and needs both (below, *Core and periphery*). **H3** is read at the method, since S1 to S4 are measures of the method; the same block at
+- **H2** is read at the class and at the method, and needs both (below, *Core and periphery*). **H6** is read at the method, since S1 to S4 are measures of the method; the same block at
   the class is reported.
 - **H4's condition:** for the same problems, the function arm's bound code is come back to less than
   the methods arm's, at the class and at the method.
@@ -1590,7 +1595,7 @@ measures of §4.7. For a problem *p* and a host its bound code went into, at eac
   core with every member the code was bound to, as until 22 November 2026.
 - **The periphery:** the rest of the data the place held once *p*'s code was in it: what stood by
   (§4.3a) and what *p* introduced (§4.3b); at the class also the class's methods *p*'s code did not
-  call and those its checkpoint added (so that core and periphery are alike in kind; H1's
+  call and those its checkpoint added (so that core and periphery are alike in kind; H3's
   bystanders stay fields only), and the members it was bound to that others can reach.
 - **A use:** a later intrusion, as defined above (bound there; neither declared nor crossing),
   whose code in that method, or that class, uses one of those values. **A value counts once**, not
@@ -1703,7 +1708,7 @@ positions at cp1 of the development chain), so a ratio of totals reports the sta
 as the agent's. The ui stacks start empty, so there the two are the same. The ratio of totals is
 reported beside it.
 
-### 4.7 Shape (the competitors of H3)
+### 4.7 Shape (the competitors of H6)
 
 The measures the earlier studies and the absorbed drafts used, each read on the **host** an
 addition lands in, at *k − 1*, before the addition. A new host has none of them.
@@ -1717,12 +1722,12 @@ addition lands in, at *k − 1*, before the addition. A new host has none of the
 | S5 | **Concentration:** the host's size and the Gini coefficient of the class's positions over its methods | §4.2 |
 
 **Two kinds of measure** (17 November 2026, §9). S1, S4 and S5 are shape as the literature reads
-it (length, complexity, the god class's concentration), and are H3's block. S2 and S3 are **sinew
+it (length, complexity, the god class's concentration), and are H6's block. S2 and S3 are **sinew
 measures**: whether the data flowing through a method stops it being split, and whether it hands
 on more data than it receives. They are the author's own, from SinewSlim and the flow-injection
 draft, and nothing in the reviewed literature studies them as shape (`LITERATURE.md`; the nearest
 relatives are fan-out and Henry and Kafura's information flow, which count flow between modules).
-They describe data, which is this study's subject, so they are read apart from H3 with their own
+They describe data, which is this study's subject, so they are read apart from H6 with their own
 stated direction (§5).
 
 S1 to S4 are read conventionally on both arms, so OfficeFloor's functions are priced as if they
@@ -1758,7 +1763,7 @@ trajectories can be set beside the per-problem ones.
 
 ### 4.7a The literature's shape measures, at the method and at the class
 
-Added 17 November 2026 (§9), to be looked at on the development chain before any of them joins H3.
+Added 17 November 2026 (§9), to be looked at on the development chain before any of them joins H6.
 The measures are those the petclinic harness already reports for whole systems; here each is read
 on the place an addition lands in, as it stood at *k* − 1, with the harness's tools at its pins.
 
@@ -1797,14 +1802,14 @@ code. Corpus A's code compiles, and a compiler does resolve every name. So on a 
 chain's checkpoints, **every fifth and the last**, the tree is given to javac
 (`instrument/Check.java`, the JDK's own compiler API), and the two readings are set side by side:
 
-- **Calls** (H5's control flow, H6's coupling of pairs, H7's outcome): per method of the tree
+- **Calls** (H1's control flow, H7's coupling of pairs, H5's outcome): per method of the tree
   before the checkpoint, the application's methods it calls, as the instrument follows them
   (`flow.Graph`) and as the compiler resolves them. *Precision:* of the instrument's calls, the
   share the compiler confirms. *Recall:* of the compiler's calls that can be followed (to a method
   with a body in the tree), the share the instrument has. A call is a class and a name; a class
   agrees with the compiler's when it is that class, an ancestor or a descendant of it. Reported
   for all calls and for those that leave the method's class.
-- **Field reads** of other classes (H7): the same two shares.
+- **Field reads** of other classes (H5): the same two shares.
 - **Bound names** (the bindings, §4.3): per host of the checkpoint, the names the instrument
   counted as a parameter or local of the method, a field of its class, a method of its class;
   of each kind, the share the compiler agrees is that, in the method after the change. Precision
@@ -1823,7 +1828,7 @@ chain's checkpoints, **every fifth and the last**, the tree is given to javac
 - **A tripwire, not a pass mark** (decided by the author on 23 November 2026, §9 row 86). Where a
   share of calls (precision or recall, of all calls or of those leaving the class) is below
   **0.90** in an arm, or differs between the arms by more than **0.05**, the report says so at
-  the check and at H7, whose outcome is those calls: *read with care*. Nothing fails by it and no
+  the check and at H5, whose outcome is those calls: *read with care*. Nothing fails by it and no
   verdict changes. The difference between the arms is the one that matters most: an instrument
   that reads one arm better than the other tilts every contrast of the arms. The two figures are
   the drafter's, proposed after the development chain had been seen at about 0.985 and 0.97, and
@@ -1840,7 +1845,7 @@ chain, of the calls the instrument counted between classes, the compiler confirm
 (Spring) and 283 of 678 (OfficeFloor). With a call's family corrected to its ancestors and
 descendants (`flow.Graph.family`): 329 of 333 and 283 of 288, and of the compiler's calls between
 classes that can be followed the instrument has 295 of 304 and 245 of 248. Every figure of §6 for
-H5 at the method, H6's coupling of pairs and H7 was computed with the fault and is superseded by
+H1 at the method, H7's coupling of pairs and H5 was computed with the fault and is superseded by
 the rerun at `MEASURE_VERSION` 29.
 
 **A gap it found, closed before any run was read** (23 November 2026, §9 row 87). Field reads of
@@ -1856,7 +1861,7 @@ class's; `Outer.this` names it outright. A method of that name inherited by the 
 the one Java would call and cannot be told from the text; the check shows how often that goes
 wrong on corpus A. The bindings are unchanged: a nested class is a class of its own (§4.4), so
 a field of the class around it is not one of its own fields, and using it is coupling between
-two classes (H7), not a binding. It was closed although small on corpus A (one line), because
+two classes (H5), not a binding. It was closed although small on corpus A (one line), because
 people's Java of before 2021, corpus B, is full of inner classes that use the class around them
 (listeners, iterators, builders, callbacks), and corpus B is where the compiler cannot check.
 The compiler's reader was corrected with it: it had taken a bare name of an enclosing class's
@@ -1935,15 +1940,15 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
 
 ## 5. Analysis
 
-- **Unit:** an addition run (Q2, H1, H4) or a problem and host whose code was bound there (Q3, H2,
-  H3, H4), nested in checkpoints nested in chains.
+- **Unit:** an addition run (Q2, H3, H4) or a problem and host whose code was bound there (Q3, H2,
+  H6, H4), nested in checkpoints nested in chains.
 - **The problem is held fixed by its identity** (revised before the start, 16 November 2026, §9).
   Every checkpoint is one problem, solved once by every chain of both arms. Every model
   therefore carries a **random intercept for the checkpoint**, crossed with the chain's. A
   comparison is then between placements of the same problem, and the size and the declared
   crossings are no longer the only stand-ins for it. A model that does not converge with the
   checkpoint intercept is refitted without it, and the report says so.
-- **H1** (restated 17 November 2026, §9): a mixed model of log(1 + bystanders) per run of added
+- **H3** (restated 17 November 2026, §9): a mixed model of log(1 + bystanders) per run of added
   logic that needs a pre-existing value (§4.3a), on the checkpoint index, in the methods arm, with random intercepts for the chain and the
   checkpoint. The slope is reported with a 95% bootstrap interval over chains. Host size is not in
   the model: a larger method has more values by construction, so a slope on it would not be
@@ -1953,14 +1958,14 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
     (of that chain) and the run's difference from it; and on the method's bystanders, the same
     within the method. The slope read is the one on the difference: how much more stands by for a
     later run than for an earlier one in the same place. A class or method with runs at only one
-    checkpoint adds nothing to it. H1 is supported when all three slopes have a 95% bootstrap
+    checkpoint adds nothing to it. H3 is supported when all three slopes have a 95% bootstrap
     interval above 0.
   - **Reported beside it:** the same model on method bystanders and on class bystanders, without
     injected dependencies, and without constants; the slopes within a place in the function arm;
-    and H1 as first registered, log(1 + bindings) on
+    and H3 as first registered, log(1 + bindings) on
     log(host positions) and the checkpoint index, on runs into existing methods.
-- **The base model of H2 and H3:** a negative binomial model, per problem and host whose code was
-  bound there (§4.4), of later intrusion (H3, H4), of the later intrusions' uses of the core and
+- **The base model of H2 and H6:** a negative binomial model, per problem and host whose code was
+  bound there (§4.4), of later intrusion (H6, H4), of the later intrusions' uses of the core and
   of the periphery (H2), or of the later intrusions bound to what stood by (H2 as it stood). It holds the problem fixed: the checkpoint's intercept, the addition's size, its declared
   crossings, host size, whether the host is new, and act. A new host has almost no bindings and a
   different later life from an existing one (on the development chain, Spring's new hosts averaged
@@ -1994,26 +1999,26 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
     intrusions bound to either, per value of both, in each arm); and H2 as it stood, the bindings added to the base model on later intrusion, at the class and
     the method, with its own readings (on the problem's own lines, for information; on existing
     hosts only; with bindings to injected dependencies left out).
-- **H3** (its measures and levels set 18 November 2026, §9): six measures, each fitted **alone**,
+- **H6** (its measures and levels set 18 November 2026, §9): six measures, each fitted **alone**,
   as *The literature's measures, each alone* below describes. At the **method**, on existing
   hosts: long, cognitive complexity and cyclomatic complexity, added to the base model with the
   bindings and the method's bystanders, on intrusion at the method. At the **class**, one row per
   class and checkpoint with the class's size held fixed: the Gini of the class's positions, WMC
   and LCOM*, on intrusion at the class. They are fitted one at a time because they are rival
   readings of the same thing (the two complexities; weight and concentration), and together could
-  not be told apart; so H3 says of each that it does not draw code in, not that each adds nothing
+  not be told apart; so H6 says of each that it does not draw code in, not that each adds nothing
   beyond the others. The block as first registered (S1, S4 and S5 together in one model at the
   method) is reported.
   - **The method level is the test** (decided by the author, 18 November 2026): it is where the
     arms are compared, since a function is OfficeFloor's unit of placement.
   - **The class measures are tested only where classes can be told apart** (18 November 2026,
-    §9). They enter H3 in an analysis only when later bound arrivals fall in **at least 10
+    §9). They enter H6 in an analysis only when later bound arrivals fall in **at least 10
     distinct classes** (a class counted by its name over all chains) and **no one class holds
-    more than half** of them. Otherwise they are reported, each alone, and H3 is read on the
+    more than half** of them. Otherwise they are reported, each alone, and H6 is read on the
     method measures. The petclinic stream sends every rule through one endpoint, so one class
     there receives nearly all the arrivals and a class measure describes that class over time,
     not a difference between classes (§6); the ui stream, with many endpoints, is where the class
-    level is expected to be testable. H3 is supported when every shape measure's incidence rate ratio
+    level is expected to be testable. H6 is supported when every shape measure's incidence rate ratio
   has a 90% interval whose upper limit is below 1.25, the upper margin (one-sided, 17 November
   2026, §9; the margin of 0.8 to 1.25 was decided 16 November 2026), per
   standard deviation for continuous measures and present against absent for flags. A null is not
@@ -2025,7 +2030,7 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
     (the pilot: 45% of Spring's existing hosts); the flag is reported beside it. A shape measure
     that does not vary in a corpus, with fewer than 10 hosts flagged over all chains of an arm,
     leaves the block for that corpus. It is reported as not testable there, never as meeting the
-    margin, and H3 is read on the measures that remain.
+    margin, and H6 is read on the measures that remain.
   - **Reported beside it:** the shape block in a model *without* the problem terms and pull. This
     shows how much of shape's apparent association comes from leaving the problem out. Each shape
     measure alone, and the change in fit for every block, are also reported.
@@ -2039,10 +2044,10 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
     checkpoint's hosts in the class, what stood by the least. A measure where higher is the better
     shape (the Maintainability Index, TCC) is **reversed**, so a ratio above 1 always means the
     worse shape is followed by more. Per standard deviation (of log(1 + x) for counts, of
-    the value for ratios and the index), or present against absent. Read as H3 is, against the
+    the value for ratios and the index), or present against absent. Read as H6 is, against the
     upper margin, with the variation rule. They are fitted one at a time because they measure
     overlapping things (cyclomatic, cognitive and NPath complexity; WMC and the God Class), and
-    together would not be told apart. **Which of them are H3's** was decided by the author on 18
+    together would not be told apart. **Which of them are H6's** was decided by the author on 18
     November 2026, after they were seen on the development chain (§6): cyclomatic complexity, WMC
     and LCOM* join long, cognitive complexity and the class's Gini. NPath and nesting repeat
     complexity, and Halstead volume and the Maintainability Index are largely size; they stay
@@ -2053,7 +2058,7 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
     the shape block, on intrusion at the method and at the class. Predicted: each rate ratio above
     1. A method that data flows out of, or that its data flow holds together, is expected to be
     come back to more: that is data gravity seen from the method's side, and it would count for the
-    study's claim, not against H3. The variation rule applies to each as it does to the shape
+    study's claim, not against H6. The variation rule applies to each as it does to the shape
     measures.
   - **Reach** (reported with the sinew measures, predicted above 1; 18 November 2026, §9): the
     method's fan-out and the class's CBO and fan-out, each alone as above. They count what a place
@@ -2068,11 +2073,11 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
     more. It is repeated with the injection-aware junction. It is not among the confirmatory tests
     and does not change any verdict.
 - **H4** (restated 17 November 2026, §9): the arm term and its interaction with the checkpoint
-  index in the H1 model, on the paired chains, with the amount band (§4.6) and the two wiring
+  index in the H3 model, on the paired chains, with the amount band (§4.6) and the two wiring
   conditions (§4.5). The checkpoint index is centred at the middle of the stream, so the arm term
   is the difference between the arms half-way through. Both have to be below 0: the function arm
   has fewer bystanders, and they grow more slowly.
-  - **Come back to less** (17 November 2026, §4.4): the arm term of the base model of H2 and H3,
+  - **Come back to less** (17 November 2026, §4.4): the arm term of the base model of H2 and H6,
     without the bindings (the arm itself changes them), on intrusion at the class and at the method.
     The function arm's rate ratio has to have a 95% interval below 1 at both levels.
   - **Less well-trodden files gone back into** (22 November 2026, §9 rows 78 and 82): per
@@ -2107,7 +2112,7 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   reading does: a wired OfficeFloor function's parameters cannot be bindings by definition. It is
   therefore repeated with bindings counted from locals, fields and methods only, leaving out parameters
   in both arms, and reported.
-- **Without injected dependencies** (reported, §4.3): H1 at method and class level, H4 and H2,
+- **Without injected dependencies** (reported, §4.3): H3 at method and class level, H4 and H2,
   each with bindings to injected dependencies left out. These do not change any verdict.
 - **Choice at a checkpoint** (reported; added 16 November 2026, §9). Per checkpoint and arm, over
   the chains: the share of chains that placed any of the addition in an existing host, the number
@@ -2116,7 +2121,7 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   choice; one where the chains differ did.
 - **Formation** (reported with a stated direction, not confirmatory; added 16 November 2026, §9).
   Read within each arm, never across arms.
-  - **Lagged:** the H1 model, with its checkpoint intercept, and one more term: the chain's mean
+  - **Lagged:** the H3 model, with its checkpoint intercept, and one more term: the chain's mean
     bindings per run over all its checkpoints before *k*. Predicted: positive in the methods arm. For
     the same problem, a chain that has been forced more so far is bound more now.
   - **Where it ends:** over the chains of an arm, Spearman's correlation between the mean bindings per
@@ -2179,15 +2184,15 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   - **What it cannot say:** unbound is not free. Code can belong to a class by convention without
     using any of its data, and most classes of a tree are small, so a mean rank well above 0.5 is
     expected of almost any code that enters an existing class. The reading is therefore between
-    bound and unbound, and between the arms, not against 0.5. It replaces nothing: H3 stands as it
+    bound and unbound, and between the arms, not against 0.5. It replaces nothing: H6 stands as it
     is until this has been looked at on the development chain.
-- **Corpus B and corpus C** (§3.2, §3.3; extended 18 November 2026, to H5 on 19 November 2026 and to H6 on 20 November 2026): the H1, H2, H5 and H6 models with a
+- **Corpus B and corpus C** (§3.2, §3.3; extended 18 November 2026, to H1 on 19 November 2026 and to H7 on 20 November 2026): the H3, H2, H1 and H7 models with a
   random intercept for the repository in place of the chain's and the checkpoint's, the index the
   commit's place in the repository's order. Direction and interval only. The two comparisons of
   §3.3 are the same models with a term for the declared agent commit (within a repository) or for
   the corpus (between them), and the destination of unbound code as a binomial model on the same
   term.
-- **H5** (19 November 2026; a fall since 22 November 2026, §9 row 73): per bound host and level,
+- **H1** (19 November 2026; a fall since 22 November 2026, §9 row 73): per bound host and level,
   its alternatives (§4.2a) as a negative binomial (nbinom2) mixed model on the checkpoint index
   scaled from 0 (the first checkpoint) to 1 (the last), with the chain's intercept, in the methods
   arm: exp(slope) is the ratio of the end of the stream to its start. One-sided **below 1**, with
@@ -2195,7 +2200,7 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   (row 64). Supported when the interval lies below 1; reversed when it lies wholly above 1. A
   class level where every placement was forced (no alternative anywhere) cannot be fitted and is
   not testable: it has no p and does not enter Holm. Reported: the reading against the upper
-  margin (1.25, 90% Wald interval), as H5 stood until then;
+  margin (1.25, 90% Wald interval), as H1 stood until then;
   the share forced and the mean alternatives per arm and third; the function arm's ratio; the arm
   × index interaction's arm term; the share of class rows bound to the class's own values; the
   method values of no declared type. **The arm contrast** (24 November 2026, §9 row 92): per
@@ -2206,16 +2211,16 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   function arm's rate half-way through) and the interaction both one-sided below 1, from one
   cluster bootstrap; reversed if the arm term's interval lies wholly above 1. Reported beside it:
   the forced placements a checkpoint per arm, and the methods arm's own rise.
-- **H6** (20 November 2026): per unit that placed or edited code in an existing class, its spread
+- **H7** (20 November 2026): per unit that placed or edited code in an existing class, its spread
   (§4.2b) as a negative binomial (nbinom2) mixed model on whether the unit was forced and the index
   scaled from 0 to 1, with the chain's intercept, in the methods arm (*forced*: the ratio of the
   spread of a forced unit to one that was not, at the same point in the stream). One-sided
-  against the upper margin 1.25, 90% Wald interval, as H3 (21 November 2026, later, §9 row 67):
+  against the upper margin 1.25, 90% Wald interval, as H6 (21 November 2026, later, §9 row 67):
   *not above* when the interval lies below 1.25, *unresolved* when it reaches above it without
   lying above it, *not supported* when it lies wholly above it; the two-sided reading (0.8 to
   1.25) is reported. (Until then: one-sided above 1, 95% interval.) Reported: the spread on the
   index alone (*rise*: exp(slope), the end of the stream against its start), over all units and in
-  forced and in unforced units apart. Every H6 model holds the change's size fixed: log(1 +
+  forced and in unforced units apart. Every H7 model holds the change's size fixed: log(1 +
   positions it added) and log(1 + methods it placed or edited code in) (20 November 2026, §9 row
   61); the forced ratio without them is reported. A spread
   with less variance than its mean, where the negative binomial cannot be fitted (its Hessian not
@@ -2225,7 +2230,7 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   coupling of pairs changed together more than once, a negative binomial model of it on the index
   with intercepts for the chain and the pair; the pairs changed together, how many more than once,
   in how many of those coupling rose or fell, and the candidates by name.
-- **H7** (restated 24 November 2026, §9 row 89): per checkpoint and chain of corpus A, the links
+- **H5** (restated 24 November 2026, §9 row 89): per checkpoint and chain of corpus A, the links
   added (§4.2c) as a negative binomial (nbinom2) mixed model on the arm, the checkpoint index
   centred at the middle of the stream and scaled to its length, their interaction, and log(1 +
   logic added) (§4.9), with the chain's and the checkpoint's intercepts (the chain's alone where
@@ -2250,8 +2255,8 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   repositories for an author group is reported as too thin, not fitted. On corpus A: the four
   measures per arm, descriptive.
 - **The confirmatory tests are decided on a cluster bootstrap** (decided by the author on 22
-  November 2026, after a review of the plan, §9 row 74). Until then only H1 and H4's bystander
-  terms were; H2, H4's intrusion ratios, H5 and H7 took a Wald interval from a model with the
+  November 2026, after a review of the plan, §9 row 74). Until then only H3 and H4's bystander
+  terms were; H2, H4's intrusion ratios, H1 and H5 took a Wald interval from a model with the
   chain's intercept. That interval treats the rows of a chain as separate once the chain's level
   is taken out, and they are not: the problems placed in one class share its later changes, the
   two records of one row of H2 share its arrivals (§7), and one class is changed by many units.
@@ -2259,7 +2264,7 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   refitted on each resample (`spec$boot` refits, 1,000, seed 20261116; the resamples are drawn
   first from the one seeded stream and the refits then run on several cores, so the result does
   not depend on how many), the 95% interval is the 2.5th to the 97.5th percentile of the refits,
-  and the one-sided p is the share on the wrong side of 1, (k + 1) / (n + 1), as H1's. On a
+  and the one-sided p is the share on the wrong side of 1, (k + 1) / (n + 1), as H3's. On a
   history the repository is the chain, and the refits are **200**, not 1,000 (decided by the
   author on 22 November 2026, §9 row 84). One fit of these models was timed at 2 seconds on
   1,800 rows, 22 to 50 seconds on 15,000 to 30,000 (about a ui analysis), 5.6 minutes on 200,000
@@ -2273,12 +2278,12 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   in an arm (the development chain) a resample is the data again, so the Wald reading is what
   there is; so too if fewer than half the refits can be fitted; either is recorded. The secondary
   hypotheses and every reported reading keep their Wald intervals.
-- **Multiplicity** (21 November 2026, §9 rows 66 and 67): the confirmatory family H2, H4, H5 and
-  H7, Holm-corrected at α = 0.05 over those of the four that have a p (H5 has none where it is
-  not testable). H8 (Run D, §3.1a) is decided at α = 0.05 on its own p, on its own run. H1, H3 and H6 are secondary, each decided at α = 0.05 on its
+- **Multiplicity** (21 November 2026, §9 rows 66 and 67): the confirmatory family H2, H4, H1 and
+  H5, Holm-corrected at α = 0.05 over those of the four that have a p (H1 has none where it is
+  not testable). H8 (Run D, §3.1a) is decided at α = 0.05 on its own p, on its own run. H3, H6 and H7 are secondary, each decided at α = 0.05 on its
   own p outside the correction and reported as secondary. (Until 20 November 2026, every
   hypothesis was in one Holm family: four, then five, six and seven; on 21 November 2026 the
-  confirmatory family was H2, H4, H5, H6 and H7 until H6 was restated the same day.) All else is
+  confirmatory family was H2, H4, H1, H7 and H5 until H7 was restated the same day.) All else is
   descriptive.
 
 **As built** (`analysis/analyse.R` with glmmTMB, `placement_gravity/prepare.py` and
@@ -2287,7 +2292,7 @@ binomial mixed model). These details are fixed with the code before any run is r
 
 - **Each analysis is read on its own** (`runs.yaml`): the ui primary, which is the study's test,
   and each petclinic analysis, a replication. An analysis with fewer than 6 chains in an arm is descriptive only.
-- **H1 and H4 as first registered, on the bindings** (reported since 17 November 2026; H1 and H4
+- **H3 and H4 as first registered, on the bindings** (reported since 17 November 2026; H3 and H4
   themselves are on the bystanders, above) are fitted on runs of added logic into **existing** methods: a new method has no
   prior size, so including new methods would make "more bindings in bigger hosts" true by
   construction. Gaussian mixed models of log(1 + bindings) on log(host positions) and the checkpoint
@@ -2295,25 +2300,25 @@ binomial mixed model). These details are fixed with the code before any run is r
   size, centred (and the front end, where the analysis has more than one). Intervals: a cluster bootstrap, chains resampled
   with replacement within arm and the model refitted, **1,000 refits, seed 20261116**. One-sided
   p-values are the bootstrap share on the wrong side of 0, (k + 1) / (n + 1).
-- **H2 and H3** are negative binomial (nbinom2) mixed models of later intrusion per problem and
+- **H2 and H6** are negative binomial (nbinom2) mixed models of later intrusion per problem and
   host, at the class and at the method (§4.4), offset by log(later checkpoints), random intercepts per chain and per
   checkpoint. Its base terms are log(1 + the problem's positions added), the problem's declared
   crossings (the checkpoints it mutates or crosses), log(1 + host positions), whether the host is
   new, the act (the ui stream only; petclinic has no
   acts), the arm and, where present, the front end. **H2** is read on every bound problem and host of the methods arm,
-  with a one-sided test at each level (a Wald test until 22 November 2026; the cluster bootstrap since, above); **H3** on existing hosts with their shape at k − 1, by one
+  with a one-sided test at each level (a Wald test until 22 November 2026; the cluster bootstrap since, above); **H6** on existing hosts with their shape at k − 1, by one
   one-sided Wald test per shape measure against the upper margin (90% intervals; the two one-sided
   tests of the two-sided reading are reported). S4 enters as log(1 + cognitive complexity) and S5
   as the class Gini, both standardised; S1 to S3 as 0/1.
-- **The p-value of each hypothesis** for Holm is the larger of its parts: H1, of its three slopes
+- **The p-value of each hypothesis** for Holm is the larger of its parts: H3, of its three slopes
   (over all runs, within a class, within a method);
-  H2, of the class level and the method level and of the arm contrasts that are needed (row 77); H3, of every shape measure's one-sided test; H4, of the arm
-  term, the interaction, the arm's rate ratio in intrusion at the class and at the method and its rate ratio in how well-trodden the files gone back into were (rows 78, 82); H5, its
-  class level's and its arm contrast's two terms (the method level is reported, row 64); H6, its forced ratio's; H7, the larger of its arm term and its interaction (as H4). A hypothesis is
+  H2, of the class level and the method level and of the arm contrasts that are needed (row 77); H6, of every shape measure's one-sided test; H4, of the arm
+  term, the interaction, the arm's rate ratio in intrusion at the class and at the method and its rate ratio in how well-trodden the files gone back into were (rows 78, 82); H1, its
+  class level's and its arm contrast's two terms (the method level is reported, row 64); H7, its forced ratio's; H5, the larger of its arm term and its interaction (as H4). A hypothesis is
   supported when its p (Holm-adjusted over the confirmatory four; its own for a secondary one) is at most 0.05 **and** its conditions hold (H4: the amount in its band and neither wiring
   condition against). The verdicts are supported, not supported, reversed (an interval wholly on
-  the wrong side), unresolved (H3 and H6: an interval reaching above the upper margin), not testable (H3: no
-  shape measure varies; H5: every placement forced) or descriptive only.
+  the wrong side), unresolved (H6 and H7: an interval reaching above the upper margin), not testable (H6: no
+  shape measure varies; H1: every placement forced) or descriptive only.
 - **The revisions of 16 November 2026** (§9) are built: the checkpoint intercept, the centred host
   size, the new-host term and the lagged formation term in `analysis/analyse.R` (its self-test
   simulates a level per checkpoint and recovers each effect); intrusion on a problem's own lines in
@@ -2328,22 +2333,22 @@ binomial mixed model). These details are fixed with the code before any run is r
   - *Review:* its interval resamples the chains of each condition (2,000 resamples, seed 20261116);
     the formation correlation's interval resamples chains (10,000). Either is given only with four
     or more chains.
-- **The bystanders** (§4.3a) and H1 and H4 as restated on 17 November 2026 are built: the visible
+- **The bystanders** (§4.3a) and H3 and H4 as restated on 17 November 2026 are built: the visible
   and needed values per run and the fields a class is left with (`instrument/Pull.java`,
   `tests/test_bystanders.py`); `by.csv` and `capture.csv` (`prepare.py`); the models
-  (`analysis/analyse.R`, whose self-test simulates bystanders rising in one arm and recovers H1,
-  H4, the equal needs and capture); the verdicts (`verdict.py`: H1 on its one slope).
+  (`analysis/analyse.R`, whose self-test simulates bystanders rising in one arm and recovers H3,
+  H4, the equal needs and capture); the verdicts (`verdict.py`: H3 on its one slope).
   - *Visible:* a local is visible where a run starts when it is declared on an earlier line and its
     nearest enclosing block, loop, try, switch entry or lambda encloses that line.
   - *H4's centre* is the middle of the stream, (checkpoints + 1) / 2.
   - *Capture* is a Gaussian mixed model of the share on log(1 + the heaviest class's fields), per
     arm, with Wald intervals.
-- **H1 within a place and H2 as restated** (17 November 2026, §9) are built: what stood by per
+- **H3 within a place and H2 as restated** (17 November 2026, §9) are built: what stood by per
   host and the later intrusions bound to it (`tables.standing`, `tables.outcome_rows`,
   `tests/test_stream.py`); the class and method each run is in (`prepare.by_rows`); the models
   (`analysis/analyse.R`, whose self-test simulates both and recovers them); the verdicts
-  (`verdict.py`: H1 on its three slopes, H2 on the bystanders' rate ratio at both levels).
-  - *H1 within a place* has the same bootstrap as H1 (chains resampled, 1,000 refits); a place is a
+  (`verdict.py`: H3 on its three slopes, H2 on the bystanders' rate ratio at both levels).
+  - *H3 within a place* has the same bootstrap as H3 (chains resampled, 1,000 refits); a place is a
     class, or a method, of one chain.
   - *H2 as it then stood* is refused as not estimable at a level where the number that stood by
     does not vary.
@@ -2363,6 +2368,8 @@ binomial mixed model). These details are fixed with the code before any run is r
   it). It enters no verdict.
 
 ## 6. What was known when this was written
+
+*The hypotheses here keep the numbers that stood when each entry was written; §9 has the table to today's (row 93).*
 
 - **Seen.** The conversation that produced this plan. Step 7 of `long-method-slim-study`
   (width profiles, the 20-repository pilot): profiles are a continuum; width grows sub-linearly
@@ -2865,19 +2872,19 @@ binomial mixed model). These details are fixed with the code before any run is r
 
 ## 7. Threats
 
-- **H5's alternatives are found by type, on a control flow read without a symbol solver** (§4.2a).
+- **H1's alternatives are found by type, on a control flow read without a symbol solver** (§4.2a).
   At the method a common type (`String`, `int`) still matches more readily than a domain type,
   though only on the host's own flow. The flow can miss a method reached by a call whose receiver
   the source does not type (a chained call), or by the framework (reflection, events, callbacks),
   which biases the count down; it can include a method by an interface's every implementation,
   which biases it up. The share of calls followed is reported. A constant or state of the class
   makes the class forced by definition. None of these should change with the checkpoint by itself,
-  and H5 is about the trend; the alternatives are kept by name for the check. On a history the
+  and H1 is about the trend; the alternatives are kept by name for the check. On a history the
   index of the tree is exact at each unit's parent, but a repository's tests and generated code are
   left out as production Java is.
 
-- **H6's spread counts classes, not reasons** (§4.2b). A feature that touches a controller, a
-  service and a repository spreads by design (layering), not from lack of cohesion; H6's *forced*
+- **H7's spread counts classes, not reasons** (§4.2b). A feature that touches a controller, a
+  service and a repository spreads by design (layering), not from lack of cohesion; H7's *forced*
   part is what ties the spread to lack of choice, at the same point in the stream, and the
   function arm is the contrast. On a history a commit can bundle unrelated work (a tangled
   commit), which widens the spread whatever the placement; this does not change with the unit's
@@ -2894,15 +2901,15 @@ binomial mixed model). These details are fixed with the code before any run is r
   inherited field) are counted as apart.
 - **Coupling scales with size** (Lopes and Ossher 2015, read in full: structure measures of Java
   programs follow size by power laws, so a size-normalised reading needs the exponent, not a
-  ratio). H6 and H7 hold the change's size fixed for this reason (§9 row 61); a reading of a
+  ratio). H7 and H5 hold the change's size fixed for this reason (§9 row 61); a reading of a
   class's boundary against its size, if built, must be read against the exponent the size alone
   predicts, and against the function arm.
 - **High coupling in a few classes may be unavoidable** (Taube-Schock, Walker and Witten 2011:
   between-module connectivity is roughly scale-free, so some highly coupled modules are expected
-  of the distribution, not of poor design). This is the rival reading of H7 and of the
+  of the distribution, not of poor design). This is the rival reading of H5 and of the
   concentrate signal: a forced class that gains coupling may be in that tail whatever forced it.
   The forced/unforced contrast at the same size and the arm contrast are what separate the two.
-- **H7's links are counted, not weighed, and the agent may not use the form** (24 November
+- **H5's links are counted, not weighed, and the agent may not use the form** (24 November
   2026). A link that carries ten values and one that carries none count alike, by the author's
   choice. On the development chain the function arm wrote fewer wired functions and more called
   methods as the stream went on (§4.9), which brings the method calling structure back inside it:
@@ -2911,7 +2918,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   arms by §4.9. The author's answer (§1, *The overview*): a function that has gathered called
   methods is easy to split again along its control flow, and a reviewer, an AI among them, can
   judge its cohesion alone; the method structure's coupling makes the same split hard. That is a
-  claim about what can be repaired, not a measure, and does not change what H7 reads.
+  claim about what can be repaired, not a measure, and does not change what H5 reads.
 - **The calls across the encapsulation read coupling as calls and openness as access** (§4.2c;
   H8's dispersion). A field made public and
   read directly from another class, or a call the instrument cannot follow (an untyped receiver,
@@ -2952,7 +2959,7 @@ binomial mixed model). These details are fixed with the code before any run is r
 - **Provenance.** Line tracking across moves is imperfect. CodeTracker reports about 99.9%
   method-level precision and recall, but statement-level provenance is weaker. Disagreements
   with `git blame` are reported.
-- **Shared counts at the class and the method.** H2 and H3 are read where the code was placed.
+- **Shared counts at the class and the method.** H2 and H6 are read where the code was placed.
   Every problem placed in one class shares that class's later changes, so the rows of one class are
   not independent, and a busy class weighs on the estimate as many times as it holds problems. The
   one-endpoint petclinic stream makes this strongest there. The own-lines reading, which does not
@@ -3003,22 +3010,22 @@ binomial mixed model). These details are fixed with the code before any run is r
   Spring's 89 bound rows (§6). H2 as restated on 19 November 2026 does not have this: a kind with
   no values gives no record (§4.4), so a new method is read on its periphery, and a row bound
   only to its class has no core at the method.
-- **H1 within a method starts from nought.** A method has no bystanders at the checkpoint that
+- **H3 within a method starts from nought.** A method has no bystanders at the checkpoint that
   creates it, and later code placed in it sees the values it was created with. Part of the slope
   within a method is therefore given by a method being new once. That is a place gathering data,
   which is the claim, but it is not evidence beyond the definition.
-- **H1 and H2 overlap.** A place where data gathers (H1) and a place whose core is used by what
+- **H3 and H2 overlap.** A place where data gathers (H3) and a place whose core is used by what
   comes next (H2) are read on the same busy class. They are not independent tests, and Holm
   treats them as if they could be.
-- **H1 and H2 no longer make one loop.** Until 19 November 2026 they did: a place gathers data,
+- **H3 and H2 no longer make one loop.** Until 19 November 2026 they did: a place gathers data,
   and the gathered data binds the next code. As restated, H2 says the next code comes for a few
-  core values and not for what gathered. H1's rise is then mostly periphery: what code has to sit
-  beside, a cost of the place, and not what draws code to it. H1 was renamed to say so (§2); its
-  test was left as it is, so H1 by itself no longer shows a pull, only a cost that grows.
-- **H1's periphery is not H2's.** H1 counts bystanders, the pre-existing values a run does not
-  use. H2's periphery adds what the change introduced. H1 was not changed to count introduced
+  core values and not for what gathered. H3's rise is then mostly periphery: what code has to sit
+  beside, a cost of the place, and not what draws code to it. H3 was renamed to say so (§2); its
+  test was left as it is, so H3 by itself no longer shows a pull, only a cost that grows.
+- **H3's periphery is not H2's.** H3 counts bystanders, the pre-existing values a run does not
+  use. H2's periphery adds what the change introduced. H3 was not changed to count introduced
   values: they are not there when the code arrives, so the code does not sit beside them.
-- **H2 was shaped on the development chain** (§6), as H1 and H4 were: its restatement followed a
+- **H2 was shaped on the development chain** (§6), as H3 and H4 were: its restatement followed a
   first look at the measure there, and its direction was seen on that chain before it was written.
   That is so of both restatements. The second, to core and periphery, was made after the first
   had come out below 1 at the method on that chain and after the spread of uses over values had
@@ -3039,15 +3046,15 @@ binomial mixed model). These details are fixed with the code before any run is r
 - **Pull is not proof of force.** A binding shows that the code used something that was already there.
   It does not show that no other placement existed (§4.3). The choice-at-a-checkpoint and review
   readings are the checks, and both are indirect.
-- **H1 and H4 were shaped on the development chain.** The bystander measure and the direction of
+- **H3 and H4 were shaped on the development chain.** The bystander measure and the direction of
   both hypotheses were settled after seeing it on chain 9 (§6). That chain is excluded, and the
   registered chains had not been read, but the hypotheses are no longer blind to this run's
   general shape: the other chains of the same run are likely to resemble it. The replication on
   the ui stream, a different application, is the stronger test.
-- **Growth is not gravity by itself.** A codebase that grows has more of everything. H1's slope
+- **Growth is not gravity by itself.** A codebase that grows has more of everything. H3's slope
   is read against the function arm, which grows by about the same amount on the same stream
   (§4.6): bystanders that rise in one arm and not in the other are the form's, not the growth's.
-  H1 alone, without H4, would not show that.
+  H3 alone, without H4, would not show that.
 - **Visible is not used, and not harmful by itself.** A bystander is exposure: something the code
   could read or disturb. H2 asks whether what stands by is later used, not whether that does harm; the
   harness's own signal of a rule broken that was not meant to change is the outcome that would
@@ -3056,28 +3063,28 @@ binomial mixed model). These details are fixed with the code before any run is r
   stream again, not what happens on other problems. The petclinic stream puts every rule on one
   endpoint. The ui stream is the second set of problems; corpus B the third.
 - **Smells born, not grown.** Tufano et al. (2015) find most smells present from a unit's
-  creation. So H1's gravity may act mostly at creation (a new method pulled by its parameters,
+  creation. So H3's gravity may act mostly at creation (a new method pulled by its parameters,
   §4.3) rather than through accretion. Both are measured, so the data can say which.
 - **The cohesion assumption.** It holds by construction only in corpus A, and only if refactoring
   is separated out correctly (§4.1).
 - **The problem is fixed, not measured.** The study holds the problem fixed by design (one
   checkpoint, one problem; one stream for both arms). It does not measure how hard a problem is,
   beyond the addition's size and its declared crossings. In corpus B a commit is not one problem,
-  so H3 is not read there.
-- **Power for H3 and H6.** A test against a margin needs more data than a difference test. If an
-  interval is too wide to fall below the upper margin, H3 or H6 is reported as unresolved, not as
+  so H6 is not read there.
+- **Power for H6 and H7.** A test against a margin needs more data than a difference test. If an
+  interval is too wide to fall below the upper margin, H6 or H7 is reported as unresolved, not as
   supported. *A rough check* (21 November 2026, the drafter's; normal approximation from the
   development standard errors, scaled by the number of units, with no between-chain variance, so
-  optimistic): on log scale H6's standard deviation per unit is about 3.9 on the development chain
-  and 3.0 on the development histories, H3's cognitive measure 2.2 on the histories. With a true
-  forced ratio of 1.0, a run of 9 chains an arm (about 530 units in the methods arm) shows H6
+  optimistic): on log scale H7's standard deviation per unit is about 3.9 on the development chain
+  and 3.0 on the development histories, H6's cognitive measure 2.2 on the histories. With a true
+  forced ratio of 1.0, a run of 9 chains an arm (about 530 units in the methods arm) shows H7
   below 1.25 with a chance of about 37% to 53%; about 1,100 to 1,900 units (19 to 32 chains) are
   needed for 80%. At a true ratio of 0.85 the chance at 9 chains is 74% to 91%. So on one
-  petclinic run an unresolved H6 is the likely outcome even if spread does not see the force;
-  corpus B (two sets of 300 repositories) is where H6 has the units to resolve, and on corpus A
-  H6 is read per run, never pooled (§3.1). The confirmatory hypotheses are not at risk in the same
-  way: their tests are against 1, not a margin, and on the development chain H2, H5 at the class
-  and H7 lie well away from it.
+  petclinic run an unresolved H7 is the likely outcome even if spread does not see the force;
+  corpus B (two sets of 300 repositories) is where H7 has the units to resolve, and on corpus A
+  H7 is read per run, never pooled (§3.1). The confirmatory hypotheses are not at risk in the same
+  way: their tests are against 1, not a margin, and on the development chain H2, H1 at the class
+  and H5 lie well away from it.
 - **Encapsulation and the reader confounds author with much else** (§4.2f). A declared agent
   commit is merged by a person who may have reshaped it; undeclared commits may be assisted; the
   agent and its window are not recorded per commit; corpus C's repositories are younger than
@@ -3086,21 +3093,23 @@ binomial mixed model). These details are fixed with the code before any run is r
   size is a stand-in for whether it fits a context window, and agents retrieve a few files a task,
   so their working context is smaller than their window. The reading can show a difference and
   how it moves with size; it cannot say why.
-- **H3's measures were chosen on the development chain.** Of the literature's measures, those
-  taken into H3 are ones that lay below the margin there, or reached above it only at the class
+- **H6's measures were chosen on the development chain.** Of the literature's measures, those
+  taken into H6 are ones that lay below the margin there, or reached above it only at the class
   (§6); the one measure wholly above it, the method's fan-out, was put with the sinew measures,
   with CBO, as reach. The reasons given do not rest on the results (the first are the literature's
   usual shape measures; the second count what a place reaches out to), but the order is as stated.
-  The measures left out of H3 are all reported, so a reader can read H3 with any of them put back.
-- **The junction left H3 after it had left H3 unresolved on the development chain** (§6). The
+  The measures left out of H6 are all reported, so a reader can read H6 with any of them put back.
+- **The junction left H6 after it had left H6 unresolved on the development chain** (§6). The
   reason given is that it is not a shape measure of the literature, and that reason does not rest
-  on the result; but the order is as stated, and on that chain H3 reads better without it.
-- **H3 was made one-sided after the development chain failed the two-sided form.** There, more
+  on the result; but the order is as stated, and on that chain H6 reads better without it.
+- **H6 was made one-sided after the development chain failed the two-sided form.** There, more
   complex methods were followed by less intrusion (§6), which "adds nothing" does not allow and
   "does not draw in" does. The one-sided claim is the weaker one. The two-sided reading and every
   effect's size are reported, so a shape that goes with less intrusion is not hidden.
 
 ## 8. Order of work
+
+*The hypotheses here keep the numbers that stood when each entry was written; §9 has the table to today's (row 93).*
 
 1. ~~Build the instrument (§4): fixtures with known pull and placement, and tests.~~ Done:
    `instrument/Pull.java`, `placement_gravity/`, `tests/`, with RefactoringMiner and CodeTracker
@@ -3371,6 +3380,12 @@ author's to set, on the plan and code as they then stand, and starts the experim
   the alternatives in each arm and the share forced. With it, H1, H3 and H6 stay about the methods
   arm alone: H1 the cost of the core (its arm contrast is H4's), H3 and H6 the literature's
   readings.
+- *Decided by the author on 24 November 2026 (later still):* **the hypotheses renumbered in the
+  order of the story** (row 93): "change the ordering of the HX to match the story order of what we
+  are discovering", the order the drafter proposed; the history (§6, §8, §9) left as written, with
+  the table at the head of §9; and H1 (as it then was) renamed *the encapsulation fills*, after the
+  author asked whether the periphery is "the volume grows inside the encapsulation" (it is the
+  encapsulation's state, seen from each new block, not its code).
 - *To finish for row 89:* the pilot measured again at `MEASURE_VERSION` 34 (`./step3_measure.sh
   --analysis pilot`, then `./step4_analyse.sh --analysis pilot open-source-development` and
   `./step5_report.sh`); the histories are not affected (`HISTORY_VERSION` 14 stands). Then H7's
@@ -3427,6 +3442,22 @@ author's to set, on the plan and code as they then stand, and starts the experim
 - *The sampler* is released (0.4.0) and pinned (`setup.sh`).
 
 ## 9. Revisions and amendments
+
+**The hypotheses' numbers** (24 November 2026, §9 row 93). §1 to §5 and §7 number the hypotheses
+in the order of the study's story: the force, the concentration it makes, its cost, the control,
+the coupling, and the literature's two readings. §6, §8 and this section are the record and keep
+the numbers that stood when each entry was written. Up to row 92:
+
+| Before row 93 | Since row 93 | |
+|---|---|---|
+| H5, choice narrows | **H1** | the force |
+| H2, a core draws code in | **H2** | concentration |
+| H1, the periphery grows | **H3**, the encapsulation fills | its cost |
+| H4, function injection forms no core | **H4** | the control |
+| H7, surface against volume (from row 89; before it, *forced changes couple*, deleted, row 90) | **H5** | the coupling |
+| H3, shape does not draw code in | **H6** | the literature: shape |
+| H6, spread does not see it | **H7** | the literature: co-change |
+| H8, without encapsulation code disperses | **H8** | Run D |
 
 **Before the start.** The experiment starts when the first run named for analysis is read
 (`results/heads.tsv` holds a row that is not the development chain). Until then a change is a
@@ -3591,6 +3622,7 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 90 | **The old H7, *forced changes couple*, deleted**: its model, its reported ratios (forced by binding, without size, opened, outward, inward, members opened, rise, the function arm's, the arms'), the per-arm forced and unforced summary and its report section. Kept: its measure, the calls across the encapsulation (§4.2c), now `calls_across.csv`, because H8's *dispersion stronger* is the arms' contrast on it (the model kept in `analyse.R` as H8's alone); and the reading of where forced coupling came from (row 88), now a reading of that measure | §2, §4.2c, §5, §7, §8, `prepare.calls_across_rows` (was `forced_coupling_rows`; `encapsulation_summary` removed), `analyse.R`, `selftest.R`, `report.py` (`coupling_source_section`), `verdict.py`, `tests/` | The author, 24 November 2026: "Delete the old H7", after row 89. No other test changes |
 | 91 | §1 *The overview*: the author's account of the whole study (blocks of code essential; growth, concentration, separation and coupling; method structure the accident; function injection disperses without it), read against the hypotheses; and the author's claim that a function is easier to split and to review alone for cohesion, recorded in §1 and as the answer to H7's threat in §7. No measure, model or rule changes | §1, §7 | The author's, 24 November 2026 ("add the overview to §1"; the splitting claim given the same day). The drafter's addition: H7 counts links, not how tight they are, so it does not credit the function arm's looser control flow |
 | 92 | H5's arm contrast: per checkpoint, the placements forced at the class (bound there with no other place to go) fewer in the function arm half-way through **and** rising less over the stream (the arm term and its interaction with the index, both below 1, one cluster bootstrap), beside the methods arm's fall; p the largest of the three. Not read on a history | §2, §5, §8, `prepare.h5_forced_rows` (`h5_forced.csv`), `analyse.R` (`H5$contrast`; `boot_irrs` moved to the helpers), `verdict.h5`, `report.h5_section`, `selftest.R`, `tests/test_analysis.py` | The author's, 24 November 2026: "make H5 an arm contrast"; "it also potentially shows the accidental cost of the method structure in Spring handlers (and typical web app servers) over function injection of OfficeFloor". The form chosen from three, **after the development chain's H5 figures by arm had been seen** (the function arm 10 class rows in 60 checkpoints, 9 forced; the methods arm 48 in 59, 26 forced). Before the tag, so a revision |
+| 93 | **The hypotheses renumbered in the order of the story**: old H5 → H1, H2 → H2, H1 → H3, H4 → H4, H7 → H5, H3 → H6, H6 → H7, H8 → H8 (the table at the head of this section). H3 renamed *the encapsulation fills*. §1 to §5 and §7, the code, the tests, `README.md` and `LITERATURE.md` take the new numbers; §6, §8 and §9 keep those of their time; the figure keeps the old. The report lists the hypotheses H1 to H7 in order | throughout; `verdict.py` (the confirmatory family H1, H2, H4, H5; secondary H3, H6, H7), `analyse.R` and `selftest.R` (`res$H*`, the data files `h*.csv`), `prepare.py`, `report.py`, `tests/` | The author, 24 November 2026: "change the ordering of the HX to match the story order of what we are discovering". No test, measure, model or rule changes; only names. The results in `results/analysis/` keep the old numbers until they are made again |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

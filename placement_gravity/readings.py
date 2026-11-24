@@ -221,7 +221,7 @@ def review(primary_runs: list[dict], primary_additions: list[dict], reviewed_add
     return out
 
 
-# ---- bystanders: the description beside H1 and H4 ----
+# ---- bystanders: the description beside H3 and H4 ----
 
 def bystander_summary(by: list[dict], captured: list[dict], checkpoints: int) -> dict:
     """Per arm: the share of runs that need nothing that was there (free: not pulled anywhere), and

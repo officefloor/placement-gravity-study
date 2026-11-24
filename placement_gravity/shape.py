@@ -1,4 +1,4 @@
-"""The shape competitors of H3 (PLAN.md §4.7), read on the host an addition lands in, at k − 1.
+"""The shape competitors of H6 (PLAN.md §4.7), read on the host an addition lands in, at k − 1.
 
 The Java pass (``Pull --shape``) reads every method of the production tree at the agent commit's
 parent: SinewSlim's code lines and conventional assessment, and the junction counts. This module

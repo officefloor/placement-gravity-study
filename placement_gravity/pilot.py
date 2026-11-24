@@ -1,5 +1,5 @@
 """The pilot (PLAN.md §8, step 2): the instrument on two chains, to check that the measures compute
-and are not degenerate. It is not a test of H1–H4, and its chains are excluded from registration.
+and are not degenerate. It is not a test of any hypothesis, and its chains are excluded from registration.
 
     python -m placement_gravity.pilot --out results/pilot
 """
@@ -132,7 +132,7 @@ def main() -> None:
             "codetracker": {k: v for k, v in cc.items()
                             if k not in ("per_method", "ct_identity", "ct_touched")},
             "outcomes_followed_by_codetracker": sum(1 for x in o if x["identity_source"] == "codetracker"),
-            # §4.7: the shape competitors on existing hosts at k - 1 (descriptive; no H3 statistic)
+            # §4.7: the shape competitors on existing hosts at k - 1 (descriptive; no H6 statistic)
             "shape_problems": len(measured["shape_problems"]),
             "shape_errors": sum(x["errors"] for x in se),
             "existing_hosts_shape_found": sum(1 for x in real if not x["host_new"] and x["shape_found"]),

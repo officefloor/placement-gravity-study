@@ -431,7 +431,7 @@ public class Repo { int rows; public int count() { return rows; } }
 
 
 def test_links_count_calls_and_state_but_not_injection_or_constants(tmp_path):
-    """H7 (PLAN.md 4.2c, restated 24 November 2026): a link between blocks of logic is a call or a
+    """H5 (PLAN.md 4.2c, restated 24 November 2026): a link between blocks of logic is a call or a
     use of a field holding state, each once; an injected dependency and a constant are not state."""
     import json
     import subprocess

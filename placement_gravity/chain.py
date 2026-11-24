@@ -134,7 +134,7 @@ def materialise_many(repo: Path, rev: str, paths: list[str], dest: Path) -> None
 
 
 def flows(repo: Path, rev: str, root: str = WIRING) -> list[list[str]]:
-    """The OfficeFloor control flows at rev (H5, PLAN.md 4.2a): per wiring file, the simple names of
+    """The OfficeFloor control flows at rev (H1, PLAN.md 4.2a): per wiring file, the simple names of
     the classes it wires. A request's functions are the classes of its file, joined by ``next`` and
     ``outputs``, not by Java calls. None for an arm without wiring."""
     out = []
@@ -185,7 +185,7 @@ def parse_wiring(texts: dict[str, str]) -> dict:
     is a ``next:`` or an entry of an ``outputs:`` map; a line is a line that is neither blank nor only
     a comment. ``largest_lines`` is the line count of the file with the most (PLAN.md §4.5).
     ``links``: each edge as ``file|from|to``, the node it leaves and the node it names, once however
-    many outputs join the two (H7's flow links, PLAN.md 4.2c)."""
+    many outputs join the two (H5's flow links, PLAN.md 4.2c)."""
     nodes = edges = lines = 0
     largest, largest_lines = None, 0
     links: set[str] = set()
@@ -390,7 +390,7 @@ def measure(repo: Path, branch: str, base_ref: str, work: Path, java_src: str = 
                     str(work / "hints.tsv"), str(work / "pull.jsonl")], check=True)
     subprocess.run(["java", "-cp", CLASSPATH, "Pull", "--amount", str(work / "amount.tsv"),
                     str(work / "amount.jsonl")], check=True)
-    # choice (H5, PLAN.md 4.2a): the places of the tree before each checkpoint, by the types they
+    # choice (H1, PLAN.md 4.2a): the places of the tree before each checkpoint, by the types they
     # hold and the calls they make, and (OfficeFloor) the flows its wiring declares
     places = tree_places(repo, cps, work, java_src, wiring_root, light, keep, shapes)
     (work / "shape.tsv").write_text("\n".join(shapes) + "\n")

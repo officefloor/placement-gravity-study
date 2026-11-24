@@ -1,7 +1,7 @@
 """Step 4, the decision: each hypothesis's verdict from the R estimates and the conditions
 (PLAN.md §2, §5). Every decision rule of the study is here.
 
-- **H1** (the methods arm): the slope of the bystanders (PLAN.md §4.3a) on the checkpoint index
+- **H3** (the methods arm): the slope of the bystanders (PLAN.md §4.3a) on the checkpoint index
   above 0, over all runs and within a place: the class's bystanders within a class, the method's
   within a method. p = the largest of the three one-sided bootstrap p-values.
 - **H2** (the methods arm): where code was bound to a class or a method, the rate ratio of the
@@ -12,7 +12,7 @@
   where both arms have the core records to compare (``reuse_class``, ``reuse_method``,
   ``required``). p = the largest of the parts. On a history the arms do not solve the same
   problems and the arm contrast is not read.
-- **H3** (one-sided): every shape measure kept shown not to raise later intrusion at its level, the
+- **H6** (one-sided): every shape measure kept shown not to raise later intrusion at its level, the
   method or the class: its rate ratio below the upper margin (1.25), by a one-sided test, each
   measure fitted alone with the bindings and the bystanders in the model. p = the largest of those p-values. A measure that lowers intrusion does
   not count against. The two-sided reading (within 0.8 to 1.25) is reported.
@@ -21,7 +21,7 @@
   and (since 22 November 2026) its changes going back into less well-trodden files, production
   Java and wiring counted alike (``trodden``: the earlier checkpoints that had changed each file
   it changed), the rate ratio below 1 (p = the largest of the five one-sided p-values); the amount within its band; and neither wiring condition against.
-- **H5** (19 November 2026; a fall since 22 November 2026): in the methods arm, the alternatives a
+- **H1** (19 November 2026; a fall since 22 November 2026): in the methods arm, the alternatives a
   bound addition had (other places holding what its code was bound to) **fall** over the stream:
   the ratio of the end of the stream to its start below 1 (one-sided, cluster bootstrap), at the
   class, the encapsulation (20 November 2026: the method level shows the encapsulation's volume
@@ -33,13 +33,13 @@
   checkpoint fewer in the function arm half-way through (rate ratio below 1) and rising less
   (the arm's interaction with the index below 1). p = the largest of the three. Not read on a
   history (no arms solving the same problems).
-- **H6, spread does not see it** (restated 21 November 2026, PLAN.md §9 row 67; one-sided, as
-  H3): in the methods arm, a unit with a placement forced at the class does not place or edit code
+- **H7, spread does not see it** (restated 21 November 2026, PLAN.md §9 row 67; one-sided, as
+  H6): in the methods arm, a unit with a placement forced at the class does not place or edit code
   in more of the classes that existed before it than a unit without one, at the same change size
   and point in the stream: the spread's rate ratio on forced shown below the upper margin (1.25).
   Not supported when its interval lies wholly above the margin; unresolved when it reaches above
   it. (Until then, *forced changes spread*: the ratio above 1.) The spread's rise is reported.
-- **H7, surface against volume** (restated 24 November 2026, PLAN.md §9 row 89; the author's):
+- **H5, surface against volume** (restated 24 November 2026, PLAN.md §9 row 89; the author's):
   for the same logic added (the volume), the function arm adds fewer links between blocks of logic
   (the surface: call, state and flow links, each counted once, injection not among them) half-way
   through the stream, the rate ratio below 1, **and** the gap widens, the arm's interaction with the
@@ -49,12 +49,12 @@
   calls a forced class gained across its boundary, the ratio on forced above 1; deleted the same
   day, PLAN.md §9 row 90.)
 - **Two tiers** (decided by the author on 21 November 2026): the **confirmatory** family is the
-  force and its two outlets, with the control: H2, H4, H5 and H7, Holm over the four at α = 0.05
-  (H6 left it when restated, later the same day). H1, H3 and H6 are **secondary**: each keeps its
+  force and its two outlets, with the control: H2, H4, H1 and H5, Holm over the four at α = 0.05
+  (H7 left it when restated, later the same day). H3, H6 and H7 are **secondary**: each keeps its
   rule and direction and is decided at α = 0.05 on its own p, outside the correction, and
   reported as secondary.
-- **H3 with the coupling measures put back** (a sensitivity reading, 22 November 2026;
-  ``sensitivity.H3_with_coupling``): H3's rule over its measures and the literature's coupling
+- **H6 with the coupling measures put back** (a sensitivity reading, 22 November 2026;
+  ``sensitivity.H6_with_coupling``): H6's rule over its measures and the literature's coupling
   measures the plan reads apart as reach (fan-out, CBO, RFC). It changes no verdict.
 - **H8, without encapsulation code disperses** (Run D against Run A's same stack, PLAN.md §3.1a;
   an analysis with ``contrast: no-encapsulation``; decided on its own p at α = 0.05, on its own
@@ -65,8 +65,8 @@
   it is descriptive only.
 
 Verdicts: ``supported``; ``not supported``; ``reversed`` (an interval wholly on the wrong side);
-``unresolved`` (H3, H6: an interval reaching above the upper margin without lying above it);
-``not testable`` (H3: no shape measure varies; H5: every placement forced); ``descriptive only``
+``unresolved`` (H6, H7: an interval reaching above the upper margin without lying above it);
+``not testable`` (H6: no shape measure varies; H1: every placement forced); ``descriptive only``
 (fewer than 6 chains in an arm, or the development analysis).
 """
 
@@ -77,10 +77,10 @@ from pathlib import Path
 
 ALPHA = 0.05
 #: The confirmatory family (Holm) and the secondary hypotheses (their own p), 21 November 2026;
-#: H6 secondary since its restatement the same day.
-CONFIRMATORY = ("H2", "H4", "H5", "H7")
-SECONDARY = ("H1", "H3", "H6")
-#: H3's measures (PLAN.md §2, §5): at the method, long, cognitive and cyclomatic complexity; at the
+#: H7 secondary since its restatement the same day.
+CONFIRMATORY = ("H1", "H2", "H4", "H5")
+SECONDARY = ("H3", "H6", "H7")
+#: H6's measures (PLAN.md §2, §5): at the method, long, cognitive and cyclomatic complexity; at the
 #: class, concentration, WMC and lack of cohesion. Each is fitted alone. Not slimmable and
 #: junction are sinew measures, and fan-out and CBO measures of reach, reported apart.
 SHAPES = ("s1_long", "s4_cognitive", "m_cyclomatic", "c_gini", "c_wmc", "c_lcom_star")
@@ -104,8 +104,8 @@ def _ok(x: dict | None) -> bool:
     return bool(x) and "error" not in x
 
 
-def h1(est: dict) -> dict:
-    x = est.get("H1") or {}
+def h3(est: dict) -> dict:
+    x = est.get("H3") or {}
     parts = [x.get("cp"), x.get("within_class"), x.get("within_method")]
     if not all(_ok(b) for b in parts):
         return {"p": None, "verdict": "not estimable", "detail": x}
@@ -132,7 +132,7 @@ def h2(est: dict) -> dict:
 
 
 def shape_state(measures: dict, upper: float) -> str:
-    """H3's rule over a set of measures, each fitted alone: against, not above, or unresolved."""
+    """H6's rule over a set of measures, each fitted alone: against, not above, or unresolved."""
     if any(m.get("above", m["irr_lower"] > upper) for m in measures.values()):
         return "against"            # a shape measure raises later intrusion beyond the margin
     if all(m["irr_upper"] <= upper for m in measures.values()):
@@ -140,10 +140,10 @@ def shape_state(measures: dict, upper: float) -> str:
     return "unresolved"
 
 
-def h3_with_coupling(est: dict) -> dict:
-    """The sensitivity reading of H3 (22 November 2026): its rule over its measures with the
+def h6_with_coupling(est: dict) -> dict:
+    """The sensitivity reading of H6 (22 November 2026): its rule over its measures with the
     literature's coupling measures put back (fan-out, CBO, RFC). Reported; it changes no verdict."""
-    b = (est.get("reported") or {}).get("H3_with_coupling") or {}
+    b = (est.get("reported") or {}).get("H6_with_coupling") or {}
     measures = {k: m for k, m in (b.get("measures") or {}).items() if _ok(m) and m.get("irr_upper") is not None}
     failed = [k for k in (b.get("measures") or {}) if k not in measures]
     if not measures:
@@ -154,8 +154,8 @@ def h3_with_coupling(est: dict) -> dict:
             "p": max(m["p_upper"] for m in measures.values())}
 
 
-def h3(est: dict) -> dict:
-    b = est.get("H3") or {}
+def h6(est: dict) -> dict:
+    b = est.get("H6") or {}
     measures = b.get("measures") or {}
     dropped = [k for k in SHAPES if k not in (b.get("kept") or [])]
     if any(not _ok(m) for m in measures.values()):
@@ -165,7 +165,7 @@ def h3(est: dict) -> dict:
                 "detail": b}
     upper = b["margin"][1]
     state = shape_state(measures, upper)
-    # reported: the two-sided reading, as H3 stood until 17 November 2026
+    # reported: the two-sided reading, as H6 stood until 17 November 2026
     two_sided = ("outside" if any(m.get("outside") for m in measures.values()) else
                  "within" if all(b["margin"][0] <= m["irr_lower"] and m["irr_upper"] <= upper
                                  for m in measures.values()) else "unresolved")
@@ -196,8 +196,8 @@ def h4(est: dict, cond: dict) -> dict:
             "detail": {"model": x, "amount": amount, "wiring": w}}
 
 
-def h5(est: dict) -> dict:
-    x = est.get("H5") or {}
+def h1(est: dict) -> dict:
+    x = est.get("H1") or {}
     b = x.get("class") or {}         # the method level is reported (20 November 2026)
     if b.get("all_forced"):          # no alternative anywhere: no choice to narrow
         return {"p": None, "verdict": "not testable", "state": "every placement forced", "detail": x}
@@ -219,8 +219,8 @@ def h5(est: dict) -> dict:
             "state": state, "arm_contrast": True, "detail": x}
 
 
-def h6(est: dict) -> dict:
-    x = est.get("H6") or {}
+def h7(est: dict) -> dict:
+    x = est.get("H7") or {}
     fo = x.get("forced")
     if not _ok(fo) or "p_upper" not in fo:
         return {"p": None, "verdict": "not estimable", "detail": x}
@@ -231,10 +231,10 @@ def h6(est: dict) -> dict:
             "detail": x}
 
 
-def h7(est: dict) -> dict:
+def h5(est: dict) -> dict:
     """Surface against volume (restated 24 November 2026): fewer links for the same logic in the
     function arm, and a gap that widens over the stream; both below 1."""
-    x = est.get("H7") or {}
+    x = est.get("H5") or {}
     if x.get("not_applicable"):
         return {"p": None, "verdict": "not testable", "state": "a history", "detail": x}
     arm, trend = x.get("arm"), x.get("trend")
@@ -278,12 +278,12 @@ def decide(est: dict, cond: dict) -> dict:
             v["verdict"] = "supported"
         elif v.get("reversed"):
             v["verdict"] = "reversed"
-        elif k in ("H3", "H6") and v.get("state") == "unresolved":
+        elif k in ("H6", "H7") and v.get("state") == "unresolved":
             v["verdict"] = "unresolved"
         else:
             v["verdict"] = "not supported"
     out = {"alpha": ALPHA, "descriptive_only": bool(cond.get("descriptive_only")),
-           "hypotheses": parts, "sensitivity": {"H3_with_coupling": h3_with_coupling(est)}}
+           "hypotheses": parts, "sensitivity": {"H6_with_coupling": h6_with_coupling(est)}}
     if cond.get("contrast") == "no-encapsulation":
         # Run D against Run A's same stack: its one test is H8, on its own p; H1 to H7 are the
         # arms' test (the ui primary) and are descriptive here

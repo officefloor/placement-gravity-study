@@ -98,8 +98,8 @@ def chain_tables(root: Path, arm: str, n: int, amount: int, junction_hosts: int 
                      "bystanders_method": i % 2, "drawn_class": i % 2, "drawn_method": 0,
                      "bound": str(i % 5 != 0), "later_checkpoints": 30 - i, "binding": i % 3, "net_added": 3,
                      "pre_positions": 5 + i, "host_new": "False"})
-    runs_.append({**runs_[0], "host_new": "True"})                 # a new host: not in H1
-    runs_.append({**runs_[1], "replacement": "True"})              # moved code: not in H1
+    runs_.append({**runs_[0], "host_new": "True"})                 # a new host: not in H3
+    runs_.append({**runs_[1], "replacement": "True"})              # moved code: not in H3
     adds = [{**common, "cp": c, "positions_added": 4, "amount_positions": amount + c,
              "wiring_edges_added": 1 if arm == "officefloor" else 0,
              "wiring_files": 3 if arm == "officefloor" else 0, "wiring_lines": 30 if arm == "officefloor" else 0,
@@ -117,24 +117,24 @@ def test_prepare_builds_the_datasets_and_applies_the_rules(tmp_path):
     streamed = {c: {"mutates": [1] if c == 4 else [], "crosses": [2, 3] if c == 4 else [], "act": None}
                 for c in range(1, 23)}
     out = prepare.prepare({"name": "a", "role": "primary"}, streamed, tmp_path / "m", tmp_path / "d")
-    h1 = list(csv.DictReader((out / "h1.csv").open()))
-    assert len(h1) == 12 * 20                         # new hosts and replacements left out
+    h3 = list(csv.DictReader((out / "h3.csv").open()))
+    assert len(h3) == 12 * 20                         # new hosts and replacements left out
     h2 = list(csv.DictReader((out / "h2.csv").open()))
     assert {r["declared_crossings"] for r in h2 if r["cp"] == "4"} == {"3"}
     spec = json.loads((out / "spec.json").read_text())
-    # H3's block is the literature's shape measures; the sinew measures are read apart. s2 never
+    # H6's block is the literature's shape measures; the sinew measures are read apart. s2 never
     # flagged; s3 flagged on 5 hosts per OfficeFloor chain x 6 = 30, kept
     assert "s1_long" in spec["shape_kept"] and not {"s2_stuck", "s3_junction"} & set(spec["shape_kept"])
     assert spec["sinew_kept"] == ["s3_junction"]
-    # H3's measures are those of its six that vary; the fixture has no literature measures
-    assert spec["h3_all"] == list(verdict.SHAPES) and "s1_long" in spec["h3_measures"]
+    # H6's measures are those of its six that vary; the fixture has no literature measures
+    assert spec["h6_all"] == list(verdict.SHAPES) and "s1_long" in spec["h6_measures"]
     assert spec["class_level"]["testable"] is False       # one class in the fixture
-    assert "m_cyclomatic" not in spec["h3_measures"] and spec["reach"] == ["m_fanout", "c_cbo", "c_fanout"]
+    assert "m_cyclomatic" not in spec["h6_measures"] and spec["reach"] == ["m_fanout", "c_cbo", "c_fanout"]
     assert spec["shape_counts"]["s2_stuck"] == {"officefloor": 0, "spring": 0}
     cond = json.loads((out / "conditions.json").read_text())
     assert cond["chains"] == {"spring": 6, "officefloor": 6} and not cond["descriptive_only"]
     assert abs(cond["amount"]["ratio"] - (922 / 1022)) < 1e-9 and cond["amount"]["in_band"]
-    assert {"prior_binding_mean", "binding"} <= set(h1[0]) and {"intrusion_class", "intrusion_method", "intrusion_lines", "own_lines"} <= set(h2[0])
+    assert {"prior_binding_mean", "binding"} <= set(h3[0]) and {"intrusion_class", "intrusion_method", "intrusion_lines", "own_lines"} <= set(h2[0])
     assert (out / "readings.json").exists()
     assert (out / "by.csv").exists() and (out / "capture.csv").exists()
     assert {"bystanders_class", "bystanders_method", "drawn_class", "drawn_method"} <= set(h2[0])
@@ -175,8 +175,8 @@ def test_fewer_than_six_chains_is_descriptive(tmp_path):
 # ---------------------------------------------------------------- step 4: verdicts
 
 def test_holm():
-    adj = verdict.holm({"H1": 0.01, "H2": 0.04, "H3": 0.03, "H4": None})
-    assert adj["H1"] == pytest.approx(0.03) and adj["H3"] == pytest.approx(0.06)
+    adj = verdict.holm({"H3": 0.01, "H2": 0.04, "H6": 0.03, "H4": None})
+    assert adj["H3"] == pytest.approx(0.03) and adj["H6"] == pytest.approx(0.06)
     assert adj["H2"] == pytest.approx(0.06) and adj["H4"] is None   # monotone: max(0.06, 0.04)
 
 
@@ -190,12 +190,12 @@ def measure(irr, lo, hi, p, outside=False):
 
 
 def estimates(**over):
-    e = {"H1": {"cp": boot(0.01, 0.002, 0.02, 0.004, 0.99),
+    e = {"H3": {"cp": boot(0.01, 0.002, 0.02, 0.004, 0.99),
                 "within_class": boot(0.02, 0.005, 0.03, 0.003, 0.99),
                 "within_method": boot(0.01, 0.001, 0.02, 0.004, 0.99)},
          "H2": {"n": 100, "class": {"irr": 1.3, "irr_lower": 1.1, "irr_upper": 1.5, "p_greater": 0.001},
                 "method": {"irr": 1.2, "irr_lower": 1.05, "irr_upper": 1.4, "p_greater": 0.004}},
-         "H3": {"testable": True, "margin": [0.8, 1.25], "kept": ["s1_long", "s4_cognitive"],
+         "H6": {"testable": True, "margin": [0.8, 1.25], "kept": ["s1_long", "s4_cognitive"],
                 "measures": {"s1_long": measure(1.0, 0.9, 1.1, 0.002),
                              "s4_cognitive": measure(1.05, 0.95, 1.15, 0.01)}},
          "H4": {"arm": boot(-0.5, -0.8, -0.2, 0.999, 0.001), "slope": boot(-0.2, -0.3, -0.1, 0.99, 0.002),
@@ -212,15 +212,15 @@ COND = {"descriptive_only": False, "amount": {"in_band": True, "ratio": 0.95},
 
 def test_all_supported():
     v = verdict.decide(estimates(), COND)["hypotheses"]
-    assert [v[k]["verdict"] for k in ("H1", "H2", "H3", "H4")] == ["supported"] * 4
+    assert [v[k]["verdict"] for k in ("H3", "H2", "H6", "H4")] == ["supported"] * 4
 
 
-def test_h1_needs_the_rise_within_a_class_and_within_a_method():
+def test_h3_needs_the_rise_within_a_class_and_within_a_method():
     e = estimates()
-    e["H1"]["within_method"] = boot(0.001, -0.01, 0.012, 0.4, 0.6)
-    assert verdict.decide(e, COND)["hypotheses"]["H1"]["verdict"] == "not supported"
-    e["H1"]["within_method"] = {"error": "no place with runs at two checkpoints"}
-    assert verdict.decide(e, COND)["hypotheses"]["H1"]["verdict"] == "not estimable"
+    e["H3"]["within_method"] = boot(0.001, -0.01, 0.012, 0.4, 0.6)
+    assert verdict.decide(e, COND)["hypotheses"]["H3"]["verdict"] == "not supported"
+    e["H3"]["within_method"] = {"error": "no place with runs at two checkpoints"}
+    assert verdict.decide(e, COND)["hypotheses"]["H3"]["verdict"] == "not estimable"
 
 
 def test_h2_needs_both_the_class_and_the_method():
@@ -231,37 +231,37 @@ def test_h2_needs_both_the_class_and_the_method():
     assert verdict.decide(e, COND)["hypotheses"]["H2"]["verdict"] == "reversed"
 
 
-def test_h2_and_h3_are_decided_apart():
-    """What stood by can draw later code in (H2) while the shape is unresolved (H3), and the other way."""
+def test_h2_and_h6_are_decided_apart():
+    """What stood by can draw later code in (H2) while the shape is unresolved (H6), and the other way."""
     e = estimates()
-    e["H3"]["measures"]["s1_long"] = measure(1.1, 0.7, 1.5, 0.3)
+    e["H6"]["measures"]["s1_long"] = measure(1.1, 0.7, 1.5, 0.3)
     v = verdict.decide(e, COND)["hypotheses"]
-    assert v["H2"]["verdict"] == "supported" and v["H3"]["verdict"] == "unresolved"
+    assert v["H2"]["verdict"] == "supported" and v["H6"]["verdict"] == "unresolved"
 
 
-def test_h3_is_one_sided_a_shape_that_raises_intrusion_counts_against():
+def test_h6_is_one_sided_a_shape_that_raises_intrusion_counts_against():
     e = estimates()
-    e["H3"]["measures"]["s1_long"] = measure(1.6, 1.3, 1.9, 0.99, outside=True)
-    v = verdict.decide(e, COND)["hypotheses"]["H3"]
+    e["H6"]["measures"]["s1_long"] = measure(1.6, 1.3, 1.9, 0.99, outside=True)
+    v = verdict.decide(e, COND)["hypotheses"]["H6"]
     assert v["state"] == "against" and v["verdict"] == "not supported" and v["two_sided"] == "outside"
 
 
-def test_h3_a_shape_that_lowers_intrusion_does_not_count_against():
-    """The development chain's case: complexity at 0.38 [0.23, 0.63]. Below the upper margin, so H3
+def test_h6_a_shape_that_lowers_intrusion_does_not_count_against():
+    """The development chain's case: complexity at 0.38 [0.23, 0.63]. Below the upper margin, so H6
     holds; the two-sided reading, reported, says it lies outside."""
     e = estimates()
-    e["H3"]["measures"]["s1_long"] = measure(0.38, 0.23, 0.63, 0.0001, outside=True)
-    v = verdict.decide(e, COND)["hypotheses"]["H3"]
+    e["H6"]["measures"]["s1_long"] = measure(0.38, 0.23, 0.63, 0.0001, outside=True)
+    v = verdict.decide(e, COND)["hypotheses"]["H6"]
     assert v["state"] == "not above" and v["verdict"] == "supported" and v["two_sided"] == "outside"
     # an interval reaching above the margin is unresolved, not supported
-    e["H3"]["measures"]["s1_long"] = measure(0.9, 0.5, 1.6, 0.2)
-    assert verdict.decide(e, COND)["hypotheses"]["H3"]["verdict"] == "unresolved"
+    e["H6"]["measures"]["s1_long"] = measure(0.9, 0.5, 1.6, 0.2)
+    assert verdict.decide(e, COND)["hypotheses"]["H6"]["verdict"] == "unresolved"
 
 
-def test_h3_without_a_testable_shape_measure_says_so():
-    e = estimates(H3={"testable": False, "margin": [0.8, 1.25], "kept": []})
+def test_h6_without_a_testable_shape_measure_says_so():
+    e = estimates(H6={"testable": False, "margin": [0.8, 1.25], "kept": []})
     v = verdict.decide(e, COND)["hypotheses"]
-    assert v["H3"]["verdict"] == "not testable" and set(v["H3"]["dropped"]) == set(verdict.SHAPES)
+    assert v["H6"]["verdict"] == "not testable" and set(v["H6"]["dropped"]) == set(verdict.SHAPES)
     assert v["H2"]["verdict"] == "supported"          # H2 no longer waits on the shape
 
 
@@ -279,25 +279,25 @@ def test_h4_fails_on_the_amount_the_wiring_or_intrusion():
 
 def test_reversed_and_holm_failures():
     e = estimates()
-    e["H1"]["cp"] = boot(-0.01, -0.02, -0.002, 0.999, 0.001)
-    assert verdict.decide(e, COND)["hypotheses"]["H1"]["verdict"] == "reversed"
+    e["H3"]["cp"] = boot(-0.01, -0.02, -0.002, 0.999, 0.001)
+    assert verdict.decide(e, COND)["hypotheses"]["H3"]["verdict"] == "reversed"
     # each interval clears its line, but p = 0.02 for all four confirmatory: Holm makes them 0.08;
-    # H1 and H6, secondary, are decided on their own p = 0.02
-    e = estimates(H1={k: boot(0.01, 0.001, 0.02, 0.02, 0.98) for k in ("cp", "within_class", "within_method")})
+    # H3 and H7, secondary, are decided on their own p = 0.02
+    e = estimates(H3={k: boot(0.01, 0.001, 0.02, 0.02, 0.98) for k in ("cp", "within_class", "within_method")})
     e["H2"]["class"]["p_greater"] = e["H2"]["method"]["p_greater"] = 0.02
     e["H4"] = {"arm": boot(-0.5, -0.8, -0.01, 0.98, 0.02), "slope": boot(-0.2, -0.3, -0.01, 0.98, 0.02),
                "intrusion_class": {"irr": 0.4, "irr_lower": 0.3, "irr_upper": 0.9, "p_less": 0.02},
                "intrusion_method": {"irr": 0.4, "irr_lower": 0.3, "irr_upper": 0.9, "p_less": 0.02},
                "trodden": {"irr": 0.7, "irr_lower": 0.5, "irr_upper": 0.9, "p_less": 0.02}}
-    e["H5"] = {"margin": [0.8, 1.25], "class": {"irr": 0.6, "irr_lower": 0.4, "irr_upper": 0.9, "p_less": 0.02}}
+    e["H1"] = {"margin": [0.8, 1.25], "class": {"irr": 0.6, "irr_lower": 0.4, "irr_upper": 0.9, "p_less": 0.02}}
     up = {"irr": 1.5, "irr_lower": 1.1, "irr_upper": 2.0, "p_greater": 0.02}
-    e["H6"] = {"margin": [0.8, 1.25], "forced": {"irr": 0.9, "irr_lower": 0.7, "irr_upper": 1.1, "p_upper": 0.02}}
-    e["H7"] = {"arm": {"irr": 0.6, "irr_lower": 0.4, "irr_upper": 0.9, "p_less": 0.02},
+    e["H7"] = {"margin": [0.8, 1.25], "forced": {"irr": 0.9, "irr_lower": 0.7, "irr_upper": 1.1, "p_upper": 0.02}}
+    e["H5"] = {"arm": {"irr": 0.6, "irr_lower": 0.4, "irr_upper": 0.9, "p_less": 0.02},
                "trend": {"irr": 0.7, "irr_lower": 0.5, "irr_upper": 0.95, "p_less": 0.02}}
     v = verdict.decide(e, COND)["hypotheses"]
     assert v["H2"]["p_holm"] == pytest.approx(0.08) and v["H2"]["verdict"] == "not supported"
-    assert v["H1"]["p_holm"] == pytest.approx(0.02) and v["H1"]["verdict"] == "supported"
-    assert v["H6"]["p_holm"] == pytest.approx(0.02) and v["H6"]["verdict"] == "supported"
+    assert v["H3"]["p_holm"] == pytest.approx(0.02) and v["H3"]["verdict"] == "supported"
+    assert v["H7"]["p_holm"] == pytest.approx(0.02) and v["H7"]["verdict"] == "supported"
 
 
 def test_descriptive_only_decides_nothing():
@@ -307,13 +307,13 @@ def test_descriptive_only_decides_nothing():
 
 def test_an_error_in_a_model_is_not_estimable():
     e = estimates()
-    e["H1"]["cp"] = {"error": "no fit"}
+    e["H3"]["cp"] = {"error": "no fit"}
     v = verdict.decide(e, COND)
-    assert v["hypotheses"]["H1"]["verdict"] == "not estimable"
+    assert v["hypotheses"]["H3"]["verdict"] == "not estimable"
     e = estimates()
     e["H2"]["method"] = {"error": "standard error not computed: binding"}
     v = verdict.decide(e, COND)["hypotheses"]
-    assert v["H2"]["verdict"] == "not estimable" and v["H1"]["verdict"] == "supported"
+    assert v["H2"]["verdict"] == "not estimable" and v["H3"]["verdict"] == "supported"
 
 
 # ---------------------------------------------------------------- step 5
@@ -326,7 +326,7 @@ def test_the_report_names_every_hypothesis_and_commit():
     cond = {**COND, "chains": {"spring": 9, "officefloor": 9}}
     heads = [{"arm": "spring", "run": "r", "chain": 1, "excluded": False, "sha": "a" * 40}]
     md = report.render("petclinic-primary", "primary", est, ver, cond, {"shape_counts": {}}, heads)
-    for k in ("H1", "H2", "H3", "H4", "supported", "`aaaaaaaaaaaa`", "s3_junction", "At the class (the private members the code was bound to)", "H5, choice narrows", "H6, spread does not see it", "H7, surface against volume", "Within a class",
+    for k in ("H3", "H2", "H6", "H4", "supported", "`aaaaaaaaaaaa`", "s3_junction", "At the class (the private members the code was bound to)", "H1, choice narrows", "H7, spread does not see it", "H5, surface against volume", "Within a class",
               "the sinew measures", "s3_junction at the method 1.400 [1.100, 1.800]",
               "Later intrusion where bound code was placed"):
         assert k in md
@@ -343,42 +343,42 @@ def test_the_report_names_every_hypothesis_and_commit():
         assert k in md
 
 
-def h5_levels(c, m):
-    return {"H5": {"margin": [0.8, 1.25], "class": c, "method": m}}
+def h1_levels(c, m):
+    return {"H1": {"margin": [0.8, 1.25], "class": c, "method": m}}
 
 
 FALL = {"irr": 0.5, "irr_lower": 0.3, "irr_upper": 0.8, "p_less": 0.004}
 
 
-def test_h5_is_a_fall_a_flat_count_does_not_pass_and_a_rise_is_reversed():
-    v = verdict.decide(estimates(**h5_levels(FALL, FALL)), COND)["hypotheses"]["H5"]
+def test_h1_is_a_fall_a_flat_count_does_not_pass_and_a_rise_is_reversed():
+    v = verdict.decide(estimates(**h1_levels(FALL, FALL)), COND)["hypotheses"]["H1"]
     assert (v["state"], v["verdict"]) == ("falls", "supported")
     # flat: below the old margin of 1.25, which passed until 22 November 2026; not a fall
     flat = {"irr": 0.9, "irr_lower": 0.7, "irr_upper": 1.1, "p_less": 0.2}
-    v = verdict.decide(estimates(**h5_levels(flat, FALL)), COND)["hypotheses"]["H5"]
+    v = verdict.decide(estimates(**h1_levels(flat, FALL)), COND)["hypotheses"]["H1"]
     assert (v["state"], v["verdict"]) == ("not shown to fall", "not supported")
     rising = {"irr": 2.0, "irr_lower": 1.5, "irr_upper": 2.6, "p_less": 0.999}
-    v = verdict.decide(estimates(**h5_levels(rising, FALL)), COND)["hypotheses"]["H5"]
+    v = verdict.decide(estimates(**h1_levels(rising, FALL)), COND)["hypotheses"]["H1"]
     assert (v["state"], v["verdict"]) == ("rises", "reversed")
-    # the method level is reported, not tested: rising there does not count against H5
-    assert verdict.decide(estimates(**h5_levels(FALL, rising)), COND)["hypotheses"]["H5"]["verdict"] == "supported"
+    # the method level is reported, not tested: rising there does not count against H1
+    assert verdict.decide(estimates(**h1_levels(FALL, rising)), COND)["hypotheses"]["H1"]["verdict"] == "supported"
 
 
-def test_h5_a_level_where_every_placement_was_forced_has_no_choice_to_narrow():
-    v = verdict.decide(estimates(**h5_levels({"error": "every placement forced", "all_forced": True}, FALL)),
+def test_h1_a_level_where_every_placement_was_forced_has_no_choice_to_narrow():
+    v = verdict.decide(estimates(**h1_levels({"error": "every placement forced", "all_forced": True}, FALL)),
                        COND)["hypotheses"]
-    assert v["H5"]["verdict"] == "not testable" and v["H5"]["p"] is None
+    assert v["H1"]["verdict"] == "not testable" and v["H1"]["p"] is None
     # it does not enter Holm as a p of 0: the others are corrected over those that have a p
     assert v["H2"]["p_holm"] == pytest.approx(0.006)   # over H2 and H4 only
 
 
 def test_holm_runs_over_the_four_confirmatory_and_the_secondary_keep_their_own_p():
-    v = verdict.decide(estimates(**h5_levels({**FALL, "p_less": 0.011}, FALL)), COND)["hypotheses"]
+    v = verdict.decide(estimates(**h1_levels({**FALL, "p_less": 0.011}, FALL)), COND)["hypotheses"]
     assert len(v) == 7
-    assert {k for k, x in v.items() if x["tier"] == "confirmatory"} == {"H2", "H4", "H5", "H7"}
-    assert {k for k, x in v.items() if x["tier"] == "secondary"} == {"H1", "H3", "H6"}
-    assert v["H5"]["p_holm"] >= 0.011
-    assert v["H1"]["tier"] == "secondary" and v["H1"]["p_holm"] == v["H1"]["p"]
+    assert {k for k, x in v.items() if x["tier"] == "confirmatory"} == {"H2", "H4", "H1", "H5"}
+    assert {k for k, x in v.items() if x["tier"] == "secondary"} == {"H3", "H6", "H7"}
+    assert v["H1"]["p_holm"] >= 0.011
+    assert v["H3"]["tier"] == "secondary" and v["H3"]["p_holm"] == v["H3"]["p"]
 
 
 def test_h2_needs_the_core_come_back_to_less_in_the_function_arm_where_the_arms_can_be_compared():
@@ -439,15 +439,15 @@ def test_trodden_counts_the_earlier_checkpoints_that_changed_each_file_gone_back
     assert tables.trodden({"checkpoints": []}) == {}
 
 
-def test_h3_with_the_coupling_measures_put_back_is_reported_and_changes_no_verdict():
+def test_h6_with_the_coupling_measures_put_back_is_reported_and_changes_no_verdict():
     e = estimates()
-    e["reported"] = {"H3_with_coupling": {"margin": [0.8, 1.25], "measures": {
-        **e["H3"]["measures"], "m_fanout": measure(3.0, 1.6, 5.5, 0.99), "c_cbo": {"error": "does not vary"}}}}
+    e["reported"] = {"H6_with_coupling": {"margin": [0.8, 1.25], "measures": {
+        **e["H6"]["measures"], "m_fanout": measure(3.0, 1.6, 5.5, 0.99), "c_cbo": {"error": "does not vary"}}}}
     out = verdict.decide(e, COND)
-    sens = out["sensitivity"]["H3_with_coupling"]
+    sens = out["sensitivity"]["H6_with_coupling"]
     assert (sens["state"], sens["above"], sens["not_estimable"]) == ("against", ["m_fanout"], ["c_cbo"])
-    assert out["hypotheses"]["H3"]["verdict"] == "supported"
-    assert verdict.decide(estimates(), COND)["sensitivity"]["H3_with_coupling"]["state"] == "not testable"
+    assert out["hypotheses"]["H6"]["verdict"] == "supported"
+    assert verdict.decide(estimates(), COND)["sensitivity"]["H6_with_coupling"]["state"] == "not testable"
 
 
 def test_the_lever_within_forced_tells_injected_private_fields_from_the_class_own():
@@ -482,7 +482,7 @@ def test_h8_run_d_needs_less_coming_back_more_coupling_compliance_and_the_amount
     cond = {**COND, "contrast": "no-encapsulation", "compliance": {"share": 0.96, "introduced": 900}}
     v = verdict.decide(h8_estimates(less, more), cond)["hypotheses"]
     assert v["H8"]["verdict"] == "supported" and v["H8"]["p"] == pytest.approx(0.01)
-    assert all(v[k]["verdict"] == "descriptive only" for k in ("H1", "H2", "H3", "H4", "H5", "H6", "H7"))
+    assert all(v[k]["verdict"] == "descriptive only" for k in ("H3", "H2", "H6", "H4", "H1", "H7", "H5"))
     same = {"irr": 1.0, "irr_lower": 0.8, "irr_upper": 1.3, "p_greater": 0.5}
     assert verdict.decide(h8_estimates(less, same), cond)["hypotheses"]["H8"]["verdict"] == "not supported"
     fewer = {"irr": 0.6, "irr_lower": 0.4, "irr_upper": 0.9, "p_greater": 0.99}
@@ -499,14 +499,14 @@ def test_h8_run_d_needs_less_coming_back_more_coupling_compliance_and_the_amount
     assert prepare.compliance(members, "open") == {"arm": "open", "introduced": 10, "private": 1, "share": 0.9}
 
 
-def test_h7_fewer_links_for_the_same_logic_and_a_widening_gap_are_both_needed():
+def test_h5_fewer_links_for_the_same_logic_and_a_widening_gap_are_both_needed():
     # restated 24 November 2026 (PLAN.md 9 row 89): shaped as H4, both terms below 1
     lo = {"irr": 0.6, "irr_lower": 0.4, "irr_upper": 0.9, "p_less": 0.001}
     flat = {"irr": 1.0, "irr_lower": 0.8, "irr_upper": 1.2, "p_less": 0.5}
     hi = {"irr": 1.6, "irr_lower": 1.2, "irr_upper": 2.1, "p_less": 0.999}
 
-    def v(**h7):
-        return verdict.decide(estimates(H7=h7), COND)["hypotheses"]["H7"]
+    def v(**h5):
+        return verdict.decide(estimates(H5=h5), COND)["hypotheses"]["H5"]
     assert v(arm=lo, trend=lo)["verdict"] == "supported"
     assert v(arm=lo, trend=flat)["verdict"] == "not supported"     # fewer, but the gap does not widen
     assert v(arm=lo, trend=flat)["p"] == 0.5
@@ -515,13 +515,13 @@ def test_h7_fewer_links_for_the_same_logic_and_a_widening_gap_are_both_needed():
     assert v(not_applicable=True)["verdict"] == "not testable"     # a history
 
 
-def test_h7_rows_join_the_links_to_the_logic_added():
+def test_h5_rows_join_the_links_to_the_logic_added():
     links = [{"chain_id": "s/r/c1", "arm": "spring", "cp": "2", "links_added": "5", "call_links_added": "3",
               "state_links_added": "2", "flow_links_added": "0", "call_links": "10", "state_links": "4",
               "flow_links": "0", "methods": "7"},
              {"chain_id": "s/r/c1", "arm": "spring", "cp": "3", "links_added": "1"}]     # no logic read
     split = [{"chain_id": "s/r/c1", "cp": 2, "logic_added": 9}]
-    rows = prepare.h7_rows(links, split)
+    rows = prepare.h5_rows(links, split)
     assert len(rows) == 1 and (rows[0]["links_added"], rows[0]["logic_added"], rows[0]["methods"]) == (5, 9, 7)
     s = prepare.links_summary(rows, 3)["spring"]
     assert s["links_per_logic"] == 5 / 9 and s["tree_links_per_method"] == 2.0
@@ -542,35 +542,35 @@ def test_forced_coupling_is_sorted_into_contained_the_problem_reuse_and_other():
     def edge(cp, a, b, kind, fa, fb):
         return {"chain_id": "s/r/c1", "arm": "spring", "cp": cp, "caller_class": a, "callee_class": b,
                 "kind": kind, "caller_forced": str(fa), "callee_forced": str(fb)}
-    h7 = [row(2, "Owner", True, 1), row(2, "Pet", True, 1), row(3, "Vet", True, 0),
+    h5 = [row(2, "Owner", True, 1), row(2, "Pet", True, 1), row(3, "Vet", True, 0),
           row(4, "Visit", True, 2), row(4, "Util", False, 1)]
     edges = [edge(2, "Owner", "Pet", "exposed", True, True),       # problem, though Pet's member is new
              edge(4, "Visit", "Clinic", "existing", True, False),  # reuse
              edge(4, "Visit", "Util", "exposed", True, False)]     # other
-    s = prepare.coupling_source(h7, edges)["spring"]
+    s = prepare.coupling_source(h5, edges)["spring"]
     assert (s["rows"], s["contained"], s["explained"], s["other"]) == (4, 1, 2, 1)
     assert s["calls"]["forced"] == {"problem": 1, "reuse": 1, "other": 1}
 
 
-def h6(forced):
-    return {"H6": {"margin": [0.8, 1.25], "forced": forced}}
+def h7(forced):
+    return {"H7": {"margin": [0.8, 1.25], "forced": forced}}
 
 
-def test_h6_spread_not_above_the_margin_is_supported():
-    # restated 21 November 2026: spread does not see the force (one-sided below 1.25, as H3)
+def test_h7_spread_not_above_the_margin_is_supported():
+    # restated 21 November 2026: spread does not see the force (one-sided below 1.25, as H6)
     flat = {"irr": 0.85, "irr_lower": 0.68, "irr_upper": 1.07, "p_upper": 0.004}
-    v = verdict.decide(estimates(**h6(flat)), COND)["hypotheses"]["H6"]
+    v = verdict.decide(estimates(**h7(flat)), COND)["hypotheses"]["H7"]
     assert (v["state"], v["verdict"], v["tier"]) == ("not above", "supported", "secondary")
     wide = {"irr": 1.03, "irr_lower": 0.45, "irr_upper": 2.4, "p_upper": 0.3}
-    assert verdict.decide(estimates(**h6(wide)), COND)["hypotheses"]["H6"]["verdict"] == "unresolved"
+    assert verdict.decide(estimates(**h7(wide)), COND)["hypotheses"]["H7"]["verdict"] == "unresolved"
     up = {"irr": 1.8, "irr_lower": 1.3, "irr_upper": 2.4, "p_upper": 0.99}
-    v = verdict.decide(estimates(**h6(up)), COND)["hypotheses"]["H6"]
+    v = verdict.decide(estimates(**h7(up)), COND)["hypotheses"]["H7"]
     assert (v["state"], v["verdict"]) == ("against", "not supported")
-    v = verdict.decide(estimates(**h6({"error": "every change in one class"})), COND)["hypotheses"]
-    assert v["H6"]["verdict"] == "not estimable" and v["H2"]["verdict"] == "supported"
+    v = verdict.decide(estimates(**h7({"error": "every change in one class"})), COND)["hypotheses"]
+    assert v["H7"]["verdict"] == "not estimable" and v["H2"]["verdict"] == "supported"
 
 
-def test_h6_units_count_existing_classes_and_the_accountings_add_up():
+def test_h7_units_count_existing_classes_and_the_accountings_add_up():
     def host(cp, t, choice=None, added=3, new=False):
         return {"chain_id": "spring/r/chain1", "arm": "spring", "cp": cp, "type": t, "before_type": t,
                 "added": added, "net_added": added, "replacement": False, "class_new": new,
@@ -578,7 +578,7 @@ def test_h6_units_count_existing_classes_and_the_accountings_add_up():
                 "forced_enc": "" if choice is None else choice == 0}
     hosts = [host(1, "A"), host(2, "A", 0), host(2, "B", 2), host(2, "B"), host(3, "A", 1),
              host(3, "C", new=True), host(3, "D", added=0), host(4, "E", new=True)]
-    u = {r["cp"]: r for r in prepare.h6_rows(hosts, {})}
+    u = {r["cp"]: r for r in prepare.h7_rows(hosts, {})}
     assert set(u) == {1, 2, 3}                      # cp 4 changed only a new class: a free choice
     assert (u[1]["classes"], u[1]["spread"], u[1]["forced"], u[1]["chosen"]) == (1, 0, False, False)
     assert (u[2]["classes"], u[2]["forced"], u[2]["forced_classes"], u[2]["chosen"]) == (2, True, 1, True)
@@ -698,11 +698,11 @@ def test_reader_rows_join_size_forcing_splits_and_tokens_per_unit_and_class():
               "runs": "1", "edits": "0", "binding_field": "1", "binding_class": "1", "forced_enc": "True"},
              {"chain_id": "agent/r", "arm": "agent", "cp": "1", "type": "N", "added": "4", "net_added": "4", "class_new": "True",
               "runs": "1", "edits": "0"}]
-    h7 = [{"chain_id": "agent/r", "arm": "agent", "unit": 1, "cp": 0.0, "class": "A", "members_opened": 2,
+    h5 = [{"chain_id": "agent/r", "arm": "agent", "unit": 1, "cp": 0.0, "class": "A", "members_opened": 2,
            "forced": True, "positions": 6, "methods": 1}]
     boundary = [{"chain_id": "agent/r", "cp": "1", "class": "A", "methods_before": "14"}]
     refs = [{"chain_id": "agent/r", "cp": "1", "kind": "Extract Class"}]
-    units, classes = prepare.reader_rows(members, hosts, h7, boundary, refs)
+    units, classes = prepare.reader_rows(members, hosts, h5, boundary, refs)
     u = units[0]
     assert (u["band"], u["introduced"], u["private"], u["splits"], u["positions"]) == ("200k to 1M", 4, 1, 1, 10)
     assert u["existing_positions"] == 6
@@ -732,7 +732,7 @@ def test_a_history_is_bootstrapped_with_fewer_refits_than_a_paired_run():
     assert prepare.BOOT_HISTORY == 200 and prepare.BOOT == 1000
 
 
-def test_h5_needs_the_fall_and_the_arm_contrast_where_the_arms_solve_the_same_problems():
+def test_h1_needs_the_fall_and_the_arm_contrast_where_the_arms_solve_the_same_problems():
     # 24 November 2026 (PLAN.md 9 row 92): fewer forced placements a checkpoint in the function arm,
     # rising less, beside the methods arm's fall in alternatives
     fall = {"irr": 0.4, "irr_lower": 0.2, "irr_upper": 0.8, "p_less": 0.001}
@@ -740,17 +740,17 @@ def test_h5_needs_the_fall_and_the_arm_contrast_where_the_arms_solve_the_same_pr
     flat = {"irr": 1.0, "irr_lower": 0.7, "irr_upper": 1.4, "p_less": 0.5}
 
     def v(**c):
-        return verdict.decide(estimates(H5={"class": fall, **({"contrast": c} if c else {})}), COND)["hypotheses"]["H5"]
+        return verdict.decide(estimates(H1={"class": fall, **({"contrast": c} if c else {})}), COND)["hypotheses"]["H1"]
     assert v()["verdict"] == "supported" and not v()["arm_contrast"]       # a history: the fall alone
     assert v(arm=lo, trend=lo)["verdict"] == "supported"
     assert v(arm=lo, trend=flat)["verdict"] == "not supported" and v(arm=lo, trend=flat)["p"] == 0.5
     assert v(error="no checkpoints in both arms")["verdict"] == "not estimable"
 
 
-def test_h5_forced_rows_count_every_checkpoint_that_did_something():
-    h5 = [{"chain_id": "c", "level": "class", "forced": True, "cp": 2},
+def test_h1_forced_rows_count_every_checkpoint_that_did_something():
+    h1 = [{"chain_id": "c", "level": "class", "forced": True, "cp": 2},
           {"chain_id": "c", "level": "class", "forced": True, "cp": 2},
           {"chain_id": "c", "level": "method", "forced": True, "cp": 2},
           {"chain_id": "c", "level": "class", "forced": False, "cp": 3}]
     adds = [{"chain_id": "c", "arm": "spring", "cp": str(k), "noop": str(k == 4)} for k in (1, 2, 3, 4)]
-    assert [(r["cp"], r["forced_class"]) for r in prepare.h5_forced_rows(h5, adds)] == [(1, 0), (2, 2), (3, 0)]
+    assert [(r["cp"], r["forced_class"]) for r in prepare.h1_forced_rows(h1, adds)] == [(1, 0), (2, 2), (3, 0)]

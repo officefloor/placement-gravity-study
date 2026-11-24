@@ -48,11 +48,11 @@ def width_lines(rep: dict) -> list[str]:
     return L
 
 
-def h5_section(est: dict, hyp: dict, rep: dict) -> list[str]:
-    """H5, choice narrows (PLAN.md §2, §4.2a, §5)."""
-    b = est.get("H5") or {}
-    h = hyp.get("H5") or {}
-    L = ["", "## H5, choice narrows (and less often forced in the function arm)", "",
+def h1_section(est: dict, hyp: dict, rep: dict) -> list[str]:
+    """H1, choice narrows (PLAN.md §2, §4.2a, §5)."""
+    b = est.get("H1") or {}
+    h = hyp.get("H1") or {}
+    L = ["", "## H1, choice narrows (and less often forced in the function arm)", "",
          "Per bound addition, the other places in the code before its checkpoint that hold what its code "
          "was bound to: at the class, another class holding injected dependencies of the same types (code "
          "bound to the class's own state, constants or methods has none); at the method, another method "
@@ -85,9 +85,9 @@ def h5_section(est: dict, hyp: dict, rep: dict) -> list[str]:
                      + (f"; one-sided p {f(x.get('p_less'))}" if "p_less" in x else "")
                      + (f"; {x['interval']}" if x.get("interval") else "") + ")")
             L.append(f"- Reported, at the {lev} against the upper margin "
-                     f"{f((b.get('margin') or [None, None])[1])} (as H5 stood until 22 November 2026, 90% Wald "
-                     f"interval): {ratio(rep.get(f'H5_margin_{lev}'))}")
-        for arm, sp in (rep.get(f"H5_spread_{lev}") or {}).items():
+                     f"{f((b.get('margin') or [None, None])[1])} (as H1 stood until 22 November 2026, 90% Wald "
+                     f"interval): {ratio(rep.get(f'H1_margin_{lev}'))}")
+        for arm, sp in (rep.get(f"H1_spread_{lev}") or {}).items():
             if not sp:
                 continue
             tf, ta = sp.get("thirds_forced") or {}, sp.get("thirds_alternatives") or {}
@@ -95,27 +95,27 @@ def h5_section(est: dict, hyp: dict, rep: dict) -> list[str]:
                      f"{f(sp.get('mean_alternatives'))} alternatives a row; over the thirds, forced "
                      + ", ".join(f(tf.get(k)) for k in ("1", "2", "3")) + "; alternatives "
                      + ", ".join(f(ta.get(k)) for k in ("1", "2", "3")))
-        L.append(f"- Reported, the function arm's ratio at the {lev}: {ratio(rep.get(f'H5_function_arm_{lev}'))}; "
-                 f"function arm / methods arm: {ratio(rep.get(f'H5_arm_{lev}'))}")
-    fl = rep.get("H5_flow") or {}
+        L.append(f"- Reported, the function arm's ratio at the {lev}: {ratio(rep.get(f'H1_function_arm_{lev}'))}; "
+                 f"function arm / methods arm: {ratio(rep.get(f'H1_arm_{lev}'))}")
+    fl = rep.get("H1_flow") or {}
     L.append(f"- Reported, at the method by type alone over the whole tree (as first built): "
-             f"{ratio(rep.get('H5_method_by_type'))}; methods on a host's control flow, per arm: "
+             f"{ratio(rep.get('H1_method_by_type'))}; methods on a host's control flow, per arm: "
              + ", ".join(f"{a} {f(v)}" for a, v in (fl.get("methods") or {}).items())
              + "; by type over the whole tree: "
              + ", ".join(f"{a} {f(v)}" for a, v in (fl.get("by_type") or {}).items())
              + f"; calls to a name the application declares that were followed by their receiver's type: "
              f"{f(fl.get('followed'))} (the rest have a receiver the instrument cannot read)")
     L.append(f"- Reported, class rows bound to the class's own state, constants or methods: "
-             f"{f(rep.get('H5_class_own'))}; method values of no declared type left out of the match: "
-             f"{f(rep.get('H5_method_untyped'))}")
+             f"{f(rep.get('H1_class_own'))}; method values of no declared type left out of the match: "
+             f"{f(rep.get('H1_method_untyped'))}")
     return L
 
 
-def h6_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
-    """H6, spread does not see it (PLAN.md §2, §4.2b, §5; restated 21 November 2026), and its
+def h7_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
+    """H7, spread does not see it (PLAN.md §2, §4.2b, §5; restated 21 November 2026), and its
     accountings."""
-    b = est.get("H6") or {}
-    h = hyp.get("H6") or {}
+    b = est.get("H7") or {}
+    h = hyp.get("H7") or {}
     fo = b.get("forced") or {}
 
     def fam(e):
@@ -123,7 +123,7 @@ def h6_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
         return f"n = {f(e.get('n'))}, {e.get('family', '–')}"
 
     margin = (b.get("margin") or [0.8, 1.25])[1]
-    L = ["", "## H6, spread does not see it (methods arm; secondary)", "",
+    L = ["", "## H7, spread does not see it (methods arm; secondary)", "",
          "Per unit that placed or edited code in classes that existed before it, those classes beyond the "
          "first (a new class is a free choice and is not counted): co-change spread, the change-coupling "
          "literature's measure. The ratio of the spread of a unit with a placement forced at the class (by "
@@ -132,12 +132,12 @@ def h6_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
          "*forced changes spread*, one-sided above 1).", "",
          f"- **{h.get('verdict', '–')}**" + (f" ({h['state']})" if h.get("state") else ""),
          f"- **Forced: {ratio(fo)}** ({fam(fo)}; one-sided p below the margin {f(fo.get('p_upper'))})",
-         f"- Reported, forced by binding with no alternative (H5's): {ratio(rep.get('H6_forced_bind'))}; "
-         f"forced without the change's size: {ratio(rep.get('H6_forced_without_size'))}",
-         f"- Reported, the spread's rise over the stream (end against start): all units {ratio(rep.get('H6_rise'))} "
-         f"({fam(rep.get('H6_rise'))}); forced units {ratio(rep.get('H6_rise_forced'))} ({fam(rep.get('H6_rise_forced'))}); "
-         f"unforced units {ratio(rep.get('H6_rise_unforced'))} ({fam(rep.get('H6_rise_unforced'))})"]
-    for arm, sp in (rep.get("H6_spread") or {}).items():
+         f"- Reported, forced by binding with no alternative (H1's): {ratio(rep.get('H7_forced_bind'))}; "
+         f"forced without the change's size: {ratio(rep.get('H7_forced_without_size'))}",
+         f"- Reported, the spread's rise over the stream (end against start): all units {ratio(rep.get('H7_rise'))} "
+         f"({fam(rep.get('H7_rise'))}); forced units {ratio(rep.get('H7_rise_forced'))} ({fam(rep.get('H7_rise_forced'))}); "
+         f"unforced units {ratio(rep.get('H7_rise_unforced'))} ({fam(rep.get('H7_rise_unforced'))})"]
+    for arm, sp in (rep.get("H7_spread") or {}).items():
         if not sp:
             continue
         th = {k: sp.get(f"thirds_{k}") or {} for k in ("classes", "forced", "unforced")}
@@ -148,8 +148,8 @@ def h6_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
                  + ", ".join(f(th["classes"].get(k)) for k in ("1", "2", "3")) + "; forced "
                  + ", ".join(f(th["forced"].get(k)) for k in ("1", "2", "3")) + "; unforced "
                  + ", ".join(f(th["unforced"].get(k)) for k in ("1", "2", "3")))
-    L.append(f"- Reported, the function arm: forced {ratio(rep.get('H6_function_arm_forced'))}; rise "
-             f"{ratio(rep.get('H6_function_arm'))}; function arm / methods arm: {ratio(rep.get('H6_arm'))}")
+    L.append(f"- Reported, the function arm: forced {ratio(rep.get('H7_function_arm_forced'))}; rise "
+             f"{ratio(rep.get('H7_function_arm'))}; function arm / methods arm: {ratio(rep.get('H7_arm'))}")
     L += ["", "### Where the growth of existing classes came from", "",
           "Positions added to classes that existed, by the placement that added them: forced at the class, "
           "with a choice there, or not bound at the class.", ""]
@@ -186,7 +186,7 @@ def h6_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
                  f"{f(c.get('added_unforced_units'))}; between existing classes changed together "
                  f"{f(c.get('pairs_added'))} ({f(c.get('share_between_pairs'))}), of it in forced units "
                  f"{f(c.get('pairs_added_forced'))} ({f(c.get('share_pairs_forced'))})")
-    pc = rep.get("H6_pair_coupling") or {}
+    pc = rep.get("H7_pair_coupling") or {}
     L += ["", "### Pairs of classes changed together", "",
           f"- The coupling of pairs changed together more than once (calls between them before the unit) on "
           f"the index: {ratio(pc)}" + (f" ({f(pc.get('pairs'))} pairs, {f(pc.get('n'))} rows"
@@ -203,11 +203,11 @@ def h6_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
     return L
 
 
-def h7_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
-    """H7, surface against volume (PLAN.md §2, §4.2c, §5; restated 24 November 2026)."""
-    b = est.get("H7") or {}
-    h = hyp.get("H7") or {}
-    L = ["", "## H7, surface against volume", "",
+def h5_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
+    """H5, surface against volume (PLAN.md §2, §4.2c, §5; restated 24 November 2026)."""
+    b = est.get("H5") or {}
+    h = hyp.get("H5") or {}
+    L = ["", "## H5, surface against volume", "",
          "Per checkpoint, the links it added between blocks of logic (the surface: a method calling a method, "
          "a method using a field that holds state, a function wired to the next), each counted once, an "
          "injected dependency not among them; against the logic it added (the volume). The function arm's "
@@ -227,13 +227,13 @@ def h7_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
                  f"Wald: {ratio(x.get('wald'))}")
     L.append(f"- Links added a checkpoint: " + ", ".join(f"{a} {f(v)}" for a, v in (b.get("links_added") or {}).items())
              + "; logic added: " + ", ".join(f"{a} {f(v)}" for a, v in (b.get("logic_added") or {}).items()))
-    for k, x in (rep.get("H7_kinds") or {}).items():
+    for k, x in (rep.get("H5_kinds") or {}).items():
         L.append(f"- Reported, {k} links: function arm / methods arm {ratio(x.get('arm'))}, over the stream "
                  f"{ratio(x.get('trend'))}; a checkpoint " + ", ".join(f"{a} {f(v)}" for a, v in (x.get("mean") or {}).items()))
-    wl = rep.get("H7_without_logic") or {}
+    wl = rep.get("H5_without_logic") or {}
     L.append(f"- Reported, without the logic in the model: arm {ratio(wl.get('arm'))}, over the stream {ratio(wl.get('trend'))}; "
-             f"the methods arm's own rise over the stream {ratio(rep.get('H7_methods_rise'))}; links per e-fold logic "
-             f"{ratio(rep.get('H7_logic'))}")
+             f"the methods arm's own rise over the stream {ratio(rep.get('H5_methods_rise'))}; links per e-fold logic "
+             f"{ratio(rep.get('H5_logic'))}")
     for arm, a in ((rd or {}).get("links") or {}).items():
         th = a.get("thirds") or {}
         L.append(f"- Reported, {arm}: {f(a.get('checkpoints'))} checkpoints; links added a checkpoint {f(a.get('links_added'))} "
@@ -387,7 +387,7 @@ def validation_section(rd: dict) -> list[str]:
                  f"{f(a.get('names_class_method_precision'))} of {f(a.get('names_class_method'))} |")
     tripped = rd.get("validation_flags") or []
     L.append("")
-    L.append("- **Read the calls with care (H5's flow at the method, H6's coupling, H7):** " + "; ".join(tripped) + "."
+    L.append("- **Read the calls with care (H1's flow at the method, H7's coupling, H5):** " + "; ".join(tripped) + "."
              if tripped else
              f"- The tripwire is not set off: every share of calls is at least {validate.LOW:.2f} in each arm, "
              f"and none differs between the arms by more than {validate.GAP:.2f}.")
@@ -511,7 +511,7 @@ def reader_section(rep: dict, rd: dict) -> list[str]:
 
 
 def bystander_lines(r: dict) -> list[str]:
-    """The description beside H1: needed values and bystanders per run, per arm (PLAN.md §4.3a)."""
+    """The description beside H3: needed values and bystanders per run, per arm (PLAN.md §4.3a)."""
     L = []
     for arm, x in (r.get("bystanders") or {}).items():
         L.append(f"- Reported, {arm}: {f(x.get('pulled'))} of {f(x.get('runs'))} runs need a pre-existing "
@@ -619,7 +619,7 @@ def literature_section(est: dict, spec: dict) -> list[str]:
          "problem, the bindings and what stood by held fixed. Method measures on intrusion at the method, "
          "class measures on intrusion at the class, one row per class a checkpoint's bound code went into "
          f"({f(((est.get('reported') or {}).get('literature_class_rows')))} rows), with the class's size held "
-         "fixed and an intercept for the class (\u2020: refitted without it). Read as H3 is: below 1.25 does "
+         "fixed and an intercept for the class (\u2020: refitted without it). Read as H6 is: below 1.25 does "
          "not draw code in. A measure marked reversed is one where higher is better; its ratio is for the "
          "worse shape.", "",
          "| Measure | Level | Source | n | Rate ratio (90% interval) | One-sided p | Against 1.25 |",
@@ -641,7 +641,7 @@ def literature_section(est: dict, spec: dict) -> list[str]:
               f"{f(at_class.get('classes_with_arrivals'))} distinct classes here, and the busiest holds "
               f"{f(at_class.get('top_class_share'))} of them. A class measure then mostly describes that one "
               f"class as it changes over the stream, so an association with later arrivals may be "
-              f"coincidental. These rows are not part of H3 in this analysis."]
+              f"coincidental. These rows are not part of H6 in this analysis."]
     if left:
         L += ["", "Left out by the variation rule (bound rows flagged or above zero, per arm): "
               + ", ".join(f"{k} ({counts[k]})" for k in left) + "."]
@@ -701,33 +701,37 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
          "|---|---|---|---|"]
     for k, v in hyp.items():
         L.append(f"| {k} | {v.get('tier', '–')} | {v['verdict']} | {f(v.get('p_holm'))} |")
-    h1 = est.get("H1") or {}
-    lv = rep.get("H1_levels") or {}
-    t1 = rep.get("H1_bindings") or {}
-    L += ["", "## H1, the periphery grows (methods arm)", "",
-          f"Runs that need a pre-existing value {f(h1.get('n_runs'))} over {f(h1.get('n_chains'))} "
+    # the inline sections below are built in the order they were written and put in the story's
+    # order (H1 to H8, PLAN.md 9 row 93) at the end
+    seg = {"H3": len(L)}
+    h3 = est.get("H3") or {}
+    lv = rep.get("H3_levels") or {}
+    t1 = rep.get("H3_bindings") or {}
+    L += ["", "## H3, the encapsulation fills (methods arm)", "",
+          f"Runs that need a pre-existing value {f(h3.get('n_runs'))} over {f(h3.get('n_chains'))} "
           f"chains; the slope of log(1 + bystanders) on the checkpoint index, cluster-bootstrap 95% interval "
           f"({est.get('boot')} refits).", "",
-          f"- **Bystanders on the checkpoint index: {interval(h1.get('cp'))}**",
-          f"- **Within a class, the class's bystanders: {interval(h1.get('within_class'))}** "
-          f"({f((h1.get('within_class') or {}).get('places'))} classes with runs at two or more checkpoints)",
-          f"- **Within a method, the method's bystanders: {interval(h1.get('within_method'))}** "
-          f"({f((h1.get('within_method') or {}).get('places'))} methods)",
+          f"- **Bystanders on the checkpoint index: {interval(h3.get('cp'))}**",
+          f"- **Within a class, the class's bystanders: {interval(h3.get('within_class'))}** "
+          f"({f((h3.get('within_class') or {}).get('places'))} classes with runs at two or more checkpoints)",
+          f"- **Within a method, the method's bystanders: {interval(h3.get('within_method'))}** "
+          f"({f((h3.get('within_method') or {}).get('places'))} methods)",
           f"- Reported, within a place in the function arm: class "
-          f"{interval((rep.get('H1_within_function_arm') or {}).get('class'))}; method "
-          f"{interval((rep.get('H1_within_function_arm') or {}).get('method'))}",
+          f"{interval((rep.get('H3_within_function_arm') or {}).get('class'))}; method "
+          f"{interval((rep.get('H3_within_function_arm') or {}).get('method'))}",
           f"- Reported, method bystanders {interval(lv.get('method'))}; class bystanders "
           f"{interval(lv.get('class'))}",
           f"- Reported, without injected dependencies {interval(lv.get('without_injected'))}; without "
           f"constants {interval(lv.get('without_constants'))}",
           f"- Reported, the function arm's slope: {interval(lv.get('function_arm'))}",
           *bystander_lines(readings or {}),
-          f"- Reported, H1 as first registered (bindings of runs into existing methods): on log(host "
+          f"- Reported, H3 as first registered (bindings of runs into existing methods): on log(host "
           f"positions) {interval(t1.get('log_host'))}; on the checkpoint index {interval(t1.get('cp'))}",
-          f"- Reported, bindings in the function arm: on host size {interval((rep.get('H1_function_arm') or {}).get('log_host'))}",
-          f"- Reported, bindings at class level (methods arm): on class size {interval((rep.get('H1_class_level') or {}).get('log_class'))}",
-          f"- Reported, bindings without injected dependencies: on host size {interval((rep.get('H1_without_injected') or {}).get('log_host'))}; "
-          f"class level on class size {interval((rep.get('H1_class_level_without_injected') or {}).get('log_class'))}"]
+          f"- Reported, bindings in the function arm: on host size {interval((rep.get('H3_function_arm') or {}).get('log_host'))}",
+          f"- Reported, bindings at class level (methods arm): on class size {interval((rep.get('H3_class_level') or {}).get('log_class'))}",
+          f"- Reported, bindings without injected dependencies: on host size {interval((rep.get('H3_without_injected') or {}).get('log_host'))}; "
+          f"class level on class size {interval((rep.get('H3_class_level_without_injected') or {}).get('log_class'))}"]
+    seg["H2"] = len(L)
     e2 = est.get("H2") or {}
     rows_ = rep.get("intrusion_rows") or {}
     L += ["", "## H2, a core draws code in (methods arm)", "",
@@ -770,22 +774,23 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           f"{ratio(rep.get('bindings_existing_hosts_method'))}",
           f"- Reported, per binding, without injected dependencies: class {ratio(rep.get('bindings_without_injected_class'))}; "
           f"method {ratio(rep.get('bindings_without_injected_method'))}"]
-    h3 = hyp["H3"]
-    b = est.get("H3") or {}
-    L += ["", "## H3, shape does not draw code in", "",
-          f"- **{h3.get('state', h3.get('verdict'))}** (one-sided: each rate ratio below "
+    seg["H6"] = len(L)
+    h6 = hyp["H6"]
+    b = est.get("H6") or {}
+    L += ["", "## H6, shape does not draw code in", "",
+          f"- **{h6.get('state', h6.get('verdict'))}** (one-sided: each rate ratio below "
           f"{f((b.get('margin') or [None, None])[1])}); each measure fitted alone at its level, with the "
           f"bindings and the bystanders in the model, 90% intervals: method measures on intrusion at the "
           f"method (n = {f(b.get('n'))}), class measures on intrusion at the class, one row per class and "
           f"checkpoint with the class's size held fixed (n = {f(b.get('n_class'))}); reported, two-sided "
           f"({f((b.get('margin') or [None])[0])} to {f((b.get('margin') or [None, None])[1])}): "
-          f"{h3.get('two_sided', '–')}"]
+          f"{h6.get('two_sided', '–')}"]
     for k, m in (b.get("measures") or {}).items():
         L.append(f"  - {k} ({m.get('at', '–')}): {ratio(m)}, one-sided p {f(m.get('p_upper'))} "
                  f"(two-sided TOST p {f(m.get('p_tost'))})")
     # a class measure left out because the class level cannot be tested is named on the next line
     apart = (spec.get("class_level") or {}).get("testable") is False
-    dropped = [k for k in h3.get("dropped") or [] if not (apart and k.startswith("c_"))]
+    dropped = [k for k in h6.get("dropped") or [] if not (apart and k.startswith("c_"))]
     if dropped:
         counts = {**(spec.get("shape_counts") or {}), **(spec.get("literature_counts") or {})}
         L.append("  - Left out by the variation rule: " + ", ".join(
@@ -797,9 +802,9 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
                  f"{f(at_class.get('min_classes'))} needed), the busiest holding "
                  f"{f(at_class.get('top_class_share'))} of them (at most {f(at_class.get('max_share'))}). "
                  f"They are reported below, each alone.")
-    sens = (ver.get("sensitivity") or {}).get("H3_with_coupling") or {}
+    sens = (ver.get("sensitivity") or {}).get("H6_with_coupling") or {}
     if sens:
-        L.append(f"  - Reported, a sensitivity reading: H3's rule with the literature's coupling measures put "
+        L.append(f"  - Reported, a sensitivity reading: H6's rule with the literature's coupling measures put "
                  f"back (fan-out, CBO, RFC; read apart in this plan as reach): **{sens.get('state', '–')}** over "
                  + (", ".join(sens.get("measures") or []) or "no measure")
                  + (f"; wholly above the margin: {', '.join(sens['above'])}" if sens.get("above") else "")
@@ -809,7 +814,7 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
     if sj.get("measures"):
         L.append("- Reported, the block as first registered, together in one model on method-level intrusion: "
                  + "; ".join(f"{k} {ratio(v)}" for k, v in sj["measures"].items()))
-    cl = rep.get("H3_class_level") or {}
+    cl = rep.get("H6_class_level") or {}
     if cl:
         L.append("- Reported, that block on class-level intrusion: "
                  + "; ".join(f"{k} {ratio(v)}" for k, v in cl.items()))
@@ -831,6 +836,7 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
                  f"{k} ({(spec.get('shape_counts') or {}).get(k)})" for k in left) if left and sn else ""))
     for j in ("s3_junction", "s3_junction_injection_aware"):
         L.append(f"- Reported, junction × arm ({j}): {ratio(rep.get('junction_x_arm_' + j))}")
+    seg["H4"] = len(L)
     m3 = est.get("H4") or {}
     rs = (readings or {}).get("reopening") or {}
     amt = cond.get("amount") or {}
@@ -874,9 +880,12 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           f"- Reported, bindings without injected dependencies: arm {interval((rep.get('H4_without_injected') or {}).get('arm'))}, "
           f"slope {interval((rep.get('H4_without_injected') or {}).get('slope'))}",
           f"- Reported, trajectory of the bindings (arm × checkpoint): {interval(rep.get('H4_trajectory'))}",
-          *h5_section(est, hyp, rep),
-          *h6_section(est, hyp, rep, readings or {}),
-          *h7_section(est, hyp, rep, readings or {}),
+          ]
+    seg["end"] = len(L)
+    L = (L[:seg["H3"]] + h1_section(est, hyp, rep) + L[seg["H2"]:seg["H6"]] + L[seg["H3"]:seg["H2"]]
+         + L[seg["H4"]:seg["end"]] + h5_section(est, hyp, rep, readings or {}) + L[seg["H6"]:seg["H4"]]
+         + h7_section(est, hyp, rep, readings or {}))
+    L += [
           *h8_section(est, hyp, cond),
           *coupling_source_section(readings or {}),
           *redesign_section(readings or {}),
@@ -922,10 +931,8 @@ def main() -> None:
         rd = json.loads((data / "readings.json").read_text()) if (data / "readings.json").exists() else {}
         (d / "REPORT.md").write_text(render(name, analysis["role"], est, ver, cond, spec, mine, drift, rd))
         hy = ver["hypotheses"]
-        index.append(f"| [{name}]({name}/REPORT.md) | {analysis['role']} | {hy['H1']['verdict']} "
-                     f"| {hy['H2']['verdict']} | {hy['H3']['verdict']} | {hy['H4']['verdict']} "
-                     f"| {hy.get('H5', {}).get('verdict', '–')} | {hy.get('H6', {}).get('verdict', '–')} "
-                     f"| {hy.get('H7', {}).get('verdict', '–')} |")
+        index.append(f"| [{name}]({name}/REPORT.md) | {analysis['role']} | "
+                     + " | ".join(hy.get(f"H{i}", {}).get("verdict", "–") for i in range(1, 8)) + " |")
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "REPORT.md").write_text("\n".join(index) + "\n")
     print((OUT / "REPORT.md").read_text())

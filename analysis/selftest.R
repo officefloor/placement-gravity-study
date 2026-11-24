@@ -11,7 +11,7 @@ dir.create(dir, showWarnings = FALSE, recursive = TRUE)
 arms <- c("spring", "officefloor")
 cp_binding <- rnorm(60, 0, 0.3)   # the problem's own level, the same for every chain
 cp_int <- rnorm(60, 0, 0.5)
-h1 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
+h3 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
   n <- 150
   cp <- sample(1:60, n, replace = TRUE)
   pre <- round(exp(runif(n, log(3), log(120))))
@@ -134,7 +134,7 @@ split <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, fu
              method_values_added = rpois(60, 5), fields_added = rpois(60, 0.5), organisation_all = dl + wl + 1)
 }))))
 write.csv(split, file.path(dir, "split.csv"), row.names = FALSE)
-# surface against volume (H7, restated 24 November 2026), on its own random stream so that the
+# surface against volume (H5, restated 24 November 2026), on its own random stream so that the
 # simulations after it keep their draws: links added rise with the logic added; at
 # the middle of the stream the function arm adds 0.6 times the links for the same logic, and where
 # the methods arm's double over the stream the function arm's stay flat (the trend ratio 0.5)
@@ -147,15 +147,15 @@ lk$flow_links_added <- ifelse(lk$arm == "spring", 0, rbinom(nrow(lk), lk$links_a
 lk$state_links_added <- rbinom(nrow(lk), lk$links_added - lk$flow_links_added, 0.4)
 lk$call_links_added <- lk$links_added - lk$flow_links_added - lk$state_links_added
 lk$links_lost <- rpois(nrow(lk), 1)
-write.csv(lk, file.path(dir, "h7.csv"), row.names = FALSE)
+write.csv(lk, file.path(dir, "h5.csv"), row.names = FALSE)
 assign(".Random.seed", kept_seed, envir = .GlobalEnv)
 write.csv(by, file.path(dir, "by.csv"), row.names = FALSE)
 write.csv(cap, file.path(dir, "capture.csv"), row.names = FALSE)
-write.csv(h1, file.path(dir, "h1.csv"), row.names = FALSE)
+write.csv(h3, file.path(dir, "h3.csv"), row.names = FALSE)
 write.csv(h2, file.path(dir, "h2.csv"), row.names = FALSE)
-# choice (H5): the methods arm's alternatives fall to about a third over the stream; the function
+# choice (H1): the methods arm's alternatives fall to about a third over the stream; the function
 # arm's stay where they are
-h5 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
+h1 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
   n <- 120
   cp <- sample(1:60, n, replace = TRUE)
   mu <- if (arm == "spring") 3 * exp(log(1 / 3) * (cp - 1) / 59) else rep(4, n)
@@ -166,23 +166,23 @@ h5 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
              by_type = a + rpois(n, cp / 3), flow_methods = 20 + rpois(n, 5),
              calls_to_app_names = 10, calls_followed = 8)
 }))))
-write.csv(h5, file.path(dir, "h5.csv"), row.names = FALSE)
-# H5's arm contrast, on its own random stream: placements forced at the class per checkpoint; the
+write.csv(h1, file.path(dir, "h1.csv"), row.names = FALSE)
+# H1's arm contrast, on its own random stream: placements forced at the class per checkpoint; the
 # methods arm's rise from 0.3 to 0.9 over the stream, the function arm's stay at 0.1 (half-way, the
 # ratio 0.1 / sqrt(0.27) = 0.19; the trend ratio 1/3)
 kept_seed <- .Random.seed
 set.seed(20261125)
-h5f <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
+h1f <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
   cp <- 1:60
   mu <- if (arm == "spring") 0.3 * exp(log(3) * (cp - 1) / 59) else rep(0.1, 60)
   data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = cp, forced_class = rpois(60, mu))
 }))))
-write.csv(h5f, file.path(dir, "h5_forced.csv"), row.names = FALSE)
+write.csv(h1f, file.path(dir, "h1_forced.csv"), row.names = FALSE)
 assign(".Random.seed", kept_seed, envir = .GlobalEnv)
-# change spread (H6): in the methods arm the classes beyond the first double over the stream and
+# change spread (H7): in the methods arm the classes beyond the first double over the stream and
 # are 1.5 times as many where a placement was forced; the function arm's stay where they are.
 # Pairs changed together: their coupling rises over the stream in the methods arm
-h6 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
+h7 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
   cp <- 1:60
   forced <- rbinom(60, 1, 0.5) == 1
   methods <- 1 + rpois(60, ifelse(forced, 3, 1))           # a forced unit is a larger change
@@ -195,7 +195,7 @@ h6 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
              classes = sp + 1, spread = sp, all_classes = sp + 1, forced = forced, forced_classes = as.integer(forced),
              chosen = !forced, new_classes = 0, class_names = "")
 }))))
-write.csv(h6, file.path(dir, "h6.csv"), row.names = FALSE)
+write.csv(h7, file.path(dir, "h7.csv"), row.names = FALSE)
 pairs <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
   do.call(rbind, lapply(1:6, function(k) {
     cp <- sort(sample(1:60, 5))
@@ -206,8 +206,8 @@ pairs <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, fu
   }))
 }))))
 write.csv(pairs, file.path(dir, "pairs.csv"), row.names = FALSE)
-# calls across the encapsulation (H8's dispersion; the old H7's rows until 24 November 2026): in the methods arm
-h7 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
+# calls across the encapsulation (H8's dispersion; the old H5's rows until 24 November 2026): in the methods arm
+h5 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
   n <- 100
   forced <- rbinom(n, 1, 0.4) == 1
   cp <- sample(1:60, n, replace = TRUE)
@@ -222,7 +222,7 @@ h7 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
              class = paste0("C", k), forced = forced, chosen = !forced, new_out = out, new_in = inn,
              coupled = out + inn, opened = op, members_opened = rpois(n, ifelse(forced, 1, 0.5)))
 }))))
-write.csv(h7, file.path(dir, "calls_across.csv"), row.names = FALSE)
+write.csv(h5, file.path(dir, "calls_across.csv"), row.names = FALSE)
 # surface against volume: across classes the surface grows as volume^0.7 in the methods arm; a class
 # that grows gains surface as volume^1.3; a forced change adds 3 more calls at the same volume added
 sf <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
@@ -276,9 +276,9 @@ writeLines(jsonlite::toJSON(list(
   analysis = "selftest", role = "development", seed = 20261116, boot = 60, margin = c(0.8, 1.25),
   methods_arm = "spring", function_arm = "officefloor", checkpoints = 60,
   shape_kept = c("s1_long", "s4_cognitive", "s5_class_gini"), sinew_kept = c("s2_stuck", "s3_junction"),
-  h3_measures = c("s1_long", "s4_cognitive", "m_cyclomatic", "c_gini", "c_wmc", "c_lcom_star"),
+  h6_measures = c("s1_long", "s4_cognitive", "m_cyclomatic", "c_gini", "c_wmc", "c_lcom_star"),
   reach = c("m_fanout"),
-  h3_sensitivity = c("s1_long", "s4_cognitive", "m_cyclomatic", "m_fanout", "c_gini", "c_wmc", "c_lcom_star"),
+  h6_sensitivity = c("s1_long", "s4_cognitive", "m_cyclomatic", "m_fanout", "c_gini", "c_wmc", "c_lcom_star"),
   literature = list(s1_long = list(level = "method", kind = "flag", source = "long"),
                     s4_cognitive = list(level = "method", kind = "level", source = "cognitive"),
                     c_gini = list(level = "class", kind = "plain", source = "Gini"),
@@ -301,10 +301,10 @@ check <- function(ok, what) {
   if (!isTRUE(ok)) stop("selftest failed: ", what)
   cat("ok:", what, "\n")
 }
-check(e$H1$cp$lower > 0, "H1 recovers bystanders rising with the checkpoint in the methods arm")
-check(e$H1$cp$lower < 0.02 && 0.02 < e$H1$cp$upper + 0.01, "H1's slope is near the simulated one")
-check(e$H1$within_class$lower > 0 && e$H1$within_method$lower > 0,
-      "H1 recovers bystanders rising within a class and within a method")
+check(e$H3$cp$lower > 0, "H3 recovers bystanders rising with the checkpoint in the methods arm")
+check(e$H3$cp$lower < 0.02 && 0.02 < e$H3$cp$upper + 0.01, "H3's slope is near the simulated one")
+check(e$H3$within_class$lower > 0 && e$H3$within_method$lower > 0,
+      "H3 recovers bystanders rising within a class and within a method")
 check(e$reported$H2_left_class$irr_lower > 1 && e$reported$H2_left_method$irr_lower > 1,
       "the reading with what was introduced beside what stood by is estimated at both levels")
 check(!is.null(e$reported$core_reuse_class$irr) && !is.null(e$reported$core_reuse_method$irr),
@@ -320,7 +320,7 @@ check(abs(log(e$H4$trodden$irr) - log(0.5)) < 0.2 && e$H4$trodden$irr_upper < 1 
       "H4's symmetric count recovers the function arm going back into files half as well-trodden")
 check(abs(log(e$reported$existing_files$irr) - log(0.7)) < 0.15,
       "the plain number of existing files gone back into, as first built, is reported")
-check(e$H1$within_class$places == 48, "H1 within a class is read on the classes with runs at two checkpoints")
+check(e$H3$within_class$places == 48, "H3 within a class is read on the classes with runs at two checkpoints")
 for (lev in c("class", "method")) {
   m <- e$H2[[lev]]
   true <- if (lev == "class") 1.15 else 1.10
@@ -343,13 +343,13 @@ for (lev in c("class", "method")) {
 check(e$H2$n < e$reported$intrusion_rows$bound, "H2 is read on the methods arm's bound rows")
 check(abs(log(e$reported$bindings_lines$irr)) < 0.05,
       "intrusion on the problem's own lines, simulated unrelated to bindings, is reported as such")
-for (k in names(e$H3$measures)) {
-  m <- e$H3$measures[[k]]
-  check(m$irr_lower > 0.5 && m$irr_upper < 2, paste("H3 estimates", k, "near no effect"))
+for (k in names(e$H6$measures)) {
+  m <- e$H6$measures[[k]]
+  check(m$irr_lower > 0.5 && m$irr_upper < 2, paste("H6 estimates", k, "near no effect"))
 }
-check(all(sapply(e$H3$measures, function(m) m$p_upper <= m$p_tost && !isTRUE(m$above))),
-      "H3's one-sided p is no larger than the two-sided one, and no measure lies above the margin")
-check(!is.null(e$reported$H3_class_level$s4_cognitive$irr), "the first block on class-level intrusion is reported")
+check(all(sapply(e$H6$measures, function(m) m$p_upper <= m$p_tost && !isTRUE(m$above))),
+      "H6's one-sided p is no larger than the two-sided one, and no measure lies above the margin")
+check(!is.null(e$reported$H6_class_level$s4_cognitive$irr), "the first block on class-level intrusion is reported")
 for (k in c("m_cyclomatic", "c_wmc", "c_god_class")) {
   m <- e$reported$literature_shape[[k]]
   check(!is.null(m$irr) && m$irr_lower > 0.5 && m$irr_upper < 2,
@@ -359,12 +359,12 @@ check(e$reported$literature_shape$c_wmc$at == "class", "a class measure is read 
 check(e$reported$literature_class_rows < e$reported$intrusion_rows$bound,
       "a class measure is read on one row per class and checkpoint")
 check(isTRUE(e$reported$literature_shape$c_mi$reversed), "a measure where higher is better is read reversed")
-check(setequal(names(e$H3$measures), c("s1_long", "s4_cognitive", "m_cyclomatic", "c_gini", "c_wmc", "c_lcom_star")),
-      "H3 is read on its six measures, each alone")
-check(e$H3$measures$c_wmc$at == "class" && e$H3$measures$s4_cognitive$at == "method",
-      "H3's measures are read at their own level")
+check(setequal(names(e$H6$measures), c("s1_long", "s4_cognitive", "m_cyclomatic", "c_gini", "c_wmc", "c_lcom_star")),
+      "H6 is read on its six measures, each alone")
+check(e$H6$measures$c_wmc$at == "class" && e$H6$measures$s4_cognitive$at == "method",
+      "H6's measures are read at their own level")
 check(!is.null(e$reported$shape_joint$measures$s4_cognitive$irr), "the block as first registered is reported")
-check(is.null(e$H3$measures$s3_junction), "the junction is not among H3's shape measures")
+check(is.null(e$H6$measures$s3_junction), "the junction is not among H6's shape measures")
 check(e$reported$sinew$s3_junction$method$irr_lower > 1 && e$reported$sinew$s3_junction$class$irr_lower > 1,
       "the junction, simulated to be followed by more intrusion, is reported as such")
 check(abs(log(e$reported$sinew$s2_stuck$method$irr)) < 0.1, "not slimmable, simulated unrelated, is reported near 1")
@@ -377,74 +377,74 @@ for (lev in c("intrusion_class", "intrusion_method")) {
 check(e$reported$intrusion_rows$bound < e$reported$intrusion_rows$all, "intrusion is read on the bound rows only")
 check(abs(log(e$reported$reopen_with_wiring$irr) - log(1 / 3)) < 0.15, "reopening is reported, near the true ratio")
 check(!is.null(e$reported$bindings_any_change_class$irr), "H2 on any later change is reported")
-check(abs(e$reported$H1_levels$function_arm$estimate) < 0.01, "the function arm's slope is reported, near flat")
+check(abs(e$reported$H3_levels$function_arm$estimate) < 0.01, "the function arm's slope is reported, near flat")
 check(abs(e$reported$needed_arm$estimate) < 0.05, "the arms need the same")
 check(e$reported$capture_spring$lower > 0, "capture is recovered in the methods arm")
-check(e$reported$H1_bindings$log_host$lower > 0, "H1 as first registered (bindings) is reported")
+check(e$reported$H3_bindings$log_host$lower > 0, "H3 as first registered (bindings) is reported")
 check(e$reported$H4_bindings$arm$upper < 0, "H4 as first registered (bindings) is reported")
 check(e$reported$H4_bindings$centre_positions > 3 && e$reported$H4_bindings$centre_positions < 120,
       "the binding-based H4's host size is centred within the data")
 check(e$reported$H4_arm_at[["50"]]$estimate < e$reported$H4_arm_at[["10"]]$estimate,
       "the arm difference in bindings widens with host size, as simulated")
-check(isTRUE(e$checkpoint_intercept$H1) && isTRUE(e$checkpoint_intercept$H4) &&
+check(isTRUE(e$checkpoint_intercept$H3) && isTRUE(e$checkpoint_intercept$H4) &&
       isTRUE(e$checkpoint_intercept$H2_class), "the models carry the checkpoint's intercept")
 check(e$reported$formation_lagged_spring$lower > 0, "the lagged formation term is recovered")
 check(!is.null(e$reported$junction_x_arm_s3_junction$irr), "junction x arm is estimated")
-check(e$reported$H1_without_injected$log_host$lower > 0, "H1 (bindings) without injected dependencies is estimated")
-check(!is.null(e$reported$H1_class_level_without_injected$log_class$estimate),
-      "class-level H1 (bindings) without injected dependencies is estimated")
+check(e$reported$H3_without_injected$log_host$lower > 0, "H3 (bindings) without injected dependencies is estimated")
+check(!is.null(e$reported$H3_class_level_without_injected$log_class$estimate),
+      "class-level H3 (bindings) without injected dependencies is estimated")
 check(!is.null(e$reported$H4_without_injected$slope$estimate), "H4 (bindings) without injected dependencies is estimated")
 check(!is.null(e$reported$bindings_without_injected_class$irr), "H2 without injected dependencies is estimated")
 for (lev in c("class", "method")) {
-  x <- e$H5[[lev]]
+  x <- e$H1[[lev]]
   check(!is.null(x$irr) && x$irr_upper < 1 && x$p_less < 0.05 && abs(log(x$irr) - log(1 / 3)) < 0.45,
-        paste("H5 recovers the falling alternatives, below 1, at the", lev, "(ratio", signif(x$irr, 3), "interval",
+        paste("H1 recovers the falling alternatives, below 1, at the", lev, "(ratio", signif(x$irr, 3), "interval",
               signif(x$irr_lower, 3), signif(x$irr_upper, 3), "p", signif(x$p_less, 3), x$interval, ")"))
   check(x$interval == "cluster bootstrap" && !is.null(x$wald$irr),
-        paste("H5 is decided on the cluster bootstrap, the Wald reading beside it, at the", lev))
-  check(e$reported[[paste0("H5_margin_", lev)]]$irr_upper < 1.25,
-        paste("H5 against the upper margin, as it stood, is reported, at the", lev))
-  check(abs(log(e$reported[[paste0("H5_function_arm_", lev)]]$irr)) < 0.3,
+        paste("H1 is decided on the cluster bootstrap, the Wald reading beside it, at the", lev))
+  check(e$reported[[paste0("H1_margin_", lev)]]$irr_upper < 1.25,
+        paste("H1 against the upper margin, as it stood, is reported, at the", lev))
+  check(abs(log(e$reported[[paste0("H1_function_arm_", lev)]]$irr)) < 0.3,
         paste("the function arm's flat alternatives are reported, at the", lev))
-  check(!is.null(e$reported[[paste0("H5_spread_", lev)]]$methods$forced), paste("the share forced is reported,", lev))
+  check(!is.null(e$reported[[paste0("H1_spread_", lev)]]$methods$forced), paste("the share forced is reported,", lev))
   check(length(e$reported[[paste0("H2_core_width_", lev)]]) > 0, paste("the core's width is reported,", lev))
 }
-h5c <- e$H5$contrast
-check(abs(log(h5c$arm$irr) - log(0.1 / sqrt(0.27))) < 0.35 && h5c$arm$irr_upper < 1 && h5c$arm$interval == "cluster bootstrap",
-      "H5's arm contrast recovers fewer forced placements in the function arm half-way through")
-check(abs(log(h5c$trend$irr) - log(1 / 3)) < 0.6 && h5c$trend$irr_upper < 1, "H5's arm contrast recovers forcing rising less in the function arm")
-check(abs(log(h5c$methods_rise$irr) - log(3)) < 0.35, "the methods arm's forcing tripling over the stream is reported")
+h1c <- e$H1$contrast
+check(abs(log(h1c$arm$irr) - log(0.1 / sqrt(0.27))) < 0.35 && h1c$arm$irr_upper < 1 && h1c$arm$interval == "cluster bootstrap",
+      "H1's arm contrast recovers fewer forced placements in the function arm half-way through")
+check(abs(log(h1c$trend$irr) - log(1 / 3)) < 0.6 && h1c$trend$irr_upper < 1, "H1's arm contrast recovers forcing rising less in the function arm")
+check(abs(log(h1c$methods_rise$irr) - log(3)) < 0.35, "the methods arm's forcing tripling over the stream is reported")
 check(!is.null(e$reported$H2_class_fields$irr), "H2 at the class on its fields only is reported")
-check(e$reported$H5_method_by_type$irr > 1, "H5 by type alone over the whole tree, simulated rising, is reported as such")
-check(abs(e$reported$H5_flow$followed - 0.8) < 1e-9, "the share of calls followed is reported")
-check(abs(log(e$reported$H6_rise$irr) - log(2)) < 0.3 && e$reported$H6_rise$irr_lower > 1, "the spread doubling over the stream is reported")
-check(abs(log(e$reported$H6_rise_forced$irr) - log(2)) < 0.45 && abs(log(e$reported$H6_rise_unforced$irr) - log(2)) < 0.45,
+check(e$reported$H1_method_by_type$irr > 1, "H1 by type alone over the whole tree, simulated rising, is reported as such")
+check(abs(e$reported$H1_flow$followed - 0.8) < 1e-9, "the share of calls followed is reported")
+check(abs(log(e$reported$H7_rise$irr) - log(2)) < 0.3 && e$reported$H7_rise$irr_lower > 1, "the spread doubling over the stream is reported")
+check(abs(log(e$reported$H7_rise_forced$irr) - log(2)) < 0.45 && abs(log(e$reported$H7_rise_unforced$irr) - log(2)) < 0.45,
       "the rise in forced and in unforced units is reported apart")
-check(abs(log(e$H6$forced$irr) - log(1.5)) < 0.25 && e$H6$forced$irr_lower > 1, "H6 recovers forced units spreading wider at the same size")
-check(is.numeric(e$H6$forced$p_upper) && e$H6$forced$level == 0.90 && e$H6$margin[2] == 1.25 &&
-        e$H6$forced$p_upper > 0.5, "H6 is tested against the upper margin, 90% interval: a simulated spread of 1.5 is not shown below it")
-check(e$reported$H6_forced_without_size$irr > e$H6$forced$irr * 1.2, "without the change's size, the forced ratio is inflated, as simulated")
-check(abs(log(e$reported$H6_function_arm$irr)) < 0.35, "the function arm's flat spread is reported")
-check(!is.null(e$reported$H6_spread$methods$thirds_classes), "the spread per third is reported")
-check(abs(log(e$reported$H6_pair_coupling$irr) - log(3)) < 0.35, "the rising coupling of pairs changed together is recovered")
-check(is.null(e$reported$H7_retired_forced) && is.null(e$H7$forced), "the old H7 is gone")
+check(abs(log(e$H7$forced$irr) - log(1.5)) < 0.25 && e$H7$forced$irr_lower > 1, "H7 recovers forced units spreading wider at the same size")
+check(is.numeric(e$H7$forced$p_upper) && e$H7$forced$level == 0.90 && e$H7$margin[2] == 1.25 &&
+        e$H7$forced$p_upper > 0.5, "H7 is tested against the upper margin, 90% interval: a simulated spread of 1.5 is not shown below it")
+check(e$reported$H7_forced_without_size$irr > e$H7$forced$irr * 1.2, "without the change's size, the forced ratio is inflated, as simulated")
+check(abs(log(e$reported$H7_function_arm$irr)) < 0.35, "the function arm's flat spread is reported")
+check(!is.null(e$reported$H7_spread$methods$thirds_classes), "the spread per third is reported")
+check(abs(log(e$reported$H7_pair_coupling$irr) - log(3)) < 0.35, "the rising coupling of pairs changed together is recovered")
+check(is.null(e$reported$H5_retired_forced) && is.null(e$H5$forced), "the old H5 is gone")
 check(identical(e$coupled_arm$interval, "cluster bootstrap"),
       "H8's calls across the encapsulation are decided on the cluster bootstrap")
-check(abs(log(e$H7$arm$irr) - log(0.6)) < 0.2 && e$H7$arm$irr_upper < 1 && e$H7$arm$interval == "cluster bootstrap",
-      "H7 recovers the function arm's 0.6 times the links for the same logic, on the cluster bootstrap")
-check(abs(log(e$H7$trend$irr) - log(0.5)) < 0.3 && e$H7$trend$irr_upper < 1 && e$H7$trend$interval == "cluster bootstrap",
-      "H7 recovers the gap widening over the stream (the trend ratio 0.5)")
-check(abs(log(e$reported$H7_methods_rise$irr) - log(2)) < 0.3, "the methods arm's links doubling over the stream is reported")
-check(abs(e$reported$H7_logic$estimate - 0.8) < 0.15, "links rising as logic^0.8 is recovered")
-check(is.null(e$reported$H7_kinds$flow$arm) && !is.null(e$reported$H7_kinds$call$arm$irr),
+check(abs(log(e$H5$arm$irr) - log(0.6)) < 0.2 && e$H5$arm$irr_upper < 1 && e$H5$arm$interval == "cluster bootstrap",
+      "H5 recovers the function arm's 0.6 times the links for the same logic, on the cluster bootstrap")
+check(abs(log(e$H5$trend$irr) - log(0.5)) < 0.3 && e$H5$trend$irr_upper < 1 && e$H5$trend$interval == "cluster bootstrap",
+      "H5 recovers the gap widening over the stream (the trend ratio 0.5)")
+check(abs(log(e$reported$H5_methods_rise$irr) - log(2)) < 0.3, "the methods arm's links doubling over the stream is reported")
+check(abs(e$reported$H5_logic$estimate - 0.8) < 0.15, "links rising as logic^0.8 is recovered")
+check(is.null(e$reported$H5_kinds$flow$arm) && !is.null(e$reported$H5_kinds$call$arm$irr),
       "each kind of link is reported; flow links, none in the methods arm, have no ratio")
 check(abs(log(e$coupled_arm$irr) - log(1 / 1.4)) < 0.3,
       "the arms' ratio in calls added at the same change size (Run D's dispersion test) is estimated")
 check(e$H2$class$interval == "cluster bootstrap" && e$H4$intrusion_class$interval == "cluster bootstrap",
       "H2 and H4's intrusion ratios are decided on the cluster bootstrap")
-check(setequal(names(e$reported$H3_with_coupling$measures),
+check(setequal(names(e$reported$H6_with_coupling$measures),
                c("s1_long", "s4_cognitive", "m_cyclomatic", "m_fanout", "c_gini", "c_wmc", "c_lcom_star")),
-      "H3's sensitivity reading puts the literature's coupling measures back")
+      "H6's sensitivity reading puts the literature's coupling measures back")
 sx <- e$reported$surface$spring
 check(abs(sx$across$estimate - 0.7) < 0.1, "the exponent across classes is recovered")
 check(abs(sx$within$estimate - 1.3) < 0.25, "the exponent within a growing class is recovered")

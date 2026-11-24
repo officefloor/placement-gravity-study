@@ -114,7 +114,7 @@ def _line(g: flow.Graph, c: str) -> set[str]:
 
 def calls(index: dict, theirs: dict) -> dict:
     """The instrument's calls and field reads of one tree against the compiler's (see the module's
-    text). ``cross_*`` are those that leave the method's class: what H6 and H7 count."""
+    text). ``cross_*`` are those that leave the method's class: what H7 and H5 count."""
     g = flow.Graph(index)
     paths = [p for p, f in index.get("files", {}).items() for _ in f.get("methods", [])]
     bodies: dict[str, set[str]] = {}

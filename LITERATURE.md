@@ -4,6 +4,9 @@ Searched 15 November 2026. Each entry was checked against an index record (DOI, 
 publisher). Where only a secondary source was found, it says so. **Check before quoting** marks
 items whose exact wording or figures were not read in the full text.
 
+The hypotheses are numbered as in the plan since 24 November 2026 (its §9 row 93, the story's
+order); notes written earlier have been renumbered to match.
+
 ## 1. The amount is the problem's: essential complexity and conservation
 
 - **Brooks (1987)** separates essential complexity (the problem's) from accidental complexity
@@ -18,7 +21,7 @@ items whose exact wording or figures were not read in the full text.
   primary paper by Tesler was found. It is a precedent for *conserved amount* in spirit only;
   cite it as such. **Check before quoting.**
 - **Lehman (1980)**, the law of increasing complexity: an evolving system's complexity rises
-  unless work is done to reduce it. H1 is a mechanism for this law: forced placement compounds.
+  unless work is done to reduce it. H3 is a mechanism for this law: forced placement compounds.
 - **Eick et al. (2001)**, code decay: the *span* of changes (files touched per change) increases
   over time in a 15-year telephone-switch system. This is the closest empirical result to
   "growth makes later changes spread"; it is measured on files, not on placement.
@@ -52,7 +55,7 @@ items whose exact wording or figures were not read in the full text.
   is what happens to the minority that lands in existing hosts, and whether that minority grows
   as hosts grow.
 - **Tufano et al. (2015):** over 200 projects, smells are mostly present from a unit's creation,
-  not acquired gradually, and deadline pressure is a common cause. This threatens H1's accretion
+  not acquired gradually, and deadline pressure is a common cause. This threatens H3's accretion
   story and is why the plan also measures pull at creation (§4.3, new methods taking existing
   state as parameters).
 - **Chowdhury (2025):** highly change-prone methods can be predicted at their inception from
@@ -222,7 +225,7 @@ result is "not found by this protocol", not "does not exist".**
 
 | Work | What it does | How it differs from this study |
 |---|---|---|
-| Passos et al. 2015; 2018 (Linux feature scattering) | Follows *each feature's* scattering over about 8 years of the kernel. The median scattering stays constant and low; platform-driver features scatter about 2.5× more. | **The closest per-problem longitudinal study.** But a "feature" is a configuration option (`#ifdef`), not a change request; it measures where code *ended up*; it does not ask whether placement was forced. Its flat median scattering is a useful counterpoint to H1. |
+| Passos et al. 2015; 2018 (Linux feature scattering) | Follows *each feature's* scattering over about 8 years of the kernel. The median scattering stays constant and low; platform-driver features scatter about 2.5× more. | **The closest per-problem longitudinal study.** But a "feature" is a configuration option (`#ifdef`), not a change request; it measures where code *ended up*; it does not ask whether placement was forced. Its flat median scattering is a useful counterpoint to H3. |
 | Queiroz et al. 2014; 2017 (shape of feature code) | Feature scattering follows a power law in 14 of 20 preprocessor systems; tangling does not. | Concentration as a distribution, not a mechanism. It supports the plan's choice not to use thresholds on centrality statistics. |
 | Bouwers, van Deursen and Visser 2014 (encapsulation from history) | Classifies each change-set as *local* (one component) or *non-local*, and compares 12 snapshot metrics against the local ratio. | A per-change containment measure, close to §4.4's containment. It does not separate a problem's intended crossings from placement-caused ones. |
 | Wong, Cai, Kim and Dalton 2011 (Clio, modularity violations) | Flags co-changes that the designed module structure does not predict. Many were later recognised or refactored by developers. | **The closest to "declared against undeclared crossings"**, but the declaration is the design structure, not the stream of requirements. It reads violations after the fact, and has no notion of forced placement. |
@@ -254,7 +257,7 @@ result is "not found by this protocol", not "does not exist".**
    al. 2007; Steidl and Deissenboeck 2015; Khomh et al. 2012). Passos et al. find per-feature
    scattering flat over 8 years. No study found tests whether *new code is held* in large hosts
    by their existing data, or whether that hold strengthens. **Claim:** new as a mechanism.
-   Present H1 against Vasa (change concentrates) and Passos (scattering stays flat) as the two
+   Present H3 against Vasa (change concentrates) and Passos (scattering stays flat) as the two
    readings it must separate.
 4. **Forcing, not concentration, does the harm.** *Not found as stated.* Olbrich et al. (2010)
    show concentration is not harmful per line. Clio shows unpredicted co-change marks real
@@ -279,12 +282,12 @@ result is "not found by this protocol", not "does not exist".**
 
 All five were applied to `PLAN.md` on 15 November 2026 (§1, §2 H2, §4.3, §4.4 and §7).
 
-### Novelty check for H1 and H2 as restated, 18 November 2026
+### Novelty check for H3 and H2 as restated, 18 November 2026
 
 The check above searched the vocabulary of the plan as it stood on 15 November: pull, forcing,
-placement. H1 and H2 have since been restated on **bystanders** (the pre-existing values visible
+placement. H3 and H2 have since been restated on **bystanders** (the pre-existing values visible
 where added code lands that it does not use) and on **which of those values later code is bound
-to** (`PLAN.md` §2, §4.3a, §4.4), and H3 made one-sided. The verdicts on claims 3 and 4 above were
+to** (`PLAN.md` §2, §4.3a, §4.4), and H6 made one-sided. The verdicts on claims 3 and 4 above were
 for the earlier wording. This is the same check run again for the claims as they now stand.
 
 **Protocol, as run.**
@@ -328,29 +331,29 @@ accessibility) that do not cite each other.
 
 | Work | What it does | How it differs from the restated claims |
 |---|---|---|
-| Schach et al. 2002; Yu, Schach, Chen and Offutt 2004 (common coupling in the Linux kernel) | Count the instances of common coupling (modules sharing global data) over 365 versions of Linux; they grow exponentially with the version while the lines of code grow linearly (as reported in the abstract). Yu et al. categorise the coupling by definition and use. Selby et al. (2007) cite this line for *clandestine* coupling, introduced into a module without any change to it. | **The closest precedent for H1.** It is data that gathers and exposes code that did not ask for it. But it is global data between modules of C, counted per version; not the values visible at the place one addition lands, split into needed and not needed, and not followed within a class or a method. |
+| Schach et al. 2002; Yu, Schach, Chen and Offutt 2004 (common coupling in the Linux kernel) | Count the instances of common coupling (modules sharing global data) over 365 versions of Linux; they grow exponentially with the version while the lines of code grow linearly (as reported in the abstract). Yu et al. categorise the coupling by definition and use. Selby et al. (2007) cite this line for *clandestine* coupling, introduced into a module without any change to it. | **The closest precedent for H3.** It is data that gathers and exposes code that did not ask for it. But it is global data between modules of C, counted per version; not the values visible at the place one addition lands, split into needed and not needed, and not followed within a class or a method. |
 | Selby, Ruffell, Giesbrecht and Godfrey 2007 (global data and maintainability) | Over the releases of several large systems, files with more references to global variables have more revisions and more lines changed (a significant positive correlation). | **The closest precedent for H2 in outcome.** Data use goes with later change. It counts references a file already has, at file level; it does not ask whether later code arrives because of data that stood by, nor which values it uses. |
 | Vidal, Bergel, Marcos and Díaz-Pace 2016 (over-exposed methods); Vidal, Bergel, Díaz-Pace and Marcos 2016 (over-exposed classes) | At least 20% of methods and about 25% of classes in open-source Java are declared more accessible than their use requires; 90% of over-exposed classes are so from their first version (abstracts). | **The closest relative of the bystander as an idea:** visible beyond what is used. But it is the declared accessibility of a member to *other* classes, mostly a snapshot, with no link to where later code goes. |
 | Ruland et al. 2018 (attack surface of refactorings) | Treats the declared accessibility of class members as an attack surface to be minimised when refactorings are searched for. | Exposure as a quantity to control, for security; not measured at the point of a change, and not followed. |
-| Counsell and Nasseri 2010 (evolution at the attribute level) | Net attributes added per version in three Java systems: some arrive with new classes, some alone, and additions go with refactoring activity. | Classes gain fields over time: the raw material of H1's class level. No account of what the fields are visible to or who later uses them. |
-| Vaucher et al. 2009; Chatzigeorgiou and Manakos 2010; Tufano et al. 2015 (life cycle of god classes and smells) | God classes mostly arise by new functionality accumulating over versions; smells persist once present; most are there from a unit's creation. | The accretion H1 describes, seen at the level of the detector's verdict. None measures the data a new addition finds around it, and none tests a mechanism. Already in the plan (§7, *Smells born, not grown*). |
+| Counsell and Nasseri 2010 (evolution at the attribute level) | Net attributes added per version in three Java systems: some arrive with new classes, some alone, and additions go with refactoring activity. | Classes gain fields over time: the raw material of H3's class level. No account of what the fields are visible to or who later uses them. |
+| Vaucher et al. 2009; Chatzigeorgiou and Manakos 2010; Tufano et al. 2015 (life cycle of god classes and smells) | God classes mostly arise by new functionality accumulating over versions; smells persist once present; most are there from a unit's creation. | The accretion H3 describes, seen at the level of the detector's verdict. None measures the data a new addition finds around it, and none tests a mechanism. Already in the plan (§7, *Smells born, not grown*). |
 | Baumgartner and Pulvermüller 2025 (data clumps over time) | A longitudinal analysis of data clumps (groups of fields or parameters that travel together) across public repositories; a search summary of the authors' earlier conference paper says clumps remain or accumulate. **Abstract not seen.** | Method and class data that gathers, followed over history. A clump is data *used together*, the opposite side from a bystander. |
 | Chaikalis and Chatzigeorgiou 2015; Lin and Whitehead 2015 (preferential attachment in Java evolution) | Model the growth of class dependency networks: new relations attach to classes in proportion to those they have, damped by age; fine-grained changes simulated this way give the observed power laws. | **The aggregate pattern H2 would explain.** Rich-get-richer is fitted to degree in a dependency graph. It does not say what is attached to (data), nor follow the particular values later code uses. A reviewer may read H2 as preferential attachment under another name. |
 | Tsantalis and Chatzigeorgiou 2009; Kiss and Mihancea 2018 (entity placement; feature envy at block level) | Where a method, or a block, belongs given the entities it accesses. | Already the nearest relative of the binding (first check, claim 2). It reads what code uses, on a snapshot; the bystander is what it does not use. |
 | Chidamber and Kemerer 1994; Mitchell and Power 2004 (LCOM and its run-time variant) | Lack of cohesion counts the fields of a class that its methods do not share; the run-time variant counts only fields actually accessed. | **A structural relative the plan does not yet name.** A run's class bystanders are, for one piece of added code, the fields of its class it does not use: the per-addition, at-the-commit form of the quantity LCOM sums over a class. LCOM is a snapshot of the whole class and says nothing about what later code is bound to. |
-| Zhou, Leung and Xu 2009; Chowdhury et al. 2022b (size, metrics and change-proneness) | Zhou et al.: on Eclipse, class size accounts for, or reverses, the association of many object-oriented metrics with change-proneness. Chowdhury et al.: at method level, metrics still help estimate change-proneness once size is removed, and dividing by size does not remove it. | **Both sides of H3.** The first is H3's result for size at the class; the second disputes it at the method. Neither holds the problem fixed or controls for the data in the place. |
+| Zhou, Leung and Xu 2009; Chowdhury et al. 2022b (size, metrics and change-proneness) | Zhou et al.: on Eclipse, class size accounts for, or reverses, the association of many object-oriented metrics with change-proneness. Chowdhury et al.: at method level, metrics still help estimate change-proneness once size is removed, and dividing by size does not remove it. | **Both sides of H6.** The first is H6's result for size at the class; the second disputes it at the method. Neither holds the problem fixed or controls for the data in the place. |
 | Feitelson 2023 (local variables of narrow and broad scope) | Scope of 637,077 Java locals against the length and wording of their names. | Scope measured at scale, for naming. No link to change. |
 
 **Verdict, claim by claim.**
 
-1. **H1, places fill with data that added code does not use, within a class and a method.**
+1. **H3, places fill with data that added code does not use, within a class and a method.**
    *The growth is known in aggregate; the measure and the unit were not found.* That shared data
    gathers faster than code is the Linux common-coupling result (Schach et al.; Yu et al.), and
    classes gaining attributes and god classes forming by accretion are documented (Counsell and
    Nasseri; Vaucher et al.). Visibility beyond use is documented for access modifiers (Vidal et
    al.). No study found measures, at the commit where code lands, what was visible there and not
    used, or follows that within one class and one method. **Claim:** new as a measure and as a
-   unit; **not** new as the observation that classes and shared state grow. H1 should be presented
+   unit; **not** new as the observation that classes and shared state grow. H3 should be presented
    as the per-addition, per-place form of the common-coupling growth result, and set beside LCOM,
    of which the class-level bystander is the per-addition component.
 2. **H2, later code is bound to the data that stood by.** *Not found.* The nearest are a
@@ -361,7 +364,7 @@ accessibility) that do not cite each other.
    distinctive of the four. It needs to say why it is more than preferential attachment: it names
    what is attached to, and the plan's size-or-data reading is where the two are set apart (on the
    development chain that reading did not separate them).
-3. **H3, shape does not draw code in once the problem, the bindings and the bystanders are held
+3. **H6, shape does not draw code in once the problem, the bindings and the bystanders are held
    fixed (one-sided).** *Substantially anticipated for size; contested at the method.* Zhou et al.
    (2009) and El Emam et al. (2001) show size accounting for metric associations at the class;
    Olbrich et al. (2010) the same for god classes; Chowdhury et al. (2022b) report the opposite at
@@ -380,13 +383,13 @@ accessibility) that do not cite each other.
 - Cite the Linux common-coupling studies in §1 and §4.3a as the precedent for data that gathers
   and exposes code without the code changing, and state how a bystander differs.
 - Name LCOM in §4.3a. The plan says (§7 of this file) that it does not measure cohesion, yet a
-  class-level bystander count is a cohesion-like quantity, and H3 now tests LCOM* as a *shape*
-  measure beside it. A reviewer will ask how H2's predictor and one of H3's measures differ; the
+  class-level bystander count is a cohesion-like quantity, and H6 now tests LCOM* as a *shape*
+  measure beside it. A reviewer will ask how H2's predictor and one of H6's measures differ; the
   answer (per addition against whole class; visible to this code against shared between methods)
   should be written down.
 - Add preferential attachment to §7 as the rival reading of H2, with the size-or-data reading as
   the check.
-- Cite Zhou et al. 2009 and Chowdhury et al. 2022b at H3 as the two sides; Chowdhury et al. is
+- Cite Zhou et al. 2009 and Chowdhury et al. 2022b at H6 as the two sides; Chowdhury et al. is
   already in the references.
 - Cite the over-exposure studies as the nearest "visible beyond use" measure.
 
@@ -403,7 +406,7 @@ hypotheses:
    the forced class against calls added across class boundaries, split by whether the callee was
    already exposed, newly exposed, or widened in access.
 2. **Forced changes spread** across more classes and raise the coupling between the classes that
-   change together (H6 and H7).
+   change together (H7 and H5).
 3. **Surface against volume.** A class's boundary (calls in and out) against its size (the
    content it encapsulates), followed over time, with a scaling exponent: concentration lowers
    surface per volume, dispersion raises it, and good engineering is the balance point. With it, a
@@ -460,7 +463,7 @@ is "not found by this protocol", not "does not exist".
 | Kobori, Matsushita and Inoue 2015 (accessibility excessiveness over versions, SANER) | Runs an accessibility-excessiveness checker across releases of several OSS projects and reports how fields and methods move between excessive and not, by major against minor release (abstract). | **The nearest to measuring widening over evolution.** Per release and per member, not per change; it does not ask which change made a member wider or whether that change also needed the class's data. |
 | Vidal et al. 2016 (already cited); Steimann and Thies 2009 (*From public to private to absent*, ECOOP) | Over-exposure is common and mostly present from a member's first version; changes of access modifier are reported as infrequent (cited in Vidal et al., **source not traced**). Steimann and Thies formalise the accessibility constraints that moving members imposes, so refactorings must sometimes widen access (**index record only**). | Together they bound idea 1's widening branch: widening exists, is rare per member, and is a known side effect of moves. None links a widening to the change that needed it. |
 | Paixão et al. 2017 (ASE, already cited); Eick et al. 2001 (already cited) | Per-commit cohesion and coupling deltas; span of changes grows over time. | Measure the *outcome* of ideas 1–2 per commit. No forced/unforced split. |
-| Ajienka and Capiluppi 2017 (JSS); Oliva and Gerosa (cited by them); Beck and Diehl 2011 (FSE) | 79 projects: structural and logical (co-change) coupling overlap little; co-changed sets are much larger than structurally coupled ones (abstract and secondary). Beck and Diehl: which coupling kinds (structural, co-change, ownership, clones, semantics) agree with the package structure in 16 projects (abstract). | Background for H6/H7: co-change and structural coupling are different things, so "coupling between co-changed classes" must say which it means. |
+| Ajienka and Capiluppi 2017 (JSS); Oliva and Gerosa (cited by them); Beck and Diehl 2011 (FSE) | 79 projects: structural and logical (co-change) coupling overlap little; co-changed sets are much larger than structurally coupled ones (abstract and secondary). Beck and Diehl: which coupling kinds (structural, co-change, ownership, clones, semantics) agree with the package structure in 16 projects (abstract). | Background for H7/H5: co-change and structural coupling are different things, so "coupling between co-changed classes" must say which it means. |
 | Silva, Valente and Maia 2014; 2015 (co-change clusters); de Oliveira et al. 2019 (JSS, *Finding needles in a haystack*); Bavota, De Lucia and Oliveto 2011 (JSS, Extract Class from structural and semantic cohesion); Chen et al. 2024 (ASE, ClassSplitter) | Co-change clusters projected on packages to assess modularity; Move Method/Move Field recommended to remove co-change dependencies across classes (610 "evolutionary smells" in 49 projects); classes split by clustering methods on shared fields and semantics; god classes split using method position. (Abstracts or snippets.) | **Idea 3's split-or-concentrate reading is well established** as refactoring recommendation: split on disjoint data use, move or merge on co-change. What none does is restrict the evidence to *forced* changes. |
 | Mancoridis et al. 1998; Mitchell and Mancoridis 2006 (Bunch, TSE); Harman, Hierons and Proctor 2002; Praditwong, Harman and Yao 2010 (TSE); Paixão, Harman, Zhang and Yu 2017 (IEEE TEVC) | Modularisation as search maximising cohesion and minimising coupling (with granularity); multi-objective forms. The longitudinal study over 233 releases of ten systems: developers' structures beat random on the cohesion/coupling fitness but leave about 25% improvement, and optimising would change over 57% of the structure (abstract). | **Idea 3's "balance point" as an optimum is known** and has an operational form. It optimises a static graph; it does not derive the trade from forced changes, and treats size only as granularity. Paixão et al. 2017 TEVC is the longitudinal comparison to cite. |
 | Razina and Janzen 2007; Sun et al. 2022 (*Computers* 11(9)) | Twenty pairs of SourceForge projects with and without dependency injection: no correlation of DI use with coupling or cohesion, a trend to lower coupling above 10% DI (abstract). Sun et al. propose DI-weighted CBO (abstract). | The only DI-against-not comparisons found; project-level, not about placement, and not size against coupling. |
@@ -476,7 +479,7 @@ is "not found by this protocol", not "does not exist".
    of positions absorbed against calls added, split by the callee's prior, new or widened
    exposure. **Claim:** new as a measure; present it as connascence locality made measurable at
    the commit.
-2. **Forced changes spread and raise co-change coupling (H6/H7).** *Outcome measures known;
+2. **Forced changes spread and raise co-change coupling (H7/H5).** *Outcome measures known;
    predictor not found.* Change span (Eick), per-commit coupling deltas (Paixão et al. ASE) and
    the gap between logical and structural coupling (Ajienka and Capiluppi) exist. No study
    separates forced from unforced changes. **Claim:** new in its predictor, as for the first
@@ -530,9 +533,9 @@ changes are infrequent (traced only to a citation inside Vidal et al.).
 The checks above were made mostly from abstracts, index records and search snippets. This is the
 full read of the works they lean on, for the hypotheses as they stand after §9 rows 65–67 of
 `PLAN.md`: encapsulation is the force (forced = bound at the class to a private field, method or
-constant); a forced change concentrates (H2, a core draws code in) or disperses (H7, forced
-changes couple); choice narrows (H5); function injection removes the force (H4); and the
-literature's two readings, shape (H3) and co-change spread (H6, as restated: spread does not see
+constant); a forced change concentrates (H2, a core draws code in) or disperses (H5, forced
+changes couple); choice narrows (H1); function injection removes the force (H4); and the
+literature's two readings, shape (H6) and co-change spread (H7, as restated: spread does not see
 the force once change size is held fixed), are predicted not to see it.
 
 **Protocol, as run.** The reading was done on 22 November 2026 (dated here by the decision of 21
@@ -606,7 +609,7 @@ paired problem streams to study design structure
   an Update of a Private part, that change will be local ... If you expose the private part through
   a Get/Set, the Update won't be local anymore". Together: hiding decides which unit new code is
   drawn to, and exposing the hidden part turns a local change into a non-local one. That is H2's
-  concentration and H7's dispersion-by-widening, stated as design argument, for components and
+  concentration and H5's dispersion-by-widening, stated as design argument, for components and
   for likely changes, with no classification of changes and no measurement.
 - *Code that enumerates a class's data grows with it.* Ch. 14 (February 2011), the "Enumeration
   Law": "every artifact ... that is enumerating over the members of set by name is U-U entangled
@@ -634,12 +637,12 @@ paired problem streams to study design structure
 concentration, the conservation remark, the actor-independence principle, and, in two posts, the
 argument that hiding concentrates change and exposing disperses it. He does not propose
 encapsulation as *the* force (for him hiding separates, and gravity is size), does not classify
-changes as forced or chosen, has nothing like H5, and measures nothing. His gravity is
+changes as forced or chosen, has nothing like H1, and measures nothing. His gravity is
 attraction by mass, which is the rival reading the plan holds fixed (host size, preferential
-attachment) when it tests H2, and he later attributed it to co-change, the measure H6 predicts
+attachment) when it tests H2, and he later attributed it to co-change, the measure H7 predicts
 not to see the force.
 
-**2. The change-coupling literature that H6 now argues against.** Six works; the questions were
+**2. The change-coupling literature that H7 now argues against.** Six works; the questions were
 whether any claims that co-change reveals the cause, controls for change size, or distinguishes
 forced changes, and whether "spread does not see the force" contradicts any finding.
 
@@ -648,7 +651,7 @@ forced changes, and whether "spread does not see the force" contradicts any find
   decomposition structure of the application should be reconsidered and possibly restructured"
   (§2); the technique "reveals hidden dependencies ... identifies modules that should undergo
   restructuring" (§6). Asserted, illustrated with examples, not tested. No size control. One
-  observation fits H6: subsystem C "was continuously growing over the 20 releases ... but this fact
+  observation fits H7: subsystem C "was continuously growing over the 20 releases ... but this fact
   is not reflected in a high logical coupling with other subsystems" (§5); growth by concentration
   was invisible to cross-boundary co-change.
 - *Zimmermann et al. 2005.* Predictive only: the mined rules "describe the factual software
@@ -685,11 +688,11 @@ assumption; Palomba: misplaced responsibility and low cohesion, with counter-exa
 oracle). None tests it. None controls for the size of a change: the nearest is dropping very large
 transactions (more than 25, 30 or 100 entities). None distinguishes changes forced by
 encapsulation; the nearest is Beck and Diehl's aggregate reading of local co-change as
-information hiding. So the restated H6 contradicts no *finding* here; it contradicts the
+information hiding. So the restated H7 contradicts no *finding* here; it contradicts the
 *reading* that co-change spread shows why code is placed where it is. Gall's growing subsystem,
 Palomba's correctly placed co-changing classes and D'Ambros's "number of changes" result are all
 consistent with it, and Ajienka and Capiluppi's asymmetry says why a forced change's cost should
-show more in calls (H7) than in spread.
+show more in calls (H5) than in spread.
 
 **3. Encapsulation and exposure.**
 
@@ -699,7 +702,7 @@ show more in calls (H7) than in spread.
   their creation"; 86% stay over-exposed unchanged; "we could not find evidence that over-exposed
   classes are a major contributor to modularity problems", since new references from outside the
   minimal accessibility "are unusual" (RQ4, RQ5). Exposure is set at creation and seldom used
-  beyond need: H7's dispersion should run mostly through members already exposed, and widening at
+  beyond need: H5's dispersion should run mostly through members already exposed, and widening at
   the moment of a change should be rare, as the development chain found ("members opened" 0.19).
 - *Kobori et al. 2015* (not obtained): reported by Vidal et al. as finding that access-modifier
   changes for methods are infrequent and that over-exposed methods and fields increase over time.
@@ -713,7 +716,7 @@ show more in calls (H7) than in spread.
   information: when you see information leakage, see if you can pull the code together ...
   Benefits of bringing together: Eliminates dependencies"; "Classes Should be Thick ... Lots of
   functionality, yet simple interface"; the goal is "maximize functionality/(interface
-  complexity)". Concentration around shared data, as advice: H2's and H7's mechanism with the
+  complexity)". Concentration around shared data, as advice: H2's and H5's mechanism with the
   opposite valence to "gravity as harm".
 
 **4. Growth and concentration.**
@@ -728,7 +731,7 @@ show more in calls (H7) than in spread.
   modification history"; "The links of highly connected source code entities were not generally
   resolved within-module, and our model indicates that this is due to practical limits on module
   sizes" (§7). The concentrate-or-disperse trade at the level of a degree distribution, with size
-  limits as the reason for dispersion. Supports holding tail coupling fixed in H7.
+  limits as the reason for dispersion. Supports holding tail coupling fixed in H5.
 - *Hatton* (preprint): conservation of token information implies power-law component sizes "no
   matter what they do or how they were built". No coupling or placement. An invariance claim of
   the "regardless of author" kind, about size distributions.
@@ -739,11 +742,11 @@ show more in calls (H7) than in spread.
 - *Preferential attachment* (Chaikalis and Chatzigeorgiou; Lin and Whitehead): not obtained; the
   argument is carried here by Taube-Schock et al. and, informally, by Pescio's gravity.
 
-**5. The H3 contest.** *Chowdhury et al. 2022b* (read in full): dividing a metric by size "fails to
+**5. The H6 contest.** *Chowdhury et al. 2022b* (read in full): dividing a metric by size "fails to
 neutralize the size influence", but with size as a covariate "code metrics are indeed good
 maintenance predictors, even when their correlation with size is neutralized" (RQ3), and McCabe
 "can increase monotonically ... So their performance is not negatively impacted by code size"
-(RQ4). The paper is against H3 at the method, as §10 of 18 November said. *Zhou et al. 2009*: not
+(RQ4). The paper is against H6 at the method, as §10 of 18 November said. *Zhou et al. 2009*: not
 obtained.
 
 **6. Dependency injection.** *Razina and Janzen 2007*: 20 matched pairs; "no correlation was
@@ -805,11 +808,11 @@ access); Schach et al. (exponential against linear, from the report); Taube-Scho
 | Encapsulation is a force: a change bound to a private member is forced into its class | **Partly anticipated as argument; not found as a classification or measure** | Pescio (DSM post 2009: hiding decides which unit new code is drawn to; "Ask not" 2012: a change to a private part stays local). Parnas; Beck and Diehl read local co-change as information hiding, in aggregate. For Pescio, hiding is separation, *against* gravity; nobody calls encapsulation the force. |
 | *Gravity* as the name | **Anticipated as a word, with a different mechanism** | Pescio: attraction by size (mass), later by co-change. The plan's mechanism (binding to particular values, size held fixed) is not his. |
 | H2, a core draws code in | **Still not found** | Nearest: Pescio's Enumeration Law (code enumerating a class's data changes with it) and setters as "sub-gravitational centers"; Selby et al. (already cited). None asks which values later code returns to. |
-| H5, choice narrows | **Still not found** | — |
-| H7, forced changes couple (calls across the boundary; through exposed or widened members) | **Partly anticipated as argument; not found as measure** | Pescio ("expose the private part through a Get/Set, the Update won't be local anymore"); Taube-Schock et al. (size limits push links across modules); Schach et al. ("coupling is a necessary consequence of modularization"). Steimann and Thies: about one class move in seven needs access widened. Vidal et al.: exposure set at creation, rarely used beyond need. |
+| H1, choice narrows | **Still not found** | — |
+| H5, forced changes couple (calls across the boundary; through exposed or widened members) | **Partly anticipated as argument; not found as measure** | Pescio ("expose the private part through a Get/Set, the Update won't be local anymore"); Taube-Schock et al. (size limits push links across modules); Schach et al. ("coupling is a necessary consequence of modularization"). Steimann and Thies: about one class move in seven needs access widened. Vidal et al.: exposure set at creation, rarely used beyond need. |
 | Concentrate or disperse: placement divides a conserved amount between size and coupling | **Partly anticipated as framing; not found as a tested law** | Pescio Ch. 13 ("we don't really change the mass of code"); Loth's Corollary 2.2.2 (internal against crossing dependencies); Ousterhout's notes (bring together on shared information). |
-| H6, co-change spread does not see the force (at fixed change size) | **Not contradicted; not anticipated** | It argues against a reading (Gall; D'Ambros's stated assumption; Palomba's symptom framing), not a finding. No paper of the six controls for change size or distinguishes forced changes. Gall's growing subsystem and Palomba's correctly placed co-change are consistent with it. |
-| H3, shape does not draw code in | **Unchanged: contested at the method** | Chowdhury et al. 2022b against (read); Zhou et al. not obtained. |
+| H7, co-change spread does not see the force (at fixed change size) | **Not contradicted; not anticipated** | It argues against a reading (Gall; D'Ambros's stated assumption; Palomba's symptom framing), not a finding. No paper of the six controls for change size or distinguishes forced changes. Gall's growing subsystem and Palomba's correctly placed co-change are consistent with it. |
+| H6, shape does not draw code in | **Unchanged: contested at the method** | Chowdhury et al. 2022b against (read); Zhou et al. not obtained. |
 | H4, function injection removes the force | **Not anticipated as a paired design** | Razina and Janzen: no project-level difference; Sun et al.: injection raises explicit coupling. |
 | Physics regardless of author | **Partly anticipated as a principle; not tested** | Pescio 2024 (forces unchanged by the actor, human or AI; only efficiency changes); invariance claims "no matter ... how they were built" (Hatton) and "Regardless of maturity, size, modification history" (Taube-Schock et al.), neither varying the author. |
 | Agents as controlled developers on paired problem streams | **Still not found** | Nearest: FeatureArc (agents on evolving features; correctness only). |
@@ -822,10 +825,10 @@ access); Schach et al. (exponential against linear, from the report); Taube-Scho
   preferential-attachment reading H2 holds fixed, not the study's mechanism.
 - The "regardless of author" framing: cite Pescio 2024 (pp. 14–15) as its prior statement, and say
   that the study tests it, with author (person or agent) varied, rather than presenting it as new.
-- H7's prior work: add Pescio's "Ask not what an object is" (get/set makes a private update
+- H5's prior work: add Pescio's "Ask not what an object is" (get/set makes a private update
   non-local), Taube-Schock et al. (module size limits force coupling), and Steimann and Thies's 85%
   against 99%; and Vidal et al.'s persistence figures as the reason widening is expected to be rare.
-- H6: say that it argues against the change-coupling literature's *reading* (cause revealed by
+- H7: say that it argues against the change-coupling literature's *reading* (cause revealed by
   co-change), which D'Ambros et al. themselves call an untested assumption, not against a finding;
   and that the field's only handling of change size is dropping very large transactions (more than
   25, 30 or 100 entities). Gall et al.'s growing but uncoupled subsystem could be cited as an early
@@ -833,7 +836,7 @@ access); Schach et al. (exponential against linear, from the report); Taube-Scho
 - §1's sentence on the size-confounding literature: Chowdhury et al. 2022b should not be cited for
   "many structural metrics carry little information once size is controlled"; El Emam et al. 2001
   (and Zhou et al. 2009, abstract) carry that, and Chowdhury et al. belong on the other side, as
-  H3's own text already places them.
+  H6's own text already places them.
 - H4: Sun et al.'s rise in coupling with injection is the expected direction and could be cited
   where the wiring is said to be "reported, not hidden".
 - The conservation framing: Pescio's Ch. 13 remark and Loth's Corollary 2.2.2 join Tesler and Hatton

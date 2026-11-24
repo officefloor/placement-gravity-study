@@ -5,30 +5,30 @@
 Writes data/analysis/<name>/:
 
 - ``by.csv``: one row per run of added logic that needs at least one pre-existing value, in new
-  hosts and existing ones (H1, H4), with its bystanders (PLAN.md §4.3a): the pre-existing values
+  hosts and existing ones (H3, H4), with its bystanders (PLAN.md §4.3a): the pre-existing values
   visible where it starts that it does not use; and the class and the method it is in.
 - ``capture.csv``: one row per addition, with the share of its positions landing in existing hosts
   and the fields held by the chain's heaviest class at k − 1 (the capture reading).
-- ``h1.csv``: one row per run of added logic into an existing method, with its bindings and its host's
-  size before the addition (H1 and H4 as first registered, reported; the lagged formation term).
+- ``h3.csv``: one row per run of added logic into an existing method, with its bindings and its host's
+  size before the addition (H3 and H4 as first registered, reported; the lagged formation term).
   New methods are left out: a new host has no prior size, so including them would make "more bindings
   in bigger hosts" true by construction.
 - ``reopen.csv``: one row per checkpoint, with the classes its bound code goes back into and the
   wiring files it changes again (reported).
-- ``h2.csv``: one row per problem and host its code went into (H2, H3, H4, the junction × arm
+- ``h2.csv``: one row per problem and host its code went into (H2, H6, H4, the junction × arm
   reading), with what stood by there, the later intrusion at the class and the method, how much of
   it is bound to what stood by, what the change introduced there (§4.3b), the problem's own lines, the problem's size and declared crossings,
   the host's size and its shape at k − 1.
-- ``h6.csv``: one row per unit that placed or edited code, with the classes it did so in and
-  whether a placement in it was forced at the class (H6, PLAN.md §4.2b); ``pairs.csv``: one row
+- ``h7.csv``: one row per unit that placed or edited code, with the classes it did so in and
+  whether a placement in it was forced at the class (H7, PLAN.md §4.2b); ``pairs.csv``: one row
   per unit and pair of classes it changed together, with the calls between them before it.
-- ``h7.csv``: one row per checkpoint and chain, the links between blocks of logic it added (call,
-  state, flow) and the logic it added (H7, surface against volume, PLAN.md §4.2c, restated 24
+- ``h5.csv``: one row per checkpoint and chain, the links between blocks of logic it added (call,
+  state, flow) and the logic it added (H5, surface against volume, PLAN.md §4.2c, restated 24
   November 2026). Corpus A only.
 - ``calls_across.csv``: one row per unit and existing class it changed, with the calls across the
   class's boundary the unit added, by the member they reach (already open, exposed, widened), and
   whether a placement in the class was forced (PLAN.md §4.2c): H8's dispersion, and the reader
-  reading. (The old H7, *forced changes couple*, was read on it until it was deleted on 24 November
+  reading. (The old H5, *forced changes couple*, was read on it until it was deleted on 24 November
   2026.)
 - ``surface.csv``: one row per class a unit changed, its volume (methods, positions) and surface
   (calls out and in) before and after, and per class of each chain's last tree (PLAN.md §4.2e).
@@ -51,7 +51,7 @@ from . import chain, history, literature, places, readings, runs, tables, valida
 
 DATA = chain.ROOT / "data" / "analysis"
 SEED = 20261116
-#: Cluster-bootstrap refits for H1 and for the confirmatory tests (H2, H4, H5, H7; PLAN.md §5).
+#: Cluster-bootstrap refits for H3 and for the confirmatory tests (H2, H4, H1, H5; PLAN.md §5).
 BOOT = 1000
 #: On a history (corpora B and C), which is read for direction and interval only and whose models
 #: are hundreds of times larger: fewer refits, the Wald interval beside each (PLAN.md §5).
@@ -60,7 +60,7 @@ MARGIN = [0.8, 1.25]
 AMOUNT_BAND = [0.8, 1.25]
 MIN_FLAGGED = 10
 MIN_CHAINS = 6
-#: H3's shape measures are the literature's: long, complex, concentrated. The sinew measures (not
+#: H6's shape measures are the literature's: long, complex, concentrated. The sinew measures (not
 #: slimmable, junction) are the author's own, about data flow; they are read apart (PLAN.md §5).
 SHAPE_FLAGS = ["s1_long"]
 SINEW_FLAGS = ["s2_stuck", "s3_junction"]
@@ -69,15 +69,15 @@ SINEW_FLAGS = ["s2_stuck", "s3_junction"]
 FIRST = {"s1_long": ("method", "flag", "long: 26 or more code lines"),
          "s4_cognitive": ("method", "level", "Campbell 2018, cognitive complexity"),
          "c_gini": ("class", "plain", "concentration of the class's positions (Gini)")}
-#: H3's measures (PLAN.md §2, §5): length and complexity at the method; concentration, weight and
+#: H6's measures (PLAN.md §2, §5): length and complexity at the method; concentration, weight and
 #: lack of cohesion at the class. Each is fitted alone and has to lie below the upper margin.
-H3_MEASURES = ["s1_long", "s4_cognitive", "m_cyclomatic", "c_gini", "c_wmc", "c_lcom_star"]
+H6_MEASURES = ["s1_long", "s4_cognitive", "m_cyclomatic", "c_gini", "c_wmc", "c_lcom_star"]
 #: How far a place reaches out: read with the sinew measures, predicted above 1.
 REACH = ["m_fanout", "c_cbo", "c_fanout"]
-#: H3's sensitivity reading (22 November 2026): its measures with the literature's coupling measures
+#: H6's sensitivity reading (22 November 2026): its measures with the literature's coupling measures
 #: put back, as the literature reads them among its shape metrics (Chidamber and Kemerer's CBO and
 #: RFC, fan-out).
-H3_SENSITIVITY = H3_MEASURES + ["m_fanout", "c_cbo", "c_rfc", "c_fanout"]
+H6_SENSITIVITY = H6_MEASURES + ["m_fanout", "c_cbo", "c_rfc", "c_fanout"]
 SHAPE_LEVELS = ["s4_cognitive", "s5_class_gini"]
 METHODS_ARM, FUNCTION_ARM = "spring", "officefloor"
 
@@ -107,7 +107,7 @@ def gather(analysis: str, table: str, root: Path | None = None) -> list[dict]:
     return rows
 
 
-def h1_rows(run_rows: list[dict], host_rows: list[dict], streamed: dict) -> list[dict]:
+def h3_rows(run_rows: list[dict], host_rows: list[dict], streamed: dict) -> list[dict]:
     prior = readings.prior_binding_mean(run_rows)
     cls = {(h["chain_id"], h["cp"], h["type"], h["signature"]): h.get("s5_class_positions")
            for h in host_rows}
@@ -130,8 +130,8 @@ def h1_rows(run_rows: list[dict], host_rows: list[dict], streamed: dict) -> list
     return out
 
 
-def h5_rows(host_rows: list[dict], streamed: dict) -> list[dict]:
-    """Choice (H5, PLAN.md 4.2a): one row per bound host and level (class, method) where the
+def h1_rows(host_rows: list[dict], streamed: dict) -> list[dict]:
+    """Choice (H1, PLAN.md 4.2a): one row per bound host and level (class, method) where the
     alternatives were counted: the other places in the tree before the checkpoint that hold what the
     code was bound to there; at the method, on the host's control flow (the count over the whole
     tree, by type alone, beside it). On a history the index is the unit's place from 0 to 1."""
@@ -159,13 +159,13 @@ def h5_rows(host_rows: list[dict], streamed: dict) -> list[dict]:
     return out
 
 
-def h5_forced_rows(h5: list[dict], additions: list[dict]) -> list[dict]:
-    """H5's arm contrast (24 November 2026, PLAN.md 9 row 92): per checkpoint and chain, the
-    placements bound at the class with no other place to go (forced, H5's), zero where there were
+def h1_forced_rows(h1: list[dict], additions: list[dict]) -> list[dict]:
+    """H1's arm contrast (24 November 2026, PLAN.md 9 row 92): per checkpoint and chain, the
+    placements bound at the class with no other place to go (forced, H1's), zero where there were
     none. Every checkpoint that did something counts, so a form that binds less often scores
     lower; no-op checkpoints are left out. Corpus A only."""
     n: dict[tuple, int] = {}
-    for r in h5:
+    for r in h1:
         if r["level"] == "class" and r["forced"]:
             k = (r["chain_id"], int(r["cp"]))
             n[k] = n.get(k, 0) + 1
@@ -179,13 +179,13 @@ def added(h: dict) -> float:
     return max(num(h.get("net_added"), 0) or 0, 0)
 
 
-def h6_rows(host_rows: list[dict], streamed: dict) -> list[dict]:
-    """Change spread (H6, PLAN.md 4.2b): one row per unit that placed or edited code in a class that
+def h7_rows(host_rows: list[dict], streamed: dict) -> list[dict]:
+    """Change spread (H7, PLAN.md 4.2b): one row per unit that placed or edited code in a class that
     existed before it, with the number of such classes (``spread`` is those beyond the first; a
     new class is a free choice, so it is counted beside, not in the spread) and whether any of its
     placements was forced by encapsulation (bound to a member of the class no other class can reach,
     ``tables.encapsulated``), or bound at the class only to reachable members (``chosen``); whether
-    one was forced by binding with no alternative (``forced_bind``, H5's class level); and the change's size, the positions it
+    one was forced by binding with no alternative (``forced_bind``, H1's class level); and the change's size, the positions it
     added (``positions``) and the methods it placed or edited code in (``methods``), so that forced
     is compared with unforced at the same size (decided 20 November 2026)."""
     units: dict[tuple, dict] = {}
@@ -219,7 +219,7 @@ def h6_rows(host_rows: list[dict], streamed: dict) -> list[dict]:
 
 
 def pair_rows(pairs: list[dict]) -> list[dict]:
-    """The coupling of classes changed together (H6, reported): one row per unit and pair of
+    """The coupling of classes changed together (H7, reported): one row per unit and pair of
     classes that both existed before it, the calls between them in the tree before the unit and
     what the unit added (after less before; none for the last unit), with the number of times the
     pair has been changed together in its chain so far."""
@@ -242,7 +242,7 @@ def pair_rows(pairs: list[dict]) -> list[dict]:
 
 
 def growth_accounting(host_rows: list[dict], checkpoints: int) -> dict:
-    """Where the growth of classes that existed came from (H6's accounting, PLAN.md 4.2b): per arm,
+    """Where the growth of classes that existed came from (H7's accounting, PLAN.md 4.2b): per arm,
     and per third of the stream, the positions added to existing classes by placements forced at
     the class, by placements that had a choice there, and by code not bound at the class; and
     each one's share."""
@@ -293,7 +293,7 @@ def growth_by_lever(host_rows: list[dict]) -> dict:
     by whether the lever of injection was there (``tables.lever``, decided by the author on 22
     November 2026): bound to the class's own private members (``own``); bound only to injected
     private fields, with another class already holding those dependencies (``injected_elsewhere``,
-    H5's alternatives at least one) or with none yet (``injected_only_here``). The injected part is
+    H1's alternatives at least one) or with none yet (``injected_only_here``). The injected part is
     the opportunity dependency injection gives to duplicate the core and avoid the concentration; it
     is still forced, because the lever was not exercised. Shares are of the forced growth, with the
     forced growth's share of all growth of existing classes."""
@@ -333,12 +333,12 @@ def compliance(members: list[dict], arm: str) -> dict:
     return {"arm": arm, "introduced": n, "private": private, "share": (n - private) / n if n else None}
 
 
-def coupling_accounting(pairs: list[dict], coupling: list[dict], h6: list[dict]) -> dict:
-    """What coupling between classes each unit added (H6's accounting, PLAN.md 4.2b): per arm, the
+def coupling_accounting(pairs: list[dict], coupling: list[dict], h7: list[dict]) -> dict:
+    """What coupling between classes each unit added (H7's accounting, PLAN.md 4.2b): per arm, the
     calls between classes the units added in all (the tree after less the tree before, over every
     class), how much of that between pairs of existing classes changed together, and how much in
     units with a forced placement and in the others."""
-    forced = {(r["chain_id"], int(r["unit"])): truth(r["forced"]) for r in h6}
+    forced = {(r["chain_id"], int(r["unit"])): truth(r["forced"]) for r in h7}
     out: dict[str, dict] = {}
 
     def acc(arm):
@@ -404,8 +404,8 @@ def co_change(pairs: list[dict], top: int = 10) -> dict:
     return out
 
 
-def h7_rows(links: list[dict], split: list[dict]) -> list[dict]:
-    """Surface against volume (H7, PLAN.md 4.2c, restated 24 November 2026): per checkpoint and
+def h5_rows(links: list[dict], split: list[dict]) -> list[dict]:
+    """Surface against volume (H5, PLAN.md 4.2c, restated 24 November 2026): per checkpoint and
     chain, the links between blocks of logic it added (``links_added``: call, state and flow, each
     counted once, injection not among them) and the logic it added (``logic_added``, the volume,
     from the logic and organisation reading, §4.9). Only checkpoints with both: the last has no tree
@@ -428,7 +428,7 @@ def h7_rows(links: list[dict], split: list[dict]) -> list[dict]:
 
 def links_summary(rows: list[dict], checkpoints: int) -> dict:
     """Per arm, the links added a checkpoint by kind and over the thirds of the stream, per unit of
-    logic added, and the tree's links per method at the last checkpoint read (H7, reported beside)."""
+    logic added, and the tree's links per method at the last checkpoint read (H5, reported beside)."""
     out = {}
     for arm in sorted({r["arm"] for r in rows}):
         rs = [r for r in rows if r["arm"] == arm]
@@ -494,7 +494,7 @@ def call_source(e: dict) -> str:
     return "reuse" if e["kind"] == "existing" else "other"
 
 
-def coupling_source(h7: list[dict], edges: list[dict]) -> dict:
+def coupling_source(h5: list[dict], edges: list[dict]) -> dict:
     """Is forced coupling the problem's own (PLAN.md 4.2c, row 88; the author, 23 November 2026)?
     Per arm, the class rows forced by encapsulation: how many added no call across the class's
     boundary (*contained*), how many added only calls of the problem or of reuse, and how many some
@@ -511,8 +511,8 @@ def coupling_source(h7: list[dict], edges: list[dict]) -> dict:
         for c in {e["caller_class"], e["callee_class"]}:
             by_row.setdefault((e["chain_id"], int(e["cp"]), c), []).append(s)
     out: dict[str, dict] = {}
-    for arm in sorted({r["arm"] for r in h7} | set(calls)):
-        rows = [r for r in h7 if r["arm"] == arm and r["forced"]]
+    for arm in sorted({r["arm"] for r in h5} | set(calls)):
+        rows = [r for r in h5 if r["arm"] == arm and r["forced"]]
         kinds = [by_row.get((r["chain_id"], int(r["unit"]), flow.simple(r["class"])), []) for r in rows]
         contained = sum(1 for r in rows if not r["coupled"])
         explained = sum(1 for r, k in zip(rows, kinds) if r["coupled"] and k and "other" not in k)
@@ -546,13 +546,13 @@ def band(tokens) -> str:
             "200k to 1M" if t < CONTEXT_BANDS[1] else "above 1M")
 
 
-def reader_rows(members: list[dict], hosts: list[dict], h7: list[dict], boundary: list[dict],
+def reader_rows(members: list[dict], hosts: list[dict], h5: list[dict], boundary: list[dict],
                 refactorings: list[dict]) -> tuple[list[dict], list[dict]]:
     """Encapsulation and the reader (PLAN.md 4.2f): one row per unit, with the members it
     introduced and how many are private (measure 1), the positions it added to classes that
     existed and how many of those by a placement forced at the class (measure 2), the classes it
     split (RefactoringMiner's Extract Class), its change size, and the system's tokens before it;
-    and one row per unit and existing class it changed (H7's rows), with the members it exposed or
+    and one row per unit and existing class it changed (H5's rows), with the members it exposed or
     widened there (measure 3) and the class's methods before it (measure 4)."""
     size: dict[tuple, dict] = {}
     for h in hosts:
@@ -588,7 +588,7 @@ def reader_rows(members: list[dict], hosts: list[dict], h7: list[dict], boundary
                       "splits": splits.get(k, 0), "positions": s["positions"], "methods": s["methods"]})
     before = {(b["chain_id"], int(b["cp"]), b["class"]): num(b.get("methods_before")) for b in boundary}
     classes = []
-    for r in h7:
+    for r in h5:
         k = (r["chain_id"], r["unit"])
         t = tokens.get(k)
         classes.append({"chain_id": r["chain_id"], "arm": r["arm"], "unit": r["unit"], "cp": r["cp"],
@@ -813,9 +813,9 @@ def ripple(hosts: list[dict], edges: list[dict]) -> dict:
 
 def by_rows(run_rows: list[dict], outcomes: list[dict] | None = None) -> list[dict]:
     """Every run of added logic (moved code left out) with its bystanders. ``pulled`` marks the
-    runs that need at least one pre-existing value: H1 and H4 are read on those. ``place_class``
+    runs that need at least one pre-existing value: H3 and H4 are read on those. ``place_class``
     and ``place_method`` name the class and the method the run is in, followed across renames and
-    moves (the identities of ``tables.outcome_rows``), for H1's slopes within a place."""
+    moves (the identities of ``tables.outcome_rows``), for H3's slopes within a place."""
     where = {(o["chain_id"], str(o["cp"]), o["type"], o["signature"]): o for o in outcomes or []}
     out = []
     for r in run_rows:
@@ -979,7 +979,7 @@ def h2_rows(outcomes: list[dict], host_rows: list[dict], additions: list[dict],
 
 def shape_kept(h2: list[dict], measures: list[str] | None = None) -> tuple[list[str], dict]:
     """The variation rule (PLAN.md §5): a shape measure flagged (or, for a level, non-zero) on
-    fewer than MIN_FLAGGED existing hosts in any arm leaves the H3 block."""
+    fewer than MIN_FLAGGED existing hosts in any arm leaves the H6 block."""
     rows = [r for r in h2 if not r["host_new"] and r["shape_found"] and r["bound"]]
     arms = sorted({r["arm"] for r in rows})
     counts, kept = {}, []
@@ -992,7 +992,7 @@ def shape_kept(h2: list[dict], measures: list[str] | None = None) -> tuple[list[
 
 
 def literature_kept(h2: list[dict]) -> tuple[dict, dict]:
-    """The literature's measures that can be read (PLAN.md §4.7a), by the variation rule of H3: a
+    """The literature's measures that can be read (PLAN.md §4.7a), by the variation rule of H6: a
     flag set, or a level above zero, on at least MIN_FLAGGED bound rows in every arm. Method
     measures are read on existing hosts, class measures on hosts of classes that existed."""
     arms = sorted({r["arm"] for r in h2})
@@ -1009,7 +1009,7 @@ def literature_kept(h2: list[dict]) -> tuple[dict, dict]:
     return kept, counts
 
 
-#: A class measure is tested in H3 only where the class level can tell classes apart: later
+#: A class measure is tested in H6 only where the class level can tell classes apart: later
 #: arrivals in at least MIN_CLASSES distinct classes (by name, over all chains), and no one class
 #: holding more than MAX_CLASS_SHARE of them (PLAN.md §5).
 MIN_CLASSES = 10
@@ -1017,7 +1017,7 @@ MAX_CLASS_SHARE = 0.5
 
 
 def class_level(h2: list[dict]) -> dict:
-    """Whether the class level varies enough for H3's class measures: the distinct classes that
+    """Whether the class level varies enough for H6's class measures: the distinct classes that
     receive later bound arrivals, and the share of those arrivals the busiest class holds. A
     class is counted by its name over all chains, and its arrivals once per chain and checkpoint."""
     seen, per = set(), {}
@@ -1100,7 +1100,7 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
 
     hosts = table("hosts")
     run_rows = table("runs")
-    h1 = h1_rows(run_rows, hosts, streamed)
+    h3 = h3_rows(run_rows, hosts, streamed)
     additions = table("additions")
     outcomes = table("outcomes")
     h2 = h2_rows(outcomes, hosts, additions, streamed)
@@ -1118,7 +1118,7 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
         {"chain_id": r["chain_id"], "arm": r["arm"], "cp": r["cp"],
          "existing_class": r["destination"] != "new class"}
         for r in landed if "chain_id" in r and not truth(r["bound"])])
-    write_csv(out / "h1.csv", h1)
+    write_csv(out / "h3.csv", h3)
     by = by_rows(run_rows, outcomes)
     write_csv(out / "by.csv", [r for r in by if r["pulled"]])
     captured = capture_rows(additions)
@@ -1128,23 +1128,23 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
     split = [] if past else split_rows(additions)
     write_csv(out / "split.csv", split)
     write_csv(out / "h2.csv", h2)
-    chosen5 = h5_rows(hosts, streamed)
-    write_csv(out / "h5.csv", chosen5)
-    write_csv(out / "h5_forced.csv", [] if past else h5_forced_rows(chosen5, additions))
-    h6 = h6_rows(hosts, streamed)
-    write_csv(out / "h6.csv", h6)
+    chosen5 = h1_rows(hosts, streamed)
+    write_csv(out / "h1.csv", chosen5)
+    write_csv(out / "h1_forced.csv", [] if past else h1_forced_rows(chosen5, additions))
+    h7 = h7_rows(hosts, streamed)
+    write_csv(out / "h7.csv", h7)
     paired = pair_rows(table("pairs"))
     write_csv(out / "pairs.csv", paired)
     coupled = table("coupling")
-    h7 = calls_across_rows(table("encapsulation"), hosts)
-    write_csv(out / "calls_across.csv", h7)
-    surfaced = [] if past else h7_rows(table("links"), split)
-    write_csv(out / "h7.csv", surfaced)
+    h5 = calls_across_rows(table("encapsulation"), hosts)
+    write_csv(out / "calls_across.csv", h5)
+    surfaced = [] if past else h5_rows(table("links"), split)
+    write_csv(out / "h5.csv", surfaced)
     write_csv(out / "surface.csv", surface_rows(table("boundary")))
     edges = table("edges")
     rippled = ripple(hosts, edges)
     members = table("members")
-    r_units, r_classes = reader_rows(members, hosts, h7, table("boundary"), table("refactorings"))
+    r_units, r_classes = reader_rows(members, hosts, h5, table("boundary"), table("refactorings"))
     write_csv(out / "reader_units.csv", r_units)
     write_csv(out / "reader_classes.csv", r_classes)
     spec = {"analysis": name, "role": analysis["role"], "seed": SEED, "boot": BOOT_HISTORY if past else BOOT,
@@ -1158,15 +1158,15 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
             "reader_models": past,
             "shape_kept": kept, "shape_counts": {**counts, **sinew_counts}, "sinew_kept": sinew,
             "literature": lit, "literature_counts": lit_counts,
-            # H3's measures that vary; its class measures only where the class level does
+            # H6's measures that vary; its class measures only where the class level does
             "class_level": at_class,
-            "h3_measures": [k for k in H3_MEASURES if k in lit
+            "h6_measures": [k for k in H6_MEASURES if k in lit
                             and (lit[k]["level"] == "method" or at_class["testable"])],
-            "h3_sensitivity": [k for k in H3_SENSITIVITY if k in lit
+            "h6_sensitivity": [k for k in H6_SENSITIVITY if k in lit
                                and (lit[k]["level"] == "method" or at_class["testable"])],
-            "h3_all": H3_MEASURES, "reach": REACH, "checkpoints": len(streamed),
-            "acts": any(r["act"] is not None for r in h1 + h2),
-            "frontends": sorted({r["frontend"] for r in h1 if r["frontend"]})}
+            "h6_all": H6_MEASURES, "reach": REACH, "checkpoints": len(streamed),
+            "acts": any(r["act"] is not None for r in h3 + h2),
+            "frontends": sorted({r["frontend"] for r in h3 if r["frontend"]})}
     conditions = {"chains": {k: len(v) for k, v in chains.items()},
                   "descriptive_only": analysis["role"] == "development"
                   or any(len(v) < MIN_CHAINS for v in chains.values()) or len(chains) < 2,
@@ -1201,8 +1201,8 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
         "validation_flags": validate.flags(checked),
         "split": split_summary(split, len(streamed)),
         "links": links_summary(surfaced, len(streamed)),
-        "coupling_added": coupling_accounting(paired, coupled, h6),
-        "coupling_source": coupling_source(h7, edges),
+        "coupling_added": coupling_accounting(paired, coupled, h7),
+        "coupling_source": coupling_source(h5, edges),
         "redesign": redesign(hosts, paired),
         "ripple": rippled,
         "reader": reader_summary(r_units, r_classes),

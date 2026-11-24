@@ -110,7 +110,7 @@ def _graph(index: dict):
 
 
 def choice(r: dict, tm: list[str], tf: list[str], ti: list[str], tc: list[str], places: dict | None) -> dict:
-    """Choice (H5, PLAN.md 4.2a): the other places in the tree before the checkpoint that hold what
+    """Choice (H1, PLAN.md 4.2a): the other places in the tree before the checkpoint that hold what
     this host's code was bound to. At the class: the other classes holding injected dependencies of
     every type the code used; code bound to anything else of its class (its state, a constant, a
     method) has no other class, so none. At the method: the other methods **on the host's control
@@ -244,7 +244,7 @@ def lever(r: dict, tf: list[str], ti: list[str], tc: list[str], places: dict | N
     author on 22 November 2026). ``injected``: every private member the code was bound to is a field
     holding an injected dependency, which another class could declare too, so the core could be
     duplicated elsewhere; the choice exists as a construct and was not exercised (whether another
-    class already holds those dependencies is H5's ``choice_class``). ``own``: it was bound to a
+    class already holds those dependencies is H1's ``choice_class``). ``own``: it was bound to a
     private field of the class's own state, a private constant or a private method, which nothing
     outside can reach. None where the placement was not forced by encapsulation."""
     private = private_members(r, places) if (tf or tc) else None
@@ -264,7 +264,7 @@ def forced(h: dict) -> bool | None:
 
 
 def changed(h: dict) -> bool:
-    """A host a unit placed or edited code in (H6, PLAN.md 4.2b): it added positions, and is not a
+    """A host a unit placed or edited code in (H7, PLAN.md 4.2b): it added positions, and is not a
     re-placement of code moved there."""
     return float(h.get("added") or 0) > 0 and str(h.get("replacement")) != "True"
 
@@ -279,7 +279,7 @@ def _trees(measured: dict) -> tuple[dict, dict]:
 
 
 def pair_rows(arm: str, chain: str, hosts: list[dict], measured: dict) -> list[dict]:
-    """Change spread (H6, PLAN.md 4.2b): per unit, every pair of classes it placed or edited code
+    """Change spread (H7, PLAN.md 4.2b): per unit, every pair of classes it placed or edited code
     in, with the calls between them in the tree before the unit and in the tree after it (before
     the next unit; on a history, with any commits between that are not units), followed by their
     receiver's type (``flow.Graph.class_calls``), each way. A class not in the tree before (new in
@@ -314,7 +314,7 @@ def pair_rows(arm: str, chain: str, hosts: list[dict], measured: dict) -> list[d
 
 
 def coupling_rows(arm: str, chain: str, measured: dict) -> list[dict]:
-    """The coupling of the whole tree (H6's accounting, PLAN.md 4.2b): per unit, the calls followed
+    """The coupling of the whole tree (H7's accounting, PLAN.md 4.2b): per unit, the calls followed
     from one class to another in the tree before it and in the tree after it, so that what a unit
     added between all classes, changed together or not, can be counted."""
     trees, after = _trees(measured)
@@ -327,12 +327,12 @@ def coupling_rows(arm: str, chain: str, measured: dict) -> list[dict]:
             for cp in sorted(trees)]
 
 
-#: Access, from closed to open (H7): a member whose rank rises was widened.
+#: Access, from closed to open (H5): a member whose rank rises was widened.
 ACCESS = {"private": 0, "package": 1, "protected": 2, "public": 3}
 
 
 def encapsulation_rows(arm: str, chain: str, hosts: list[dict], measured: dict) -> list[dict]:
-    """Forced coupling (H7, PLAN.md 4.2c): per unit and class that existed before it that the unit
+    """Forced coupling (H5, PLAN.md 4.2c): per unit and class that existed before it that the unit
     placed or edited code in, the calls across that class's boundary the unit added (in the tree
     after it, which is the tree before the next unit, and not before), outward (from its methods to
     another class's) and inward (from another class's methods to its own), each by the member it
@@ -340,7 +340,7 @@ def encapsulation_rows(arm: str, chain: str, hosts: list[dict], measured: dict) 
     open to other classes (*exposed*, not private), or one the unit made more open (*widened*). With
     whether a placement in the class was forced by encapsulation (``forced``; bound to a member no
     other class can reach) or bound only to reachable members (``chosen``), whether one was forced by
-    binding with no alternative (``forced_bind``, H5's class level), and how many of the class's own
+    binding with no alternative (``forced_bind``, H1's class level), and how many of the class's own
     members the unit exposed or widened, called or not."""
     trees, after = _trees(measured)
     by_cp = _forced_classes(hosts)
@@ -408,7 +408,7 @@ def member_rows(arm: str, chain: str, measured: dict) -> list[dict]:
 
 def _forced_classes(hosts: list[dict]) -> dict[int, dict[str, dict]]:
     """Per unit, the classes that existed that it placed or edited code in, each with whether a
-    placement there was forced at the class or had a choice (H5's class level)."""
+    placement there was forced at the class or had a choice (H1's class level)."""
     by_cp: dict[int, dict[str, dict]] = {}
     for h in hosts:
         if not changed(h) or str(h.get("class_new")) == "True":
@@ -482,7 +482,7 @@ def boundary_rows(arm: str, chain: str, hosts: list[dict], measured: dict) -> li
 
 
 def edge_rows(arm: str, chain: str, hosts: list[dict], measured: dict) -> list[dict]:
-    """The calls across a class's boundary each unit added (H7's calls, PLAN.md 4.2c), one row each,
+    """The calls across a class's boundary each unit added (H5's calls, PLAN.md 4.2c), one row each,
     for the ripple reading (4.2e): the caller's class and method, the callee's class and method, the
     kind of member reached (existing, exposed, widened), and whether the caller's or the callee's
     class was forced in the unit."""
@@ -508,7 +508,7 @@ def edge_rows(arm: str, chain: str, hosts: list[dict], measured: dict) -> list[d
 
 
 def link_rows(arm: str, chain: str, measured: dict) -> list[dict]:
-    """Surface against volume (H7, PLAN.md 4.2c, restated 24 November 2026): per checkpoint, the
+    """Surface against volume (H5, PLAN.md 4.2c, restated 24 November 2026): per checkpoint, the
     links between blocks of logic it added and lost, by kind: **call** (a method to a method it
     calls), **state** (a method to a field holding state that it uses; not an injected dependency,
     not a constant) and **flow** (an edge of the OfficeFloor wiring, one function to the next). A

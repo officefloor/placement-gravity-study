@@ -1,4 +1,4 @@
-"""The shape competitors of H3 (PLAN.md §4.7) on a fixture tree with known answers
+"""The shape competitors of H6 (PLAN.md §4.7) on a fixture tree with known answers
 (tests/fixtures/shape/tree), and their join to a host's version at k − 1."""
 
 from pathlib import Path

@@ -25,7 +25,7 @@ def test_reader_counts_nodes_edges_and_lines():
     w = chain.parse_wiring({"rest/a.POST.yml": FLOW, "escalation/E.yml": ESCALATION})
     assert (w["files"], w["nodes"], w["edges"]) == (2, 3, 3)
     assert w["lines"] == 10 + 2 and w["largest_file"] == "rest/a.POST.yml" and w["largest_lines"] == 10
-    # H7's flow links: the node an edge leaves and the node it names
+    # H5's flow links: the node an edge leaves and the node it names
     assert w["links"] == ["rest/a.POST.yml|first|done", "rest/a.POST.yml|first|second",
                           "rest/a.POST.yml|second|done"]
 

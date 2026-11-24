@@ -12,7 +12,7 @@ is cohesive with that problem, and measures how that code was placed:
 - its **pull**: how much pre-existing host state it had to read or write. Pull separates a
   **forced** placement (gravity) from a **chosen** one.
 - its **bystanders**: what else was there with the data it needed. The data a problem needs is
-  the problem's; what surrounds that data, and grows, is the gravity (H1, H4). Later code is
+  the problem's; what surrounds that data, and grows, is the gravity (H3, H4). Later code is
   expected to come for the few values earlier code was bound to, the place's core, and not for
   the rest (H2).
 - what it **introduced**: the parameters and locals it adds to a method and the fields it adds
@@ -28,13 +28,13 @@ first.
 Shape is read only where the problem is fixed. The measures of solution shape used by the earlier
 studies (long, complexity outlier, concentration) enter as competitors; not slimmable and junction
 are sinew measures of data flow, read apart:
-H3 tests whether any of them draws later code in once the problem, the bindings and the bystanders are held fixed. The plan
+H6 tests whether any of them draws later code in once the problem, the bindings and the bystanders are held fixed. The plan
 absorbs three drafts that read the same runs: flow-injection containment, the ui harness's
 SinewSlim analysis plan, and sinew identification (`PLAN.md` §1.1).
 
 | Read | For |
 |---|---|
-| [`PLAN.md`](PLAN.md) | The study: questions, hypotheses H1–H7 (confirmatory H2, H4, H5, H7; secondary H1, H3, H6), measures, analysis; a map of how they fit together in §2 ([`figures/placement-forces.svg`](figures/placement-forces.svg)). **Not yet registered:** the tag `plan-v1` was withdrawn on 17 November 2026 while the hypotheses are worked out on the development chain, and will be set before any run named for analysis is read; changes after the start are dated amendments (§9). |
+| [`PLAN.md`](PLAN.md) | The study: questions, hypotheses H1–H8 in the order of the story (confirmatory H1, H2, H4, H5; secondary H3, H6, H7; H8 for Run D), measures, analysis; a map of how they fit together in §2 ([`figures/placement-forces.svg`](figures/placement-forces.svg)). **Not yet registered:** the tag `plan-v1` was withdrawn on 17 November 2026 while the hypotheses are worked out on the development chain, and will be set before any run named for analysis is read; changes after the start are dated amendments (§9). |
 | [`LITERATURE.md`](LITERATURE.md) | The literature: notes by theme, the systematic novelty check (§10), and the full references. |
 | [`results/pilot/PILOT.md`](results/pilot/PILOT.md) | The pilot: the instrument on one pair of chains, what it showed, the decisions it raised. |
 
@@ -87,7 +87,7 @@ cloned into `~/placement-gravity-data/`. The streams are read at the commits `ru
 | `placement_gravity/literature.py` | The literature's shape measures on every method and class (CK, PMD, jscpd, Halstead, Maintainability Index; PLAN.md §4.7a). |
 | `placement_gravity/places.py` | Where bound and unbound code lands among the methods and classes it could have gone to, ranked by complexity and by data width (PLAN.md §5, reported). |
 | `placement_gravity/readings.py` | The reported readings: choice at a checkpoint, formation and review (PLAN.md §5). |
-| `placement_gravity/shape.py` | The shape measures S1, S4 and S5 of H3 and the sinew measures S2 and S3 (PLAN.md §4.7) on each existing host at k − 1, with the complexity-concentration study's cognitive extractor and outlier rule (pinned in `requirements.txt`). |
+| `placement_gravity/shape.py` | The shape measures S1, S4 and S5 of H6 and the sinew measures S2 and S3 (PLAN.md §4.7) on each existing host at k − 1, with the complexity-concentration study's cognitive extractor and outlier rule (pinned in `requirements.txt`). |
 | `runs.yaml` | The runs read: streams pinned per run, repositories, and each analysis with its role. |
 | `placement_gravity/runs.py` | Step 2: the registry, the registration guard, the stacks' roots, fetching and pinning chains. |
 | `placement_gravity/measure.py` | Step 3: the instrument and tables over every pinned chain. |

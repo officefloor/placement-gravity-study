@@ -46,7 +46,7 @@ def test_a_new_method_sees_its_classes_fields(records):
 
 def test_a_run_that_needs_nothing_was_not_pulled(records):
     [x] = next(r for r in records if r["kind"] == "host" and r["name"] == "fresh")["runs"]
-    assert tables.bystanders(x)["need"] == 0           # prepare.by_rows leaves it out of H1 and H4
+    assert tables.bystanders(x)["need"] == 0           # prepare.by_rows leaves it out of H3 and H4
     rows = prepare.by_rows([{"chain_id": "c", "arm": "spring", "cp": 1, "host_new": "True",
                              "replacement": "False", **tables.bystanders(x)}])
     assert rows[0]["pulled"] is False

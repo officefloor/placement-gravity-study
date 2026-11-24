@@ -1,4 +1,4 @@
-"""The control flow of a host (H5, PLAN.md 4.2a): which methods of the tree a request's data passes
+"""The control flow of a host (H1, PLAN.md 4.2a): which methods of the tree a request's data passes
 through, so that a method holding the same types elsewhere, on another request's flow, is not
 counted as a place the code could have gone.
 
@@ -70,7 +70,7 @@ class Graph:
                     self.out[i].add(j)
                     self.into[j].add(i)
         # a class's fields and their access (Pull VERSION 15), and each method's reads of another
-        # class's fields: an edge to that field, as a call is to a method (H7, PLAN.md 4.2c)
+        # class's fields: an edge to that field, as a call is to a method (H5, PLAN.md 4.2c)
         self.fields: dict[str, dict[str, str]] = defaultdict(dict)
         for f in files.values():
             for c in f.get("classes", []):
@@ -84,14 +84,14 @@ class Graph:
                         self.reads[i].add((c, f"#{name}"))
         self.flows = [set(f) for f in index.get("flows", [])]
         # the fields of a class that hold state (Pull VERSION 17): not injected, not constants, not
-        # utilities; and each method's uses of its own class's fields (H7, PLAN.md 4.2c)
+        # utilities; and each method's uses of its own class's fields (H5, PLAN.md 4.2c)
         self.state: dict[str, set[str]] = defaultdict(set)
         for f in files.values():
             for c in f.get("classes", []):
                 self.state[simple(c["name"])].update(c.get("state") or [])
 
     def class_calls(self) -> dict[tuple[str, str], int]:
-        """Calls followed from one class's methods to another's (H6, PLAN.md 4.2b), keyed by the
+        """Calls followed from one class's methods to another's (H7, PLAN.md 4.2b), keyed by the
         classes' simple names, caller first; a call that may go to several overrides counts once
         for each class it may reach."""
         if getattr(self, "_class_calls", None) is None:
@@ -104,7 +104,7 @@ class Graph:
         return self._class_calls
 
     def cross_edges(self) -> set[tuple[tuple[str, str], tuple[str, str]]]:
-        """The calls followed from a method of one class to a method of another (H7, PLAN.md 4.2c),
+        """The calls followed from a method of one class to a method of another (H5, PLAN.md 4.2c),
         each as (caller, callee), a method as (its class's simple name, its signature)."""
         if getattr(self, "_cross", None) is None:
             def k(i):
@@ -115,7 +115,7 @@ class Graph:
         return self._cross
 
     def links(self) -> dict[str, set]:
-        """The links between blocks of logic (H7, PLAN.md 4.2c, restated 24 November 2026), each
+        """The links between blocks of logic (H5, PLAN.md 4.2c, restated 24 November 2026), each
         counted once however heavy: **call links**, a method to a method it calls, in its own class or
         another (a call that may reach several overrides is a link to each), not to itself; and
         **state links**, a method to a field holding state that it uses, of its own class or another's.
