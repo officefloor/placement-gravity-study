@@ -220,7 +220,7 @@ development chain's (§6).
 
 **Two tiers** (decided by the author on 21 November 2026, §9 row 66). The study's necessity is to
 find the force. The **confirmatory** family is the force and its two outlets, with the control:
-**H5** (the force forms: choice of class narrows), **H2** (concentration: a core draws code in),
+**H5** (the force forms: choice of class narrows, and the function arm is forced less), **H2** (concentration: a core draws code in),
 **H7** (the surface: for the same logic, fewer links between blocks of logic under function
 injection, and the gap widening; restated 24 November 2026, §9 row 89) and **H4** (the control:
 function injection removes the force). Holm over these four. **H1** (the periphery grows, the
@@ -408,6 +408,22 @@ alternatives at the class are the other classes that already hold the same depen
   there (it is not a pass). H5 is decided apart from H2: H2 is about what later code comes back
   to a place for (binding), H5 about whether the placement had anywhere else to go. It is the
   plan's title read directly: *whether it had a choice*.
+  - **And the function arm is forced less** (the arm contrast, added 24 November 2026, §9 row 92;
+    the author's, so that every confirmatory test points at the difference between the forms):
+    per checkpoint, the placements forced at the class (bound there with no other place to go)
+    are **fewer in the function arm** half-way through the stream (the rate ratio below 1) **and
+    rise less** over it (the arm's interaction with the checkpoint index below 1), shaped as H4
+    and H7. Every checkpoint counts, so a form that binds code at the class less often scores
+    lower. The author: "it also potentially shows the accidental cost of the method structure in
+    Spring handlers (and typical web app servers) over function injection of OfficeFloor". Not
+    read on a history, whose arms do not solve the same problems; there H5 is the fall alone.
+  - *Why not the fall in the function arm* (seen before it was written, §9 row 92): on the
+    development chain the function arm bound code at the class 10 times in 60 checkpoints, the
+    methods arm 48 times in 59; but 9 of the function arm's 10 had no other place to go (the
+    methods arm's share forced 0.54), with 0.1 alternatives a row from the start. Its choice has
+    nothing to narrow from, so a contrast of the two falls would rest on ten rows nearly all nought,
+    and a contrast of the share forced would go against the form. The difference is how often the
+    force happens at all, not how much choice is left when it does.
   - *As it stood until 22 November 2026* (reported): one-sided as H3, the ratio shown below the
     upper margin 1.25, so that a flat count passed, and a level where every placement was forced
     passed with p 0. Replaced by the author after a review of the plan: a hypothesis named
@@ -595,7 +611,9 @@ alternatives at the class are the other classes that already hold the same depen
   (§4.5).
 - H5: alternatives at the class that do not fall over the stream. Flat, choice stays as it was;
   rising (an interval wholly above 1, *reversed*), code finds more classes to go to as the system
-  grows, and placement loosens.
+  grows, and placement loosens. Or a function arm forced as often as the methods arm, or more,
+  or forced more and more as the methods arm is: the force would then belong to the problems, not
+  to the method structure.
 - H8 (Run D, §3.1a): with nothing private, bound code come back to as much at the class, or no
   more calls and field reads added across class boundaries. Encapsulation would then not be what
   concentrates code, or removing it would not disperse it.
@@ -2180,7 +2198,14 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   margin (1.25, 90% Wald interval), as H5 stood until then;
   the share forced and the mean alternatives per arm and third; the function arm's ratio; the arm
   × index interaction's arm term; the share of class rows bound to the class's own values; the
-  method values of no declared type.
+  method values of no declared type. **The arm contrast** (24 November 2026, §9 row 92): per
+  checkpoint and chain of corpus A that did something, the placements forced at the class, as a
+  negative binomial mixed model on the arm, the checkpoint index centred at the middle of the
+  stream and scaled to its length, and their interaction, with the chain's and the checkpoint's
+  intercepts (Poisson where the negative binomial cannot be fitted, recorded). The arm term (the
+  function arm's rate half-way through) and the interaction both one-sided below 1, from one
+  cluster bootstrap; reversed if the arm term's interval lies wholly above 1. Reported beside it:
+  the forced placements a checkpoint per arm, and the methods arm's own rise.
 - **H6** (20 November 2026): per unit that placed or edited code in an existing class, its spread
   (§4.2b) as a negative binomial (nbinom2) mixed model on whether the unit was forced and the index
   scaled from 0 to 1, with the chain's intercept, in the methods arm (*forced*: the ratio of the
@@ -2284,7 +2309,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   (over all runs, within a class, within a method);
   H2, of the class level and the method level and of the arm contrasts that are needed (row 77); H3, of every shape measure's one-sided test; H4, of the arm
   term, the interaction, the arm's rate ratio in intrusion at the class and at the method and its rate ratio in how well-trodden the files gone back into were (rows 78, 82); H5, its
-  class level's (the method level is reported, row 64); H6, its forced ratio's; H7, the larger of its arm term and its interaction (as H4). A hypothesis is
+  class level's and its arm contrast's two terms (the method level is reported, row 64); H6, its forced ratio's; H7, the larger of its arm term and its interaction (as H4). A hypothesis is
   supported when its p (Holm-adjusted over the confirmatory four; its own for a secondary one) is at most 0.05 **and** its conditions hold (H4: the amount in its band and neither wiring
   condition against). The verdicts are supported, not supported, reversed (an interval wholly on
   the wrong side), unresolved (H3 and H6: an interval reaching above the upper margin), not testable (H3: no
@@ -3338,6 +3363,14 @@ author's to set, on the plan and code as they then stand, and starts the experim
   the reading of where forced coupling came from (row 88) is kept as a reading of that measure
   (the drafter's choice, to be confirmed). Made after the development chain's
   outer surface and its logic and organisation reading had been seen (§2, H7).
+- *Decided by the author on 24 November 2026 (later):* **H5 is an arm contrast too** (row 92),
+  so that every confirmatory test points at the difference between OfficeFloor and Spring, which
+  the author holds to be the study's end ("it should be pointing out OfficeFloor vs Spring in
+  terms of differences"). Of three forms put to the author with the development chain's figures,
+  the forced placements a checkpoint (the drafter's recommendation) was chosen over the fall of
+  the alternatives in each arm and the share forced. With it, H1, H3 and H6 stay about the methods
+  arm alone: H1 the cost of the core (its arm contrast is H4's), H3 and H6 the literature's
+  readings.
 - *To finish for row 89:* the pilot measured again at `MEASURE_VERSION` 34 (`./step3_measure.sh
   --analysis pilot`, then `./step4_analyse.sh --analysis pilot open-source-development` and
   `./step5_report.sh`); the histories are not affected (`HISTORY_VERSION` 14 stands). Then H7's
@@ -3557,6 +3590,7 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 89 | **H7 restated: surface against volume.** Per checkpoint, the links between blocks of logic it added (call links, state links to its own class's and other classes' fields that hold state, and the wiring's flow links; each counted once; an injected dependency not a link in either arm) against the logic it added: the function arm's rate ratio half-way through, for the same logic, below 1, **and** its interaction with the checkpoint index below 1 (as H4, both from one cluster bootstrap; p the larger). Not testable on a history. Confirmatory, in the Holm family in place of *forced changes couple*, which is retired and reported without a verdict (its arm contrast stays H8's) | §2, §4.2c, §5, §7, §8, `Pull.java` VERSION 17 (`own`, `state`), `chain.parse_wiring` (`links`), `flow.Graph.links`, `tables.link_rows`, `measure.py` (`links.csv`), `prepare.h7_rows`, `prepare.links_summary`, `prepare.forced_coupling_rows` (`forced_coupling.csv`), `analyse.R` (`H7`, `boot_irrs`; the old model as `reported$H7_retired_forced`), `verdict.h7`, `report.h7_section`, `selftest.R`, `tests/`; `MEASURE_VERSION` 34 | The author's, 24 November 2026 (§8): volume is encapsulated complexity, surface is coupling; the calling structure is accidental, the blocks of logic essential; injection is not surface; "make similar to H4"; links counted, not weighed. **Made after the development chain's outer surface (§4.2e: 0.73 and 0.78 across classes, 0.82 and 0.85 within a growing class) and its logic and organisation reading (§4.9) had been seen**; the links themselves had not been measured. Before the tag, so a revision |
 | 90 | **The old H7, *forced changes couple*, deleted**: its model, its reported ratios (forced by binding, without size, opened, outward, inward, members opened, rise, the function arm's, the arms'), the per-arm forced and unforced summary and its report section. Kept: its measure, the calls across the encapsulation (§4.2c), now `calls_across.csv`, because H8's *dispersion stronger* is the arms' contrast on it (the model kept in `analyse.R` as H8's alone); and the reading of where forced coupling came from (row 88), now a reading of that measure | §2, §4.2c, §5, §7, §8, `prepare.calls_across_rows` (was `forced_coupling_rows`; `encapsulation_summary` removed), `analyse.R`, `selftest.R`, `report.py` (`coupling_source_section`), `verdict.py`, `tests/` | The author, 24 November 2026: "Delete the old H7", after row 89. No other test changes |
 | 91 | §1 *The overview*: the author's account of the whole study (blocks of code essential; growth, concentration, separation and coupling; method structure the accident; function injection disperses without it), read against the hypotheses; and the author's claim that a function is easier to split and to review alone for cohesion, recorded in §1 and as the answer to H7's threat in §7. No measure, model or rule changes | §1, §7 | The author's, 24 November 2026 ("add the overview to §1"; the splitting claim given the same day). The drafter's addition: H7 counts links, not how tight they are, so it does not credit the function arm's looser control flow |
+| 92 | H5's arm contrast: per checkpoint, the placements forced at the class (bound there with no other place to go) fewer in the function arm half-way through **and** rising less over the stream (the arm term and its interaction with the index, both below 1, one cluster bootstrap), beside the methods arm's fall; p the largest of the three. Not read on a history | §2, §5, §8, `prepare.h5_forced_rows` (`h5_forced.csv`), `analyse.R` (`H5$contrast`; `boot_irrs` moved to the helpers), `verdict.h5`, `report.h5_section`, `selftest.R`, `tests/test_analysis.py` | The author's, 24 November 2026: "make H5 an arm contrast"; "it also potentially shows the accidental cost of the method structure in Spring handlers (and typical web app servers) over function injection of OfficeFloor". The form chosen from three, **after the development chain's H5 figures by arm had been seen** (the function arm 10 class rows in 60 checkpoints, 9 forced; the methods arm 48 in 59, 26 forced). Before the tag, so a revision |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

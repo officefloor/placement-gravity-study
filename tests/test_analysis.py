@@ -730,3 +730,27 @@ def test_the_reader_section_reports_bands_and_models():
 def test_a_history_is_bootstrapped_with_fewer_refits_than_a_paired_run():
     # corpora B and C are read for direction and interval only, and their models are far larger
     assert prepare.BOOT_HISTORY == 200 and prepare.BOOT == 1000
+
+
+def test_h5_needs_the_fall_and_the_arm_contrast_where_the_arms_solve_the_same_problems():
+    # 24 November 2026 (PLAN.md 9 row 92): fewer forced placements a checkpoint in the function arm,
+    # rising less, beside the methods arm's fall in alternatives
+    fall = {"irr": 0.4, "irr_lower": 0.2, "irr_upper": 0.8, "p_less": 0.001}
+    lo = {"irr": 0.3, "irr_lower": 0.2, "irr_upper": 0.6, "p_less": 0.001}
+    flat = {"irr": 1.0, "irr_lower": 0.7, "irr_upper": 1.4, "p_less": 0.5}
+
+    def v(**c):
+        return verdict.decide(estimates(H5={"class": fall, **({"contrast": c} if c else {})}), COND)["hypotheses"]["H5"]
+    assert v()["verdict"] == "supported" and not v()["arm_contrast"]       # a history: the fall alone
+    assert v(arm=lo, trend=lo)["verdict"] == "supported"
+    assert v(arm=lo, trend=flat)["verdict"] == "not supported" and v(arm=lo, trend=flat)["p"] == 0.5
+    assert v(error="no checkpoints in both arms")["verdict"] == "not estimable"
+
+
+def test_h5_forced_rows_count_every_checkpoint_that_did_something():
+    h5 = [{"chain_id": "c", "level": "class", "forced": True, "cp": 2},
+          {"chain_id": "c", "level": "class", "forced": True, "cp": 2},
+          {"chain_id": "c", "level": "method", "forced": True, "cp": 2},
+          {"chain_id": "c", "level": "class", "forced": False, "cp": 3}]
+    adds = [{"chain_id": "c", "arm": "spring", "cp": str(k), "noop": str(k == 4)} for k in (1, 2, 3, 4)]
+    assert [(r["cp"], r["forced_class"]) for r in prepare.h5_forced_rows(h5, adds)] == [(1, 0), (2, 2), (3, 0)]

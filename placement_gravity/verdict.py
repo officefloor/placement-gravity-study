@@ -28,7 +28,11 @@
   growing, so it is reported, not tested). Reversed if its interval lies wholly above 1. A class
   level where every placement was forced (no alternative anywhere) has no choice to narrow: not
   testable. (Until 22 November 2026: shown below the upper margin 1.25, so that a flat count
-  passed, and a level with every placement forced passed with p 0; reported.)
+  passed, and a level with every placement forced passed with p 0; reported.) **And** (since 24
+  November 2026, PLAN.md §9 row 92) the arm contrast: the placements forced at the class per
+  checkpoint fewer in the function arm half-way through (rate ratio below 1) and rising less
+  (the arm's interaction with the index below 1). p = the largest of the three. Not read on a
+  history (no arms solving the same problems).
 - **H6, spread does not see it** (restated 21 November 2026, PLAN.md §9 row 67; one-sided, as
   H3): in the methods arm, a unit with a placement forced at the class does not place or edit code
   in more of the classes that existed before it than a unit without one, at the same change size
@@ -199,9 +203,20 @@ def h5(est: dict) -> dict:
         return {"p": None, "verdict": "not testable", "state": "every placement forced", "detail": x}
     if not _ok(b) or "irr_upper" not in b or "p_less" not in b:
         return {"p": None, "verdict": "not estimable", "detail": x}
-    return {"p": b["p_less"], "reversed": b["irr_lower"] > 1, "conditions_met": b["irr_upper"] < 1,
-            "state": "falls" if b["irr_upper"] < 1 else "rises" if b["irr_lower"] > 1 else "not shown to fall",
-            "detail": x}
+    state = "falls" if b["irr_upper"] < 1 else "rises" if b["irr_lower"] > 1 else "not shown to fall"
+    # the arm contrast (24 November 2026): forced placements per checkpoint fewer in the function arm,
+    # and rising less; read where the arms solve the same problems (absent on a history)
+    c = x.get("contrast")
+    if c is None:
+        return {"p": b["p_less"], "reversed": b["irr_lower"] > 1, "conditions_met": b["irr_upper"] < 1,
+                "state": state, "arm_contrast": False, "detail": x}
+    arm, trend = c.get("arm"), c.get("trend")
+    if not (_ok(c) and _ok(arm) and _ok(trend)) or "irr_upper" not in arm or "irr_upper" not in trend:
+        return {"p": None, "verdict": "not estimable", "state": state, "detail": x}
+    return {"p": max(b["p_less"], arm["p_less"], trend["p_less"]),
+            "reversed": b["irr_lower"] > 1 or arm["irr_lower"] > 1,
+            "conditions_met": b["irr_upper"] < 1 and arm["irr_upper"] < 1 and trend["irr_upper"] < 1,
+            "state": state, "arm_contrast": True, "detail": x}
 
 
 def h6(est: dict) -> dict:

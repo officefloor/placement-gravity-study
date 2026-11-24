@@ -158,6 +158,22 @@ boot_irr <- function(fit, formula, d, family, term, nest = NULL) {
             level = 0.95, interval = "cluster bootstrap", wald = w))
 }
 
+# Several terms of one model from one cluster bootstrap (H5's and H7's arm contrasts, shaped as H4).
+boot_irrs <- function(fit, formula, d, family, terms) {
+  ws <- lapply(setNames(terms, terms), function(t) irr(wald(fit, t)))
+  if (any(vapply(ws, function(w) !is.null(w$error), logical(1)))) return(ws)
+  chains <- tapply(d$chain_id, as.character(d$arm), function(v) length(unique(v)))
+  if (min(chains) < 2) return(lapply(ws, function(w) c(w, list(interval = "wald: one chain in an arm"))))
+  draws <- cluster_boot(d, formula, family, terms, spec$boot)
+  lapply(setNames(terms, terms), function(t) {
+    if (sum(!is.na(draws[, t])) < max(2, spec$boot / 2))
+      return(c(ws[[t]], list(interval = "wald: fewer than half the bootstrap refits could be fitted",
+                             failed = sum(is.na(draws[, t])))))
+    b <- boot_summary(fit, draws, t)
+    c(b, list(irr = exp(b$estimate), irr_lower = exp(b$lower), irr_upper = exp(b$upper),
+              level = 0.95, interval = "cluster bootstrap", wald = ws[[t]]))
+  })
+}
 # The model with random intercepts for the chain and the checkpoint; without the checkpoint's when
 # that does not converge. `fixed` is the formula without its random part, as text.
 fit_cp <- function(fixed, d, family) {
@@ -682,7 +698,8 @@ if (!is.null(h2)) {
 # intercept: exp(slope) is the ratio of the alternatives at the end of the stream to those at its
 # start. H5 is a fall (22 November 2026): the ratio shown below 1, one-sided, at the class, by the
 # cluster bootstrap; the method level is reported. A level where every placement was forced has no
-# choice to narrow and is not testable. The reading against the upper margin (1.25, as H5 stood
+# choice to narrow and is not testable. Since 24 November 2026 H5 also needs the arm contrast below.
+# The reading against the upper margin (1.25, as H5 stood
 # until then: a flat count passed) is reported. The share forced (no other place) is reported per
 # arm and third; the function arm's slope and the arms' contrast too.
 h5 <- read("h5.csv")
@@ -732,6 +749,43 @@ if (!is.null(h5) && nrow(h5) > 0) {
           by_type = as.list(tapply(d$by_type, as.character(d$arm), mean, na.rm = TRUE)),
           followed = sum(d$calls_followed, na.rm = TRUE) / max(sum(d$calls_to_app_names, na.rm = TRUE), 1))
       }
+    }
+  }
+}
+
+# H5's arm contrast (24 November 2026, PLAN.md 9 row 92): per checkpoint and chain, the placements
+# forced at the class (bound there with no other place to go). A negative binomial mixed model on the
+# arm, the checkpoint index centred at the middle of the stream and scaled to its length, and their
+# interaction, with the chain's and the checkpoint's intercepts (Poisson where the negative binomial
+# cannot be fitted, recorded). The function arm's rate half-way through below 1, **and** its
+# interaction with the index below 1 (forcing rises less), both from one cluster bootstrap. Corpus A
+# only: on a history the arms do not solve the same problems.
+hf <- read("h5_forced.csv")
+if (!is.null(res$H5) && !isFALSE(spec$problem_fixed)) {
+  if (is.null(hf) || nrow(hf) == 0 || !multi(hf$arm)) {
+    res$H5$contrast <- list(error = "no checkpoints in both arms")
+  } else {
+    hf <- hf[as.character(hf$arm) %in% c(spec$methods_arm, spec$function_arm), ]
+    hf$arm <- droplevels(as_arm(as.character(hf$arm)))
+    hf$cp_c <- (hf$cp - (max(spec$checkpoints, 1) + 1) / 2) / max(spec$checkpoints - 1, 1)
+    per5 <- as.list(tapply(hf$forced_class, as.character(hf$arm), mean))
+    if (all(hf$forced_class == 0)) {
+      res$H5$contrast <- list(error = "no placement forced at the class in either arm", mean = per5)
+    } else {
+      fixed5 <- paste0("forced_class ~ cp_c * arm", if (multi(hf$frontend)) " + frontend" else "")
+      m5 <- fit_cp(fixed5, hf, nbinom2())
+      fam5 <- nbinom2()
+      ok5 <- function(m) !inherits(m$fit, "fit_error") && isTRUE(m$fit$sdr$pdHess) &&
+        all(is.finite(summary(m$fit)$coefficients$cond[, "Std. Error"]))
+      if (!ok5(m5)) {
+        m5 <- fit_cp(fixed5, hf, poisson())
+        fam5 <- poisson()
+      }
+      T5 <- paste0("cp_c:", FARM)
+      b5 <- boot_irrs(m5$fit, m5$formula, m5$data, fam5, c(FARM, T5))
+      res$H5$contrast <- list(arm = b5[[FARM]], trend = b5[[T5]], n = nrow(hf), family = fam5$family,
+                              checkpoint_intercept = m5$cp, mean = per5,
+                              methods_rise = irr(wald(m5$fit, "cp_c")))
     }
   }
 }
@@ -881,21 +935,6 @@ if (!is.null(h7) && nrow(h7) > 0) {
 # interaction with the index below 1 (the gap widens over the stream). Both from one cluster
 # bootstrap (chains resampled within arm). Reported: each kind of link apart, the same model
 # without the logic, and the methods arm's own rise over the stream.
-boot_irrs <- function(fit, formula, d, family, terms) {
-  ws <- lapply(setNames(terms, terms), function(t) irr(wald(fit, t)))
-  if (any(vapply(ws, function(w) !is.null(w$error), logical(1)))) return(ws)
-  chains <- tapply(d$chain_id, as.character(d$arm), function(v) length(unique(v)))
-  if (min(chains) < 2) return(lapply(ws, function(w) c(w, list(interval = "wald: one chain in an arm"))))
-  draws <- cluster_boot(d, formula, family, terms, spec$boot)
-  lapply(setNames(terms, terms), function(t) {
-    if (sum(!is.na(draws[, t])) < max(2, spec$boot / 2))
-      return(c(ws[[t]], list(interval = "wald: fewer than half the bootstrap refits could be fitted",
-                             failed = sum(is.na(draws[, t])))))
-    b <- boot_summary(fit, draws, t)
-    c(b, list(irr = exp(b$estimate), irr_lower = exp(b$lower), irr_upper = exp(b$upper),
-              level = 0.95, interval = "cluster bootstrap", wald = ws[[t]]))
-  })
-}
 lk <- read("h7.csv")
 if (isFALSE(spec$problem_fixed)) {
   res$H7 <- list(not_applicable = TRUE)       # a history: no arms solving the same problems

@@ -167,6 +167,18 @@ h5 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
              calls_to_app_names = 10, calls_followed = 8)
 }))))
 write.csv(h5, file.path(dir, "h5.csv"), row.names = FALSE)
+# H5's arm contrast, on its own random stream: placements forced at the class per checkpoint; the
+# methods arm's rise from 0.3 to 0.9 over the stream, the function arm's stay at 0.1 (half-way, the
+# ratio 0.1 / sqrt(0.27) = 0.19; the trend ratio 1/3)
+kept_seed <- .Random.seed
+set.seed(20261125)
+h5f <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
+  cp <- 1:60
+  mu <- if (arm == "spring") 0.3 * exp(log(3) * (cp - 1) / 59) else rep(0.1, 60)
+  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = cp, forced_class = rpois(60, mu))
+}))))
+write.csv(h5f, file.path(dir, "h5_forced.csv"), row.names = FALSE)
+assign(".Random.seed", kept_seed, envir = .GlobalEnv)
 # change spread (H6): in the methods arm the classes beyond the first double over the stream and
 # are 1.5 times as many where a placement was forced; the function arm's stay where they are.
 # Pairs changed together: their coupling rises over the stream in the methods arm
@@ -397,6 +409,11 @@ for (lev in c("class", "method")) {
   check(!is.null(e$reported[[paste0("H5_spread_", lev)]]$methods$forced), paste("the share forced is reported,", lev))
   check(length(e$reported[[paste0("H2_core_width_", lev)]]) > 0, paste("the core's width is reported,", lev))
 }
+h5c <- e$H5$contrast
+check(abs(log(h5c$arm$irr) - log(0.1 / sqrt(0.27))) < 0.35 && h5c$arm$irr_upper < 1 && h5c$arm$interval == "cluster bootstrap",
+      "H5's arm contrast recovers fewer forced placements in the function arm half-way through")
+check(abs(log(h5c$trend$irr) - log(1 / 3)) < 0.6 && h5c$trend$irr_upper < 1, "H5's arm contrast recovers forcing rising less in the function arm")
+check(abs(log(h5c$methods_rise$irr) - log(3)) < 0.35, "the methods arm's forcing tripling over the stream is reported")
 check(!is.null(e$reported$H2_class_fields$irr), "H2 at the class on its fields only is reported")
 check(e$reported$H5_method_by_type$irr > 1, "H5 by type alone over the whole tree, simulated rising, is reported as such")
 check(abs(e$reported$H5_flow$followed - 0.8) < 1e-9, "the share of calls followed is reported")

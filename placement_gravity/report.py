@@ -52,7 +52,7 @@ def h5_section(est: dict, hyp: dict, rep: dict) -> list[str]:
     """H5, choice narrows (PLAN.md §2, §4.2a, §5)."""
     b = est.get("H5") or {}
     h = hyp.get("H5") or {}
-    L = ["", "## H5, choice narrows (methods arm)", "",
+    L = ["", "## H5, choice narrows (and less often forced in the function arm)", "",
          "Per bound addition, the other places in the code before its checkpoint that hold what its code "
          "was bound to: at the class, another class holding injected dependencies of the same types (code "
          "bound to the class's own state, constants or methods has none); at the method, another method "
@@ -60,6 +60,22 @@ def h5_section(est: dict, hyp: dict, rep: dict) -> list[str]:
          "to its start: a fall, one-sided below 1, at the class, 95% cluster-bootstrap interval (chains "
          "resampled). The method level is reported.", "",
          f"- **{h.get('verdict', '–')}** ({h.get('state', '–')})"]
+    c = b.get("contrast")
+    if c is not None:
+        L.append("- The arm contrast (since 24 November 2026): the placements forced at the class per checkpoint "
+                 "(bound there with no other place to go), function arm / methods arm half-way through the "
+                 "stream, and the gap over the stream; both one-sided below 1.")
+        if "error" in c:
+            L.append(f"- **Arm contrast: not estimated** ({c['error']})")
+        for k, lab in (("arm", "Forced per checkpoint, function arm / methods arm"),
+                       ("trend", "Its change over the stream (arm × checkpoint index)")):
+            x = c.get(k)
+            if x:
+                L.append(f"- **{lab}: {ratio(x)}** (one-sided p {f(x.get('p_less'))}; {x.get('interval', '–')}; "
+                         f"{c.get('family', '–')})")
+        if c.get("mean"):
+            L.append("- Forced at the class a checkpoint: " + ", ".join(f"{a} {f(v)}" for a, v in c["mean"].items())
+                     + f"; the methods arm's own rise over the stream {ratio(c.get('methods_rise'))}")
     for lev in ("class", "method"):
         x = b.get(lev) or {}
         if x.get("all_forced"):

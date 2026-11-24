@@ -159,6 +159,21 @@ def h5_rows(host_rows: list[dict], streamed: dict) -> list[dict]:
     return out
 
 
+def h5_forced_rows(h5: list[dict], additions: list[dict]) -> list[dict]:
+    """H5's arm contrast (24 November 2026, PLAN.md 9 row 92): per checkpoint and chain, the
+    placements bound at the class with no other place to go (forced, H5's), zero where there were
+    none. Every checkpoint that did something counts, so a form that binds less often scores
+    lower; no-op checkpoints are left out. Corpus A only."""
+    n: dict[tuple, int] = {}
+    for r in h5:
+        if r["level"] == "class" and r["forced"]:
+            k = (r["chain_id"], int(r["cp"]))
+            n[k] = n.get(k, 0) + 1
+    return [{"chain_id": a["chain_id"], "arm": a["arm"], "frontend": a.get("frontend", ""), "cp": int(a["cp"]),
+             "forced_class": n.get((a["chain_id"], int(a["cp"])), 0)}
+            for a in additions if not truth(a.get("noop"))]
+
+
 def added(h: dict) -> float:
     """The positions a host gained (its net addition, none below 0): the size of a change there."""
     return max(num(h.get("net_added"), 0) or 0, 0)
@@ -1113,7 +1128,9 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
     split = [] if past else split_rows(additions)
     write_csv(out / "split.csv", split)
     write_csv(out / "h2.csv", h2)
-    write_csv(out / "h5.csv", h5_rows(hosts, streamed))
+    chosen5 = h5_rows(hosts, streamed)
+    write_csv(out / "h5.csv", chosen5)
+    write_csv(out / "h5_forced.csv", [] if past else h5_forced_rows(chosen5, additions))
     h6 = h6_rows(hosts, streamed)
     write_csv(out / "h6.csv", h6)
     paired = pair_rows(table("pairs"))
