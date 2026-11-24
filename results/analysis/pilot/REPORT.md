@@ -110,19 +110,24 @@ Runs that need a pre-existing value 91 over 1 chains; the slope of log(1 + bysta
 
 ## H5, surface against volume
 
-Per checkpoint, the links it added between blocks of logic (the surface: a method calling a method, a method using a field that holds state, a function wired to the next), each counted once, an injected dependency not among them; against the logic it added (the volume). The function arm's ratio half-way through the stream, for the same logic, below 1, **and** its interaction with the checkpoint index below 1 (the gap widens); one-sided, 95% cluster-bootstrap intervals (chains resampled).
+Per checkpoint, the links it added between blocks of logic (the surface: a method calling a method, a method using a field that holds state, a function wired to the next), each weighed by the data it carries (a call 1, +1 per parameter, +1 if it returns a value; a state link 1; a wiring edge 1, +1 if it carries a value), an injected dependency weighing nothing; against the logic it added (the volume). The function arm's ratio half-way through the stream, for the same logic, below 1, **and** its interaction with the checkpoint index below 1 (the gap widens); one-sided, 95% cluster-bootstrap intervals (chains resampled).
 
-- **descriptive only** (p 0.996)
-- **Links added, function arm / methods arm, for the same logic: 1.249 [1.063, 1.468]** (one-sided p 0.996; wald: one chain in an arm); Wald: not estimated (no data)
-- **The gap over the stream (arm × checkpoint index): 1.126 [0.642, 1.975]** (one-sided p 0.661; wald: one chain in an arm); Wald: not estimated (no data)
-- Links added a checkpoint: officefloor 5.797, spring 4.672; logic added: officefloor 9.610, spring 9.034
-- Reported, call links: function arm / methods arm 1.062 [0.801, 1.409], over the stream 1.520 [0.560, 4.126]; a checkpoint officefloor 4.186, spring 3.931
-- Reported, state links: function arm / methods arm 1.017 [0.514, 2.014], over the stream 1.718 [0.174, 16.919]; a checkpoint officefloor 0.678, spring 0.741
-- Reported, flow links: function arm / methods arm not estimated (no data), over the stream not estimated (no data); a checkpoint officefloor 0.932, spring 0
-- Reported, lost links: function arm / methods arm 2.116 [1.233, 3.632], over the stream 0.311 [0.053, 1.827]; a checkpoint officefloor 2.305, spring 1.655
-- Reported, without the logic in the model: arm 1.229 [0.904, 1.670], over the stream 1.344 [0.469, 3.854]; the methods arm's own rise over the stream 1.020 [0.522, 1.993]; links per e-fold logic 1.711 [1.409, 2.078]
+- **descriptive only** (p 0.979)
+- **Weighted links added, function arm / methods arm, for the same logic: 1.062 [0.915, 1.232]** (one-sided p 0.785; wald: one chain in an arm)
+- **The gap over the stream (arm × checkpoint index): 1.726 [1.022, 2.917]** (one-sided p 0.979; wald: one chain in an arm)
+- Reported, the links counted, not weighed (the test until 24 November 2026): arm 1.249 [1.063, 1.468], over the stream 1.126 [0.642, 1.975]
+- Weight added a checkpoint: officefloor 12.102, spring 10.966; links added: officefloor 5.797, spring 4.672; logic added: officefloor 9.610, spring 9.034
+- Reported, call links weighed: function arm / methods arm 0.941 [0.808, 1.096], over the stream 2.094 [1.209, 3.628]; a checkpoint officefloor 10.492, spring 10.224
+- Reported, state links weighed: function arm / methods arm 1.017 [0.514, 2.014], over the stream 1.718 [0.174, 16.919]; a checkpoint officefloor 0.678, spring 0.741
+- Reported, flow links weighed: function arm / methods arm not estimated (no data), over the stream not estimated (no data); a checkpoint officefloor 0.932, spring 0
+- Reported, lost links weighed: function arm / methods arm 2.873 [1.428, 5.781], over the stream 0.210 [0.018, 2.436]; a checkpoint officefloor 4.559, spring 3.931
+- Reported, without the logic in the model: arm 1.044 [0.904, 1.205], over the stream 2.135 [1.272, 3.585]; the methods arm's own rise over the stream 1.035 [0.534, 2.003]; links per e-fold logic 1.875 [1.538, 2.287]
 - Reported, officefloor: 59 checkpoints; links added a checkpoint 5.797 (call 4.186, state 0.678, flow 0.932; lost 2.305); over the thirds 4.650, 6.200, 6.579; links per position of logic 0.603; the tree's links per method at the end 1.701
+  - weighed: 12.102 a checkpoint (call 10.492, state 0.678, flow 0.932; lost 4.559); per position of logic 1.259
+  - its call links by caller: from wired functions 2.915, from other methods 1.271 (over the thirds 0.050, 1.800, 2.000); within the caller's class 0.847, across classes 3.339
 - Reported, spring: 58 checkpoints; links added a checkpoint 4.672 (call 3.931, state 0.741, flow 0.000; lost 1.655); over the thirds 4.300, 5.000, 4.722; links per position of logic 0.517; the tree's links per method at the end 1.779
+  - weighed: 10.966 a checkpoint (call 10.224, state 0.741, flow 0.000; lost 3.931); per position of logic 1.214
+  - its call links by caller: from wired functions 0.000, from other methods 3.931 (over the thirds 3.300, 4.400, 4.111); within the caller's class 1.552, across classes 2.379
 
 ## H6, shape does not draw code in
 

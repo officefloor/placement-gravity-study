@@ -103,7 +103,7 @@ Runs that need a pre-existing value 1181 over 2 chains; the slope of log(1 + bys
 
 ## H5, surface against volume
 
-Per checkpoint, the links it added between blocks of logic (the surface: a method calling a method, a method using a field that holds state, a function wired to the next), each counted once, an injected dependency not among them; against the logic it added (the volume). The function arm's ratio half-way through the stream, for the same logic, below 1, **and** its interaction with the checkpoint index below 1 (the gap widens); one-sided, 95% cluster-bootstrap intervals (chains resampled).
+Per checkpoint, the links it added between blocks of logic (the surface: a method calling a method, a method using a field that holds state, a function wired to the next), each weighed by the data it carries (a call 1, +1 per parameter, +1 if it returns a value; a state link 1; a wiring edge 1, +1 if it carries a value), an injected dependency weighing nothing; against the logic it added (the volume). The function arm's ratio half-way through the stream, for the same logic, below 1, **and** its interaction with the checkpoint index below 1 (the gap widens); one-sided, 95% cluster-bootstrap intervals (chains resampled).
 
 - **descriptive only**
 - Not testable on a history: its arms do not solve the same problems.

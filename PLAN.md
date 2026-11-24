@@ -2900,6 +2900,25 @@ binomial mixed model). These details are fixed with the code before any run is r
   again; to see whether that is where the function arm's calls are, a reported reading of its
   call links by caller (a wired function or another method) and by class was added after this
   (row 94), and the chain measured again.
+- **The development chain under rows 94 and 95** (24 November 2026, evening, `MEASURE_VERSION`
+  36; numbers of row 93; descriptive only). *H5 weighed:* the function arm's weight of links for
+  the same logic **1.06 [0.92, 1.23]**, about the methods arm's (the plain count 1.25 [1.06, 1.47]
+  as before), and the gap over the stream **1.73 [1.02, 2.92]**, the function arm's rising faster:
+  against the prediction. A checkpoint weighed 12.10 in OfficeFloor and 10.97 in Spring (calls
+  10.49 and 10.22; state 0.68 and 0.74; flow 0.93 and none). Every wiring edge weighed 1: on this
+  chain no edge carried a value; the data passed through `Out` and `@Val`. *The call links by
+  caller:* in OfficeFloor 2.92 a checkpoint from wired functions and 1.27 from other methods, the
+  latter **0.05, 1.80, 2.00 over the thirds**, so the helper methods the agent began writing
+  inside functions after the first third (§4.9) carry the function arm's rise; in Spring 3.93,
+  all from methods. Across classes 3.34 in OfficeFloor (mostly functions calling the objects
+  injected into them: repositories, mappers, stores) against 2.38 in Spring; within the caller's
+  class 0.85 against 1.55. The weighed links lost were higher in the function arm (4.56 against
+  3.93). **H5 is frozen as it stands** (the drafter's advice, the author agreeing on 24 November
+  2026): it was restated (row 89) and weighed (row 95) after the development chain had been
+  seen, each recorded, and a further change aimed at the same figure could not be defended; the
+  ui runs, not yet read, decide it, with the breakdown reported beside. A call made on an injected
+  object stays a call link (§4.2c): a call is control flow whatever its receiver. That was the
+  drafter's reading and is kept on that principle, not on these figures.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
@@ -3444,8 +3463,10 @@ author's to set, on the plan and code as they then stand, and starts the experim
   a wiring edge weighs 1, plus 1 where it carries a value ("1, +1 if it carries a value", against
   always 1); and the test runs on the weights with the plain count reported (against needing
   both). The author's earlier "the existence of the link is the coupling" is revised by this.
-- *To finish for rows 94 and 95:* the pilot measured again at `MEASURE_VERSION` 36, as below, for
-  the call links by caller and the weights (row 89's run at 34 is done and in §6). *As it stood for row 89:* the pilot measured again at `MEASURE_VERSION` 34 (`./step3_measure.sh
+- *Done for rows 94 and 95:* the pilot measured again at `MEASURE_VERSION` 36 (§6). **H5 frozen**
+  (the author, 24 November 2026, agreeing with the drafter): no further change to it before the ui
+  runs are read. *Still the author's to confirm before the tag:* that a call made on an injected
+  object is a call link (the drafter's reading, kept on principle, §6). *As it stood for row 89:* the pilot measured again at `MEASURE_VERSION` 34 (`./step3_measure.sh
   --analysis pilot`, then `./step4_analyse.sh --analysis pilot open-source-development` and
   `./step5_report.sh`); the histories are not affected (`HISTORY_VERSION` 14 stands). Then H7's
   development figures go into §6. The figure of §2 still shows the old H7. **H8 stays as it is**
