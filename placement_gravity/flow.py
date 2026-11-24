@@ -83,6 +83,12 @@ class Graph:
                     if name in self.fields.get(c, {}):
                         self.reads[i].add((c, f"#{name}"))
         self.flows = [set(f) for f in index.get("flows", [])]
+        # the fields of a class that hold state (Pull VERSION 17): not injected, not constants, not
+        # utilities; and each method's uses of its own class's fields (H7, PLAN.md 4.2c)
+        self.state: dict[str, set[str]] = defaultdict(set)
+        for f in files.values():
+            for c in f.get("classes", []):
+                self.state[simple(c["name"])].update(c.get("state") or [])
 
     def class_calls(self) -> dict[tuple[str, str], int]:
         """Calls followed from one class's methods to another's (H6, PLAN.md 4.2b), keyed by the
@@ -107,6 +113,26 @@ class Graph:
                            if k(i)[0] != k(j)[0]}
             self._cross |= {(k(i), f) for i, fs in enumerate(self.reads) for f in fs if k(i)[0] != f[0]}
         return self._cross
+
+    def links(self) -> dict[str, set]:
+        """The links between blocks of logic (H7, PLAN.md 4.2c, restated 24 November 2026), each
+        counted once however heavy: **call links**, a method to a method it calls, in its own class or
+        another (a call that may reach several overrides is a link to each), not to itself; and
+        **state links**, a method to a field holding state that it uses, of its own class or another's.
+        A field holding an injected dependency is not a state link, nor is a constant: injection is
+        not bound to the control flow. A method is (its class's simple name, its signature), a field
+        (its class's simple name, "#name")."""
+        if getattr(self, "_links", None) is None:
+            def k(i):
+                return simple(self.methods[i]["type"]), self.methods[i]["signature"]
+            calls = {(k(i), k(j)) for i, js in enumerate(self.out) for j in js if i != j}
+            state = set()
+            for i, m in enumerate(self.methods):
+                c = simple(m["type"])
+                state |= {(k(i), (c, f"#{x}")) for x in m.get("own", []) if x in self.state.get(c, ())}
+                state |= {(k(i), (rc, f)) for rc, f in self.reads[i] if f[1:] in self.state.get(rc, ())}
+            self._links = {"call": calls, "state": state}
+        return self._links
 
     def access(self) -> dict[tuple[str, str], str]:
         """Each method's and field's access (public, protected, package, private), by (class,

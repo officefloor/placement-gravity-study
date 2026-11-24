@@ -183,12 +183,16 @@ def wiring(repo: Path, rev: str, root: str = WIRING) -> dict:
 def parse_wiring(texts: dict[str, str]) -> dict:
     """Nodes, edges and lines of wiring files (path -> text). A node is a ``class:`` entry; an edge
     is a ``next:`` or an entry of an ``outputs:`` map; a line is a line that is neither blank nor only
-    a comment. ``largest_lines`` is the line count of the file with the most (PLAN.md §4.5)."""
+    a comment. ``largest_lines`` is the line count of the file with the most (PLAN.md §4.5).
+    ``links``: each edge as ``file|from|to``, the node it leaves and the node it names, once however
+    many outputs join the two (H7's flow links, PLAN.md 4.2c)."""
     nodes = edges = lines = 0
     largest, largest_lines = None, 0
+    links: set[str] = set()
     for f in sorted(texts):
         in_outputs = None
         own = 0
+        node = None
         for raw in texts[f].splitlines():
             line = raw.split("#", 1)[0].rstrip()
             if not line.strip():
@@ -198,19 +202,23 @@ def parse_wiring(texts: dict[str, str]) -> dict:
             key = line.strip()
             if in_outputs is not None and indent <= in_outputs:
                 in_outputs = None
+            if indent == 0 and key.endswith(":"):
+                node = key[:-1].strip()
             if key.startswith("class:"):
                 nodes += 1
             elif key.startswith("next:"):
                 edges += 1
+                links.add(f"{f}|{node}|{key.split(':', 1)[1].strip()}")
             elif key.startswith("outputs:"):
                 in_outputs = indent
             elif in_outputs is not None and ":" in key:
                 edges += 1
+                links.add(f"{f}|{node}|{key.split(':', 1)[1].strip()}")
         lines += own
         if own > largest_lines:
             largest, largest_lines = f, own
     return {"files": len(texts), "nodes": nodes, "edges": edges, "lines": lines,
-            "largest_file": largest, "largest_lines": largest_lines}
+            "largest_file": largest, "largest_lines": largest_lines, "links": sorted(links)}
 
 
 #: A Java token, for the system's size against a context window (PLAN.md 4.2f): comments and
@@ -288,7 +296,8 @@ def tree_places(repo: Path, cps: list, work: Path, java_src: str, wiring_root: s
 
 
 #: No wiring: an arm, or a history, without OfficeFloor configuration.
-NO_WIRING = {"files": 0, "nodes": 0, "edges": 0, "lines": 0, "largest_file": None, "largest_lines": 0}
+NO_WIRING = {"files": 0, "nodes": 0, "edges": 0, "lines": 0, "largest_file": None, "largest_lines": 0,
+             "links": []}
 
 
 def measure(repo: Path, branch: str, base_ref: str, work: Path, java_src: str = JAVA_SRC,

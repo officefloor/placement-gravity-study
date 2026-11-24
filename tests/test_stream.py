@@ -407,3 +407,60 @@ def test_growth_by_access_shares_the_positions_added_to_existing_classes():
              {"arm": "s", "added": "9", "net_added": "9", "class_new": "True", "bound_access": "private"}]
     g = prepare.growth_by_access(hosts)["s"]
     assert (g["total"], g["private_share"], g["package_share"], g["unbound_share"]) == (10, 0.6, 0.2, 0.2)
+
+
+SPRING = """package s;
+import org.springframework.stereotype.Service;
+@Service
+public class Owners {
+    private final Repo repo;
+    private static final int MAX = 3;
+    private int seen;
+    public Owners(Repo repo) { this.repo = repo; }
+    public int add(String name) {
+        int seen = 0;
+        this.seen++;
+        return check(name) + repo.count() + MAX + seen;
+    }
+    private int check(String name) { return name.length() + this.seen; }
+}
+"""
+REPO = """package s;
+public class Repo { int rows; public int count() { return rows; } }
+"""
+
+
+def test_links_count_calls_and_state_but_not_injection_or_constants(tmp_path):
+    """H7 (PLAN.md 4.2c, restated 24 November 2026): a link between blocks of logic is a call or a
+    use of a field holding state, each once; an injected dependency and a constant are not state."""
+    import json
+    import subprocess
+    from placement_gravity import chain, flow
+    src = tmp_path / "src" / "s"
+    src.mkdir(parents=True)
+    (src / "Owners.java").write_text(SPRING)
+    (src / "Repo.java").write_text(REPO)
+    (tmp_path / "places.tsv").write_text(f"cp01\t{tmp_path / 'src'}\n")
+    subprocess.run(["java", "-cp", chain.CLASSPATH, "Pull", "--places", str(tmp_path / "places.tsv"),
+                    str(tmp_path / "places.jsonl")], check=True)
+    files = {r["path"]: r for r in map(json.loads, (tmp_path / "places.jsonl").read_text().splitlines())}
+    owners = files["s/Owners.java"]
+    assert owners["classes"][0]["state"] == ["seen"]                  # repo injected, MAX a constant
+    own = {m["name"]: m["own"] for m in owners["methods"]}
+    assert own["add"] == ["MAX", "repo", "seen"]                      # this.seen; the local seen shadows
+    assert own["check"] == ["seen"]
+    links = flow.Graph({"files": files}).links()
+    assert links["call"] == {(("Owners", "add(String)"), ("Owners", "check(String)")),
+                             (("Owners", "add(String)"), ("Repo", "count()"))}
+    assert links["state"] == {(("Owners", "add(String)"), ("Owners", "#seen")),
+                              (("Owners", "check(String)"), ("Owners", "#seen")),
+                              (("Repo", "count()"), ("Repo", "#rows"))}
+    # per checkpoint: the links added, Java against the next tree, the wiring against its commit
+    empty = {"files": {}, "flows": []}
+    measured = {"places": {"cp01": empty, "cp02": {"files": files, "flows": []}, "cp03": {"files": files, "flows": []}},
+                "wiring": {"cp01": {"before": chain.NO_WIRING, "after": {**chain.NO_WIRING, "links": ["f|a|b"]}},
+                           "cp02": {"before": {**chain.NO_WIRING, "links": ["f|a|b"]},
+                                    "after": {**chain.NO_WIRING, "links": ["f|a|b"]}}}}
+    r1, r2 = tables.link_rows("spring", "c", measured)
+    assert (r1["call_links_added"], r1["state_links_added"], r1["flow_links_added"], r1["links_added"]) == (2, 3, 1, 6)
+    assert (r2["links_added"], r2["links_lost"], r2["call_links"], r2["methods"]) == (0, 0, 2, 4)

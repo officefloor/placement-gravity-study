@@ -507,6 +507,38 @@ def edge_rows(arm: str, chain: str, hosts: list[dict], measured: dict) -> list[d
     return out
 
 
+def link_rows(arm: str, chain: str, measured: dict) -> list[dict]:
+    """Surface against volume (H7, PLAN.md 4.2c, restated 24 November 2026): per checkpoint, the
+    links between blocks of logic it added and lost, by kind: **call** (a method to a method it
+    calls), **state** (a method to a field holding state that it uses; not an injected dependency,
+    not a constant) and **flow** (an edge of the OfficeFloor wiring, one function to the next). A
+    link is counted once, however heavy. Java links compare the tree before the checkpoint with the
+    tree before the next; the wiring compares the checkpoint's parent with its commit. The last
+    checkpoint has no tree after it and no row. With the tree's totals before it (``*_links``) and its
+    methods."""
+    trees, after = _trees(measured)
+    rows = []
+    for cp in sorted(trees):
+        if cp not in after:
+            continue
+        g0, g1 = _graph(trees[cp]), _graph(trees[after[cp]])
+        l0, l1 = g0.links(), g1.links()
+        w = (measured.get("wiring") or {}).get(f"cp{cp:02d}") or {}
+        f0 = set((w.get("before") or {}).get("links") or [])
+        f1 = set((w.get("after") or {}).get("links") or [])
+        row = {"arm": arm, "chain": chain, "cp": cp}
+        for kind, a, b in (("call", l0["call"], l1["call"]), ("state", l0["state"], l1["state"]),
+                           ("flow", f0, f1)):
+            row[f"{kind}_links_added"] = len(b - a)
+            row[f"{kind}_links_lost"] = len(a - b)
+            row[f"{kind}_links"] = len(a)
+        row["links_added"] = sum(row[f"{k}_links_added"] for k in ("call", "state", "flow"))
+        row["links_lost"] = sum(row[f"{k}_links_lost"] for k in ("call", "state", "flow"))
+        row["methods"] = len(g0.methods)
+        rows.append(row)
+    return rows
+
+
 #: RefactoringMiner's kinds that split a class or move members between classes (the redesign
 #: reading's check, PLAN.md 4.2d).
 SPLITS = {"Extract Class", "Extract Subclass"}

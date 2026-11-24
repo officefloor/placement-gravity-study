@@ -35,11 +35,15 @@
   and point in the stream: the spread's rate ratio on forced shown below the upper margin (1.25).
   Not supported when its interval lies wholly above the margin; unresolved when it reaches above
   it. (Until then, *forced changes spread*: the ratio above 1.) The spread's rise is reported.
-- **H7** (20 November 2026): in the methods arm, a class with a placement forced at the class
-  gains more calls across its boundary (outward and inward) in that unit than one without, at the
-  same point in the stream and of the same size, with the class's intercept: the rate ratio on
-  forced above 1 (one-sided, cluster bootstrap). Reversed if its interval lies wholly below 1. Whether those calls reach members the unit exposed or widened is
-  reported.
+- **H7, surface against volume** (restated 24 November 2026, PLAN.md §9 row 89; the author's):
+  for the same logic added (the volume), the function arm adds fewer links between blocks of logic
+  (the surface: call, state and flow links, each counted once, injection not among them) half-way
+  through the stream, the rate ratio below 1, **and** the gap widens, the arm's interaction with the
+  checkpoint index below 1 (p = the larger of the two one-sided bootstrap p-values, as H4).
+  Reversed if the arm's interval lies wholly above 1. Not testable on a history (no arms solving
+  the same problems). (Until 24 November 2026, *forced changes couple*: in the methods arm the
+  calls a forced class gained across its boundary, the ratio on forced above 1; deleted the same
+  day, PLAN.md §9 row 90.)
 - **Two tiers** (decided by the author on 21 November 2026): the **confirmatory** family is the
   force and its two outlets, with the control: H2, H4, H5 and H7, Holm over the four at α = 0.05
   (H6 left it when restated, later the same day). H1, H3 and H6 are **secondary**: each keeps its
@@ -213,12 +217,16 @@ def h6(est: dict) -> dict:
 
 
 def h7(est: dict) -> dict:
+    """Surface against volume (restated 24 November 2026): fewer links for the same logic in the
+    function arm, and a gap that widens over the stream; both below 1."""
     x = est.get("H7") or {}
-    fo = x.get("forced")
-    if not _ok(fo):
+    if x.get("not_applicable"):
+        return {"p": None, "verdict": "not testable", "state": "a history", "detail": x}
+    arm, trend = x.get("arm"), x.get("trend")
+    if not (_ok(arm) and _ok(trend)) or "irr_upper" not in arm or "irr_upper" not in trend:
         return {"p": None, "verdict": "not estimable", "detail": x}
-    return {"p": fo["p_greater"], "reversed": fo["irr_upper"] < 1,
-            "conditions_met": fo["irr_lower"] > 1, "detail": x}
+    return {"p": max(arm["p_less"], trend["p_less"]), "reversed": arm["irr_lower"] > 1,
+            "conditions_met": arm["irr_upper"] < 1 and trend["irr_upper"] < 1, "detail": x}
 
 
 def h8(est: dict, cond: dict) -> dict:

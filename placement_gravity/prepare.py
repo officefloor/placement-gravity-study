@@ -22,9 +22,14 @@ Writes data/analysis/<name>/:
 - ``h6.csv``: one row per unit that placed or edited code, with the classes it did so in and
   whether a placement in it was forced at the class (H6, PLAN.md §4.2b); ``pairs.csv``: one row
   per unit and pair of classes it changed together, with the calls between them before it.
-- ``h7.csv``: one row per unit and existing class it changed, with the calls across the class's
-  boundary the unit added, by the member they reach (already open, exposed, widened), and whether
-  a placement in the class was forced (H7, PLAN.md §4.2c).
+- ``h7.csv``: one row per checkpoint and chain, the links between blocks of logic it added (call,
+  state, flow) and the logic it added (H7, surface against volume, PLAN.md §4.2c, restated 24
+  November 2026). Corpus A only.
+- ``calls_across.csv``: one row per unit and existing class it changed, with the calls across the
+  class's boundary the unit added, by the member they reach (already open, exposed, widened), and
+  whether a placement in the class was forced (PLAN.md §4.2c): H8's dispersion, and the reader
+  reading. (The old H7, *forced changes couple*, was read on it until it was deleted on 24 November
+  2026.)
 - ``surface.csv``: one row per class a unit changed, its volume (methods, positions) and surface
   (calls out and in) before and after, and per class of each chain's last tree (PLAN.md §4.2e).
 - ``spec.json``: what the R models need (seed, resamples, the equivalence margin, the shape measures
@@ -384,8 +389,55 @@ def co_change(pairs: list[dict], top: int = 10) -> dict:
     return out
 
 
-def h7_rows(enc: list[dict], host_rows: list[dict] | None = None) -> list[dict]:
-    """Forced coupling (H7, PLAN.md 4.2c): one row per unit and existing class it changed, with the
+def h7_rows(links: list[dict], split: list[dict]) -> list[dict]:
+    """Surface against volume (H7, PLAN.md 4.2c, restated 24 November 2026): per checkpoint and
+    chain, the links between blocks of logic it added (``links_added``: call, state and flow, each
+    counted once, injection not among them) and the logic it added (``logic_added``, the volume,
+    from the logic and organisation reading, §4.9). Only checkpoints with both: the last has no tree
+    after it, and a no-op checkpoint's lines are not read."""
+    logic = {(r["chain_id"], int(r["cp"])): r for r in split}
+    out = []
+    for r in links:
+        s = logic.get((r["chain_id"], int(r["cp"])))
+        if s is None:
+            continue
+        row = {"chain_id": r["chain_id"], "arm": r["arm"], "frontend": r.get("frontend", ""), "cp": int(r["cp"]),
+               "logic_added": int(s["logic_added"])}
+        row.update({k: int(num(r.get(k), 0)) for k in (
+            "links_added", "links_lost", "call_links_added", "state_links_added", "flow_links_added",
+            "call_links_lost", "state_links_lost", "flow_links_lost", "call_links", "state_links",
+            "flow_links", "methods")})
+        out.append(row)
+    return out
+
+
+def links_summary(rows: list[dict], checkpoints: int) -> dict:
+    """Per arm, the links added a checkpoint by kind and over the thirds of the stream, per unit of
+    logic added, and the tree's links per method at the last checkpoint read (H7, reported beside)."""
+    out = {}
+    for arm in sorted({r["arm"] for r in rows}):
+        rs = [r for r in rows if r["arm"] == arm]
+        third = lambda r: min(3, 1 + 3 * (r["cp"] - 1) // max(checkpoints, 1))
+        mean = lambda k, xs: statistics.fmean(r[k] for r in xs) if xs else None
+        logic = sum(r["logic_added"] for r in rs)
+        last = {}
+        for r in rs:
+            if r["cp"] >= last.get(r["chain_id"], {}).get("cp", -1):
+                last[r["chain_id"]] = r
+        ends = list(last.values())
+        out[arm] = {"checkpoints": len(rs),
+                    **{k: mean(k, rs) for k in ("links_added", "call_links_added", "state_links_added",
+                                                 "flow_links_added", "links_lost", "logic_added")},
+                    "thirds": {str(t): mean("links_added", [r for r in rs if third(r) == t]) for t in (1, 2, 3)},
+                    "links_per_logic": sum(r["links_added"] for r in rs) / logic if logic else None,
+                    "tree_links_per_method": statistics.fmean(
+                        (r["call_links"] + r["state_links"] + r["flow_links"]) / r["methods"]
+                        for r in ends if r["methods"]) if any(r["methods"] for r in ends) else None}
+    return out
+
+
+def calls_across_rows(enc: list[dict], host_rows: list[dict] | None = None) -> list[dict]:
+    """Calls across the encapsulation (PLAN.md 4.2c; H8's dispersion): one row per unit and existing class it changed, with the
     calls across the class's boundary the unit added (``coupled``, outward and inward), how many of
     those reach a member the unit exposed or widened (``opened``), and whether the class had a
     placement forced at the class; and the change's size in the class, the positions it added there
@@ -411,29 +463,6 @@ def h7_rows(enc: list[dict], host_rows: list[dict] | None = None) -> list[dict]:
                     "chosen": truth(r["chosen"]), **n,
                     "coupled": n["new_out"] + n["new_in"],
                     "opened": n["out_exposed"] + n["out_widened"] + n["in_exposed"] + n["in_widened"]})
-    return out
-
-
-def encapsulation_summary(h7: list[dict]) -> dict:
-    """Per arm, forced class rows against the others: the calls across the boundary added a row,
-    outward and inward, the share of them reaching a member the unit exposed or widened, and the
-    members a row exposed or widened."""
-    out: dict[str, dict] = {}
-    for arm in sorted({r["arm"] for r in h7}):
-        a = {}
-        for lab, rows in (("forced", [r for r in h7 if r["arm"] == arm and r["forced"]]),
-                          ("unforced", [r for r in h7 if r["arm"] == arm and not r["forced"]])):
-            n = len(rows)
-            c = sum(r["coupled"] for r in rows)
-            a[lab] = {"rows": n,
-                      "coupled": c / n if n else None,
-                      "out": sum(r["new_out"] for r in rows) / n if n else None,
-                      "in": sum(r["new_in"] for r in rows) / n if n else None,
-                      "opened_share": sum(r["opened"] for r in rows) / c if c else None,
-                      "widened": sum(r["out_widened"] + r["in_widened"] for r in rows),
-                      "exposed": sum(r["out_exposed"] + r["in_exposed"] for r in rows),
-                      "members_opened": sum(r["members_opened"] for r in rows) / n if n else None}
-        out[arm] = a
     return out
 
 
@@ -1090,8 +1119,10 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
     paired = pair_rows(table("pairs"))
     write_csv(out / "pairs.csv", paired)
     coupled = table("coupling")
-    h7 = h7_rows(table("encapsulation"), hosts)
-    write_csv(out / "h7.csv", h7)
+    h7 = calls_across_rows(table("encapsulation"), hosts)
+    write_csv(out / "calls_across.csv", h7)
+    surfaced = [] if past else h7_rows(table("links"), split)
+    write_csv(out / "h7.csv", surfaced)
     write_csv(out / "surface.csv", surface_rows(table("boundary")))
     edges = table("edges")
     rippled = ripple(hosts, edges)
@@ -1152,8 +1183,8 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
         "validation": checked,
         "validation_flags": validate.flags(checked),
         "split": split_summary(split, len(streamed)),
+        "links": links_summary(surfaced, len(streamed)),
         "coupling_added": coupling_accounting(paired, coupled, h6),
-        "encapsulation": encapsulation_summary(h7),
         "coupling_source": coupling_source(h7, edges),
         "redesign": redesign(hosts, paired),
         "ripple": rippled,

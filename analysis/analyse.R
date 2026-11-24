@@ -821,21 +821,16 @@ if (!is.null(h6) && nrow(h6) > 0) {
   }
 }
 
-# ---------------------------------------------------------------- H7: forced changes couple
+# ---------------------------------------------------------------- calls across the encapsulation (H8)
 # Per unit and class that existed before it that the unit changed, the calls across the class's
-# boundary the unit added, outward and inward (coupled; PLAN.md 4.2c). H7's test, in the methods
-# arm: a negative binomial model of coupled on whether a placement in the class was forced at the
-# class, with the index scaled from 0 to 1, the chain's intercept and the class's within the chain
-# (22 November 2026: one class is changed by many units, and its rows are not independent; dropped,
-# and recorded, where the model cannot then be fitted), decided on the cluster bootstrap (forced: the ratio of a forced
-# class row's added coupling to another's, at the same point in the stream), one-sided above 1.
-# Reported: the same for the calls reaching a member the unit exposed or widened (opened), for the
-# outward and inward calls apart, and for the members the class opened; coupled's rise over the
-# stream; the function arm's forced ratio; the arms' contrast. Poisson where the negative binomial
-# cannot be fitted, recorded. Every H7 model holds the change's size in the class fixed, as H6's
-# (log(1 + positions added there), log(1 + methods changed there)); the forced ratio without them
-# is reported.
-h7 <- read("h7.csv")
+# boundary the unit added, outward and inward (coupled; PLAN.md 4.2c). H8's *dispersion stronger*
+# (Run D, PLAN.md 3.1a): the arms against each other in the calls added, at the same point in the
+# stream (the index scaled from 0 to 1) and change size (log(1 + positions added there), log(1 +
+# methods changed there)), forced not in the model (the instruction changes what is forced), with
+# the chain's intercept and the class's within the chain, decided on the cluster bootstrap; Poisson
+# where the negative binomial cannot be fitted, recorded. (Until 24 November 2026 the old H7,
+# *forced changes couple*, was read on these rows too; deleted, PLAN.md 9 row 90.)
+h7 <- read("calls_across.csv")
 if (!is.null(h7) && nrow(h7) > 0) {
   h7$arm <- as_arm(h7$arm)
   span7 <- max(spec$checkpoints - 1, 1)
@@ -862,32 +857,8 @@ if (!is.null(h7) && nrow(h7) > 0) {
     list(fit = fit_or_error(glmmTMB(f, data = d, family = poisson())), family = "poisson", formula = f,
          fam = poisson(), class_intercept = FALSE, data = d)
   }
-  one7 <- function(m, term, n) c(irr(wald(m$fit, term)), list(n = n, family = m$family,
-                                                              class_intercept = isTRUE(m$class_intercept)))
-  dm <- h7[h7$arm == spec$methods_arm, ]
-  df <- h7[h7$arm == spec$function_arm, ]
   sz7 <- SIZE(h7)
-  m7 <- fit7(dm, "coupled", paste0("forced + x", sz7))
-  res$H7 <- list(forced = c(
-    if (is.null(m7$formula)) irr(wald(m7$fit, "forced")) else
-      boot_irr(m7$fit, m7$formula, m7$data, m7$fam, "forced", nest = if (isTRUE(m7$class_intercept)) "class" else NULL),
-    list(n = nrow(dm), family = m7$family, class_intercept = isTRUE(m7$class_intercept))))
-  res$reported$H7_forced_without_size <- one7(fit7(dm, "coupled", "forced + x"), "forced", nrow(dm))
-  if ("forced_bind" %in% names(dm)) {
-    db <- dm
-    db$forced <- as.numeric(as.logical(db$forced_bind))
-    res$reported$H7_forced_bind <- one7(fit7(db, "coupled", paste0("forced + x", sz7)), "forced", nrow(db))
-  }
-  for (y in c("opened", "new_out", "new_in", "members_opened"))
-    res$reported[[paste0("H7_forced_", y)]] <- one7(fit7(dm, y, paste0("forced + x", sz7)), "forced", nrow(dm))
-  res$reported$H7_rise <- one7(fit7(dm, "coupled", paste0("x", sz7)), "x", nrow(dm))
-  res$reported$H7_function_arm_forced <- irr(wald(fit7(df, "coupled", paste0("forced + x", sz7))$fit, "forced"))
   if (multi(as.character(h7$arm)) && !all(h7$coupled == 0)) {
-    fa <- fit_or_error(glmmTMB(as.formula(paste0("coupled ~ forced + x + arm", sz7, " + (1 | chain_id)")), data = h7, family = nbinom2()))
-    res$reported$H7_arm <- irr(wald(fa, FARM))
-    # the arms against each other in the calls added at the same change size, forced not in the
-    # model (the arm may change what is forced): the dispersion part of the no-encapsulation test
-    # (Run D, PLAN.md 3.1a), decided on the cluster bootstrap
     ha <- h7
     ha$arm <- droplevels(ha$arm)
     mc <- fit7(ha, "coupled", paste0("x + arm", sz7))
@@ -896,6 +867,63 @@ if (!is.null(h7) && nrow(h7) > 0) {
         boot_irr(mc$fit, mc$formula, mc$data, mc$fam, FARM, nest = if (isTRUE(mc$class_intercept)) "class" else NULL),
       list(n = nrow(ha), family = mc$family, class_intercept = isTRUE(mc$class_intercept)))
   }
+}
+
+# ---------------------------------------------------------------- H7: surface against volume
+# Restated 24 November 2026 (PLAN.md §2, §4.2c, §9 row 89; the author's). The volume is the logic a
+# checkpoint added (the essential complexity: the statements of method bodies, §4.9); the surface
+# is the links it added between blocks of logic (the accidental complexity of getting them run and
+# supplied with data): call links, state links and the wiring's flow links, each counted once,
+# injection not among them. A negative binomial mixed model of the links added on the arm, the
+# checkpoint index centred at the middle of the stream and scaled to its length, their interaction,
+# and log(1 + logic added), with the chain's and the checkpoint's intercepts. Shaped as H4: the
+# function arm's ratio half-way through below 1 (fewer links for the same logic), **and** its
+# interaction with the index below 1 (the gap widens over the stream). Both from one cluster
+# bootstrap (chains resampled within arm). Reported: each kind of link apart, the same model
+# without the logic, and the methods arm's own rise over the stream.
+boot_irrs <- function(fit, formula, d, family, terms) {
+  ws <- lapply(setNames(terms, terms), function(t) irr(wald(fit, t)))
+  if (any(vapply(ws, function(w) !is.null(w$error), logical(1)))) return(ws)
+  chains <- tapply(d$chain_id, as.character(d$arm), function(v) length(unique(v)))
+  if (min(chains) < 2) return(lapply(ws, function(w) c(w, list(interval = "wald: one chain in an arm"))))
+  draws <- cluster_boot(d, formula, family, terms, spec$boot)
+  lapply(setNames(terms, terms), function(t) {
+    if (sum(!is.na(draws[, t])) < max(2, spec$boot / 2))
+      return(c(ws[[t]], list(interval = "wald: fewer than half the bootstrap refits could be fitted",
+                             failed = sum(is.na(draws[, t])))))
+    b <- boot_summary(fit, draws, t)
+    c(b, list(irr = exp(b$estimate), irr_lower = exp(b$lower), irr_upper = exp(b$upper),
+              level = 0.95, interval = "cluster bootstrap", wald = ws[[t]]))
+  })
+}
+lk <- read("h7.csv")
+if (isFALSE(spec$problem_fixed)) {
+  res$H7 <- list(not_applicable = TRUE)       # a history: no arms solving the same problems
+} else if (is.null(lk) || nrow(lk) == 0 || !multi(lk$arm)) {
+  res$H7 <- list(error = "no links measured in both arms")
+} else {
+  lk <- lk[as.character(lk$arm) %in% c(spec$methods_arm, spec$function_arm), ]
+  lk$arm <- droplevels(as_arm(as.character(lk$arm)))
+  lk$cp_c <- (lk$cp - (max(spec$checkpoints, 1) + 1) / 2) / max(spec$checkpoints - 1, 1)
+  fe_l <- if (multi(lk$frontend)) " + frontend" else ""
+  TREND <- paste0("cp_c:", FARM)
+  ml <- fit_cp(paste0("links_added ~ cp_c * arm + log1p(logic_added)", fe_l), lk, nbinom2())
+  note("H7", ml)
+  per <- function(y) as.list(tapply(lk[[y]], as.character(lk$arm), mean))
+  b <- boot_irrs(ml$fit, ml$formula, ml$data, nbinom2(), c(FARM, TREND))
+  res$H7 <- list(arm = b[[FARM]], trend = b[[TREND]], n = nrow(lk), checkpoint_intercept = ml$cp,
+                 links_added = per("links_added"), logic_added = per("logic_added"))
+  kind <- function(y) {
+    if (any(unlist(per(y)) == 0)) return(list(error = paste("no", y, "in an arm"), mean = per(y)))
+    m <- fit_cp(paste0(y, " ~ cp_c * arm + log1p(logic_added)", fe_l), lk, nbinom2())$fit
+    list(arm = irr(wald(m, FARM)), trend = irr(wald(m, TREND)), mean = per(y))
+  }
+  res$reported$H7_kinds <- lapply(c(call = "call_links_added", state = "state_links_added",
+                                    flow = "flow_links_added", lost = "links_lost"), kind)
+  mn <- fit_cp(paste0("links_added ~ cp_c * arm", fe_l), lk, nbinom2())$fit
+  res$reported$H7_without_logic <- list(arm = irr(wald(mn, FARM)), trend = irr(wald(mn, TREND)))
+  res$reported$H7_methods_rise <- irr(wald(ml$fit, "cp_c"))
+  res$reported$H7_logic <- irr(wald(ml$fit, "log1p(logic_added)"))
 }
 
 # ---------------------------------------------------------------- surface against volume (reported)

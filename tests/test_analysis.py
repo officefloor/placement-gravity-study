@@ -292,7 +292,8 @@ def test_reversed_and_holm_failures():
     e["H5"] = {"margin": [0.8, 1.25], "class": {"irr": 0.6, "irr_lower": 0.4, "irr_upper": 0.9, "p_less": 0.02}}
     up = {"irr": 1.5, "irr_lower": 1.1, "irr_upper": 2.0, "p_greater": 0.02}
     e["H6"] = {"margin": [0.8, 1.25], "forced": {"irr": 0.9, "irr_lower": 0.7, "irr_upper": 1.1, "p_upper": 0.02}}
-    e["H7"] = {"forced": up}
+    e["H7"] = {"arm": {"irr": 0.6, "irr_lower": 0.4, "irr_upper": 0.9, "p_less": 0.02},
+               "trend": {"irr": 0.7, "irr_lower": 0.5, "irr_upper": 0.95, "p_less": 0.02}}
     v = verdict.decide(e, COND)["hypotheses"]
     assert v["H2"]["p_holm"] == pytest.approx(0.08) and v["H2"]["verdict"] == "not supported"
     assert v["H1"]["p_holm"] == pytest.approx(0.02) and v["H1"]["verdict"] == "supported"
@@ -325,7 +326,7 @@ def test_the_report_names_every_hypothesis_and_commit():
     cond = {**COND, "chains": {"spring": 9, "officefloor": 9}}
     heads = [{"arm": "spring", "run": "r", "chain": 1, "excluded": False, "sha": "a" * 40}]
     md = report.render("petclinic-primary", "primary", est, ver, cond, {"shape_counts": {}}, heads)
-    for k in ("H1", "H2", "H3", "H4", "supported", "`aaaaaaaaaaaa`", "s3_junction", "At the class (the private members the code was bound to)", "H5, choice narrows", "H6, spread does not see it", "H7, forced changes couple", "Within a class",
+    for k in ("H1", "H2", "H3", "H4", "supported", "`aaaaaaaaaaaa`", "s3_junction", "At the class (the private members the code was bound to)", "H5, choice narrows", "H6, spread does not see it", "H7, surface against volume", "Within a class",
               "the sinew measures", "s3_junction at the method 1.400 [1.100, 1.800]",
               "Later intrusion where bound code was placed"):
         assert k in md
@@ -498,18 +499,38 @@ def test_h8_run_d_needs_less_coming_back_more_coupling_compliance_and_the_amount
     assert prepare.compliance(members, "open") == {"arm": "open", "introduced": 10, "private": 1, "share": 0.9}
 
 
-def test_h7_forced_classes_that_gain_more_coupling_are_supported():
-    up = {"irr": 1.8, "irr_lower": 1.3, "irr_upper": 2.4, "p_greater": 0.001}
-    assert verdict.decide(estimates(H7={"forced": up}), COND)["hypotheses"]["H7"]["verdict"] == "supported"
-    down = {"irr": 0.6, "irr_lower": 0.4, "irr_upper": 0.9, "p_greater": 0.99}
-    assert verdict.decide(estimates(H7={"forced": down}), COND)["hypotheses"]["H7"]["verdict"] == "reversed"
-    assert verdict.decide(estimates(H7={"forced": {"error": "no coupled"}}), COND)["hypotheses"]["H7"]["verdict"] \
-        == "not estimable"
-    rows = prepare.h7_rows([{"chain_id": "s/r/c1", "arm": "spring", "cp": 2, "class": "A", "forced": "True",
-                             "chosen": "False", "new_out": 3, "new_in": 1, "out_exposed": 1, "in_widened": 1}])
+def test_h7_fewer_links_for_the_same_logic_and_a_widening_gap_are_both_needed():
+    # restated 24 November 2026 (PLAN.md 9 row 89): shaped as H4, both terms below 1
+    lo = {"irr": 0.6, "irr_lower": 0.4, "irr_upper": 0.9, "p_less": 0.001}
+    flat = {"irr": 1.0, "irr_lower": 0.8, "irr_upper": 1.2, "p_less": 0.5}
+    hi = {"irr": 1.6, "irr_lower": 1.2, "irr_upper": 2.1, "p_less": 0.999}
+
+    def v(**h7):
+        return verdict.decide(estimates(H7=h7), COND)["hypotheses"]["H7"]
+    assert v(arm=lo, trend=lo)["verdict"] == "supported"
+    assert v(arm=lo, trend=flat)["verdict"] == "not supported"     # fewer, but the gap does not widen
+    assert v(arm=lo, trend=flat)["p"] == 0.5
+    assert v(arm=hi, trend=lo)["verdict"] == "reversed"
+    assert v(arm={"error": "no links"}, trend=lo)["verdict"] == "not estimable"
+    assert v(not_applicable=True)["verdict"] == "not testable"     # a history
+
+
+def test_h7_rows_join_the_links_to_the_logic_added():
+    links = [{"chain_id": "s/r/c1", "arm": "spring", "cp": "2", "links_added": "5", "call_links_added": "3",
+              "state_links_added": "2", "flow_links_added": "0", "call_links": "10", "state_links": "4",
+              "flow_links": "0", "methods": "7"},
+             {"chain_id": "s/r/c1", "arm": "spring", "cp": "3", "links_added": "1"}]     # no logic read
+    split = [{"chain_id": "s/r/c1", "cp": 2, "logic_added": 9}]
+    rows = prepare.h7_rows(links, split)
+    assert len(rows) == 1 and (rows[0]["links_added"], rows[0]["logic_added"], rows[0]["methods"]) == (5, 9, 7)
+    s = prepare.links_summary(rows, 3)["spring"]
+    assert s["links_per_logic"] == 5 / 9 and s["tree_links_per_method"] == 2.0
+
+
+def test_calls_across_rows_count_the_calls_a_class_gained_and_those_reaching_opened_members():
+    rows = prepare.calls_across_rows([{"chain_id": "s/r/c1", "arm": "spring", "cp": 2, "class": "A", "forced": "True",
+                                       "chosen": "False", "new_out": 3, "new_in": 1, "out_exposed": 1, "in_widened": 1}])
     assert (rows[0]["coupled"], rows[0]["opened"], rows[0]["forced"]) == (4, 2, True)
-    s = prepare.encapsulation_summary(rows)["spring"]
-    assert (s["forced"]["coupled"], s["forced"]["opened_share"], s["unforced"]["rows"]) == (4, 0.5, 0)
 
 
 def test_forced_coupling_is_sorted_into_contained_the_problem_reuse_and_other():

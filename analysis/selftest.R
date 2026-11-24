@@ -134,6 +134,21 @@ split <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, fu
              method_values_added = rpois(60, 5), fields_added = rpois(60, 0.5), organisation_all = dl + wl + 1)
 }))))
 write.csv(split, file.path(dir, "split.csv"), row.names = FALSE)
+# surface against volume (H7, restated 24 November 2026), on its own random stream so that the
+# simulations after it keep their draws: links added rise with the logic added; at
+# the middle of the stream the function arm adds 0.6 times the links for the same logic, and where
+# the methods arm's double over the stream the function arm's stay flat (the trend ratio 0.5)
+kept_seed <- .Random.seed
+set.seed(20261124)
+lk <- do.call(rbind, lapply(seq_len(nrow(split)), function(i) split[i, c("chain_id", "arm", "frontend", "cp", "logic_added")]))
+grow <- ifelse(lk$arm == "spring", exp(log(2) * (lk$cp - 30.5) / 59), 0.6)
+lk$links_added <- rnbinom(nrow(lk), size = 6, mu = 0.8 * (1 + lk$logic_added)^0.8 * grow)
+lk$flow_links_added <- ifelse(lk$arm == "spring", 0, rbinom(nrow(lk), lk$links_added, 0.4))
+lk$state_links_added <- rbinom(nrow(lk), lk$links_added - lk$flow_links_added, 0.4)
+lk$call_links_added <- lk$links_added - lk$flow_links_added - lk$state_links_added
+lk$links_lost <- rpois(nrow(lk), 1)
+write.csv(lk, file.path(dir, "h7.csv"), row.names = FALSE)
+assign(".Random.seed", kept_seed, envir = .GlobalEnv)
 write.csv(by, file.path(dir, "by.csv"), row.names = FALSE)
 write.csv(cap, file.path(dir, "capture.csv"), row.names = FALSE)
 write.csv(h1, file.path(dir, "h1.csv"), row.names = FALSE)
@@ -179,8 +194,7 @@ pairs <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, fu
   }))
 }))))
 write.csv(pairs, file.path(dir, "pairs.csv"), row.names = FALSE)
-# forced coupling (H7): in the methods arm a forced class gains twice the calls across its boundary,
-# half of them to members the unit opened; the function arm's forced classes gain no more
+# calls across the encapsulation (H8's dispersion; the old H7's rows until 24 November 2026): in the methods arm
 h7 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
   n <- 100
   forced <- rbinom(n, 1, 0.4) == 1
@@ -196,7 +210,7 @@ h7 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
              class = paste0("C", k), forced = forced, chosen = !forced, new_out = out, new_in = inn,
              coupled = out + inn, opened = op, members_opened = rpois(n, ifelse(forced, 1, 0.5)))
 }))))
-write.csv(h7, file.path(dir, "h7.csv"), row.names = FALSE)
+write.csv(h7, file.path(dir, "calls_across.csv"), row.names = FALSE)
 # surface against volume: across classes the surface grows as volume^0.7 in the methods arm; a class
 # that grows gains surface as volume^1.3; a forced change adds 3 more calls at the same volume added
 sf <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
@@ -396,9 +410,17 @@ check(e$reported$H6_forced_without_size$irr > e$H6$forced$irr * 1.2, "without th
 check(abs(log(e$reported$H6_function_arm$irr)) < 0.35, "the function arm's flat spread is reported")
 check(!is.null(e$reported$H6_spread$methods$thirds_classes), "the spread per third is reported")
 check(abs(log(e$reported$H6_pair_coupling$irr) - log(3)) < 0.35, "the rising coupling of pairs changed together is recovered")
-check(abs(log(e$H7$forced$irr) - log(2)) < 0.25 && e$H7$forced$irr_lower > 1, "H7 recovers forced classes gaining twice the coupling")
-check(isTRUE(e$H7$forced$class_intercept) && e$H7$forced$interval == "cluster bootstrap",
-      "H7 carries the class's intercept within the chain and is decided on the cluster bootstrap")
+check(is.null(e$reported$H7_retired_forced) && is.null(e$H7$forced), "the old H7 is gone")
+check(identical(e$coupled_arm$interval, "cluster bootstrap"),
+      "H8's calls across the encapsulation are decided on the cluster bootstrap")
+check(abs(log(e$H7$arm$irr) - log(0.6)) < 0.2 && e$H7$arm$irr_upper < 1 && e$H7$arm$interval == "cluster bootstrap",
+      "H7 recovers the function arm's 0.6 times the links for the same logic, on the cluster bootstrap")
+check(abs(log(e$H7$trend$irr) - log(0.5)) < 0.3 && e$H7$trend$irr_upper < 1 && e$H7$trend$interval == "cluster bootstrap",
+      "H7 recovers the gap widening over the stream (the trend ratio 0.5)")
+check(abs(log(e$reported$H7_methods_rise$irr) - log(2)) < 0.3, "the methods arm's links doubling over the stream is reported")
+check(abs(e$reported$H7_logic$estimate - 0.8) < 0.15, "links rising as logic^0.8 is recovered")
+check(is.null(e$reported$H7_kinds$flow$arm) && !is.null(e$reported$H7_kinds$call$arm$irr),
+      "each kind of link is reported; flow links, none in the methods arm, have no ratio")
 check(abs(log(e$coupled_arm$irr) - log(1 / 1.4)) < 0.3,
       "the arms' ratio in calls added at the same change size (Run D's dispersion test) is estimated")
 check(e$H2$class$interval == "cluster bootstrap" && e$H4$intrusion_class$interval == "cluster bootstrap",
@@ -406,8 +428,6 @@ check(e$H2$class$interval == "cluster bootstrap" && e$H4$intrusion_class$interva
 check(setequal(names(e$reported$H3_with_coupling$measures),
                c("s1_long", "s4_cognitive", "m_cyclomatic", "m_fanout", "c_gini", "c_wmc", "c_lcom_star")),
       "H3's sensitivity reading puts the literature's coupling measures back")
-check(e$reported$H7_forced_opened$irr > e$H7$forced$irr, "H7: forced classes' coupling reaches opened members more, as simulated")
-check(abs(log(e$reported$H7_function_arm_forced$irr)) < 0.3, "the function arm's forced ratio, simulated 1, is reported")
 sx <- e$reported$surface$spring
 check(abs(sx$across$estimate - 0.7) < 0.1, "the exponent across classes is recovered")
 check(abs(sx$within$estimate - 1.3) < 0.25, "the exponent within a growing class is recovered")

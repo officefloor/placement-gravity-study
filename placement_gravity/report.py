@@ -188,40 +188,53 @@ def h6_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
 
 
 def h7_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
-    """H7, forced changes couple (PLAN.md §2, §4.2c, §5)."""
+    """H7, surface against volume (PLAN.md §2, §4.2c, §5; restated 24 November 2026)."""
     b = est.get("H7") or {}
     h = hyp.get("H7") or {}
-    fo = b.get("forced") or {}
-    L = ["", "## H7, forced changes couple (methods arm)", "",
-         "Per unit and existing class it changed, the calls across the class's boundary the unit added "
-         "(outward and inward). The ratio for a class with a placement forced at the class to one without, "
-         "at the same point in the stream and change size, with the class's intercept within the chain; "
-         "one-sided above 1, 95% cluster-bootstrap interval (chains resampled).", "",
-         f"- **{h.get('verdict', '–')}**",
+    L = ["", "## H7, surface against volume", "",
+         "Per checkpoint, the links it added between blocks of logic (the surface: a method calling a method, "
+         "a method using a field that holds state, a function wired to the next), each counted once, an "
+         "injected dependency not among them; against the logic it added (the volume). The function arm's "
+         "ratio half-way through the stream, for the same logic, below 1, **and** its interaction with the "
+         "checkpoint index below 1 (the gap widens); one-sided, 95% cluster-bootstrap intervals (chains "
+         "resampled).", "",
+         f"- **{h.get('verdict', '–')}**" + (f" (p {f(h.get('p'))})" if h.get("p") is not None else ""),
          *([f"- **Read with care: the instrument's calls did not agree well enough with the compiler's "
             f"here** ({'; '.join(rd.get('validation_flags'))}; see the check below)."]
-           if (rd or {}).get("validation_flags") else []),
-         f"- **Forced: {ratio(fo)}** (n = {f(fo.get('n'))}, {fo.get('family', '–')}; one-sided p "
-         f"{f(fo.get('p_greater'))}; {fo.get('interval', '–')}; the class's intercept "
-         f"{'kept' if fo.get('class_intercept') else 'not fitted'}); Wald: {ratio(fo.get('wald'))}",
-         f"- Reported, forced by binding with no alternative (H5's): {ratio(rep.get('H7_forced_bind'))}; "
-         f"forced without the change's size: {ratio(rep.get('H7_forced_without_size'))}"]
-    for y, lab in (("opened", "calls reaching a member the unit exposed or widened"), ("new_out", "outward calls"),
-                   ("new_in", "inward calls"), ("members_opened", "the class's members exposed or widened")):
-        L.append(f"- Reported, forced ratio of {lab}: {ratio(rep.get(f'H7_forced_{y}'))}")
-    L.append(f"- Reported, the rise of the calls added over the stream: {ratio(rep.get('H7_rise'))}; the function "
-             f"arm's forced ratio: {ratio(rep.get('H7_function_arm_forced'))}; function arm / methods arm: "
-             f"{ratio(rep.get('H7_arm'))}")
-    for arm, a in ((rd or {}).get("encapsulation") or {}).items():
-        for lab in ("forced", "unforced"):
-            x = a.get(lab) or {}
-            L.append(f"- Reported, {arm} arm, {lab} class rows: {f(x.get('rows'))}; calls added a row "
-                     f"{f(x.get('coupled'))} (outward {f(x.get('out'))}, inward {f(x.get('in'))}); reaching an "
-                     f"exposed or widened member {f(x.get('opened_share'))} (exposed {f(x.get('exposed'))}, widened "
-                     f"{f(x.get('widened'))}); members opened a row {f(x.get('members_opened'))}")
+           if (rd or {}).get("validation_flags") else [])]
+    if b.get("not_applicable"):
+        return L + ["- Not testable on a history: its arms do not solve the same problems."]
+    for k, lab in (("arm", "Links added, function arm / methods arm, for the same logic"),
+                   ("trend", "The gap over the stream (arm × checkpoint index)")):
+        x = b.get(k) or {}
+        L.append(f"- **{lab}: {ratio(x)}** (one-sided p {f(x.get('p_less'))}; {x.get('interval', '–')}); "
+                 f"Wald: {ratio(x.get('wald'))}")
+    L.append(f"- Links added a checkpoint: " + ", ".join(f"{a} {f(v)}" for a, v in (b.get("links_added") or {}).items())
+             + "; logic added: " + ", ".join(f"{a} {f(v)}" for a, v in (b.get("logic_added") or {}).items()))
+    for k, x in (rep.get("H7_kinds") or {}).items():
+        L.append(f"- Reported, {k} links: function arm / methods arm {ratio(x.get('arm'))}, over the stream "
+                 f"{ratio(x.get('trend'))}; a checkpoint " + ", ".join(f"{a} {f(v)}" for a, v in (x.get("mean") or {}).items()))
+    wl = rep.get("H7_without_logic") or {}
+    L.append(f"- Reported, without the logic in the model: arm {ratio(wl.get('arm'))}, over the stream {ratio(wl.get('trend'))}; "
+             f"the methods arm's own rise over the stream {ratio(rep.get('H7_methods_rise'))}; links per e-fold logic "
+             f"{ratio(rep.get('H7_logic'))}")
+    for arm, a in ((rd or {}).get("links") or {}).items():
+        th = a.get("thirds") or {}
+        L.append(f"- Reported, {arm}: {f(a.get('checkpoints'))} checkpoints; links added a checkpoint {f(a.get('links_added'))} "
+                 f"(call {f(a.get('call_links_added'))}, state {f(a.get('state_links_added'))}, flow "
+                 f"{f(a.get('flow_links_added'))}; lost {f(a.get('links_lost'))}); over the thirds "
+                 + ", ".join(f(th.get(t)) for t in ("1", "2", "3"))
+                 + f"; links per position of logic {f(a.get('links_per_logic'))}; the tree's links per method at the "
+                 f"end {f(a.get('tree_links_per_method'))}")
+    return L
+
+
+def coupling_source_section(rd: dict) -> list[str]:
+    """Where forced coupling came from (a reported reading, PLAN.md §4.2c, §9 row 88)."""
+    L: list[str] = []
     src = (rd or {}).get("coupling_source") or {}
     if src:
-        L += ["", "### Where forced coupling came from (reported reading)", "",
+        L += ["", "## Reported: where forced coupling came from", "",
               "Each class a forced change went into: *contained* (no call added across its boundary); "
               "*problem or reuse* (every call it added joins two classes whose private data the change needed, "
               "or reaches a member that was already open); *other* (some call reaches a member the change "
@@ -849,6 +862,7 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           *h6_section(est, hyp, rep, readings or {}),
           *h7_section(est, hyp, rep, readings or {}),
           *h8_section(est, hyp, cond),
+          *coupling_source_section(readings or {}),
           *redesign_section(readings or {}),
           *surface_section(rep, readings or {}),
           *reader_section(rep, readings or {}),

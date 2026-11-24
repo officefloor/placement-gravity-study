@@ -96,7 +96,7 @@ import net.officefloor.sinewslim.javaparser.ParsedFile;
 public final class Pull {
 
 	/** Bump whenever a field's meaning changes. */
-	static final int VERSION = 16;
+	static final int VERSION = 17;
 
 	/** A removed position's text must be at least this long to mark an added one as moved. */
 	static final int MOVED_MIN_CHARS = 12;
@@ -1223,6 +1223,49 @@ public final class Pull {
 		return out;
 	}
 
+	/**
+	 * The fields of its own class a method uses (H7, PLAN.md 4.2c, VERSION 17): a name that is a field
+	 * (or a record's component) of its class and not a parameter or local of the method, and
+	 * {@code this.x}. Every field is listed, injected dependencies and constants among them; which of
+	 * them hold state is the class's {@code state} in the places, so the reader decides.
+	 */
+	static List<String> own(M m) {
+		if (m.owner == null) {
+			return List.of();
+		}
+		Set<String> declared = m.owner.fieldAccess.keySet();
+		Set<String> mine = ownNames(m.node);
+		String self = ownTypeName(m.node);
+		Set<String> out = new TreeSet<>();
+		for (NameExpr n : m.node.findAll(NameExpr.class)) {
+			String x = n.getNameAsString();
+			if (declared.contains(x) && !mine.contains(x)) {
+				out.add(x);
+			}
+		}
+		for (FieldAccessExpr fa : m.node.findAll(FieldAccessExpr.class)) {
+			if (fa.getScope() instanceof ThisExpr te && outerThis(te, self) == null
+					&& declared.contains(fa.getNameAsString())) {
+				out.add(fa.getNameAsString());
+			}
+		}
+		return new ArrayList<>(out);
+	}
+
+	/** The fields of a class that hold state (H7, VERSION 17): not an injected dependency, a constant
+	 * or a utility; a record's components among them. */
+	static Set<String> state(T t) {
+		Set<String> out = new TreeSet<>(t.fields());
+		for (String k : t.fieldAccess().keySet()) {
+			if (!t.fieldTypes().containsKey(k)) {
+				out.add(k);       // a record's component
+			}
+		}
+		out.removeAll(t.injected());
+		out.removeAll(t.constants());
+		return out;
+	}
+
 	static List<String> reads(M m) {
 		Map<String, String> vars = varTypes(m.node);
 		Map<String, String> fields = m.owner == null ? Map.of() : m.owner.fieldTypes;
@@ -1366,7 +1409,8 @@ public final class Pull {
 							classes.append(classes.length() > 0 ? "," : "").append("{\"name\":").append(q(t.name()))
 									.append(",\"injected_types\":").append(strs(types)).append(",\"supers\":")
 									.append(strs(t.supers())).append(",\"fields\":").append(typeMap(t.fieldAccess()))
-									.append(",\"constants\":").append(strs(new TreeSet<>(t.constants()))).append('}');
+									.append(",\"constants\":").append(strs(new TreeSet<>(t.constants())))
+									.append(",\"state\":").append(strs(state(t))).append('}');
 						}
 						for (M m : f == null ? List.<M>of() : f.methods()) {
 							methods.append(methods.length() > 0 ? "," : "").append("{\"type\":").append(q(m.type()))
@@ -1375,7 +1419,8 @@ public final class Pull {
 									.append(",\"types\":").append(strs(new TreeSet<>(varTypes(m.node()).values())))
 									.append(",\"calls\":").append(strs(calls(m)))
 									.append(",\"access\":").append(q(access(m.node())))
-									.append(",\"reads\":").append(strs(reads(m))).append('}');
+									.append(",\"reads\":").append(strs(reads(m)))
+									.append(",\"own\":").append(strs(own(m))).append('}');
 						}
 						w.write("{\"unit\":" + q(r[0]) + ",\"path\":" + q(rel) + ",\"classes\":[" + classes
 								+ "],\"methods\":[" + methods + "],\"problems\":" + problems.size() + "}\n");

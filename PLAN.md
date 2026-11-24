@@ -89,6 +89,32 @@ This study turns the question round:
   organisation (§4.9). And organisation does more than supply data: it also names and groups
   for a reader (§4.2f). The reading of §4.9 states the claim so that it can fail: the same logic
   in both arms, and less state handed along in the function arm.
+- **The overview** (the author's, 24 November 2026, §9 row 91; the whole study in one argument):
+  "Blocks of code are the essential complexity. If we write a small programme, it is essential one
+  block of code with method wrapping necessary to call it. And in some languages they do without
+  the wrapping main(String[]) method. So as the programme grows, and concentration becomes too
+  much in one place, separation occurs requiring coupling and in case of Spring method calling to
+  allow control flow between the blocks of code. Hence, this becomes accidental complexity of
+  method structure to the essential complexity of the logic within those methods. Function
+  injection maintains the block of code and can be a single function for simple programme. It can
+  also expand out to many functions to disperse the blocks of code. However, it does not have the
+  same accidental complexity of method tight coupling that it's control flow allows with function
+  injection." Read against the hypotheses: encapsulation's force gathers the blocks into one place
+  (H5, H2) and what gathers there has its cost (H1); separating them takes coupling, the surface
+  that keeps the concentrations coordinated, and H7 counts it against the blocks it joins; function
+  injection disperses the blocks without that coupling (H4, H7). H7 counts links, not how tight
+  they are: a wiring edge counts as much as a method call, so the test does not credit the
+  function arm for its looser control flow, and is the harder for it.
+  - *Splitting, and the reviewer* (the author, the same day; a claim, not tested): "it is much
+    easier to split a function injection function with the control flow and an AI reviewer can
+    isolated look at a function injection method for it's cohesion. This is much harder with the
+    method structure, as there is a lot of coupling that restricts the splitting." A function
+    receives what it needs and hands on what it produces, so it can be read, and split, alone; a
+    method is held by the fields and the callers it shares with its class. This is why the author
+    holds the function arm's drift towards called methods (§4.9, §7) to be a lapse that a review
+    can find and undo, where the methods arm's coupling is held in place by its structure. No
+    measure reads it yet; a reading of how far a unit can be read alone (the links it has outside
+    itself) would be one.
 
 That shared data gathers faster than code is known in aggregate: across versions of the Linux
 kernel, common coupling to global data grew far faster than the code did (Schach et al. 2002; Yu
@@ -176,9 +202,13 @@ harness's to do, not this plan's.
 Hypotheses. Directions and thresholds are fixed now (thresholds decided 16 November 2026).
 
 ![Placement forces map: encapsulation is the force; choice narrows (H5) so changes become forced;
-a forced change concentrates (cost: size, H2, H1) or disperses (cost: coupling, H7); shape (H3) and
+a forced change concentrates (cost: size, H2, H1) or disperses (cost: coupling); shape (H3) and
 co-change spread (H6) are the literature's readings, predicted not to see it; function injection
 (H4) removes the force](figures/placement-forces.svg)
+
+*The figure was drawn before H7 was restated on 24 November 2026 (§9 rows 89, 90) and still shows
+it as *forced changes couple*, which has since been deleted. H7 is now the surface that keeps the concentrations coordinated: the
+links between blocks of logic, against the logic they join.*
 
 *How the hypotheses fit together* (a map, not a rule; the hypotheses below govern). A change
 bound to data no other class can reach is forced. It pays in size by concentrating, or in
@@ -191,7 +221,8 @@ development chain's (§6).
 **Two tiers** (decided by the author on 21 November 2026, §9 row 66). The study's necessity is to
 find the force. The **confirmatory** family is the force and its two outlets, with the control:
 **H5** (the force forms: choice of class narrows), **H2** (concentration: a core draws code in),
-**H7** (dispersion: forced changes couple, at the same change size) and **H4** (the control:
+**H7** (the surface: for the same logic, fewer links between blocks of logic under function
+injection, and the gap widening; restated 24 November 2026, §9 row 89) and **H4** (the control:
 function injection removes the force). Holm over these four. **H1** (the periphery grows, the
 cost of concentration), **H3** (shape does not draw code in) and **H6** (spread does not see it)
 are **secondary**: each keeps its direction and rule and is decided on its own p, outside the
@@ -211,7 +242,7 @@ only to members other classes can reach is *unforced* (chosen); one not bound at
 unbound. The definition is the force itself and
 works the same with or without dependency injection, so corpus B, which mostly has none, gets the
 same contrast as corpus A. Forced by binding with no alternative (H5's class level, §4.2a) is
-reported beside it in H6 and H7, and stays H5's own measure.
+reported beside it in H6, and stays H5's own measure.
 
 **An injected private field forces too** (decided by the author on 22 November 2026, §9 row 72,
 after a review of the plan found §4.3 and this definition at odds over it). §4.3 says a field
@@ -403,7 +434,7 @@ alternatives at the class are the other classes that already hold the same depen
   **not above** the upper margin 1.25, one-sided, as H3. The author's reasoning: that literature,
   like the shape literature, reads a symptom to find a cause; cohesion has no shape to highlight,
   so the force of encapsulation does not show in how many classes a change touches. Where it
-  shows is what the force costs at the boundary (H7). H6 argues against that literature's
+  shows is what the force costs at the boundary (§4.2c; the surface, H7). H6 argues against that literature's
   *reading*, that co-change reveals a cause (Gall et al.; Palomba et al.'s symptom framing), which
   D'Ambros et al. themselves call an untested assumption; it contradicts no finding (LITERATURE.md
   §10, *Full read*). None of the six papers read controls for change size: the field drops large
@@ -444,19 +475,42 @@ alternatives at the class are the other classes that already hold the same depen
     together). Together these say how much of the growth in size, and of the growth in coupling,
     arrived by forcing: by absorbing into a class, or by spreading to the classes holding the
     other data.
-- **H7, forced changes couple** (added 20 November 2026, §9; the author's). In the methods arm, a
-  class that a forced change goes into gains more calls across its boundary in that change than a
-  class a change goes into with no forced placement, at the same point in the stream: outward,
-  to the other places holding data it needs, and inward, from places that now need it. One-sided.
-  The author's reasoning: encapsulation is the force. What a class holds privately can only be
-  used inside it, so a change that needs it is forced inside (concentration; its cost is the
-  class's size, H1, H2 and H6's growth accounting). A forced change that also needs data held
-  elsewhere couples to that other place, either to what it already exposes or by asking for its
-  encapsulated data to be widened (made public) to couple to (dispersion; its cost is coupling).
-  So coupling between the encapsulation and the rest of the system increases because of the
-  forced change. With the amount of code conserved (H4's band), placement is the design: it
-  divides the same complexity between size and coupling. H6 reads whether forced changes spread (predicted not, beyond the margin);
-  H7 whether they couple, and through what.
+- **H7, surface against volume** (restated 24 November 2026, §9 row 89; the author's). The force of
+  encapsulation makes concentrations (H2); coupling is the surface that keeps those concentrations
+  coordinated. The author: "volume being encapsulated complexity and surface being coupling", and
+  "the method calling structure is possibly considered accidental complexity and the essential
+  complexity is the blocks of code contained in the methods. Hence, function injection does away
+  with much of the method calling and the accidental complexity of trying to call all the blocks
+  of code with the method call structure" (§1, *Essence and accident*); "data is sinew and
+  concentration force, gravity". So a checkpoint's **volume** is the logic it added (the statements
+  of method bodies, §4.9), and its **surface** is the **links** it added between blocks of logic
+  (§4.2c): a method calling a method, in its own class or another; a method using a field that
+  holds state, of its own class or another's; and, in the function arm, a function wired to the
+  next. A link is counted once however heavy (the author: "a link might be heavier but the
+  existence of the link is the coupling"). **Injection is not surface**, in either arm: an
+  injected dependency, a field the Spring container fills or a parameter OfficeFloor injects,
+  gives flexibility and is not bound to the control flow (the author: "similar to injected
+  dependencies in Spring provide flexibility. They are not associated with the control flow
+  (sinew of data bound to the control flow)"); a call made on an injected object is a call link
+  like any other. **Shaped as H4** (the author: "make similar to H4"), both needed: for the same
+  logic added, the function arm adds **fewer links** half-way through the stream (its rate ratio
+  below 1), **and the gap widens** over the stream (the arm's interaction with the checkpoint
+  index below 1). The reasoning: in the methods arm a block's data reaches it through the call
+  chain and the fields of its class, and both grow with the system; in the function arm the data
+  is injected into the function that needs it, and the next step is one wiring edge. Not testable
+  on a history, whose arms do not solve the same problems.
+  - *Seen before it was written* (the order is recorded, §9 row 89): the outer surface of §4.2e
+    on the development chain, close in the two arms (across the classes of the last tree 0.73
+    [0.60, 0.86] in the function arm against 0.78 [0.60, 0.96]; within a growing class 0.82 and
+    0.85); and the logic and organisation reading (§4.9): the same logic in both arms, the
+    organisation counted in lines higher in the function arm (1.51 [1.29, 1.75]), and the
+    function arm writing fewer wired functions and more called methods as the stream went on,
+    which brings the calling structure back inside it (§7). The links themselves had not been
+    measured.
+  - *Until 24 November 2026 H7 was* **forced changes couple**: in the methods arm, a class a
+    forced change goes into gains more calls across its boundary than one an unforced change goes
+    into. Deleted that day at the author's word (§9 row 90); its test and readings are gone from
+    the code, and its measure, the calls across the encapsulation (§4.2c), stays for H8.
   - *Prior work* (LITERATURE.md §10, novelty check of 20 November 2026; read as abstracts or
     records unless said): encapsulation as a force is known as a concept, not as a measure.
     Page-Jones's connascence (1992, 1995) holds that a dependency across an encapsulation
@@ -474,14 +528,10 @@ alternatives at the class are the other classes that already hold the same depen
     so), which is why widening is expected to be rare and exposure the usual route. That the amount
     is conserved and placement divides it is a framing only (Tesler's law; Hatton 2014; Pescio's
     *physics of software*, Ch. 13: "we don't really change the mass of code"; Loth 2026,
-    Corollary 2.2.2, unrefereed), not a tested law; the study keeps it as framing and tests the
-    forced/unforced contrast, not conservation itself (which H4's amount band only checks).
-  - *Reported beside it:* the forced ratio for the calls that reach a member the change exposed
-    (added, not private) or widened (made more open), for outward and inward calls apart, and for
-    the class's own members exposed or widened; the share of the added calls reaching an exposed
-    or widened member, forced against unforced; the rise of the added calls over the stream; the
-    function arm's forced ratio and the arms' contrast (a function's dependencies are injected,
-    so no private data forces it, and its coupling is in the wiring, H4).
+    Corollary 2.2.2, unrefereed), not a tested law; the study keeps it as framing and tests how
+    the same logic is joined (the links), not conservation itself (which H4's amount band and §4.9's
+    logic only check). Ousterhout's deep module is the nearest to H7: much volume behind little
+    surface.
 - **A reading: split or concentrate** (added 20 November 2026, §9; the author's; reported, not
   among the confirmatory tests). Encapsulation forces code into a class
   (concentration); the counter force is to separate it into more encapsulated units, which opens
@@ -549,9 +599,11 @@ alternatives at the class are the other classes that already hold the same depen
 - H8 (Run D, §3.1a): with nothing private, bound code come back to as much at the class, or no
   more calls and field reads added across class boundaries. Encapsulation would then not be what
   concentrates code, or removing it would not disperse it.
-- H7: a class a forced change goes into gaining no more calls across its boundary than one a
-  change goes into unforced. Forcing would then concentrate code without coupling it, and the
-  coupling between classes would come from elsewhere.
+- H7: as many links for the same logic in the function arm as in the methods arm, or a gap that
+  does not widen over the stream. Function injection would then move the coordination into the
+  wiring rather than remove it, and the calling structure would not be the accidental complexity
+  the author holds it to be. (Until 24 November 2026: a class a forced change goes into gaining no
+  more calls across its boundary than one a change goes into unforced.)
 - H6: a spread wider where a placement was forced than where none was, beyond the margin, at the
   same change size. Co-change would then see the force of encapsulation, and the change-coupling
   literature would find what this study says it misses. (As first drafted, H6 was the opposite:
@@ -667,7 +719,7 @@ end's production Java of the four stacks of its Runs A and B, a front end × bac
     - *concentration weaker:* the open arm's bound code is come back to less at the class, the
       rate ratio of later intrusion at the class (H4's model, §5) below 1;
     - *dispersion stronger:* its units add more calls and field reads across class boundaries,
-      per existing class changed (H7's count, §4.2c), at the same change size and point in the
+      per existing class changed (§4.2c's calls across the encapsulation), at the same change size and point in the
       stream, the rate ratio above 1 (forced is not in this model: the instruction changes what
       is forced).
     Each one-sided with a 95% cluster-bootstrap interval (§5); p is the larger of the two.
@@ -691,8 +743,8 @@ end's production Java of the four stacks of its Runs A and B, a front end × bac
     0, and H5's choice of class not narrowing (the alternatives' ratio not below 1).
   - *Concentration weaker:* H2's core draws less at the class (a lower rate ratio), since code
     that needs a class's data may now go elsewhere.
-  - *Dispersion stronger:* more calls and field reads across class boundaries per unit (H7's
-    count, now unforced) and a wider spread (H6's measure), at the same change size.
+  - *Dispersion stronger:* more calls and field reads across class boundaries per unit (§4.2c's
+    calls across the encapsulation, now unforced) and a wider spread (H6's measure), at the same change size.
   - *The amount conserved:* Run D's amount added within 0.8 to 1.25 of Run A's (§4.6's band); the
     code is placed differently, not made more or less.
   - *The reader* (§4.2f): whether classes grow larger without encapsulation, reported without a
@@ -823,8 +875,10 @@ repository of corpus B or C is read:
   destinations (existing method, new method of an existing class, new class) but not the ranks.
   CodeTracker is not run; a method is followed by the instrument's chaining of RefactoringMiner's
   renames and moves.
-- **H6 and H7 are read on corpora B and C** as H5 is (20 November 2026): a unit is a commit, its
-  pairs' coupling and the calls across a class's boundary read on the same running index.
+- **H6 is read on corpora B and C** as H5 is (20 November 2026): a unit is a commit, its
+  pairs' coupling and the calls across a class's boundary read on the same running index. (H7
+  was too until its restatement of 24 November 2026; it now compares arms solving the same
+  problems and is not read on a history.)
 - **H5 is read on corpora B and C too** (decided by the author, 19 November 2026). Its places
   need the whole tree, so one index is kept running through a history: the whole production tree
   before the first unit, then, before each later unit, the files that differ between the previous
@@ -1014,10 +1068,44 @@ As built: `tables.pair_rows` (`pairs.csv` per chain or repository), `tables.coup
 (`coupling.csv`), `prepare.h6_rows` (`h6.csv`), `prepare.pair_rows`, `prepare.co_change`,
 `prepare.growth_accounting`, `prepare.coupling_accounting`.
 
-### 4.2c Coupling across the encapsulation (H7)
+### 4.2c Links (H7), and coupling across the encapsulation
 
-Added 20 November 2026 (§9). Per unit and class that existed before it that the unit placed or
-edited code in:
+**Links between blocks of logic** (H7's measure since 24 November 2026, §9 row 89). Per checkpoint,
+the links it added and lost, each counted once however heavy:
+
+- **Call links:** a method to a method it calls, followed as in §4.2a, in its own class or another,
+  not to itself; a call that may reach several overrides is a link to each. A method is its class
+  and signature, so a moved or renamed method's links count as new.
+- **State links:** a method to a field holding state that it uses, of its own class (a bare name
+  that is a field of the class and not a parameter or local of the method, or `this.x`) or of
+  another class (the field reads below). A field holds state when it is not an injected
+  dependency (as §4.3 finds them), not a constant (static and final) and not a utility (a
+  logger); a record's components hold state.
+- **Flow links:** in the function arm's wiring, an edge from one function to the next (`next:`, an
+  entry of `outputs:`, as §4.5 counts edges), once for each pair of nodes in a file.
+- **Not links:** an injected dependency, in either arm: a field the Spring container fills, a
+  parameter OfficeFloor injects. It is held or declared, not reached along the control flow. A
+  call made *on* an injected object is a call link.
+- **The volume** beside them: the logic the checkpoint added (§4.9). Java links compare the tree
+  before the checkpoint with the tree before the next, as the calls below; the wiring compares
+  the checkpoint's parent with its commit. The last checkpoint has no tree after it and no row.
+- Reported beside: each kind apart, the links lost, and the tree's links per method at the end.
+
+*What it cannot say.* How heavy a link is (the values it carries, how often it runs) is not read,
+by the author's choice. A call whose receiver cannot be read without a symbol solver is not
+followed (§4.8), in either arm. A use of a field through a getter is a call link, not a state
+link, so a class that wraps its fields in accessors moves links from one kind to the other
+without changing their number.
+
+As built: `instrument/Pull.java` (`own`, `state`, VERSION 17), `chain.parse_wiring` (`links`),
+`flow.Graph.links`, `tables.link_rows` (`links.csv`), `prepare.h7_rows` (`h7.csv`),
+`prepare.links_summary`, `analyse.R` (`H7`), `verdict.h7`, `report.h7_section`; `MEASURE_VERSION`
+34. Corpus A only: a history's logic is not read (§4.9).
+
+**Calls across the encapsulation** (H8's dispersion; also read by the ripple, surface against
+volume, the reader and where forced coupling came from. It was the old H7's measure until that
+hypothesis was deleted on 24 November 2026, §9 row 90). Added 20 November
+2026 (§9). Per unit and class that existed before it that the unit placed or edited code in:
 
 - **Calls added across its boundary:** the calls followed (§4.2a) from a method of the class to a
   method of another class (*outward*), or from another class's to its own (*inward*), that are in
@@ -1038,11 +1126,11 @@ edited code in:
 - The last unit of a chain or a history has no tree after it and no row.
 
 As built: `instrument/Pull.java` (`access`, VERSION 14), `flow.Graph.cross_edges`,
-`flow.Graph.access`, `tables.encapsulation_rows` (`encapsulation.csv`), `prepare.h7_rows`
-(`h7.csv`), `prepare.encapsulation_summary`.
+`flow.Graph.access`, `tables.encapsulation_rows` (`encapsulation.csv`), `prepare.calls_across_rows`
+(`calls_across.csv`; `h7.csv` until 24 November 2026).
 
 **Where forced coupling came from (reported reading; added 23 November 2026, §9 row 88).** The
-author's reading of H7 on the development histories: well-encapsulated code that is forced into a
+author's reading of the old H7 on the development histories: well-encapsulated code that is forced into a
 class adds little coupling, and what it adds comes from the problem, not the placement. Each
 class a forced change went into is *contained* (no call added across its boundary), *problem or
 reuse* (every call it added either joins two classes whose private data the change needed, both
@@ -2112,21 +2200,18 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   coupling of pairs changed together more than once, a negative binomial model of it on the index
   with intercepts for the chain and the pair; the pairs changed together, how many more than once,
   in how many of those coupling rose or fell, and the candidates by name.
-- **H7** (20 November 2026): per unit and existing class it changed, the calls added across the
-  class's boundary (§4.2c) as a negative binomial (nbinom2) mixed model on whether the class was
-  forced and the index scaled from 0 to 1, with the chain's intercept, in the methods arm
-  (*forced*: the ratio of a forced class's added calls to an unforced one's at the same point in
-  the stream and of the same size: log(1 + positions the unit added to the class) and log(1 +
-  methods it changed there) in the model, §9 row 61; the ratio without them reported). The model
-  also carries **an intercept for the class within its chain** (22 November 2026, §9 row 74): one
-  class is changed by many units, a busy class gains calls whatever forced it, and its rows are
-  not independent. One-sided above 1, 95% cluster-bootstrap interval (below); reversed if the
-  interval lies wholly below 1. Where the model cannot be fitted with the class's intercept it is
-  fitted without it, and as Poisson where the negative binomial cannot be fitted; both recorded. Reported: the same model for
-  the calls reaching an exposed or widened member, for outward and inward calls apart, and for
-  the members opened; the added calls on the index alone (rise); the function arm's forced ratio;
-  the arm term with forced and the index in the model; per arm, forced against unforced rows, the
-  calls added a row and the share reaching an exposed or widened member.
+- **H7** (restated 24 November 2026, §9 row 89): per checkpoint and chain of corpus A, the links
+  added (§4.2c) as a negative binomial (nbinom2) mixed model on the arm, the checkpoint index
+  centred at the middle of the stream and scaled to its length, their interaction, and log(1 +
+  logic added) (§4.9), with the chain's and the checkpoint's intercepts (the chain's alone where
+  that does not converge, recorded). The arm term is the function arm's rate ratio half-way through
+  the stream for the same logic; the interaction, how that ratio changes from the stream's start to
+  its end. Both one-sided below 1, from one 95% cluster bootstrap (below); p is the larger of the
+  two; reversed if the arm's interval lies wholly above 1. Reported: each kind of link apart (call,
+  state, flow; the flow links have no ratio, the methods arm having none), the links lost, the same
+  model without the logic, the methods arm's own rise over the stream, and the links per e-fold of
+  logic; per arm, the links a checkpoint by kind and third, the links per position of logic, and
+  the tree's links per method at the end.
 - **Encapsulation and the reader** (22 November 2026, §4.2f; reported, not tested; built the
   same day): on corpora B and C, per unit, (1) the private share of introduced members as a binomial
   mixed model, (2) the forced share of positions added to existing classes as a binomial mixed
@@ -2199,7 +2284,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   (over all runs, within a class, within a method);
   H2, of the class level and the method level and of the arm contrasts that are needed (row 77); H3, of every shape measure's one-sided test; H4, of the arm
   term, the interaction, the arm's rate ratio in intrusion at the class and at the method and its rate ratio in how well-trodden the files gone back into were (rows 78, 82); H5, its
-  class level's (the method level is reported, row 64); H6 and H7, each its forced ratio's. A hypothesis is
+  class level's (the method level is reported, row 64); H6, its forced ratio's; H7, the larger of its arm term and its interaction (as H4). A hypothesis is
   supported when its p (Holm-adjusted over the confirmatory four; its own for a secondary one) is at most 0.05 **and** its conditions hold (H4: the amount in its band and neither wiring
   condition against). The verdicts are supported, not supported, reversed (an interval wholly on
   the wrong side), unresolved (H3 and H6: an interval reaching above the upper margin), not testable (H3: no
@@ -2792,7 +2877,18 @@ binomial mixed model). These details are fixed with the code before any run is r
   of the distribution, not of poor design). This is the rival reading of H7 and of the
   concentrate signal: a forced class that gains coupling may be in that tail whatever forced it.
   The forced/unforced contrast at the same size and the arm contrast are what separate the two.
-- **H7 reads coupling as calls and openness as method access** (§4.2c). A field made public and
+- **H7's links are counted, not weighed, and the agent may not use the form** (24 November
+  2026). A link that carries ten values and one that carries none count alike, by the author's
+  choice. On the development chain the function arm wrote fewer wired functions and more called
+  methods as the stream went on (§4.9), which brings the method calling structure back inside it:
+  a gap that does not widen may be the agent's habit, not the form. The
+  logic in the model holds the change's size; the amount of logic itself is shown the same in both
+  arms by §4.9. The author's answer (§1, *The overview*): a function that has gathered called
+  methods is easy to split again along its control flow, and a reviewer, an AI among them, can
+  judge its cohesion alone; the method structure's coupling makes the same split hard. That is a
+  claim about what can be repaired, not a measure, and does not change what H7 reads.
+- **The calls across the encapsulation read coupling as calls and openness as access** (§4.2c;
+  H8's dispersion). A field made public and
   read directly from another class, or a call the instrument cannot follow (an untyped receiver,
   reflection, framework callbacks), is not seen; nor is coupling through shared types without
   calls. A renamed or moved method makes its calls look new on both sides. Neither should differ
@@ -3223,6 +3319,32 @@ author's to set, on the plan and code as they then stand, and starts the experim
   (row 87, §4.8). *Decided by the author the same evening, on H7 at `HISTORY_VERSION` 14:* where
   forced coupling came from, as a reported reading (row 88, §4.2c), and the pairs model refitted
   without the chain's intercept when its standard error is not computed (row 88): "B".
+- *Decided by the author on 24 November 2026:* **H7 is restated as surface against volume** (row
+  89). The author's framing, given over the conversation: "volume being encapsulated complexity and
+  surface being coupling"; "the method calling structure is possibly considered accidental
+  complexity and the essential complexity is the blocks of code contained in the methods"; "for
+  concentration we have hypothesis for force sinew creating gravity. For coupling it is to keep
+  these concentrations coordinated and is the surface, so should replace current coupling
+  hypothesis". On the drafter's three questions: **(1) injection is not surface**, in either arm
+  ("similar to injected dependencies in Spring provide flexibility. They are not associated with
+  the control flow"); the drafter had recommended counting the injected parameters, so that the
+  function arm could not win by leaving them out, and the author decided otherwise; the wiring's
+  flow edges are counted, and a call on an injected object is a call link (the drafter's reading,
+  to be confirmed). **(2) Shaped as H4**: fewer links for the same logic, and the gap widening,
+  both needed. **(3) Links counted, not weighed** ("the existence of the link is the coupling").
+  **A state link to a field of a method's own class** is counted (the inner surface): "yes, add
+  it". The old H7, *forced changes couple*, was first "soft deleted" (out of the tests, reported),
+  then **deleted** the same day ("Delete the old H7", row 90). Its measure stays, since H8 reads it;
+  the reading of where forced coupling came from (row 88) is kept as a reading of that measure
+  (the drafter's choice, to be confirmed). Made after the development chain's
+  outer surface and its logic and organisation reading had been seen (§2, H7).
+- *To finish for row 89:* the pilot measured again at `MEASURE_VERSION` 34 (`./step3_measure.sh
+  --analysis pilot`, then `./step4_analyse.sh --analysis pilot open-source-development` and
+  `./step5_report.sh`); the histories are not affected (`HISTORY_VERSION` 14 stands). Then H7's
+  development figures go into §6. The figure of §2 still shows the old H7. **H8 stays as it is**
+  (the author, 24 November 2026: "keep H8 as is"): its *dispersion stronger* reads where the
+  coupling goes, the calls across the encapsulation, not how much coordination the logic needs,
+  which is H7's links.
 - *To finish before the tag (state on 22 November 2026, later):* the development rerun **again**,
   at `MEASURE_VERSION` 29 and `HISTORY_VERSION` 13 (rows 72, 78 and 80 change the measured tables), with
   the same four commands as below. The rerun started that morning at 28 and 12 is **not to be
@@ -3432,6 +3554,9 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 86 | A tripwire on the compiler check: the report says *read with care*, at the check and at H7, where a share of the instrument's calls is below 0.90 in an arm or differs between the arms by more than 0.05; nothing fails by it | §4.8, `validate.flags`, `prepare.py` (`validation_flags`), `report.py`, `tests/test_validate.py` | Decided by the author on 23 November 2026, between no pass mark and a pass mark set after the development chain had been seen: the plan should say beforehand what is done if a run comes back much worse. The two figures are the drafter's. No measure, model or verdict changes |
 | 87 | A nested class's use of a member of a class around it is followed: `Outer.this.field`, `Outer.this.method()`, and a field or a method of an enclosing class used by its bare name where the callable and its own class declare none of that name. The compiler's reader corrected likewise. The bindings are unchanged | §4.8, `Pull.java` VERSION 16 (`reads`, `calls`, `enclosingTypes`, `outerThis`), `Check.java`, `tests/test_validate.py`; `MEASURE_VERSION` 33, `HISTORY_VERSION` 14 | A gap the check of row 79 found (field reads recalled 7 of 19 and 0 of 12 on the development chain) and the same blind spot for calls, seen on reading the code. Decided by the author on 23 November 2026 on the drafter's recommendation, which had first been to leave it: it is one line on corpus A, but inner classes using the class around them are common in the people's Java of corpus B, where the compiler cannot check. No rule changes; before the tag, so a revision |
 | 88 | Where forced coupling came from: contained, problem or reuse, other, per forced class row and per call (a reported reading). H6's coupling of pairs on the index refitted without the chain's intercept where its standard error is not computed | §4.2c, `prepare.coupling_source`, `report.h7_section`, `analyse.R` (`H6_pair_coupling`), `tests/test_analysis.py` | The author's reading of H7 on the development histories at `HISTORY_VERSION` 14, 23 November 2026 ("coupling is increasing only due to the problem, much like shape of solution does not describe the problem"), drafted as three sources the author named: no added coupling, coupling that joins two classes whose data the change needed, coupling through what was already exposed. The refit: at `HISTORY_VERSION` 14 the pairs model's standard error was not computed with two chains, and the author chose the fallback H3's class measures already use. No measure, table or verdict changes |
+| 89 | **H7 restated: surface against volume.** Per checkpoint, the links between blocks of logic it added (call links, state links to its own class's and other classes' fields that hold state, and the wiring's flow links; each counted once; an injected dependency not a link in either arm) against the logic it added: the function arm's rate ratio half-way through, for the same logic, below 1, **and** its interaction with the checkpoint index below 1 (as H4, both from one cluster bootstrap; p the larger). Not testable on a history. Confirmatory, in the Holm family in place of *forced changes couple*, which is retired and reported without a verdict (its arm contrast stays H8's) | §2, §4.2c, §5, §7, §8, `Pull.java` VERSION 17 (`own`, `state`), `chain.parse_wiring` (`links`), `flow.Graph.links`, `tables.link_rows`, `measure.py` (`links.csv`), `prepare.h7_rows`, `prepare.links_summary`, `prepare.forced_coupling_rows` (`forced_coupling.csv`), `analyse.R` (`H7`, `boot_irrs`; the old model as `reported$H7_retired_forced`), `verdict.h7`, `report.h7_section`, `selftest.R`, `tests/`; `MEASURE_VERSION` 34 | The author's, 24 November 2026 (§8): volume is encapsulated complexity, surface is coupling; the calling structure is accidental, the blocks of logic essential; injection is not surface; "make similar to H4"; links counted, not weighed. **Made after the development chain's outer surface (§4.2e: 0.73 and 0.78 across classes, 0.82 and 0.85 within a growing class) and its logic and organisation reading (§4.9) had been seen**; the links themselves had not been measured. Before the tag, so a revision |
+| 90 | **The old H7, *forced changes couple*, deleted**: its model, its reported ratios (forced by binding, without size, opened, outward, inward, members opened, rise, the function arm's, the arms'), the per-arm forced and unforced summary and its report section. Kept: its measure, the calls across the encapsulation (§4.2c), now `calls_across.csv`, because H8's *dispersion stronger* is the arms' contrast on it (the model kept in `analyse.R` as H8's alone); and the reading of where forced coupling came from (row 88), now a reading of that measure | §2, §4.2c, §5, §7, §8, `prepare.calls_across_rows` (was `forced_coupling_rows`; `encapsulation_summary` removed), `analyse.R`, `selftest.R`, `report.py` (`coupling_source_section`), `verdict.py`, `tests/` | The author, 24 November 2026: "Delete the old H7", after row 89. No other test changes |
+| 91 | §1 *The overview*: the author's account of the whole study (blocks of code essential; growth, concentration, separation and coupling; method structure the accident; function injection disperses without it), read against the hypotheses; and the author's claim that a function is easier to split and to review alone for cohesion, recorded in §1 and as the answer to H7's threat in §7. No measure, model or rule changes | §1, §7 | The author's, 24 November 2026 ("add the overview to §1"; the splitting claim given the same day). The drafter's addition: H7 counts links, not how tight they are, so it does not credit the function arm's looser control flow |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring
