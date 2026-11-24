@@ -28,7 +28,7 @@ Writes data/analysis/<name>/:
 - ``calls_across.csv``: one row per unit and existing class it changed, with the calls across the
   class's boundary the unit added, by the member they reach (already open, exposed, widened), and
   whether a placement in the class was forced (PLAN.md §4.2c): H8's dispersion, and the reader
-  reading. (The old H5, *forced changes couple*, was read on it until it was deleted on 24 November
+  reading. (*Forced changes couple*, H7 before the renumbering, was read on it until it was deleted on 24 November
   2026.)
 - ``surface.csv``: one row per class a unit changed, its volume (methods, positions) and surface
   (calls out and in) before and after, and per class of each chain's last tree (PLAN.md §4.2e).

@@ -882,7 +882,7 @@ if (!is.null(h7) && nrow(h7) > 0) {
 # stream (the index scaled from 0 to 1) and change size (log(1 + positions added there), log(1 +
 # methods changed there)), forced not in the model (the instruction changes what is forced), with
 # the chain's intercept and the class's within the chain, decided on the cluster bootstrap; Poisson
-# where the negative binomial cannot be fitted, recorded. (Until 24 November 2026 the old H5,
+# where the negative binomial cannot be fitted, recorded. (Until 24 November 2026 *forced changes couple* (then H7),
 # *forced changes couple*, was read on these rows too; deleted, PLAN.md 9 row 90.)
 h5 <- read("calls_across.csv")
 if (!is.null(h5) && nrow(h5) > 0) {

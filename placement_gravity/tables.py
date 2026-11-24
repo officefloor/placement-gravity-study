@@ -482,7 +482,7 @@ def boundary_rows(arm: str, chain: str, hosts: list[dict], measured: dict) -> li
 
 
 def edge_rows(arm: str, chain: str, hosts: list[dict], measured: dict) -> list[dict]:
-    """The calls across a class's boundary each unit added (H5's calls, PLAN.md 4.2c), one row each,
+    """The calls across a class's boundary each unit added (the calls across the encapsulation, PLAN.md 4.2c), one row each,
     for the ripple reading (4.2e): the caller's class and method, the callee's class and method, the
     kind of member reached (existing, exposed, widened), and whether the caller's or the callee's
     class was forced in the unit."""

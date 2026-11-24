@@ -609,7 +609,7 @@ paired problem streams to study design structure
   an Update of a Private part, that change will be local ... If you expose the private part through
   a Get/Set, the Update won't be local anymore". Together: hiding decides which unit new code is
   drawn to, and exposing the hidden part turns a local change into a non-local one. That is H2's
-  concentration and H5's dispersion-by-widening, stated as design argument, for components and
+  concentration and the dispersion-by-widening of *forced changes couple* (H7 until 24 November 2026, deleted), stated as design argument, for components and
   for likely changes, with no classification of changes and no measurement.
 - *Code that enumerates a class's data grows with it.* Ch. 14 (February 2011), the "Enumeration
   Law": "every artifact ... that is enumerating over the members of set by name is U-U entangled
@@ -702,7 +702,7 @@ show more in calls (H5) than in spread.
   their creation"; 86% stay over-exposed unchanged; "we could not find evidence that over-exposed
   classes are a major contributor to modularity problems", since new references from outside the
   minimal accessibility "are unusual" (RQ4, RQ5). Exposure is set at creation and seldom used
-  beyond need: H5's dispersion should run mostly through members already exposed, and widening at
+  beyond need: the dispersion of *forced changes couple* should run mostly through members already exposed, and widening at
   the moment of a change should be rare, as the development chain found ("members opened" 0.19).
 - *Kobori et al. 2015* (not obtained): reported by Vidal et al. as finding that access-modifier
   changes for methods are infrequent and that over-exposed methods and fields increase over time.
@@ -809,7 +809,7 @@ access); Schach et al. (exponential against linear, from the report); Taube-Scho
 | *Gravity* as the name | **Anticipated as a word, with a different mechanism** | Pescio: attraction by size (mass), later by co-change. The plan's mechanism (binding to particular values, size held fixed) is not his. |
 | H2, a core draws code in | **Still not found** | Nearest: Pescio's Enumeration Law (code enumerating a class's data changes with it) and setters as "sub-gravitational centers"; Selby et al. (already cited). None asks which values later code returns to. |
 | H1, choice narrows | **Still not found** | — |
-| H5, forced changes couple (calls across the boundary; through exposed or widened members) | **Partly anticipated as argument; not found as measure** | Pescio ("expose the private part through a Get/Set, the Update won't be local anymore"); Taube-Schock et al. (size limits push links across modules); Schach et al. ("coupling is a necessary consequence of modularization"). Steimann and Thies: about one class move in seven needs access widened. Vidal et al.: exposure set at creation, rarely used beyond need. |
+| *Forced changes couple* (H7 until 24 November 2026, deleted; calls across the boundary; through exposed or widened members) | **Partly anticipated as argument; not found as measure** | Pescio ("expose the private part through a Get/Set, the Update won't be local anymore"); Taube-Schock et al. (size limits push links across modules); Schach et al. ("coupling is a necessary consequence of modularization"). Steimann and Thies: about one class move in seven needs access widened. Vidal et al.: exposure set at creation, rarely used beyond need. |
 | Concentrate or disperse: placement divides a conserved amount between size and coupling | **Partly anticipated as framing; not found as a tested law** | Pescio Ch. 13 ("we don't really change the mass of code"); Loth's Corollary 2.2.2 (internal against crossing dependencies); Ousterhout's notes (bring together on shared information). |
 | H7, co-change spread does not see the force (at fixed change size) | **Not contradicted; not anticipated** | It argues against a reading (Gall; D'Ambros's stated assumption; Palomba's symptom framing), not a finding. No paper of the six controls for change size or distinguishes forced changes. Gall's growing subsystem and Palomba's correctly placed co-change are consistent with it. |
 | H6, shape does not draw code in | **Unchanged: contested at the method** | Chowdhury et al. 2022b against (read); Zhou et al. not obtained. |

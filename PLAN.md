@@ -335,7 +335,7 @@ alternatives at the class are the other classes that already hold the same depen
     outside the encapsulation, being the force." The class's core is the members the code was
     bound to that no other class can reach: its private fields (private constants among them) and
     private methods. The members it was bound to that others can reach join the periphery; opening
-    a member up shows in H5 (widening), not in the core. The method level is unchanged (a method's
+    a member up shows in §4.2c's calls across the encapsulation (widening), not in the core. The method level is unchanged (a method's
     own values are reachable from nowhere else). Reported beside it: the core as it stood until
     then, every member the code was bound to whatever its access (on the development data: class
     17.5 on the pilot, 3.15 on the histories, §6).
@@ -455,7 +455,7 @@ alternatives at the class are the other classes that already hold the same depen
     function arm writing fewer wired functions and more called methods as the stream went on,
     which brings the calling structure back inside it (§7). The links themselves had not been
     measured.
-  - *Until 24 November 2026 H5 was* **forced changes couple**: in the methods arm, a class a
+  - *Until 24 November 2026 the coupling hypothesis (then H7) was* **forced changes couple**: in the methods arm, a class a
     forced change goes into gains more calls across its boundary than one an unforced change goes
     into. Deleted that day at the author's word (§9 row 90); its test and readings are gone from
     the code, and its measure, the calls across the encapsulation (§4.2c), stays for H8.
@@ -760,8 +760,8 @@ end's production Java of the four stacks of its Runs A and B, a front end × bac
     Each one-sided with a 95% cluster-bootstrap interval (§5); p is the larger of the two.
     Conditions: compliance, below, and the amount within its band. H8 is decided at α = 0.05 on
     its own p: it is read on its own run, after the others, and is not in the Holm family of the
-    primary analysis. Below the compliance bar it is descriptive only. In Run D's analysis H3 to
-    H5 are descriptive: they are the arms' tests, not this run's.
+    primary analysis. Below the compliance bar it is descriptive only. In Run D's analysis H1 to
+    H7 are descriptive: they are the arms' tests, not this run's.
   - **Run D cannot be run beside Run A** (the author, 22 November 2026: "I can not currently run
     it concurrently so will have to run separately at the end, so will have to accept this"). So
     the contrast holds anything that changed between the two runs, the instruction among them:
@@ -1151,7 +1151,7 @@ As built: `instrument/Pull.java` (`own`, `state`, VERSION 17), `chain.parse_wiri
 34. Corpus A only: a history's logic is not read (§4.9).
 
 **Calls across the encapsulation** (H8's dispersion; also read by the ripple, surface against
-volume, the reader and where forced coupling came from. It was the old H5's measure until that
+volume, the reader and where forced coupling came from. It was the measure of *forced changes couple* until that
 hypothesis was deleted on 24 November 2026, §9 row 90). Added 20 November
 2026 (§9). Per unit and class that existed before it that the unit placed or edited code in:
 
@@ -1178,7 +1178,7 @@ As built: `instrument/Pull.java` (`access`, VERSION 14), `flow.Graph.cross_edges
 (`calls_across.csv`; `h5.csv` until 24 November 2026).
 
 **Where forced coupling came from (reported reading; added 23 November 2026, §9 row 88).** The
-author's reading of the old H5 on the development histories: well-encapsulated code that is forced into a
+author's reading of *forced changes couple* (since deleted) on the development histories: well-encapsulated code that is forced into a
 class adds little coupling, and what it adds comes from the problem, not the placement. Each
 class a forced change went into is *contained* (no call added across its boundary), *problem or
 reuse* (every call it added either joins two classes whose private data the change needed, both
@@ -1194,7 +1194,7 @@ classes. As built: `prepare.call_source`, `prepare.coupling_source` (`readings.j
 
 *Prior work:* access excessiveness and its evolution are measured per member (Kobori et al. 2015,
 across releases; Vidal et al. 2016, over-exposed methods and classes, mostly from their first
-version), with no link to the change that widened them. H5 reads widening at the change, and only
+version), with no link to the change that widened them. These calls read widening at the change, and only
 as it is reached by the change's new calls.
 
 ### 4.2d Split or concentrate (reported reading)
@@ -1245,7 +1245,7 @@ Added 20 November 2026 (§9 row 63; the author's). The exchange between the two 
   class leaks. Read against the function arm and against size scaling (Lopes and Ossher 2015,
   §7), not against 1 alone. Per change: the surface it added against the methods it added, forced
   against unforced at the same methods added.
-- **Ripple:** for each call a unit added across a class's boundary (H5's, §4.2c), the later units
+- **Ripple:** for each call a unit added across a class's boundary (§4.2c), the later units
   that change the method it reaches, and the share of those that also change the calling class:
   the cost of dispersion paid again later. Against chance (decided by the author, 20 November
   2026): the share of the chain's units that change the calling class anyway, so that a ripple
@@ -1272,7 +1272,7 @@ A the author is one agent and every system is small, so it is reported there per
   2. *Growth arriving forced:* of the positions the unit adds to classes that existed, the share
      forced at the class (H7's growth accounting, §4.2b).
   3. *Encapsulation opened:* per class row the unit changed, the members it exposed or widened
-     (H5's, §4.2c), forced and unforced apart.
+     (§4.2c), forced and unforced apart.
   4. *Size let reach:* the methods (and positions) of each existing class the unit adds code to,
      at the unit's parent; and whether the unit splits a class (a new class taking fields and
      methods from one that existed, as RefactoringMiner's Extract Class is read, §4.1).
@@ -1898,7 +1898,7 @@ chain, of the calls the instrument counted between classes, the compiler confirm
 (Spring) and 283 of 678 (OfficeFloor). With a call's family corrected to its ancestors and
 descendants (`flow.Graph.family`): 329 of 333 and 283 of 288, and of the compiler's calls between
 classes that can be followed the instrument has 295 of 304 and 245 of 248. Every figure of §6 for
-H1 at the method, H7's coupling of pairs and H5 was computed with the fault and is superseded by
+H1 at the method, H7's coupling of pairs and *forced changes couple* (since deleted) was computed with the fault and is superseded by
 the rerun at `MEASURE_VERSION` 29.
 
 **A gap it found, closed before any run was read** (23 November 2026, §9 row 87). Field reads of
@@ -2309,7 +2309,7 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   measures per arm, descriptive.
 - **The confirmatory tests are decided on a cluster bootstrap** (decided by the author on 22
   November 2026, after a review of the plan, §9 row 74). Until then only H3 and H4's bystander
-  terms were; H2, H4's intrusion ratios, H1 and H5 took a Wald interval from a model with the
+  terms were; H2, H4's intrusion ratios, H1 and the coupling test of the time took a Wald interval from a model with the
   chain's intercept. That interval treats the rows of a chain as separate once the chain's level
   is taken out, and they are not: the problems placed in one class share its later changes, the
   two records of one row of H2 share its arrivals (§7), and one class is changed by many units.
@@ -3000,13 +3000,13 @@ binomial mixed model). These details are fixed with the code before any run is r
   inherited field) are counted as apart.
 - **Coupling scales with size** (Lopes and Ossher 2015, read in full: structure measures of Java
   programs follow size by power laws, so a size-normalised reading needs the exponent, not a
-  ratio). H7 and H5 hold the change's size fixed for this reason (§9 row 61); a reading of a
+  ratio). H7 holds the change's size fixed for this reason (§9 row 61), and H5 the logic added; a reading of a
   class's boundary against its size, if built, must be read against the exponent the size alone
   predicts, and against the function arm.
 - **High coupling in a few classes may be unavoidable** (Taube-Schock, Walker and Witten 2011:
   between-module connectivity is roughly scale-free, so some highly coupled modules are expected
-  of the distribution, not of poor design). This is the rival reading of H5 and of the
-  concentrate signal: a forced class that gains coupling may be in that tail whatever forced it.
+  of the distribution, not of poor design). This is the rival reading of the calls across the
+  encapsulation (H8's dispersion) and of the concentrate signal: a forced class that gains coupling may be in that tail whatever forced it.
   The forced/unforced contrast at the same size and the arm contrast are what separate the two.
 - **H5's links are counted, not weighed, and the agent may not use the form** (24 November
   2026). A link that carries ten values and one that carries none count alike, by the author's
@@ -3183,7 +3183,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   corpus B (two sets of 300 repositories) is where H7 has the units to resolve, and on corpus A
   H7 is read per run, never pooled (§3.1). The confirmatory hypotheses are not at risk in the same
   way: their tests are against 1, not a margin, and on the development chain H2, H1 at the class
-  and H5 lie well away from it.
+  and *forced changes couple* (since deleted) lie well away from it.
 - **Encapsulation and the reader confounds author with much else** (§4.2f). A declared agent
   commit is merged by a person who may have reshaped it; undeclared commits may be assisted; the
   agent and its window are not recorded per commit; corpus C's repositories are younger than

@@ -212,7 +212,7 @@ pairs <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, fu
   }))
 }))))
 write.csv(pairs, file.path(dir, "pairs.csv"), row.names = FALSE)
-# calls across the encapsulation (H8's dispersion; the old H5's rows until 24 November 2026): in the methods arm
+# calls across the encapsulation (H8's dispersion; the rows of forced changes couple until 24 November 2026): in the methods arm
 h5 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
   n <- 100
   forced <- rbinom(n, 1, 0.4) == 1
@@ -433,7 +433,7 @@ check(e$reported$H7_forced_without_size$irr > e$H7$forced$irr * 1.2, "without th
 check(abs(log(e$reported$H7_function_arm$irr)) < 0.35, "the function arm's flat spread is reported")
 check(!is.null(e$reported$H7_spread$methods$thirds_classes), "the spread per third is reported")
 check(abs(log(e$reported$H7_pair_coupling$irr) - log(3)) < 0.35, "the rising coupling of pairs changed together is recovered")
-check(is.null(e$reported$H5_retired_forced) && is.null(e$H5$forced), "the old H5 is gone")
+check(is.null(e$reported$H5_retired_forced) && is.null(e$H5$forced), "forced changes couple is gone")
 check(identical(e$coupled_arm$interval, "cluster bootstrap"),
       "H8's calls across the encapsulation are decided on the cluster bootstrap")
 check(abs(log(e$H5$arm$irr) - log(0.6)) < 0.2 && e$H5$arm$irr_upper < 1 && e$H5$arm$interval == "cluster bootstrap",
