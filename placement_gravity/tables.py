@@ -540,6 +540,18 @@ def link_rows(arm: str, chain: str, measured: dict) -> list[dict]:
             row[f"{kind}_links_lost"] = len(a - b)
             row[f"{kind}_links"] = len(a)
         new_calls = l1["call"] - l0["call"]
+        # the weights (H5, decided by the author on 24 November 2026): a call 1 + its parameters + 1
+        # if it returns a value; a state link 1; a wiring edge 1, + 1 if it carries a value
+        lf0 = (w.get("before") or {}).get("link_from") or {}
+        lf1 = (w.get("after") or {}).get("link_from") or {}
+        row["call_weight_added"] = sum(g1.call_weight(b) for _, b in new_calls)
+        row["call_weight_lost"] = sum(g0.call_weight(b) for _, b in l0["call"] - l1["call"])
+        row["state_weight_added"] = row["state_links_added"]
+        row["state_weight_lost"] = row["state_links_lost"]
+        row["flow_weight_added"] = sum(g1.flow_weight(lf1.get(x)) for x in f1 - f0)
+        row["flow_weight_lost"] = sum(g0.flow_weight(lf0.get(x)) for x in f0 - f1)
+        row["weight_added"] = row["call_weight_added"] + row["state_weight_added"] + row["flow_weight_added"]
+        row["weight_lost"] = row["call_weight_lost"] + row["state_weight_lost"] + row["flow_weight_lost"]
         fns = wired.get(f"cp{after[cp]:02d}", set())
         row["call_links_added_from_functions"] = sum(1 for a, _ in new_calls if a in fns)
         row["call_links_added_from_methods"] = len(new_calls) - row["call_links_added_from_functions"]

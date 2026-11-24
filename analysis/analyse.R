@@ -933,8 +933,11 @@ if (!is.null(h5) && nrow(h5) > 0) {
 # and log(1 + logic added), with the chain's and the checkpoint's intercepts. Shaped as H4: the
 # function arm's ratio half-way through below 1 (fewer links for the same logic), **and** its
 # interaction with the index below 1 (the gap widens over the stream). Both from one cluster
-# bootstrap (chains resampled within arm). Reported: each kind of link apart, the same model
-# without the logic, and the methods arm's own rise over the stream.
+# bootstrap (chains resampled within arm). Since 24 November 2026 (PLAN.md 9 row 95) the links are
+# weighed (weight_added): a call 1 + 1 per parameter + 1 if it returns a value; a state link 1; a
+# wiring edge 1, + 1 if it carries a value; injection weighs nothing. Reported: the plain count
+# (links_added, the test until then), each kind apart, the same model without the logic, and the
+# methods arm's own rise over the stream.
 lk <- read("h5.csv")
 if (isFALSE(spec$problem_fixed)) {
   res$H5 <- list(not_applicable = TRUE)       # a history: no arms solving the same problems
@@ -946,20 +949,23 @@ if (isFALSE(spec$problem_fixed)) {
   lk$cp_c <- (lk$cp - (max(spec$checkpoints, 1) + 1) / 2) / max(spec$checkpoints - 1, 1)
   fe_l <- if (multi(lk$frontend)) " + frontend" else ""
   TREND <- paste0("cp_c:", FARM)
-  ml <- fit_cp(paste0("links_added ~ cp_c * arm + log1p(logic_added)", fe_l), lk, nbinom2())
+  ml <- fit_cp(paste0("weight_added ~ cp_c * arm + log1p(logic_added)", fe_l), lk, nbinom2())
   note("H5", ml)
   per <- function(y) as.list(tapply(lk[[y]], as.character(lk$arm), mean))
   b <- boot_irrs(ml$fit, ml$formula, ml$data, nbinom2(), c(FARM, TREND))
   res$H5 <- list(arm = b[[FARM]], trend = b[[TREND]], n = nrow(lk), checkpoint_intercept = ml$cp,
-                 links_added = per("links_added"), logic_added = per("logic_added"))
+                 weight_added = per("weight_added"), links_added = per("links_added"),
+                 logic_added = per("logic_added"))
   kind <- function(y) {
     if (any(unlist(per(y)) == 0)) return(list(error = paste("no", y, "in an arm"), mean = per(y)))
     m <- fit_cp(paste0(y, " ~ cp_c * arm + log1p(logic_added)", fe_l), lk, nbinom2())$fit
     list(arm = irr(wald(m, FARM)), trend = irr(wald(m, TREND)), mean = per(y))
   }
-  res$reported$H5_kinds <- lapply(c(call = "call_links_added", state = "state_links_added",
-                                    flow = "flow_links_added", lost = "links_lost"), kind)
-  mn <- fit_cp(paste0("links_added ~ cp_c * arm", fe_l), lk, nbinom2())$fit
+  res$reported$H5_kinds <- lapply(c(call = "call_weight_added", state = "state_weight_added",
+                                    flow = "flow_weight_added", lost = "weight_lost"), kind)
+  mu <- fit_cp(paste0("links_added ~ cp_c * arm + log1p(logic_added)", fe_l), lk, nbinom2())$fit
+  res$reported$H5_unweighted <- list(arm = irr(wald(mu, FARM)), trend = irr(wald(mu, TREND)))
+  mn <- fit_cp(paste0("weight_added ~ cp_c * arm", fe_l), lk, nbinom2())$fit
   res$reported$H5_without_logic <- list(arm = irr(wald(mn, FARM)), trend = irr(wald(mn, TREND)))
   res$reported$H5_methods_rise <- irr(wald(ml$fit, "cp_c"))
   res$reported$H5_logic <- irr(wald(ml$fit, "log1p(logic_added)"))

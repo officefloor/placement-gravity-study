@@ -96,7 +96,7 @@ import net.officefloor.sinewslim.javaparser.ParsedFile;
 public final class Pull {
 
 	/** Bump whenever a field's meaning changes. */
-	static final int VERSION = 17;
+	static final int VERSION = 18;
 
 	/** A removed position's text must be at least this long to mark an added one as moved. */
 	static final int MOVED_MIN_CHARS = 12;
@@ -1132,6 +1132,14 @@ public final class Pull {
 		return out;
 	}
 
+	static String intMap(Map<String, Integer> m) {
+		StringBuilder s = new StringBuilder("{");
+		for (Map.Entry<String, Integer> e : m.entrySet()) {
+			s.append(s.length() > 1 ? "," : "").append(q(e.getKey())).append(':').append(e.getValue());
+		}
+		return s.append('}').toString();
+	}
+
 	static String typeMap(Map<String, String> m) {
 		StringBuilder s = new StringBuilder("{");
 		for (Map.Entry<String, String> e : new TreeMap<>(m).entrySet()) {
@@ -1250,6 +1258,57 @@ public final class Pull {
 			}
 		}
 		return new ArrayList<>(out);
+	}
+
+	/** Whether a method returns a value (H5's weights, VERSION 18): not void, not a constructor. */
+	static boolean returns(Node n) {
+		return n instanceof MethodDeclaration md && !md.getType().isVoidType();
+	}
+
+	/**
+	 * A function's outputs (H5's weights, VERSION 18): each parameter annotated {@code @Flow("name")}, with
+	 * the number of arguments its flow interface's method takes, where that interface is declared in
+	 * the same source file (an OfficeFloor function's own nested interface); 0 where it is not found.
+	 */
+	static Map<String, Integer> flows(Node n) {
+		Map<String, Integer> out = new TreeMap<>();
+		if (!(n instanceof CallableDeclaration<?> cd)) {
+			return out;
+		}
+		for (com.github.javaparser.ast.body.Parameter p : cd.getParameters()) {
+			for (com.github.javaparser.ast.expr.AnnotationExpr a : p.getAnnotations()) {
+				if (!a.getNameAsString().equals("Flow") && !a.getNameAsString().endsWith(".Flow")) {
+					continue;
+				}
+				String name = null;
+				if (a instanceof com.github.javaparser.ast.expr.SingleMemberAnnotationExpr sm
+						&& sm.getMemberValue() instanceof com.github.javaparser.ast.expr.StringLiteralExpr sl) {
+					name = sl.getValue();
+				} else if (a instanceof com.github.javaparser.ast.expr.NormalAnnotationExpr na) {
+					for (var pair : na.getPairs()) {
+						if (pair.getNameAsString().equals("value")
+								&& pair.getValue() instanceof com.github.javaparser.ast.expr.StringLiteralExpr sl) {
+							name = sl.getValue();
+						}
+					}
+				}
+				if (name == null) {
+					continue;
+				}
+				String type = rawSimple(p.getType().asString());
+				int arity = 0;
+				var cu = n.findCompilationUnit();
+				if (cu.isPresent()) {
+					for (var t : cu.get().findAll(com.github.javaparser.ast.body.ClassOrInterfaceDeclaration.class)) {
+						if (t.isInterface() && t.getNameAsString().equals(type) && !t.getMethods().isEmpty()) {
+							arity = t.getMethods().get(0).getParameters().size();
+						}
+					}
+				}
+				out.put(name, arity);
+			}
+		}
+		return out;
 	}
 
 	/** The fields of a class that hold state (H7, VERSION 17): not an injected dependency, a constant
@@ -1420,7 +1479,9 @@ public final class Pull {
 									.append(",\"calls\":").append(strs(calls(m)))
 									.append(",\"access\":").append(q(access(m.node())))
 									.append(",\"reads\":").append(strs(reads(m)))
-									.append(",\"own\":").append(strs(own(m))).append('}');
+									.append(",\"own\":").append(strs(own(m)))
+									.append(",\"returns\":").append(returns(m.node()))
+									.append(",\"flows\":").append(intMap(flows(m.node()))).append('}');
 						}
 						w.write("{\"unit\":" + q(r[0]) + ",\"path\":" + q(rel) + ",\"classes\":[" + classes
 								+ "],\"methods\":[" + methods + "],\"problems\":" + problems.size() + "}\n");

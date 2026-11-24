@@ -422,8 +422,21 @@ alternatives at the class are the other classes that already hold the same depen
   of method bodies, §4.9), and its **surface** is the **links** it added between blocks of logic
   (§4.2c): a method calling a method, in its own class or another; a method using a field that
   holds state, of its own class or another's; and, in the function arm, a function wired to the
-  next. A link is counted once however heavy (the author: "a link might be heavier but the
-  existence of the link is the coupling"). **Injection is not surface**, in either arm: an
+  next. **Each link is weighed by the data it carries** (decided by the author on 24 November 2026,
+  §9 row 95, after the development chain had gone against the plain count, §6): a method call
+  weighs 1, plus 1 for each parameter and 1 if it returns a value; a use of a field holding state
+  weighs 1; a wiring edge weighs 1, plus 1 if it carries a value (a `next:` from a function that
+  returns one, an output whose flow takes an argument). The author: "a method call is calculated
+  as 1 for the call, +1 for every parameter, +1 if has return type. Then the wiring for function
+  injection is just 1 as no parameters or return type"; the +1 where an edge does carry a value is
+  the drafter's, chosen by the author so that the weights do not favour the function arm by
+  construction. Until then a link was counted once however heavy (the author: "a link might be
+  heavier but the existence of the link is the coupling"); that count is reported beside. **Where
+  the weights credit the function arm** is stated here: in OfficeFloor the data passes between
+  functions mostly through injected values (`Out<T>` published by one function, `@Val` received
+  by the next), which weigh nothing, where Spring passes the same data as parameters, which weigh
+  1 each. That is the claim itself (data is not handed along the control flow), and it rests on
+  the decision just below. **Injection is not surface**, in either arm: an
   injected dependency, a field the Spring container fills or a parameter OfficeFloor injects,
   gives flexibility and is not bound to the control flow (the author: "similar to injected
   dependencies in Spring provide flexibility. They are not associated with the control flow
@@ -1118,8 +1131,16 @@ the links it added and lost, each counted once however heavy:
   within the caller's class and across classes. It shows whether the function arm's calls come from
   its functions or from the helper methods written beside them.
 
-*What it cannot say.* How heavy a link is (the values it carries, how often it runs) is not read,
-by the author's choice. A call whose receiver cannot be read without a symbol solver is not
+- **The weights** (since 24 November 2026, §9 row 95; H5 is read on them): a call link 1, plus 1
+  for each parameter the callee takes and 1 if it returns a value (`Pull --places`, `returns`,
+  VERSION 18); a state link 1; a flow link 1, plus 1 if it carries a value: a `next:` from a
+  function whose method returns one, or an output whose `@Flow` interface's method takes an
+  argument (`flows`, VERSION 18; the interface read in the function's own file, 0 where it is not
+  found there). The function is the node's `method:`, or else its class's first public method. A
+  link lost weighs as it did before it was lost.
+
+*What it cannot say.* How often a link runs is not read. A parameter weighs 1 whatever it holds.
+A call whose receiver cannot be read without a symbol solver is not
 followed (§4.8), in either arm. A use of a field through a getter is a call link, not a state
 link, so a class that wraps its fields in accessors moves links from one kind to the other
 without changing their number.
@@ -2234,8 +2255,8 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   coupling of pairs changed together more than once, a negative binomial model of it on the index
   with intercepts for the chain and the pair; the pairs changed together, how many more than once,
   in how many of those coupling rose or fell, and the candidates by name.
-- **H5** (restated 24 November 2026, §9 row 89): per checkpoint and chain of corpus A, the links
-  added (§4.2c) as a negative binomial (nbinom2) mixed model on the arm, the checkpoint index
+- **H5** (restated 24 November 2026, §9 row 89; weighed since row 95): per checkpoint and chain of
+  corpus A, the weight of the links added (§4.2c) as a negative binomial (nbinom2) mixed model on the arm, the checkpoint index
   centred at the middle of the stream and scaled to its length, their interaction, and log(1 +
   logic added) (§4.9), with the chain's and the checkpoint's intercepts (the chain's alone where
   that does not converge, recorded). The arm term is the function arm's rate ratio half-way through
@@ -3417,8 +3438,14 @@ author's to set, on the plan and code as they then stand, and starts the experim
   the table at the head of §9; and H1 (as it then was) renamed *the encapsulation fills*, after the
   author asked whether the periphery is "the volume grows inside the encapsulation" (it is the
   encapsulation's state, seen from each new block, not its code).
-- *To finish for row 94:* the pilot measured again at `MEASURE_VERSION` 35, as below, for the call
-  links by caller (row 89's run at 34 is done and in §6). *As it stood for row 89:* the pilot measured again at `MEASURE_VERSION` 34 (`./step3_measure.sh
+- *Decided by the author on 24 November 2026 (evening):* **H5's links are weighed** (row 95), after
+  the development chain had gone against the plain count (§6) and the author had seen that
+  OfficeFloor's excess was its wiring between more, smaller pieces. The drafter put two choices:
+  a wiring edge weighs 1, plus 1 where it carries a value ("1, +1 if it carries a value", against
+  always 1); and the test runs on the weights with the plain count reported (against needing
+  both). The author's earlier "the existence of the link is the coupling" is revised by this.
+- *To finish for rows 94 and 95:* the pilot measured again at `MEASURE_VERSION` 36, as below, for
+  the call links by caller and the weights (row 89's run at 34 is done and in §6). *As it stood for row 89:* the pilot measured again at `MEASURE_VERSION` 34 (`./step3_measure.sh
   --analysis pilot`, then `./step4_analyse.sh --analysis pilot open-source-development` and
   `./step5_report.sh`); the histories are not affected (`HISTORY_VERSION` 14 stands). Then H7's
   development figures go into §6. The figure of §2 still shows the old H7. **H8 stays as it is**
@@ -3656,6 +3683,7 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 92 | H5's arm contrast: per checkpoint, the placements forced at the class (bound there with no other place to go) fewer in the function arm half-way through **and** rising less over the stream (the arm term and its interaction with the index, both below 1, one cluster bootstrap), beside the methods arm's fall; p the largest of the three. Not read on a history | §2, §5, §8, `prepare.h5_forced_rows` (`h5_forced.csv`), `analyse.R` (`H5$contrast`; `boot_irrs` moved to the helpers), `verdict.h5`, `report.h5_section`, `selftest.R`, `tests/test_analysis.py` | The author's, 24 November 2026: "make H5 an arm contrast"; "it also potentially shows the accidental cost of the method structure in Spring handlers (and typical web app servers) over function injection of OfficeFloor". The form chosen from three, **after the development chain's H5 figures by arm had been seen** (the function arm 10 class rows in 60 checkpoints, 9 forced; the methods arm 48 in 59, 26 forced). Before the tag, so a revision |
 | 93 | **The hypotheses renumbered in the order of the story**: old H5 → H1, H2 → H2, H1 → H3, H4 → H4, H7 → H5, H3 → H6, H6 → H7, H8 → H8 (the table at the head of this section). H3 renamed *the encapsulation fills*. §1 to §5 and §7, the code, the tests, `README.md` and `LITERATURE.md` take the new numbers; §6, §8 and §9 keep those of their time; the figure keeps the old. The report lists the hypotheses H1 to H7 in order | throughout; `verdict.py` (the confirmatory family H1, H2, H4, H5; secondary H3, H6, H7), `analyse.R` and `selftest.R` (`res$H*`, the data files `h*.csv`), `prepare.py`, `report.py`, `tests/` | The author, 24 November 2026: "change the ordering of the HX to match the story order of what we are discovering". No test, measure, model or rule changes; only names. The results in `results/analysis/` keep the old numbers until they are made again |
 | 94 | A reported reading beside H5: the call links a checkpoint added, split by caller (a wired function, a public method of a class the wiring declares, or any other method) and by whether the callee is in the caller's class; per arm and, for calls from other methods, over the thirds. No direction stated; no test changes | §4.2c, §6, `tables.link_rows`, `prepare.h5_rows`, `prepare.links_summary`, `report.h5_section`, `tests/`; `MEASURE_VERSION` 35 | The author's, 24 November 2026 ("add the breakdown"), **after H5 had gone against the form on the development chain** (§6): the drafter proposed it to see whether the function arm's calls come from the helper methods the agent wrote inside functions, which the author holds can be split out again (§1). H5's test is unchanged |
+| 95 | **H5's links weighed**: a call 1 + 1 per parameter + 1 if it returns a value; a state link 1; a wiring edge 1 + 1 if it carries a value (a `next:` from a function that returns one, an output whose flow takes an argument); injection weighs nothing. H5's test (its shape unchanged) is read on the weight added; the plain count, the test until then, is reported beside | §2, §4.2c, §5, §8, `Pull.java` VERSION 18 (`returns`, `flows`), `chain.parse_wiring` (`link_from`), `flow.Graph.call_weight`, `flow.Graph.flow_weight`, `tables.link_rows`, `prepare.h5_rows`, `prepare.links_summary`, `analyse.R` (`weight_added`; `reported$H5_unweighted`), `selftest.R`, `report.h5_section`, `tests/`; `MEASURE_VERSION` 36 | The author's, 24 November 2026: "a method call is calculated as 1 for the call, +1 for every parameter, +1 if has return type. Then the wiring for function injection is just 1". **Made after H5 had gone against the function arm on the development chain** (1.25 [1.06, 1.47] times the links for the same logic, §6) and after the author had seen that the excess was the wiring between OfficeFloor's more numerous classes and methods. The +1 for an edge carrying a value is the drafter's, chosen by the author. The drafter's note, in §2: OfficeFloor's data passes mostly through injected values, which weigh nothing, so the weights credit the form exactly where the author's claim is. Before the tag, so a revision |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

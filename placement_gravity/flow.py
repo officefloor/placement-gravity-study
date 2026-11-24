@@ -134,6 +134,34 @@ class Graph:
             self._links = {"call": calls, "state": state}
         return self._links
 
+    def call_weight(self, callee: tuple[str, str]) -> int:
+        """A call link's weight (H5, decided by the author on 24 November 2026): 1 for the call, 1
+        for each parameter the callee takes, and 1 if it returns a value."""
+        m = self.by_simple().get(callee)
+        if m is None:
+            return 1
+        return 1 + max(int(m.get("params", 0)), 0) + (1 if m.get("returns") else 0)
+
+    def flow_weight(self, source: dict | None) -> int:
+        """A wiring edge's weight (H5, 24 November 2026): 1, and 1 more if it carries a value: a
+        ``next:`` from a function that returns one, or an output whose flow takes an argument. The
+        function is the node's ``method:``, or else the first public method of its class."""
+        if not source or not source.get("class"):
+            return 1
+        ms = [m for m in self.methods if simple(m["type"]) == source["class"]
+              and (m.get("name") == source.get("method") if source.get("method") else m.get("access") == "public")]
+        if not ms:
+            return 1
+        m = ms[0]
+        if source.get("output") is None:
+            return 1 + (1 if m.get("returns") else 0)
+        return 1 + (1 if (m.get("flows") or {}).get(source["output"], 0) > 0 else 0)
+
+    def by_simple(self) -> dict[tuple[str, str], dict]:
+        if getattr(self, "_by_simple", None) is None:
+            self._by_simple = {(simple(m["type"]), m["signature"]): m for m in self.methods}
+        return self._by_simple
+
     def access(self) -> dict[tuple[str, str], str]:
         """Each method's and field's access (public, protected, package, private), by (class,
         signature), a field as (class, "#name")."""

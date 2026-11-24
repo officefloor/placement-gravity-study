@@ -28,11 +28,15 @@ def test_reader_counts_nodes_edges_and_lines():
     # H5's flow links: the node an edge leaves and the node it names
     assert w["links"] == ["rest/a.POST.yml|first|done", "rest/a.POST.yml|first|second",
                           "rest/a.POST.yml|second|done"]
+    # where each leaves from, for its weight (H5, 24 November 2026)
+    assert w["link_from"]["rest/a.POST.yml|first|second"] == {"class": "First", "method": None, "output": "proceed"}
+    assert w["link_from"]["rest/a.POST.yml|second|done"] == {"class": "Second", "method": None, "output": None}
 
 
 def test_reader_of_no_wiring():
     assert chain.parse_wiring({}) == chain.NO_WIRING == {"files": 0, "nodes": 0, "edges": 0, "lines": 0,
-                                                         "largest_file": None, "largest_lines": 0, "links": []}
+                                                         "largest_file": None, "largest_lines": 0, "links": [],
+                                                         "link_from": {}}
 
 
 def rows(chain_name, added, largest=0.25):

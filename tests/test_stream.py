@@ -466,5 +466,45 @@ def test_links_count_calls_and_state_but_not_injection_or_constants(tmp_path):
     r1, r2 = tables.link_rows("spring", "c", measured)
     assert (r1["call_links_added_from_functions"], r1["call_links_added_from_methods"]) == (2, 0)
     assert (r1["call_links_added_within_class"], r1["call_links_added_across_classes"]) == (1, 1)
+    # the weights: check(String) 1 + 1 parameter + 1 returned, Repo.count() 1 + 0 + 1; the state links
+    # 1 each; the wiring edge 1 (where it leaves from is not known here)
+    assert (r1["call_weight_added"], r1["state_weight_added"], r1["flow_weight_added"], r1["weight_added"]) == (5, 3, 1, 9)
     assert (r1["call_links_added"], r1["state_links_added"], r1["flow_links_added"], r1["links_added"]) == (2, 3, 1, 6)
     assert (r2["links_added"], r2["links_lost"], r2["call_links"], r2["methods"]) == (0, 0, 2, 4)
+
+
+FUNCTION = """package f;
+public class Check {
+    public interface Proceed { void proceed(String id); }
+    public interface Stop { void stop(); }
+    public void service(@Flow("proceed") Proceed proceed, @Flow("stop") Stop stop, Repo repo) {
+        proceed.proceed("x");
+    }
+}
+"""
+NEXT = """package f;
+public class Load { public String service(Repo repo) { return "x"; } }
+"""
+
+
+def test_a_wiring_edge_weighs_one_more_where_it_carries_a_value(tmp_path):
+    """H5's weights (24 November 2026): an output whose flow takes an argument, or a next from a
+    function that returns a value, carries one; injected parameters (repo) weigh nothing."""
+    import json
+    import subprocess
+    from placement_gravity import chain, flow
+    src = tmp_path / "src" / "f"
+    src.mkdir(parents=True)
+    (src / "Check.java").write_text(FUNCTION)
+    (src / "Load.java").write_text(NEXT)
+    (tmp_path / "places.tsv").write_text(f"cp01\t{tmp_path / 'src'}\n")
+    subprocess.run(["java", "-cp", chain.CLASSPATH, "Pull", "--places", str(tmp_path / "places.tsv"),
+                    str(tmp_path / "places.jsonl")], check=True)
+    files = {r["path"]: r for r in map(json.loads, (tmp_path / "places.jsonl").read_text().splitlines())}
+    m = files["f/Check.java"]["methods"][0]
+    assert (m["returns"], m["flows"]) == (False, {"proceed": 1, "stop": 0})
+    g = flow.Graph({"files": files})
+    assert g.flow_weight({"class": "Check", "method": None, "output": "proceed"}) == 2
+    assert g.flow_weight({"class": "Check", "method": None, "output": "stop"}) == 1
+    assert g.flow_weight({"class": "Load", "method": "service", "output": None}) == 2
+    assert g.flow_weight({"class": "Check", "method": None, "output": None}) == 1

@@ -209,8 +209,10 @@ def h5_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
     h = hyp.get("H5") or {}
     L = ["", "## H5, surface against volume", "",
          "Per checkpoint, the links it added between blocks of logic (the surface: a method calling a method, "
-         "a method using a field that holds state, a function wired to the next), each counted once, an "
-         "injected dependency not among them; against the logic it added (the volume). The function arm's "
+         "a method using a field that holds state, a function wired to the next), each weighed by the data it "
+         "carries (a call 1, +1 per parameter, +1 if it returns a value; a state link 1; a wiring edge 1, +1 if "
+         "it carries a value), an injected dependency weighing nothing; against the logic it added (the "
+         "volume). The function arm's "
          "ratio half-way through the stream, for the same logic, below 1, **and** its interaction with the "
          "checkpoint index below 1 (the gap widens); one-sided, 95% cluster-bootstrap intervals (chains "
          "resampled).", "",
@@ -220,15 +222,19 @@ def h5_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
            if (rd or {}).get("validation_flags") else [])]
     if b.get("not_applicable"):
         return L + ["- Not testable on a history: its arms do not solve the same problems."]
-    for k, lab in (("arm", "Links added, function arm / methods arm, for the same logic"),
+    for k, lab in (("arm", "Weighted links added, function arm / methods arm, for the same logic"),
                    ("trend", "The gap over the stream (arm × checkpoint index)")):
         x = b.get(k) or {}
         L.append(f"- **{lab}: {ratio(x)}** (one-sided p {f(x.get('p_less'))}; {x.get('interval', '–')})"
                  + (f"; Wald: {ratio(x['wald'])}" if x.get("wald") else ""))
-    L.append(f"- Links added a checkpoint: " + ", ".join(f"{a} {f(v)}" for a, v in (b.get("links_added") or {}).items())
+    uw = rep.get("H5_unweighted") or {}
+    L.append(f"- Reported, the links counted, not weighed (the test until 24 November 2026): arm {ratio(uw.get('arm'))}, "
+             f"over the stream {ratio(uw.get('trend'))}")
+    L.append(f"- Weight added a checkpoint: " + ", ".join(f"{a} {f(v)}" for a, v in (b.get("weight_added") or {}).items())
+             + "; links added: " + ", ".join(f"{a} {f(v)}" for a, v in (b.get("links_added") or {}).items())
              + "; logic added: " + ", ".join(f"{a} {f(v)}" for a, v in (b.get("logic_added") or {}).items()))
     for k, x in (rep.get("H5_kinds") or {}).items():
-        L.append(f"- Reported, {k} links: function arm / methods arm {ratio(x.get('arm'))}, over the stream "
+        L.append(f"- Reported, {k} links weighed: function arm / methods arm {ratio(x.get('arm'))}, over the stream "
                  f"{ratio(x.get('trend'))}; a checkpoint " + ", ".join(f"{a} {f(v)}" for a, v in (x.get("mean") or {}).items()))
     wl = rep.get("H5_without_logic") or {}
     L.append(f"- Reported, without the logic in the model: arm {ratio(wl.get('arm'))}, over the stream {ratio(wl.get('trend'))}; "
@@ -242,6 +248,10 @@ def h5_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
                  + ", ".join(f(th.get(t)) for t in ("1", "2", "3"))
                  + f"; links per position of logic {f(a.get('links_per_logic'))}; the tree's links per method at the "
                  f"end {f(a.get('tree_links_per_method'))}")
+        if a.get("weight_added") is not None:
+            L.append(f"  - weighed: {f(a.get('weight_added'))} a checkpoint (call {f(a.get('call_weight_added'))}, state "
+                     f"{f(a.get('state_weight_added'))}, flow {f(a.get('flow_weight_added'))}; lost {f(a.get('weight_lost'))}); "
+                     f"per position of logic {f(a.get('weight_per_logic'))}")
         if a.get("call_links_added_from_functions") is not None:
             ct = a.get("calls_from_methods_thirds") or {}
             L.append(f"  - its call links by caller: from wired functions {f(a.get('call_links_added_from_functions'))}, "

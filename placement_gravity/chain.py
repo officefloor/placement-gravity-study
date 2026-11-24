@@ -185,14 +185,20 @@ def parse_wiring(texts: dict[str, str]) -> dict:
     is a ``next:`` or an entry of an ``outputs:`` map; a line is a line that is neither blank nor only
     a comment. ``largest_lines`` is the line count of the file with the most (PLAN.md §4.5).
     ``links``: each edge as ``file|from|to``, the node it leaves and the node it names, once however
-    many outputs join the two (H5's flow links, PLAN.md 4.2c)."""
+    many outputs join the two (H5's flow links, PLAN.md 4.2c). ``link_from``: for each link, the
+    node's class (simple name), its ``method:`` if given, and the output it leaves by (None for
+    ``next:``), so that its weight can be read from the Java (H5's weights, 24 November 2026)."""
     nodes = edges = lines = 0
     largest, largest_lines = None, 0
     links: set[str] = set()
+    link_from: dict[str, dict] = {}
     for f in sorted(texts):
         in_outputs = None
         own = 0
         node = None
+        cls: dict[str, str] = {}
+        meth: dict[str, str] = {}
+        pending: list[tuple[str, str, str | None]] = []
         for raw in texts[f].splitlines():
             line = raw.split("#", 1)[0].rstrip()
             if not line.strip():
@@ -206,19 +212,29 @@ def parse_wiring(texts: dict[str, str]) -> dict:
                 node = key[:-1].strip()
             if key.startswith("class:"):
                 nodes += 1
+                cls[node] = key.split(":", 1)[1].strip().split(".")[-1].split("$")[-1]
+            elif key.startswith("method:") and in_outputs is None:
+                meth[node] = key.split(":", 1)[1].strip()
             elif key.startswith("next:"):
                 edges += 1
-                links.add(f"{f}|{node}|{key.split(':', 1)[1].strip()}")
+                link = f"{f}|{node}|{key.split(':', 1)[1].strip()}"
+                links.add(link)
+                pending.append((link, node, None))
             elif key.startswith("outputs:"):
                 in_outputs = indent
             elif in_outputs is not None and ":" in key:
                 edges += 1
-                links.add(f"{f}|{node}|{key.split(':', 1)[1].strip()}")
+                link = f"{f}|{node}|{key.split(':', 1)[1].strip()}"
+                links.add(link)
+                pending.append((link, node, key.split(":", 1)[0].strip()))
+        for link, n, out in pending:
+            link_from.setdefault(link, {"class": cls.get(n), "method": meth.get(n), "output": out})
         lines += own
         if own > largest_lines:
             largest, largest_lines = f, own
     return {"files": len(texts), "nodes": nodes, "edges": edges, "lines": lines,
-            "largest_file": largest, "largest_lines": largest_lines, "links": sorted(links)}
+            "largest_file": largest, "largest_lines": largest_lines, "links": sorted(links),
+            "link_from": link_from}
 
 
 #: A Java token, for the system's size against a context window (PLAN.md 4.2f): comments and
@@ -297,7 +313,7 @@ def tree_places(repo: Path, cps: list, work: Path, java_src: str, wiring_root: s
 
 #: No wiring: an arm, or a history, without OfficeFloor configuration.
 NO_WIRING = {"files": 0, "nodes": 0, "edges": 0, "lines": 0, "largest_file": None, "largest_lines": 0,
-             "links": []}
+             "links": [], "link_from": {}}
 
 
 def measure(repo: Path, branch: str, base_ref: str, work: Path, java_src: str = JAVA_SRC,

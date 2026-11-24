@@ -147,6 +147,12 @@ lk$flow_links_added <- ifelse(lk$arm == "spring", 0, rbinom(nrow(lk), lk$links_a
 lk$state_links_added <- rbinom(nrow(lk), lk$links_added - lk$flow_links_added, 0.4)
 lk$call_links_added <- lk$links_added - lk$flow_links_added - lk$state_links_added
 lk$links_lost <- rpois(nrow(lk), 1)
+# the weights: each link about twice its count, so the weighted model sees the same effects
+lk$call_weight_added <- lk$call_links_added + rbinom(nrow(lk), lk$call_links_added * 2, 0.5)
+lk$state_weight_added <- lk$state_links_added
+lk$flow_weight_added <- lk$flow_links_added + rbinom(nrow(lk), lk$flow_links_added, 0.5)
+lk$weight_added <- lk$call_weight_added + lk$state_weight_added + lk$flow_weight_added
+lk$weight_lost <- lk$links_lost
 write.csv(lk, file.path(dir, "h5.csv"), row.names = FALSE)
 assign(".Random.seed", kept_seed, envir = .GlobalEnv)
 write.csv(by, file.path(dir, "by.csv"), row.names = FALSE)
@@ -436,6 +442,7 @@ check(abs(log(e$H5$trend$irr) - log(0.5)) < 0.3 && e$H5$trend$irr_upper < 1 && e
       "H5 recovers the gap widening over the stream (the trend ratio 0.5)")
 check(abs(log(e$reported$H5_methods_rise$irr) - log(2)) < 0.3, "the methods arm's links doubling over the stream is reported")
 check(abs(e$reported$H5_logic$estimate - 0.8) < 0.15, "links rising as logic^0.8 is recovered")
+check(abs(log(e$reported$H5_unweighted$arm$irr) - log(0.6)) < 0.2, "the plain count of links is reported beside the weights")
 check(is.null(e$reported$H5_kinds$flow$arm) && !is.null(e$reported$H5_kinds$call$arm$irr),
       "each kind of link is reported; flow links, none in the methods arm, have no ratio")
 check(abs(log(e$coupled_arm$irr) - log(1 / 1.4)) < 0.3,
