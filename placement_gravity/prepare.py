@@ -622,7 +622,7 @@ def reader_rows(members: list[dict], hosts: list[dict], h5: list[dict], boundary
     introduced and how many are private (measure 1), the positions it added to classes that
     existed and how many of those by a placement forced at the class (measure 2), the classes it
     split (RefactoringMiner's Extract Class), its change size, and the system's tokens before it;
-    and one row per unit and existing class it changed (H5's rows), with the members it exposed or
+    and one row per unit and existing class it changed (the rows of the calls across the encapsulation, §4.2c), with the members it exposed or
     widened there (measure 3) and the class's methods before it (measure 4)."""
     size: dict[tuple, dict] = {}
     for h in hosts:

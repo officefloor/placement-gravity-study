@@ -331,12 +331,14 @@ def coupling_rows(arm: str, chain: str, measured: dict) -> list[dict]:
             for cp in sorted(trees)]
 
 
-#: Access, from closed to open (H5): a member whose rank rises was widened.
+#: Access, from closed to open (the calls across the encapsulation, PLAN.md 4.2c; read by H8): a member
+#: whose rank rises was widened.
 ACCESS = {"private": 0, "package": 1, "protected": 2, "public": 3}
 
 
 def encapsulation_rows(arm: str, chain: str, hosts: list[dict], measured: dict) -> list[dict]:
-    """Forced coupling (H5, PLAN.md 4.2c): per unit and class that existed before it that the unit
+    """The calls across the encapsulation (PLAN.md 4.2c; the measure of *forced changes couple*, deleted
+    24 November 2026, row 90, and kept for H8 and the reported readings): per unit and class that existed before it that the unit
     placed or edited code in, the calls across that class's boundary the unit added (in the tree
     after it, which is the tree before the next unit, and not before), outward (from its methods to
     another class's) and inward (from another class's methods to its own), each by the member it

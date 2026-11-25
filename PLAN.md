@@ -862,7 +862,7 @@ to issues are known to be a biased subset (Bird et al. 2009), and tangling remai
 held fixed. Corpus B is therefore read only as a check on the **direction of H3 and H2**; H6,
 H4 and the junction × arm reading are not read there.
 
-**Extended 18 November 2026** (§9; drafted, not yet built). H3 and H2 as they now stand need only
+**Extended 18 November 2026** (§9; drafted that day and built the same day, *As built* below). H3 and H2 as they now stand need only
 a history, so more can be read here than the first draft allowed:
 
 - **H3**, over all additions and within a class and a method. There are no checkpoints, so the
@@ -969,7 +969,7 @@ code written by people, which corpus A cannot give.
 
 ### 3.3 Corpus C: repositories with declared agent commits (secondary)
 
-Added 18 November 2026 (§9; drafted, not yet built). Corpus A is written by one agent on a fixed
+Added 18 November 2026 (§9; drafted that day and built the same day, §3.2 *As built*). Corpus A is written by one agent on a fixed
 stream; corpus B by people before AI assistants. Corpus C is code in the wild that an agent says
 it wrote.
 
