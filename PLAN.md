@@ -593,6 +593,23 @@ alternatives at the class are the other classes that already hold the same depen
   where the system fits in a context window, and the difference narrows where it does not. If
   none of the four differs, encapsulation's use is the same for both readers and the question is
   answered the other way; both outcomes are reported.
+- **A reading: the cost to fix a concentration** (stated 25 November 2026, §9 row 104, before any ui
+  run is read; the author's; reported, not among the tests; to be built before the tag, §4.2h). The
+  form cannot be forced on the agent: a function that is not kept to function injection grows a
+  method structure, a handler under another name, and suffers as Spring does (the drift seen on
+  the development chain, §4.9, §6). The author's claim is about what follows: "unlike spring where
+  the whole handler is this situation, leaving little options for fixing, function injection
+  allows it to be split up easily due to lack of method coupling through its wiring
+  configuration, so it is ideally easy to fix. In other words, fixing in OfficeFloor is simple
+  when concentration gets high. It is potentially a rewrite in Spring if this happens." Read as
+  the **cheapest split** of a container (§4.2g): the fewest links between its blocks that must be
+  cut to divide it into two parts each holding at least a quarter of its volume, the links being
+  its blocks' calls to each other and their uses of the same field holding state, counted alike in
+  both arms. **Stated direction:** for concentrations of the same size, the cheapest split cuts
+  fewer links in OfficeFloor than in Spring, and the gap widens as concentrations grow: a function
+  that grows a method structure stays cheap to split, a Spring handler does not. Whether it becomes
+  a secondary hypothesis (decided on its own p, as H3) is the author's to decide once it is built;
+  until then it is a reading with a stated direction.
 - **Q1 is descriptive.** Its expected baseline (Steidl and Deissenboeck 2015) is that most
   growth is new methods. So the share of additions that land in an existing host is reported as
   found, with no direction predicted.
@@ -1326,6 +1343,21 @@ expectation"); it enters no verdict.
 As built: `tables.container_rows` (`containers.csv`), `prepare.container_summary`
 (`readings.json`, `containers`), `report.containers_section`; `MEASURE_VERSION` 37; a flow is named
 by its wiring file since `MEASURE_VERSION` 39 (§9 row 103). Corpus A only.
+
+### 4.2h The cost to fix a concentration (reported reading; stated, not yet built)
+
+Stated 25 November 2026 (§9 row 104), to be built before the tag. Per container of §4.2g with at
+least two blocks, at each checkpoint, its blocks (methods) as the points of a graph whose edges are
+its **internal links**: a call from one of its blocks to another, and two of its blocks using the
+same field holding state (§4.2c; injected dependencies and constants are not state). The **cost to
+split** is the fewest edges a cut must cross to divide the blocks into two parts, each holding at
+least a quarter of the container's volume (so that lifting off one small block does not count as
+a split); found exactly where the container is small enough and by a fixed local search where it is
+not, recorded which. A container whose blocks already fall into separate pieces costs 0. Reported
+per arm and kind of container, for the concentrations and the rest: the cost at each chain's last
+checkpoint against the container's blocks and volume, and over the thirds of the stream; the share
+of containers that cost 0. The direction is stated in §2 (*A reading: the cost to fix a
+concentration*). The same rule in both arms: a difference has to come from the code.
 
 ### 4.3 Bindings (Q2), the measure of gravitation
 
@@ -3538,6 +3570,13 @@ author's to set, on the plan and code as they then stand, and starts the experim
   undeclared commits are a third group, never pooled, and a band with fewer than 10 repositories
   is shown and marked thin. With these, every drafter's choice listed above as not yet spoken to
   has been spoken to; the Run D choices of row 76 were settled with it.
+- *Decided by the author on 25 November 2026 (later):* **the cost to fix a concentration** is stated
+  now, before the ui runs, and built after the development rerun under way (row 104, §2, §4.2h); so
+  that the author's answer to H5's drift (a function grown into a method structure is cheap to
+  split, a Spring handler is not) is a prediction, not an explanation found afterwards. The other
+  items not built (corpus B by issue, landing ranks on a history, what unbound code leaves behind)
+  are left as **exploratory**, for after the experiment ("are all of these extra things we can do
+  after the experiment as exploratory?"), reported as such if done.
 - *To finish for rows 99 to 103:* the pilot measured again at `MEASURE_VERSION` 39 and the
   development histories at `HISTORY_VERSION` 15 (row 102 touches both: several chains or
   repositories are measured in one process): `./step3_measure.sh --analysis pilot`,
@@ -3797,6 +3836,7 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 101 | The drafter's remaining choices settled by the author, one at a time (§8, 25 November 2026): H1's no-ops left out and its Poisson fallback; the edge count (row 99); the containers' pooled exponent; H2's per-placement core; the reader reading's bands and its two display rules. No rule changes beyond rows 99 and 100 | §8 | The author's answers to the drafter's walk-through |
 | 102 | **A fault, found on 25 November 2026 before any run named for analysis was read:** the cache of call graphs (`tables._graph`) was keyed by a tree's id without holding the tree, so once a chain's trees were freed, a later chain or repository measured in the same process could be handed an earlier one's graph for a tree whose id had been reused. Corrected: the tree is kept with its graph. It may have touched every figure built on the call graph (H1 at the method, H7's pairs, H5's links, the calls across the encapsulation, surface, ripple, containers) for the second chain or repository of a process since row 54; the bindings, from the instrument, were not | `tables._graph`, `tests/test_stream.py`; `MEASURE_VERSION` 39, `HISTORY_VERSION` 15 | Found while testing row 103, when a new test was handed an earlier test's graph. No rule changes: the code now does what the plan said. Whether the development figures moved is to be read from the rerun (§6) |
 | 103 | The flow containers of the ball-or-pebbles reading (row 98) are named by their wiring file, not by the classes in them, so a flow that gains a function stays one container (`chain.flows` gives the files, `flow_files` in the tree index) | §4.2g, `chain.flows`, `chain.tree_places`, `flow.Graph`, `tables.container_rows`, `tests/`; `MEASURE_VERSION` 39 | Found on reading the reading's first figures (§6): every flow's growth exponent was near 0 because a flow that grew became a new container. A fault, not a choice |
+| 104 | Stated, not yet built: a reported reading, **the cost to fix a concentration**: per container of §4.2g, the fewest internal links (calls between its blocks, blocks sharing a field holding state) a cut must cross to split it into two parts of at least a quarter of its volume each; the direction stated, cheaper in OfficeFloor than in Spring at the same size and the gap widening as concentrations grow. To be built before the tag. Corpus B by issue, landing ranks on a history and what unbound code leaves behind left as exploratory, after the experiment | §2, §4.2h, §8 | The author's, 25 November 2026: "fixing in OfficeFloor is simple when concentration gets high. It is potentially a rewrite in Spring if this happens"; "write the direction now". Stated after the development chain had been seen (H5's drift, §6) and before any ui run is read; the measure is the drafter's, accepted by the author |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring
