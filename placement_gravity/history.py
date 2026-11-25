@@ -222,9 +222,20 @@ def sample_command(name: str, spec: dict) -> list[str]:
 
 
 def sample_path(name: str, spec: dict) -> Path:
-    """Where a sample's CSV is: one drawn here (``samples/<name>/``), or one another study drew
-    (``csv``), read where it lies."""
-    return Path(spec["csv"]).expanduser() if spec.get("csv") else SAMPLES / name
+    """Where a sample's CSV is: ``samples/<name>/``, drawn here, or for one another study drew
+    (``csv``) copied there from that study's repository at its pinned commit (``fetch_csv``)."""
+    return SAMPLES / name
+
+
+def fetch_csv(name: str, spec: dict) -> Path:
+    """Another study's drawn sample (``csv``: its repository, remote, pinned commit and path),
+    copied into ``samples/<name>/`` by step 2b, so the sample read is the one pinned."""
+    c = spec["csv"]
+    runs.ensure_at(Path(c["repo"]).expanduser(), c["remote"], c["ref"])
+    out = sample_path(name, spec) / "open-source-repository-sample.csv"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(chain.git(Path(c["repo"]).expanduser(), "show", f"{c['ref']}:{c['path']}"))
+    return out
 
 
 #: Repositories read at once. Each worker's Java processes are held to a share of the machine's
@@ -413,7 +424,8 @@ def main() -> None:
         spec = reg["samples"][a.name]
         runs.guard(reg, {"name": f"sample {a.name}", "role": spec["role"]})
         if spec.get("csv"):
-            raise SystemExit(f"{a.name} is another study's drawn sample ({spec['csv']}): it is read, not drawn")
+            print(f"{a.name}: another study's drawn sample, copied at {spec['csv']['ref']}: {fetch_csv(a.name, spec)}")
+            return
         subprocess.run(sample_command(a.name, spec), check=True)
         return
     done = set()

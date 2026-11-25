@@ -121,6 +121,8 @@ def stream(reg: dict, name: str) -> dict[int, dict]:
     """The pinned stream: tables.stream on the files at the stream's ref, with the act of each
     checkpoint (None where the stream has no acts)."""
     s = reg["streams"][name]
+    if s.get("remote"):
+        ensure_at(s["repo"], s["remote"], s["ref"])
     with tempfile.TemporaryDirectory() as d:
         cps = Path(d) / "checkpoints.yaml"
         cps.write_text(chain.git(s["repo"], "show", f"{s['ref']}:{s['checkpoints']}"))
@@ -135,6 +137,23 @@ def stream(reg: dict, name: str) -> dict[int, dict]:
 
 
 # ---- stacks: the declared roots, read at the empty base ----
+
+def ensure_at(path: Path, remote: str, ref: str) -> None:
+    """A clone of ``remote`` at ``path`` that holds ``ref`` (a commit or a tag): cloned where it is
+    missing, fetched where it lacks the ref, so that a pinned input is read by the scripts and not
+    from a copy someone made by hand. Nothing is checked out; files are read at the ref."""
+    path = Path(path).expanduser()
+    if not (path / ".git").exists():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run(["git", "clone", "--quiet", "--no-checkout", remote, str(path)], check=True)
+    have = subprocess.run(["git", "-C", str(path), "cat-file", "-e", f"{ref}^{{commit}}"],
+                          capture_output=True).returncode == 0
+    if not have:
+        subprocess.run(["git", "-C", str(path), "fetch", "--quiet", "--tags", "origin"], check=True)
+        if subprocess.run(["git", "-C", str(path), "cat-file", "-e", f"{ref}^{{commit}}"],
+                          capture_output=True).returncode != 0:
+            subprocess.run(["git", "-C", str(path), "fetch", "--quiet", "origin", ref], check=True)
+
 
 def ensure_clone(repo: dict) -> None:
     """A clone of the stack repo holding only its base_ref until chains are fetched."""

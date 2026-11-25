@@ -789,3 +789,33 @@ def test_the_growth_exponent_interval_does_not_depend_on_the_order_of_the_rows()
     a = prepare.container_summary(rows, 4, resamples=200)
     _r.Random(3).shuffle(rows)
     assert prepare.container_summary(rows, 4, resamples=200) == a
+
+
+def test_diagnostics_rank_correlation_and_thirds():
+    from placement_gravity import diagnostics
+    assert diagnostics.spearman([1, 2, 3, 4], [10, 20, 30, 40]) == pytest.approx(1)
+    assert diagnostics.spearman([1, 2, 3, 4], [4, 3, 2, 1]) == pytest.approx(-1)
+    assert diagnostics.spearman([1, 1, 2], [1, 2, 3]) == pytest.approx(0.866, abs=1e-3)   # ties
+    assert diagnostics.spearman([1, 2], [1, 2]) is None
+    assert [diagnostics.third(cp, 60) for cp in (1, 20, 21, 40, 41, 60)] == [1, 1, 2, 2, 3, 3]
+
+
+def test_diagnostics_count_the_files_a_chain_went_back_into(tmp_path, monkeypatch):
+    from placement_gravity import diagnostics
+    d = tmp_path / "a" / "spring-c1"
+    d.mkdir(parents=True)
+    def w(name, rows):
+        with (d / name).open("w", newline="") as f:
+            x = csv.DictWriter(f, fieldnames=list(rows[0]))
+            x.writeheader()
+            x.writerows(rows)
+    w("files.csv", [{"arm": "spring", "chain_id": "c1", "cp": cp, "kind": "java", "path": p, "status": s, "earlier": 0}
+                    for cp, p, s in ((1, "A.java", "A"), (2, "A.java", "M"), (3, "A.java", "M"), (3, "B.java", "A"),
+                                     (4, "B.java", "M"), (4, "A.java", "M"))])
+    w("files_end.csv", [{"arm": "spring", "path": "A.java", "bytes": 15500}, {"arm": "spring", "path": "B.java", "bytes": 900}])
+    w("additions.csv", [{"arm": "spring", "chain_id": "c1", "cp": cp} for cp in (1, 2, 3, 4)])
+    monkeypatch.setattr(diagnostics, "MEASURE", tmp_path)
+    s = diagnostics.files("a")["spring"]
+    assert (s["new_java_files_per_checkpoint"], s["java_files_at_end"], s["largest_java_file_kb"]) == (0.5, 2, 15.5)
+    assert s["existing_files_gone_back_into"] == 2 and s["busiest"] == {"path": "A.java", "checkpoints": 3}
+    assert s["three_busiest_share_of_returns"] == 1.0

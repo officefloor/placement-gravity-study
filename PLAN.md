@@ -414,7 +414,7 @@ alternatives at the class are the other classes that already hold the same depen
   band the flow-injection draft took from the conservation study's spread. The coupling that
   leaves the scopes appears as wiring (§4.5) and is reported, not hidden: injection is known to
   raise counted coupling (Sun et al. 2022, read in full: coupling rises as injection increases),
-  so a higher wiring count in the function arm is the expected direction, not a failure of H4.
+  so a higher wiring count in the function arm is the expected direction, not a failure of H4. *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `files`; §9 row 112.)*
   - *Reported beside it* (19 November 2026): how much a core value is come back to, function arm
     against methods arm (§5). It is where the arms differ most on the development chain (§6), and
     both arms solve the same problems, so a core that was only the problems' shared data would be
@@ -1602,7 +1602,7 @@ intrusion.
 lines.** As first built, a later checkpoint counted as touching *p* when it changed the host method
 anywhere. That makes intrusion a property of the host: every problem placed in a busy method gets
 that method's later traffic, whatever its own code is (on the development chain one Spring method
-received 26 problems, and all of Spring's intrusions were in methods holding several problems). The
+received 26 problems, and all of Spring's intrusions were in methods holding several problems). *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `problem_hosts`; §9 row 112.)* The
 petclinic stream puts every rule on one endpoint, so there the traffic of the handler is set by
 the stream. The text above always said *p*'s positions; the build now follows it:
 
@@ -2056,7 +2056,7 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   crossings, host size, whether the host is new, and act. A new host has almost no bindings and a
   different later life from an existing one (on the development chain, Spring's new hosts averaged
   0.31 bindings and existing ones 1.81), so without the new-host term that contrast alone could carry
-  a difference. Host size also stands for the plain fact that a longer method has more values in it.
+  a difference. Host size also stands for the plain fact that a longer method has more values in it. *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `problem_hosts`; §9 row 112.)*
 - **H2** (restated 19 November 2026, §9): in the methods arm, at the **class** (its fields) and at
   the **method** (its values), each bound problem and host gives up to two records (§4.4): one
   for its core and one for its periphery, where it has at least one value of that kind. The
@@ -2363,7 +2363,8 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   not depend on how many), the 95% interval is the 2.5th to the 97.5th percentile of the refits,
   and the one-sided p is the share on the wrong side of 1, (k + 1) / (n + 1), as H3's. On a
   history the repository is the chain, and the refits are **200**, not 1,000 (decided by the
-  author on 22 November 2026, §9 row 84). One fit of these models was timed at 2 seconds on
+  author on 22 November 2026, §9 row 84; the timings below are remade on any machine by
+  `./step1b_timing.sh`, row 112). One fit of these models was timed at 2 seconds on
   1,800 rows, 22 to 50 seconds on 15,000 to 30,000 (about a ui analysis), 5.6 minutes on 200,000
   and 37 minutes on 1,000,000 (where corpus B may lie): at 1,000 refits corpus B would take
   weeks. With 200 each end of an interval is located to about a tenth of the interval's
@@ -2375,7 +2376,7 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   in an arm (the development chain) a resample is the data again, so the Wald reading is what
   there is; so too if fewer than half the refits can be fitted; either is recorded. H6 and H7,
   whose tests are against a margin on a 90% Wald interval, and every reported reading keep their
-  Wald intervals; H3, secondary, has been on the bootstrap since it was registered.
+  Wald intervals; H3, secondary, has been on the bootstrap since it was registered. *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `timing`; §9 row 112.)*
 - **Multiplicity** (21 November 2026, §9 rows 66 and 67): the confirmatory family H1, H2, H4 and
   H5, Holm-corrected at α = 0.05 over those of the four that have a p (H1 has none where it is
   not testable, on a history). H8 (Run D, §3.1a) is decided at α = 0.05 on its own p, on its own run. H3, H6 and H7 are secondary (and H9 was, on 25 November 2026, until it was deleted, row 108), each decided at α = 0.05 on its
@@ -2481,7 +2482,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   on that chain no method was stuck (S2), and the junction share of cognitive complexity rose in
   the OfficeFloor arm and not in Spring (0.33 → 0.31), against the absorbed flow-injection draft's
   P1 direction: 0.30 → 0.42 under the injection-aware reading first built, 0.22 → 0.36 under the
-  conventional reading that replaced it. That reading is descriptive, of development data.
+  conventional reading that replaced it. That reading is descriptive, of development data. *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `junctions`; §9 row 112.)*
 - **The models on the development chain** (16 November 2026, after every decision rule and the
   analysis code were committed, `1f1f962` and `7c3c013`). Running steps 2 to 5 end to end on the
   pilot's chain 9, to test them, computed the hypothesis statistics on it, one chain per arm and so
@@ -2498,7 +2499,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   class binding fall from 20 to 10 and the forced runs from 71 to 67. Every class binding to `clinicService`
   and `ownerMapper`, the controller's constructor-injected dependencies, is counted as injected.
   OfficeFloor's runs into existing methods used none. The pilot raised six decisions (PILOT.md, *Decisions*), which are
-  settled at registration.
+  settled at registration. *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `injected_runs`; §9 row 112.)*
 - **The review before the start** (16 November 2026, on the development chain only, after
   `plan-v1` and before any run named for analysis was read). Seen, and the reason for the revisions
   of §9: Spring's 396 host-level intrusions all fall in methods holding several problems, one method
@@ -2509,7 +2510,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   did not reject too often (the standard deviation of z was 0.82); with only Run A, the ui model
   drops the front end and the arm term carries it. Nothing was computed with the checkpoint
   intercept, on a problem's own lines, with the centred host size, or for the formation and review
-  readings.
+  readings. *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `problem_hosts`; §9 row 112.)*
 - **The revised steps on the development chain** (16 November 2026, after the revisions of §9 were
   written into this plan and built; one chain per arm, descriptive only,
   `results/analysis/pilot/REPORT.md`). Seen: on a problem's own lines Spring has 23 intrusions and
@@ -2520,15 +2521,15 @@ binomial mixed model). These details are fixed with the code before any run is r
   0.046, the arm difference −0.39, −0.35 and −0.32 at 10, 25 and 50 positions; without parameter
   bindings −0.20 [−0.37, −0.04]; the amount added 1.08 (totals 0.88); the lagged formation term −0.36
   [−2.16, 1.44] in Spring. With one chain per arm H2's model fell back to no checkpoint
-  intercept. Nothing in the plan was changed after these were seen.
+  intercept. Nothing in the plan was changed after these were seen. *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `problem_hosts`; §9 row 112.)*
 - **Bystanders on the development chain** (17 November 2026; a scratch copy of the instrument, one
   chain per arm). **H1 and H4 were restated after these were seen**, so on this chain they are
   not predictions; the chain is excluded from every registered analysis. Fields were counted
   without telling constants apart. Seen:
   - runs into existing methods need the same in both arms (1.43 values in Spring, 1.41 in
-    OfficeFloor) and have 11.9 bystanders in Spring against 1.4 in OfficeFloor;
+    OfficeFloor) and have 11.9 bystanders in Spring against 1.4 in OfficeFloor; *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `bystanders`; §9 row 112.)*
   - over the thirds of the stream Spring's bystanders are 7.2, 11.1 and 14.9, OfficeFloor's 1.7,
-    1.0 and 1.4; over every run, new hosts included, 4.2, 7.8 and 11.5 against 1.6, 2.4 and 2.8;
+    1.0 and 1.4; over every run, new hosts included, 4.2, 7.8 and 11.5 against 1.6, 2.4 and 2.8; *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `bystanders`; §9 row 112.)*
   - Spring's rise is in the class's fields (4.6 to 11.4), not in the method's values (2.6 to 3.5);
     about three quarters of a method's values are visible where a run starts;
   - a method created at checkpoint 56 in Spring's controller, of 10 positions, sees 17 fields.
@@ -2541,7 +2542,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   7.2, 11.1, 14.9 with). And new methods brought in the entity's accessors, which see every field
   of `Owner` in both arms and need nothing that was there. **The two decisions of §4.3a (constants
   count; only runs that use existing data) and the accessor rule of §4.3 were made by the author
-  after seeing this**, each on its own argument, recorded there.
+  after seeing this**, each on its own argument, recorded there. *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `bystanders`; §9 row 112.)*
 - **Bystanders as decided, on the development chain** (17 November 2026,
   `results/analysis/pilot/REPORT.md`; one chain per arm, descriptive only). Seen: 91 of Spring's
   162 runs and 56 of OfficeFloor's 168 need a pre-existing value; those need the same in both arms
@@ -2560,7 +2561,7 @@ binomial mixed model). These details are fixed with the code before any run is r
     on own lines. Places reopened per checkpoint, as first written into H4: 1.33 classes in Spring;
     1.35 classes and 0.45 wiring files in OfficeFloor; ratio 1.35 [1.01, 1.80], against H4. **The
     author's rule that intrusion applies only where there is a binding, and the replacement of the
-    reopening count by the arm's rate ratio in intrusion, were decided after seeing this.**
+    reopening count by the arm's rate ratio in intrusion, were decided after seeing this.** *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `problem_hosts`; §9 row 112.)*
   - *With the binding rule:* 89 of Spring's 174 problem and host rows and 31 of OfficeFloor's 192 are
     bound and followed. Per bound row: 11.9 later bound arrivals at the class against 0.84, 3.3
     against 0.10 at the method. H2's rate ratio per binding 0.89 [0.75, 1.06] at the class and 0.85
@@ -2569,7 +2570,7 @@ binomial mixed model). These details are fixed with the code before any run is r
     [0.43, 1.17], so against (complexity lies wholly below the margin). H4: the arm's rate ratio in
     intrusion 0.16 [0.10, 0.27] at the class and 0.11 [0.03, 0.43] at the method. Reopening,
     reported: bound classes 0.26 [0.15, 0.48]; with the wiring files 0.77 [0.52, 1.16].
-  Nothing in the plan was changed after the figures with the binding rule were seen.
+  Nothing in the plan was changed after the figures with the binding rule were seen. *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `problem_hosts`; §9 row 112.)*
 - **H2 as restated, on the development chain** (17 November 2026; one chain per arm, descriptive
   only). **H2 was restated, and H1 extended, by the author before any of this was computed; the
   operational form of §4.4 and §5 was written after the first look below**, so on this chain
@@ -2577,7 +2578,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   - *A first look, in scratch:* in Spring's controller class the fields standing by rose from 4 to
     16 over 41 bound arrivals, and in its `addOwner` method the values standing by from 0 to 13 over
     25; of later bound arrivals 44% at the class and 16% at the method used something that had stood
-    by; OfficeFloor had 40 later arrivals at the class in all, 3 of them such.
+    by; OfficeFloor had 40 later arrivals at the class in all, 3 of them such. *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `bystanders`; §9 row 112.)*
   - *As built* (`results/analysis/pilot/REPORT.md`): H1's slope within a class 0.026 (3 classes)
     and within a method 0.023 (11 methods), beside 0.015 over all runs; in OfficeFloor 0.001 and
     −0.001. Per bound row in Spring 7.5 fields and 2.2 method values stood by; 449 of 1,056 later
@@ -2600,7 +2601,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   [2.52, 9.14]; size alone 1.78 and 3.27. Pooling did not separate the two on this chain: the
   correlation of size with what stood by is 0.95 pooled at the class and 0.81 at the method (0.57
   and 0.50 within OfficeFloor, which has 26 bound rows). Nothing in the plan was changed after
-  these were seen.
+  these were seen. *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `size_or_data_by_arm`; §9 row 112.)*
 - **Where bound and unbound code lands, on the development chain** (17 November 2026; one chain
   per arm, descriptive only). *Before the reading was written*, from the tables as they stood:
   Spring's unbound runs went 5% into existing methods, 77% into new methods of existing classes
@@ -2619,7 +2620,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   among Spring's methods the long, flat `addOwner` (25 bound placements, 33 positions, complexity
   5.5) received 35 later arrivals per 100 checkpoints, and small branching helpers almost none.
   Under the one-sided form that interval lies below 1.25. The junction (upper limit 1.67) reaches
-  above it, so on this chain H3 would be unresolved, not supported.
+  above it, so on this chain H3 would be unresolved, not supported. *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `busiest_method`; §9 row 112.)*
 - **The sinew measures taken out of H3** (17 November 2026, decided by the author **after** the
   one-sided H3 was run on the development chain). There the junction, 0.71 [0.30, 1.67], was the
   one measure that left H3 unresolved; without it the remaining measures, complexity and the class
@@ -2666,13 +2667,13 @@ binomial mixed model). These details are fixed with the code before any run is r
   running out; in the mapper and the exception advice it goes the other way (0.53, 0.92). So the
   Gini's 1.08 [0.83, 1.42] is a blend over four classes and says little. Under the rule of §5 the
   class measures are not tested on this chain, and H3 there is read on the method measures: not
-  above (cognitive 0.32, cyclomatic 0.35).
+  above (cognitive 0.32, cyclomatic 0.35). *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `class_rows`; §9 row 112.)*
 - **What unbound code leaves behind, on the development chain** (17 November 2026; a scratch look
   per checkpoint, not built). Fields added to classes that existed, per checkpoint: 0.71 in Spring
   and 0.63 in OfficeFloor where the checkpoint has an unbound landing in an existing class,
   against 0.35 and 0.06 where it has none; rank correlation of the fields added with the unbound
   landings in existing classes 0.41 and 0.63, with the bound landings 0.12 and −0.08. Which class
-  received the fields was not looked at.
+  received the fields was not looked at. *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `fields_and_landings`; §9 row 112.)*
 - **The history steps on the development repositories** (18 November 2026;
   `results/analysis/open-source-development/REPORT.md`; descriptive only, and read to see that the
   steps run, not for what they show). Three repositories, none in corpus B or C: two of people's
@@ -2687,7 +2688,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   Finding the one agent repository took 39 draws of the mid tier. The comparison of the arms here
   is of different repositories of very different length, and is not read. **Decided after this
   was seen:** every non-merge commit is a unit (the first-parent line was mostly merges), and, by
-  the author, no cap.
+  the author, no cap. *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `repositories`; §9 row 112.)*
 - **The development repositories again, with every non-merge commit a unit** (18 November 2026;
   the report regenerated; descriptive only). The two of people's code gave 227 and 422 units
   (84 and 86 on the first-parent line). The agent repository has 7,794 units; read whole it was
@@ -2700,7 +2701,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   repositories these readings move with which commits are read, and nothing is to be taken from
   them but that the steps run. The reading eight at a time, and the pass alone after a failure,
   were tried on the same repositories (the workers starved of memory: both failed, both were then
-  read alone, with the same units).
+  read alone, with the same units). *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `repositories`; §9 row 112.)*
 - **Nothing standing by at the method, on the development chain** (19 November 2026; looked at
   in the prepared table and in a scratch refit, **before introduced was decided**). Of Spring's 89
   bound rows, 45 have nothing standing by at the method and so no later intrusion bound to it: 29
@@ -2711,7 +2712,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   binomial refit of H2 at the method, without random intercepts and so not the model of §5, gave
   0.94 [0.70, 1.26] on all 83 rows, the same on the 55 existing methods, and 0.95 [0.72, 1.25] on
   the 40 rows where something stood by. The new methods had 4 later bound arrivals between them,
-  the existing ones 288.
+  the existing ones 288. *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `bound_new_methods`; §9 row 112.)*
 - **Introduced, on the development chain** (19 November 2026, as built,
   `results/analysis/pilot/REPORT.md`; one chain per arm, descriptive only). Method values
   introduced per addition: 5.1 in Spring, 6.5 in OfficeFloor. Per bound row in Spring, 1.8 method
@@ -2723,7 +2724,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   [1.04, 1.16] on what stood by alone; 0.92 [0.73, 1.15] at the method, where H2 itself still
   gives no standard error. So on this chain what a change introduces is not what later code comes
   for, and counting it does not change the class reading or lift the method reading above 1.
-  Nothing in the plan was changed after these were seen.
+  Nothing in the plan was changed after these were seen. *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `bound_new_methods`; §9 row 112.)*
 - **How bound uses are spread over values, on the development chain** (19 November 2026; a
   scratch count from the measured tables, **before H2 was restated**, since built as
   `readings.core_summary` with the same figures). In Spring, at the class: 37 bound uses of 11
@@ -2778,7 +2779,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   rise in rows bound to domain types (`Owner`, its DTOs: 10, 15, 23 over the thirds in Spring) as
   well as in those bound to `String`s: types do not separate the places at the method. Every new
   method that handles an owner counts as an alternative, whether or not the request's control
-  flow reaches it. This is the case §4.2a foresaw (a refinement by control flow); not yet decided.
+  flow reaches it. This is the case §4.2a foresaw (a refinement by control flow); not yet decided. *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `alternatives_thirds`; §9 row 112.)*
 - **H5 on the control flow, on the development chain and the development histories** (19 November
   2026, `MEASURE_VERSION` 19; descriptive only). *Pilot:* at the class unchanged, 0.16 [0.03,
   0.92]. At the method, on the flow, about 6 alternatives a row instead of 20 by type, and still
@@ -2796,7 +2797,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   class row; 64% bound to the class's own values); at the method 26 alternatives a row on flows of
   about 665 methods, with only 50% of calls followed: in a large application of interfaces and
   shared services, a flow taken from the entry points above the host takes in most of the code.
-  Nothing in the plan was changed after these were seen.
+  Nothing in the plan was changed after these were seen. *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `alternatives_thirds`, `repositories`; §9 row 112.)*
 - **H6 on the development chain and the development histories** (20 November 2026,
   `MEASURE_VERSION` 20, `HISTORY_VERSION` 4; descriptive only; H1 to H5 unchanged). *Pilot:* rise
   0.45 [0.15, 1.37], the spread not rising (Spring's units in more than one class 55%, 40%, 37%
@@ -2823,7 +2824,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   split at the median number of methods: Spring 1.0 against 1.1 (small) and 2.1 against 2.0
   (large); jmxtrans 1.2 against 1.0 and 4.1 against 1.9; UsbSerial 1.1 against 0.9 and 2.4 against
   1.6. The pilot's forced effect on spread is change size; the histories' remains for large
-  changes. Led to row 61.
+  changes. Led to row 61. *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `change_size`; §9 row 112.)*
 - **Under forced by encapsulation** (21 November 2026, `MEASURE_VERSION` 26, `HISTORY_VERSION` 10,
   the development chain and the development histories, rows 64-67 built; descriptive only).
   *Pilot:* H2 class 17.5 [11.9, 25.6], method 20.3 [11.8, 34.7]; H3 not above (cognitive 0.32,
@@ -2917,7 +2918,7 @@ binomial mixed model). These details are fixed with the code before any run is r
     OfficeFloor and 13 in Spring (36 of Spring's in the controller). OfficeFloor's 35 new wired
     functions carry 1.9 injected parameters each. So OfficeFloor still writes methods that are
     called in the ordinary way, as many as Spring; they sit in small classes of their own and
-    are handed existing state less often.
+    are handed existing state less often. *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `files`, `new_methods`; §9 row 112.)*
   - *As built* (`MEASURE_VERSION` 31, `results/analysis/pilot/REPORT.md`). **H4's count, how
     well-trodden the files gone back into were:** 13.4 a checkpoint in OfficeFloor (8.7 Java,
     4.7 wiring; 5.3, 15.0, 19.9 over the thirds) against 21.7 in Spring (7.5, 22.1, 35.4), ratio
@@ -2929,7 +2930,7 @@ binomial mixed model). These details are fixed with the code before any run is r
     Spring's fall (2.35, 1.75, 1.47). New called methods with logic 1.40 against 1.49 a
     checkpoint. The values callers pass new methods 0.33 [0.11, 0.97], as before. The injected
     parameters of new wired functions 1.10 a checkpoint (1.7, 1.0, 0.6). Nothing was changed
-    after these were seen.
+    after these were seen. *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `trodden_thirds`; §9 row 112.)*
 - **Where the logic landed, on the development chain, and the histories at 200 refits** (22
   November 2026, `MEASURE_VERSION` 32; rows 84 and 85; one chain an arm, descriptive only; the
   figures of the first paragraph were seen in scratch before row 85 was written, and the built
@@ -2944,7 +2945,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   keeps writing new called methods throughout. *The histories with 200 refits:* H2 2.93
   [2.58, 3.19] and 2.37 [2.34, 2.44], H7 0.82 [0.61, 0.88], the same to three figures as with
   1,000 (two repositories, so neither means anything); step 4 for both analyses took five and
-  a half minutes, where it had taken twenty. Nothing was changed after these were seen.
+  a half minutes, where it had taken twenty. Nothing was changed after these were seen. *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `timing`; §9 row 112.)*
 - **The development chain under rows 89 to 93** (24 November 2026, `MEASURE_VERSION` 34; the
   numbers here are those of row 93; one chain an arm, so descriptive only). *H1:* the arm
   contrast's level went the form's way, its trend did not show: placements forced at the class
@@ -3918,6 +3919,8 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 108 | **H9 deleted**, with its measure (§4.2h, the cheapest split) and its code: `tables.split_cost`, the split columns of `containers.csv`, `prepare.h9_rows`, `prepare.h9_summary`, `analyse.R` (`H9`), `verdict.h9`, `report.h9_section`, its self-test and tests. The secondary hypotheses are H3, H6 and H7 again | §2, §4.2h, §5, §8, the code named, `README.md` | The author, 25 November 2026, asked which classes H9 should be tested on: "I'm now questioning H9 and its value. Why did we introduce it? As it is only looking at cutting up methods ... with the various implementation ways"; then "delete it". Seen: the development chain's H9, 1.10 [0.68, 1.79], no difference (§6) |
 | 109 | **A constant's use is a state link in H5**, weight 1, of its own class or another (by class name; a static import is not followed); counted apart (`constant_links_*`, `constant_weight_added`) and in the totals. Reported beside: H5 without them (`weight_added_without_constants`, the test until then) | §2, §4.2c, §5, `flow.Graph.links` (`constant`), `tables.link_rows`, `prepare.h5_rows`, `prepare.links_summary`, `analyse.R` (`H5_without_constants`, `H5_kinds`), `report.h5_section`, `selftest.R`, `tests/`; `MEASURE_VERSION` 41 | The author, 25 November 2026, on hearing that constants were left out by the drafter's choice and never put to the author: "count constants in H5". The drafter had recommended keeping them out (a constant needs no coordination between blocks). Seen: the development chain's H5 without constants (§6); not yet measured with them |
 | 110 | Wording, no rule changed: §5's bootstrap paragraph (H6, H7 and the readings on Wald intervals; H3 on the bootstrap); §4.2c leads with the weights; the tiers paragraph names the readings §4.2b–4.2g and the sinew shape; the sinew shape counts a class's private constants, as H2's core does; the docstrings of `verdict.py` and `prepare.h5_rows` | §2, §4.2c, §5, `verdict.py`, `prepare.py`, `analyse.R` | The consistency review of 25 November 2026 (§8) |
+| 111 | The steps fetch every input themselves and each prints the next command: the problem streams are cloned from their remotes at their pinned refs where missing (`runs.ensure_at`; `remote:` in `runs.yaml`); corpus B's first set, drawn by `long-method-slim-study`, is copied by step 2b from that repository at its pinned commit `1dc68ac` into `samples/open-source-human/`, not read from wherever a copy lies (`history.fetch_csv`); every step script ends with `placement_gravity.nextstep`. No value read changes: the file at that commit is the file that was read | `runs.yaml`, `runs.py`, `history.py`, `nextstep.py`, the step scripts, `README.md`, `tests/` | The author, 25 November 2026: "Is everything scripted in the stepX_... scripts? All values should be generated by the scripts. Also, each script should output the command to run the next script" |
+| 112 | **Every figure the plan quotes is made by a step.** An audit of the session transcripts (25 November 2026) found about sixty figures in §2, §4.4, §5 and §6 first read by one-off queries, not printed by any report: they are now made by step 5's diagnostics (`placement_gravity/diagnostics.py`; `DIAGNOSTICS.md` and `diagnostics.json` beside each report), each passage marked with the section that makes it. For them step 3 writes two tables more (`files.csv`, every file a checkpoint created, changed or deleted, with the earlier checkpoints that had changed it; `files_end.csv`, the Java files at the head and their sizes); step 4 records its time (`timing.json`) and fits size or data within each arm alone (`size_or_data_*.by_arm`); the timings of one fit by data size are made by a new optional step, `step1b_timing.sh` (`analysis/timing.R`, `results/timing.json`). No test, rule or verdict changes. The diagnostics read the tables as they now stand, so where §6 recorded a figure on an earlier `MEASURE_VERSION` the two may differ; §6 keeps what was seen | §2, §4.4, §5, §6, `diagnostics.py`, `tables.file_rows`, `measure.py`, `analyse.py`, `analyse.R`, `analysis/timing.R`, `step1b_timing.sh`, `step5_report.sh`, `nextstep.py`, `README.md`, `tests/`; `MEASURE_VERSION` 42 | The author, 25 November 2026: "All values should be generated by the scripts"; asked how far to go, "script all 17" |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

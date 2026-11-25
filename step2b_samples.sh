@@ -8,3 +8,4 @@ cd "$(dirname "$0")"
 for name in "$@"; do
   .venv/bin/python -m placement_gravity.history sample "$name"
 done
+.venv/bin/python -m placement_gravity.nextstep 2b --samples "$@"

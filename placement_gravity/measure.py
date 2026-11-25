@@ -21,7 +21,7 @@ from . import chain, crosscheck, lines, places, runs, shape, tables, validate
 OUT = runs.RESULTS / "measure"
 WORK = chain.ROOT / ".tmp" / "measure"
 #: Bump when a table's meaning changes, so measured chains are redone.
-MEASURE_VERSION = 41
+MEASURE_VERSION = 42
 
 
 def write(path: Path, rows: list[dict]) -> None:
@@ -86,6 +86,12 @@ def measure_chain(reg: dict, analysis: dict, head: dict, streamed: dict, stacks:
     write(out / "links.csv", label(tables.link_rows(arm, name, measured), head))
     write(out / "containers.csv", label(tables.container_rows(arm, name, h, measured), head))
     write(out / "members.csv", label(tables.member_rows(arm, name, measured), head))
+    write(out / "files.csv", label(tables.file_rows(arm, name, measured), head))
+    # the production Java files at the chain's head and their sizes (diagnostics, PLAN.md 6)
+    tree = chain.git(repo["path"], "ls-tree", "-r", "-l", head["sha"], "--", paths["java_src"])
+    write(out / "files_end.csv", label([{"arm": arm, "chain": name, "path": p, "bytes": int(b)}
+                                        for b, p in (ln.split(None, 4)[3:5] for ln in tree.splitlines())
+                                        if p.endswith(".java")], head))
     write(out / "landings.csv", label(places.landings(arm, name, h, measured["shape"]), head))
     write(out / "shape_series.csv", label(shape.series_rows(arm, name, measured["shape"]), head))
     # the instrument against the compiler, on a sample of the chain's checkpoints (PLAN.md 4.8)

@@ -128,10 +128,12 @@ def test_each_worker_gets_its_share_of_the_memory():
 
 def test_what_is_pending_is_usable_java_not_excluded_and_not_yet_read(tmp_path, monkeypatch):
     monkeypatch.setattr(history, "OUT", tmp_path / "out")
-    sample = tmp_path / "s.csv"
+    monkeypatch.setattr(history, "SAMPLES", tmp_path / "samples")
+    sample = tmp_path / "samples" / "s" / "open-source-repository-sample.csv"
+    sample.parent.mkdir(parents=True)
     sample.write_text("full_name,status,language,nloc\no/a,usable,java,5\no/b,excluded,java,5\n"
                       "o/c,usable,kotlin,5\no/d,usable,java,9\no/e,usable,java,1\n")
-    spec = {"csv": str(sample)}
+    spec = {}
     assert [r["full_name"] for r in history.pending("s", spec, excluded={"o/e"})] == ["o/a", "o/d"]
     done = tmp_path / "out" / "s" / "o__a"
     done.mkdir(parents=True)
@@ -150,14 +152,16 @@ def test_only_a_development_sample_may_cap_its_units():
 
 def test_corpus_b_reads_the_first_of_each_tier_and_the_confirming_set_leaves_them_out(tmp_path, monkeypatch):
     monkeypatch.setattr(history, "OUT", tmp_path / "out")
-    first = tmp_path / "first.csv"
+    monkeypatch.setattr(history, "SAMPLES", tmp_path / "samples")
+    first = tmp_path / "samples" / "b1" / "open-source-repository-sample.csv"
+    second = tmp_path / "samples" / "b2" / "open-source-repository-sample.csv"
+    first.parent.mkdir(parents=True)
+    second.parent.mkdir(parents=True)
     first.write_text("draw,full_name,status,language,tier\n3,o/c,usable,java,high\n1,o/a,usable,java,high\n"
                      "2,o/b,usable,java,mid\n4,o/d,usable,java,high\n5,o/e,excluded,java,mid\n6,o/f,usable,java,mid\n")
-    second = tmp_path / "second.csv"
     second.write_text("draw,full_name,status,language,tier\n1,o/a,usable,java,high\n2,o/x,usable,java,high\n"
                       "3,o/y,usable,java,high\n4,o/b,usable,java,mid\n5,o/z,usable,java,mid\n")
-    reg = {"samples": {"b1": {"csv": str(first), "per_tier": 2},
-                       "b2": {"csv": str(second), "per_tier": 2, "exclude_samples": ["b1"]}}}
+    reg = {"samples": {"b1": {"per_tier": 2}, "b2": {"per_tier": 2, "exclude_samples": ["b1"]}}}
     assert [r["full_name"] for r in history.chosen("b1", reg["samples"]["b1"])] == ["o/a", "o/b", "o/c", "o/f"]
     left_out = history.sample_excluded(reg, "b2")
     assert left_out == {"o/a", "o/b", "o/c", "o/f"}
@@ -168,7 +172,8 @@ def test_corpus_b_reads_the_first_of_each_tier_and_the_confirming_set_leaves_the
 def test_corpus_b_is_two_sets_and_corpus_c_one():
     reg = runs.load()
     b1, b2 = reg["samples"]["open-source-human"], reg["samples"]["open-source-human-confirm"]
-    assert (b1["seed"], b1["per_tier"]) == (20261101, 100) and b1["csv"].endswith("long-method-slim-study/sample/open-source-repository-sample.csv")
+    assert (b1["seed"], b1["per_tier"]) == (20261101, 100)
+    assert b1["csv"]["path"] == "sample/open-source-repository-sample.csv" and len(b1["csv"]["ref"]) == 40
     assert (b2["seed"], b2["per_tier"], b2["exclude_samples"]) == (20261118, 100, ["open-source-human"])
     assert reg["samples"]["open-source-agent"]["seed"] == 20261119 and reg["samples"]["open-source-agent"]["target"] == 100
 
@@ -194,3 +199,27 @@ def test_tables_of_another_version_are_not_gathered(tmp_path):
         (d / "runs.csv").write_text("cp,arm,chain\n1,x,y\n")
     rows = history.gather(analysis, "runs", tmp_path)
     assert len(rows) == 1 and "a__new" in json.dumps(rows[0])
+
+
+def test_another_studys_sample_is_copied_at_its_pinned_commit(tmp_path, monkeypatch):
+    # step 2b clones the other study's repository where it is missing and copies the file as it
+    # stood at the pinned commit, not as it stands now
+    import subprocess
+    src = tmp_path / "other"
+    src.mkdir()
+    git = lambda *a: subprocess.run(["git", "-C", str(src), *a], check=True, capture_output=True, text=True).stdout
+    git("init", "-q")
+    git("config", "user.email", "t@t")
+    git("config", "user.name", "t")
+    (src / "sample").mkdir()
+    (src / "sample" / "s.csv").write_text("full_name\npinned/one\n")
+    git("add", ".")
+    git("commit", "-qm", "draw")
+    pinned = git("rev-parse", "HEAD").strip()
+    (src / "sample" / "s.csv").write_text("full_name\nlater/edit\n")
+    git("commit", "-qam", "later")
+    monkeypatch.setattr(history, "SAMPLES", tmp_path / "samples")
+    spec = {"csv": {"repo": str(tmp_path / "clone"), "remote": str(src), "ref": pinned, "path": "sample/s.csv"}}
+    out = history.fetch_csv("b", spec)
+    assert out == tmp_path / "samples" / "b" / "open-source-repository-sample.csv"
+    assert out.read_text() == "full_name\npinned/one\n"

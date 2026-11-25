@@ -45,11 +45,21 @@ SinewSlim analysis plan, and sinew identification (`PLAN.md` §1.1).
                     # CodeTracker (Maven), the instrument and tests; then checks R and glmmTMB, records
                     # every version in results/versions.txt and runs analysis/selftest.R.
                     # Needs JDK 17+, Maven, and R with glmmTMB (Ubuntu: r-base r-cran-glmmtmb r-cran-jsonlite).
-./step2_runs.sh     # each stack's declared roots, then the chains runs.yaml names, pinned in results/heads.tsv
+./step1b_timing.sh  # optional, about 45 minutes: one model fit by data size -> results/timing.json (PLAN.md 5)
+./step2_runs.sh     # each stack's declared roots, then the chains runs.yaml names, pinned in results/heads.tsv;
+                    # the problem streams are cloned at their pinned refs where missing
 ./step3_measure.sh  # the instrument over every pinned chain -> results/measure/<analysis>/
+./step2b_samples.sh NAME ...   # corpora B and C: draw each sample, or copy another study's at its pinned commit
+./step3b_histories.sh          # the instrument over each sample's histories -> results/measure/_history/
 ./step4_analyse.sh  # datasets (data/analysis/), models in R (estimates.json), verdicts with Holm (verdicts.json)
-./step5_report.sh   # results/analysis/<analysis>/REPORT.md and results/analysis/REPORT.md
+./step5_report.sh   # results/analysis/<analysis>/REPORT.md and results/analysis/REPORT.md; beside each report,
+                    # DIAGNOSTICS.md: every figure PLAN.md quotes that the report does not print
 ```
+
+Each step ends by printing the command to run next, with the analyses it was given (before the
+tag, the development analyses): the paired chains go 2, 3, 4, 5 and the histories 2b, 3b, 4, 5.
+Every input is fetched by the steps from a pinned commit, and every figure the plan quotes is made by
+a step (the report, or its diagnostics); nothing is copied in or computed by hand.
 
 Each step takes `--analysis NAME ...` to run only some analyses of `runs.yaml`. **Until the tag
 `plan-v1` exists, only the development analysis (`pilot`, chain 9) can be read**: steps 2 to 4

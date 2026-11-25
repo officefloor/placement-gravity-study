@@ -574,3 +574,14 @@ def test_the_graph_cache_never_hands_one_tree_another_tree_s_graph():
     assert tables._GRAPHS[id(a)][0] is a and tables._graph(a) is g
 
 
+
+
+def test_file_rows_count_the_earlier_checkpoints_that_changed_each_file():
+    measured = {"checkpoints": [{"cp": 1}, {"cp": 2}, {"cp": 3}],
+                "java_changed": {"cp01": [[None, "A.java"]], "cp02": [["A.java", "A.java"]],
+                                 "cp03": [["A.java", "B.java"]]},
+                "wiring_changes": {"cp02": [["A", "w.yml"]], "cp03": [["M", "w.yml"]]}}
+    rows = tables.file_rows("officefloor", "c", measured)
+    assert [(r["cp"], r["kind"], r["path"], r["status"], r["earlier"]) for r in rows] == [
+        (1, "java", "A.java", "A", 0), (2, "java", "A.java", "M", 1), (2, "wiring", "w.yml", "A", 0),
+        (3, "java", "B.java", "M", 2), (3, "wiring", "w.yml", "M", 1)]

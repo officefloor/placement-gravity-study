@@ -9,16 +9,19 @@ registration_tag: plan-v1
 streams:
   petclinic-20:      # the 20-checkpoint stream run 202608011310 was made on (no mutatives)
     repo: ~/spring-petclinic-rest-long-degradation-test
+    remote: git@github.com:officefloor/spring-petclinic-rest-long-degradation-test.git
     ref: 643aa1f48ef08798c6adb7dc177d9302a8ef87ec
     checkpoints: checkpoints.yaml
     act_size: null   # petclinic has no acts: one endpoint, one rule per checkpoint
   petclinic:         # the 60-checkpoint stream every later petclinic run was made on
     repo: ~/spring-petclinic-rest-long-degradation-test
+    remote: git@github.com:officefloor/spring-petclinic-rest-long-degradation-test.git
     ref: 3a3e16fd30901509c26da1c91f4c861f61eee729
     checkpoints: checkpoints.yaml
     act_size: null
   ui:                # the ui stream at the harness tag run-a (8b39da3)
     repo: ~/ui-long-degradation-test
+    remote: git@github.com:officefloor/ui-long-degradation-test.git
     ref: run-a
     checkpoints: checkpoints.yaml
     density: acceptance/DENSITY.md
@@ -52,7 +55,7 @@ repos:
 
 # Corpora B and C (PLAN.md 3.2, 3.3): samples of open-source repositories, drawn by
 # open-source-repository-sampler (`python -m placement_gravity.history sample NAME`) or, with `csv`,
-# drawn by another study and read where it lies. A development sample is read to build the steps;
+# drawn by another study and copied from its repository at a pinned commit; both by step2b_samples.sh. A development sample is read to build the steps;
 # its repositories are left out of every other analysis. `before`: only commits before that day.
 samples:
   open-source-development:           # people's code, to build the steps on
@@ -80,7 +83,11 @@ samples:
     exclude_owners: [officefloor, sagenschneider]
   open-source-human:                 # corpus B, first set: long-method-slim-study's own sample
     role: secondary                  # (its docs/ANALYSIS_PLAN.md, section 3; seed 20261101, 580 usable,
-    csv: ~/long-method-slim-study/sample/open-source-repository-sample.csv   # sampler 0.3.0),
+    csv:                             # sampler 0.3.0), fetched at its pinned commit by step 2b
+      repo: ~/long-method-slim-study
+      remote: git@github.com:officefloor/long-method-slim-study.git
+      ref: 1dc68ac82ba3624bf6ccfd51149556ef453ded7e
+      path: sample/open-source-repository-sample.csv
     seed: 20261101                   # read where it lies: the first 100 usable of each tier in the
     per_tier: 100                    # order of the draw
     as_of: "2020-12-01"

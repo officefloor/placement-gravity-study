@@ -7,3 +7,4 @@ set -euo pipefail
 cd "$(dirname "$0")"
 .venv/bin/python -m placement_gravity.runs stacks
 .venv/bin/python -m placement_gravity.runs fetch "$@"
+.venv/bin/python -m placement_gravity.nextstep 2 "$@"

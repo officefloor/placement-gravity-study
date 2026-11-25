@@ -10,6 +10,7 @@ import argparse
 import json
 import shutil
 import subprocess
+import time
 
 from . import chain, prepare, readings, runs, verdict
 
@@ -31,6 +32,7 @@ def main() -> None:
         if not runs.measured(analysis):
             continue
         runs.guard(reg, analysis)
+        started = time.monotonic()
         data = prepare.prepare(analysis, runs.streamed(reg, analysis))
         est = OUT / name / "estimates.json"
         subprocess.run(["Rscript", str(R_SCRIPT), str(data), str(est)], check=True)
@@ -46,6 +48,10 @@ def main() -> None:
                 prepare.gather(other, "runs"), prepare.gather(other, "additions"),
                 prepare.gather(name, "additions"))}
             (data / "readings.json").write_text(json.dumps(r, indent=1) + "\n")
+        # how long the analysis took (diagnostics, PLAN.md 6), with the refits it ran
+        spec = json.loads((data / "spec.json").read_text())
+        (OUT / name / "timing.json").write_text(json.dumps(
+            {"seconds": round(time.monotonic() - started, 1), "refits": spec.get("boot")}, indent=1) + "\n")
         print(name + ": " + "; ".join(f"{k} {v['verdict']}" for k, v in out["hypotheses"].items()))
 
 

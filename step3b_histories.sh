@@ -9,3 +9,4 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 .venv/bin/python -m placement_gravity.history measure "$@"
+.venv/bin/python -m placement_gravity.nextstep 3b "$@"

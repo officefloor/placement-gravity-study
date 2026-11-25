@@ -1121,6 +1121,34 @@ def class_identities(hosts: list[dict]) -> dict[tuple[int, str], str]:
     return out
 
 
+def file_rows(arm: str, chain: str, measured: dict) -> list[dict]:
+    """Every file a checkpoint created, changed or deleted, production Java and wiring (the
+    diagnostics behind H4's count, PLAN.md 2, 6; ``diagnostics.files``): its path after the change
+    (before it, where deleted), its kind, its status (``A`` created, ``M`` changed, ``D`` deleted)
+    and ``earlier``, the checkpoints of the chain that had created or changed it before (a renamed
+    file keeps its count), as ``trodden`` counts them. Empty where the files were not listed."""
+    if "java_changed" not in measured:
+        return []
+    seen: dict[str, int] = {}
+    rows = []
+    for c in measured["checkpoints"]:
+        unit = f"cp{c['cp']:02d}"
+        changes = [("java", old, new) for old, new in measured["java_changed"].get(unit, [])]
+        changes += [("wiring", None if s == "A" else p, None if s == "D" else p)
+                    for s, p in measured.get("wiring_changes", {}).get(unit, [])]
+        after = []
+        for kind, old, new in changes:
+            status = "A" if old is None else "D" if new is None else "M"
+            rows.append({"arm": arm, "chain": chain, "cp": c["cp"], "kind": kind, "path": new or old,
+                         "status": status, "earlier": 0 if old is None else seen.get(old, 0)})
+            after.append((old, new))
+        for old, new in after:
+            n = (seen.pop(old, 0) if old is not None else 0) + 1
+            if new is not None:
+                seen[new] = n
+    return rows
+
+
 def trodden(measured: dict) -> dict[str, dict]:
     """How well-trodden the files a checkpoint went back into were (H4's symmetric count, PLAN.md
     5): for each file that existed before the checkpoint and that it changed, production Java and

@@ -494,11 +494,20 @@ if (!is.null(h2)) {
       alone <- fit_cp(no_arm(base(d, y, extra)), d, nb)$fit
       inarm <- fit_cp(base(d, y, paste0(byt, " + ", extra)), d, nb)$fit
       rho <- function(x) if (nrow(x) > 2) suppressWarnings(cor(x[[size]], x[[byt]], method = "spearman")) else NA
+      # each arm by itself (diagnostics, PLAN.md 6: the methods arm's own size and what stood by)
+      one_arm <- function(x) {
+        if (nrow(x) < 20) return(list(error = "fewer than 20 rows", n = nrow(x)))
+        b1 <- fit_cp(no_arm(base(x, y, paste0(byt, " + ", extra))), x, nb)$fit
+        a1 <- fit_cp(no_arm(base(x, y, extra)), x, nb)$fit
+        list(n = nrow(x), size_alone = irr(wald(a1, size)), size = irr(wald(b1, size)),
+             bystanders = irr(wald(b1, byt)))
+      }
       res$reported[[paste0("size_or_data_", lev)]] <- list(
         n = nrow(d), bystanders = irr(wald(both, byt)), size = irr(wald(both, size)),
         size_alone = irr(wald(alone, size)),
         bystanders_within_arms = irr(wald(inarm, byt)), size_within_arms = irr(wald(inarm, size)),
-        correlation = c(list(pooled = rho(d)), lapply(split(d, as.character(d$arm)), rho)))
+        correlation = c(list(pooled = rho(d)), lapply(split(d, as.character(d$arm)), rho)),
+        by_arm = lapply(split(d, as.character(d$arm)), one_arm))
     }
   }
   # How much a core value is come back to, function arm against methods arm (H2's arm contrast): the

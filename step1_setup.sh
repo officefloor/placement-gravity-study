@@ -20,3 +20,4 @@ mkdir -p results
 } > results/versions.txt
 Rscript analysis/selftest.R
 cat results/versions.txt
+.venv/bin/python -m placement_gravity.nextstep 1
