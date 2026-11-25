@@ -52,6 +52,18 @@ repos:
     base_ref: base-empty
     branch: "evolve/{run}/{strategy}/chain{chain}"
     layout: stack
+  officehq-angular-officefloor:      # Run B (added 26 November 2026, PLAN.md 9 row 113)
+    path: ~/placement-gravity-data/officehq-angular-officefloor
+    remote: git@github.com:officefloor/officehq-angular-officefloor.git
+    base_ref: base-empty
+    branch: "evolve/{run}/{strategy}/chain{chain}"
+    layout: stack
+  officehq-tanstack-spring:          # Run B
+    path: ~/placement-gravity-data/officehq-tanstack-spring
+    remote: git@github.com:officefloor/officehq-tanstack-spring.git
+    base_ref: base-empty
+    branch: "evolve/{run}/{strategy}/chain{chain}"
+    layout: stack
 
 # Corpora B and C (PLAN.md 3.2, 3.3): samples of open-source repositories, drawn by
 # open-source-repository-sampler (`python -m placement_gravity.history sample NAME`) or, with `csv`,
@@ -183,7 +195,9 @@ analyses:
     sources:
       - {arm: spring, frontend: angular, repo: officehq-angular-spring, run: 202610271-as, strategy: just-solve}
       - {arm: officefloor, frontend: tanstack, repo: officehq-tanstack-officefloor, run: 202610271-to, strategy: just-solve}
-      # Run B (angular-officefloor, tanstack-spring): not started on 16 November 2026; added by amendment.
+      # Run B (added 26 November 2026, PLAN.md 9 row 113, before any of its backend Java was read)
+      - {arm: officefloor, frontend: angular, repo: officehq-angular-officefloor, run: 202611221-ao, strategy: just-solve}
+      - {arm: spring, frontend: tanstack, repo: officehq-tanstack-spring, run: 202611221-ts, strategy: just-solve}
       # Run C (the no-injection control, a third arm): its stack not built on 16 November 2026.
 
   # Run D (PLAN.md 3.1a, H8; registered 22 November 2026): the angular-spring stack with the agent

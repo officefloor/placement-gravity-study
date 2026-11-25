@@ -6,14 +6,15 @@
 > 22 November 2026; rows 89 to 110, of 24 and 25 November, restate H5 as surface against volume,
 > make H1 an arm contrast, number the hypotheses in the order of the study's story, settle the
 > drafter's remaining choices, and after a consistency review make H1 the arm contrast alone,
-> delete H9 and count constants in H5). It will be set again when that work is done, and waits now on Run
-> B's ids; until then only the development chain can be read.** As first registered, on 16 November 2026: the tag was first pushed on commit
+> delete H9 and count constants in H5). Run B's ids were added on 26 November 2026 (§9 row 113), so
+> nothing that needs deciding is left before the tag is set again; until it is, only the development
+> chain can be read.** As first registered, on 16 November 2026: the tag was first pushed on commit
 > `4bb8973` and moved the same day, before any run named for analysis was read, to this revision,
 > which adds bindings to injected dependencies reported apart (§4.3, §5). The instrument is piloted on
 > one pair of chains
 > (`results/pilot/PILOT.md`); no run named for analysis has been read. What remains open is only
-> what needs the data to exist (§3.1a): Run B's ids, Run C's ids when its stack is built, and each
-> chain's head when its run is pushed. The ui stacks' backend paths were read from their stack
+> what needs the data to exist (§3.1a): Run C's ids when its stack is built, Run D's when it is run,
+> and each chain's head when its run is pushed. The ui stacks' backend paths were read from their stack
 > declarations (`results/stacks.json`). The literature behind this plan is in
 > [`LITERATURE.md`](LITERATURE.md). Since 16 November 2026 this plan absorbs three drafts that read
 > the same runs (§1.1).
@@ -830,13 +831,17 @@ and its capture under `evolve-results/`; the registered analysis reads the branc
 the stack repositories by the harness's `push.sh`. On 16 November 2026 chains 1 to 3 of each run
 had been pushed; their branch names were listed, and nothing of them was fetched or read here.
 
-**Run B had not started on 16 November 2026.** Its run ids (the `angular-officefloor` and
-`tanstack-spring` stacks) are to be recorded here from the study machine when it starts, as Run A's
-were. Until then the square of the table above has only its Run A diagonal.
+**Run B had not started on 16 November 2026.** Its run ids were recorded on 26 November 2026, from
+the study machine, as Run A's were (§9 row 113): **`202611221-ao`** (`angular-officefloor`) and
+**`202611221-ts`** (`tanstack-spring`), strategy `just-solve`, in the stack repositories
+`officehq-angular-officefloor` and `officehq-tanstack-spring`. On that day each repository held
+only its empty base (`base-empty`), whose `stack.yaml` declares the same backend paths as Run A's
+stacks; no chain had been pushed, and nothing of Run B was fetched or read. With them the square of
+the table above is whole.
 
-**Open after registration:** the run ids of Run B, and the commit of each chain's branch that is
-read (each chain's head once its run has finished and been pushed). Registration came before Run B
-started, so its ids are added by a dated amendment (§9) before any of its backend Java is read.
+**Open after registration:** the commit of each chain's branch that is read (each chain's head once
+its run has finished and been pushed). Run B's ids were added before the tag was set again (§9 row
+113), so they are part of the registered plan, not an amendment to it.
 
 **Backend paths.** The petclinic layout is production Java under `src/main/java/` and wiring under
 `src/main/resources/officefloor/`. The ui stacks declare their own backend paths (`stack.yaml`);
@@ -3745,9 +3750,9 @@ author's to set, on the plan and code as they then stand, and starts the experim
   H2 takes no threshold above 1.
 - *Considered and left as a reading:* that shape is a bias on where unbound code is put, not a
   cause (§5, *Where bound and unbound code lands*). It is not part of H3.
-- *Waiting on data:* Run B's ids and Run C (§3.1a), by dated amendment before their backend Java
-  is read. Since the ui runs are the primary test (§3.1), **the study's verdicts wait on Run B**:
-  Run A alone cannot tell the arm from the front end.
+- *Waiting on data:* Run C (§3.1a), by dated amendment before its backend Java is read. Run B's ids
+  were recorded on 26 November 2026 (row 113); since the ui runs are the primary test (§3.1), **the
+  study's verdicts wait on Run B's chains**: Run A alone cannot tell the arm from the front end.
 - *Weak points seen on the development chain* (§6): H2 at the method was not estimable on one
   chain; H1 without constants is nearly flat; the size-or-data reading went against its stated
   direction; long does not vary in OfficeFloor.
@@ -3954,6 +3959,7 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 110 | Wording, no rule changed: §5's bootstrap paragraph (H6, H7 and the readings on Wald intervals; H3 on the bootstrap); §4.2c leads with the weights; the tiers paragraph names the readings §4.2b–4.2g and the sinew shape; the sinew shape counts a class's private constants, as H2's core does; the docstrings of `verdict.py` and `prepare.h5_rows` | §2, §4.2c, §5, `verdict.py`, `prepare.py`, `analyse.R` | The consistency review of 25 November 2026 (§8) |
 | 111 | The steps fetch every input themselves and each prints the next command: the problem streams are cloned from their remotes at their pinned refs where missing (`runs.ensure_at`; `remote:` in `runs.yaml`); corpus B's first set, drawn by `long-method-slim-study`, is copied by step 2b from that repository at its pinned commit `1dc68ac` into `samples/open-source-human/`, not read from wherever a copy lies (`history.fetch_csv`); every step script ends with `placement_gravity.nextstep`. No value read changes: the file at that commit is the file that was read | `runs.yaml`, `runs.py`, `history.py`, `nextstep.py`, the step scripts, `README.md`, `tests/` | The author, 25 November 2026: "Is everything scripted in the stepX_... scripts? All values should be generated by the scripts. Also, each script should output the command to run the next script" |
 | 112 | **Every figure the plan quotes is made by a step.** An audit of the session transcripts (25 November 2026) found about sixty figures in §2, §4.4, §5 and §6 first read by one-off queries, not printed by any report: they are now made by step 5's diagnostics (`placement_gravity/diagnostics.py`; `DIAGNOSTICS.md` and `diagnostics.json` beside each report), each passage marked with the section that makes it. For them step 3 writes two tables more (`files.csv`, every file a checkpoint created, changed or deleted, with the earlier checkpoints that had changed it; `files_end.csv`, the Java files at the head and their sizes); step 4 records its time (`timing.json`) and fits size or data within each arm alone (`size_or_data_*.by_arm`); the timings of one fit by data size are made by a new optional step, `step1b_timing.sh` (`analysis/timing.R`, `results/timing.json`). No test, rule or verdict changes. The diagnostics read the tables as they now stand, so where §6 recorded a figure on an earlier `MEASURE_VERSION` the two may differ; §6 keeps what was seen | §2, §4.4, §5, §6, `diagnostics.py`, `tables.file_rows`, `measure.py`, `analyse.py`, `analyse.R`, `analysis/timing.R`, `step1b_timing.sh`, `step5_report.sh`, `nextstep.py`, `README.md`, `tests/`; `MEASURE_VERSION` 42 | The author, 25 November 2026: "All values should be generated by the scripts"; asked how far to go, "script all 17" |
+| 113 | **Run B's ids recorded**: `202611221-ao` (`angular-officefloor`, repository `officehq-angular-officefloor`) and `202611221-ts` (`tanstack-spring`, `officehq-tanstack-spring`), strategy `just-solve`, added to `ui-primary` beside Run A; the two stack repositories added, their backend paths read from each one's `stack.yaml` at `base-empty` (`results/stacks.json`), the same as Run A's | §3.1a, the status, §8, `runs.yaml`, `results/stacks.json` | The author, 26 November 2026, from the study machine. Seen: that each repository exists and holds only `base-empty`; no chain of Run B pushed or read |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

@@ -22,5 +22,17 @@
   "wiring_root": "src/main/resources/officefloor/",
   "source": "stack.yaml",
   "base_ref": "base-empty"
+ },
+ "officehq-angular-officefloor": {
+  "java_src": "src/main/java/",
+  "wiring_root": "src/main/resources/officefloor/",
+  "source": "stack.yaml",
+  "base_ref": "base-empty"
+ },
+ "officehq-tanstack-spring": {
+  "java_src": "src/main/java/",
+  "wiring_root": "src/main/resources/officefloor/",
+  "source": "stack.yaml",
+  "base_ref": "base-empty"
  }
 }
