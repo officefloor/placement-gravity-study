@@ -11,6 +11,7 @@ Role: **development**. Chains: officefloor 1, spring 1. **Descriptive only.**
 | H5 | confirmatory | descriptive only | 1.000 |
 | H6 | secondary | descriptive only | 3.06e-06 |
 | H7 | secondary | descriptive only | 0.349 |
+| H9 | secondary | descriptive only | 0.654 |
 
 ## H1, choice narrows (and less often forced in the function arm)
 
@@ -45,6 +46,18 @@ Where code was bound to a class or a method (109 of 350 problem and host rows, b
 - Reported, the function arm: class 5.09e-07 [0, –]; method 4.276 [0.477, 38.309]
 - Reported, officefloor, how bound uses are spread: at the class 2 uses of 2 fields, 1.000 to a chain's three most used, 0.500 to fields no checkpoint introduced; of 24 fields introduced, 1 used by later bound code (0.042); at the method 57 uses of 45 values, 0.105 to the three most used, 0.298 to values no checkpoint introduced; of 361 introduced, 31 used later (0.086)
 - Reported, spring, how bound uses are spread: at the class 37 uses of 11 fields, 0.784 to a chain's three most used, 0.865 to fields no checkpoint introduced; of 35 fields introduced, 5 used by later bound code (0.143); at the method 86 uses of 44 values, 0.360 to the three most used, 0.477 to values no checkpoint introduced; of 315 introduced, 27 used later (0.086)
+- Reported, officefloor, the sinew shape at the class: 2 places, 2 uses; effective number of values 1.000 (over the thirds –, –, 1.000); the most used value's share 1.000; changes repeating a combination already used there 0.000 of 2
+  - most used values: `OwnerMapper` ownerRepository 1; `OwnerCreatedEvent` OWNER_CREATED 1
+  - most used combinations: `OwnerMapper` {ownerRepository} 1; `OwnerCreatedEvent` {OWNER_CREATED} 1
+- Reported, officefloor, the sinew shape at the method: 20 places, 57 uses; effective number of values 2.191 (over the thirds 2.857, 2.400, 1.867); the most used value's share 0.612; changes repeating a combination already used there 0.074 of 27
+  - most used values: `OwnerMapper membershipLevel` owner 2; `OwnerIdentityKey of` tel 2; `OwnerIdentityKey of` mail 2; `OwnerIdentityKey of` lastName 2; `DetermineOwnerHousehold deriveHouseholdId` postcode 2
+  - most used combinations: `OwnerIdentityKey of` {lastName, mail, tel} 2; `AuditOwnerCreated service` {dto, owner} 2; `InvalidOwnerTelephoneException InvalidOwnerTelephoneException` {telephone} 1; `CheckOwnerHouseholdUnique service` {address, existing, lastName, ownerRepository, request} 1; `CheckOwnerHouseholdUnique service` {existing, lastName, request} 1
+- Reported, spring, the sinew shape at the class: 6 places, 37 uses; effective number of values 1.146 (over the thirds 1.000, 1.441, 1.431); the most used value's share 0.952; changes repeating a combination already used there 0.647 of 34
+  - most used values: `OwnerRestControllerV1` clinicService 22; `OwnerRestControllerV1` ownerMapper 5; `ExceptionControllerAdvice` ERROR_INVALID_REQUEST 2; `OwnerRestControllerV1` OWNER_CREATED_SEQUENCE 1; `OwnerRestControllerV1` MAX_OWNERS_PER_CITY 1
+  - most used combinations: `OwnerRestControllerV1` {clinicService} 19; `OwnerRestControllerV1` {ownerMapper} 4; `ExceptionControllerAdvice` {ERROR_INVALID_REQUEST} 2; `OwnerRestControllerV1` {clinicService, ownerMapper} 1; `OwnerRestControllerV1` {MAX_OWNERS_PER_CITY, clinicService} 1
+- Reported, spring, the sinew shape at the method: 23 places, 86 uses; effective number of values 1.735 (over the thirds 1.595, 1.557, 1.912); the most used value's share 0.746; changes repeating a combination already used there 0.429 of 56
+  - most used values: `OwnerRestControllerV1 addOwner` owner 18; `OwnerRestControllerV1 addOwner` ownerFieldsDto 8; `OwnerRestControllerV1 toOwnerDtoWithBulkWarning` ownerDto 5; `OwnerRestControllerV1 toOwnerDtoWithBulkWarning` owner 5; `OwnerRestControllerV1 addOwner` ownerDto 5
+  - most used combinations: `OwnerRestControllerV1 addOwner` {owner} 10; `OwnerRestControllerV1 addOwner` {ownerFieldsDto} 7; `OwnerRestControllerV1 addOwner` {owner, ownerDto} 5; `OwnerRestControllerV1 toOwnerDtoWithBulkWarning` {owner, ownerDto} 4; `OwnerMapper toLocality` {owner} 3
 - Reported, at the class on its fields only (as until 19 November 2026): 8.539 [5.848, 12.468]
 - Reported, at the class with every member the code was bound to as the core, private or not (as until 22 November 2026): 17.464 [11.934, 25.556]
 - Reported, officefloor, the core's width at the class: 1 values a row (median 1, 3 rows); over the thirds of the stream 1, 1, 1
@@ -123,10 +136,10 @@ Per checkpoint, the links it added between blocks of logic (the surface: a metho
 - Reported, lost links weighed: function arm / methods arm 2.873 [1.428, 5.781], over the stream 0.210 [0.018, 2.436]; a checkpoint officefloor 4.559, spring 3.931
 - Reported, without the logic in the model: arm 1.044 [0.904, 1.205], over the stream 2.135 [1.272, 3.585]; the methods arm's own rise over the stream 1.035 [0.534, 2.003]; links per e-fold logic 1.875 [1.538, 2.287]
 - Reported, officefloor: 59 checkpoints; links added a checkpoint 5.797 (call 4.186, state 0.678, flow 0.932; lost 2.305); over the thirds 4.650, 6.200, 6.579; links per position of logic 0.603; the tree's links per method at the end 1.701
-  - weighed: 12.102 a checkpoint (call 10.492, state 0.678, flow 0.932; lost 4.559); per position of logic 1.259; wiring edges whose weight could not be read from the Java (weighed 1) – of –
+  - weighed: 12.102 a checkpoint (call 10.492, state 0.678, flow 0.932; lost 4.559); per position of logic 1.259; wiring edges whose weight could not be read from the Java (weighed 1) 0 of 55
   - its call links by caller: from wired functions 2.915, from other methods 1.271 (over the thirds 0.050, 1.800, 2.000); within the caller's class 0.847, across classes 3.339
 - Reported, spring: 58 checkpoints; links added a checkpoint 4.672 (call 3.931, state 0.741, flow 0.000; lost 1.655); over the thirds 4.300, 5.000, 4.722; links per position of logic 0.517; the tree's links per method at the end 1.779
-  - weighed: 10.966 a checkpoint (call 10.224, state 0.741, flow 0.000; lost 3.931); per position of logic 1.214; wiring edges whose weight could not be read from the Java (weighed 1) – of –
+  - weighed: 10.966 a checkpoint (call 10.224, state 0.741, flow 0.000; lost 3.931); per position of logic 1.214; wiring edges whose weight could not be read from the Java (weighed 1) 0 of 0
   - its call links by caller: from wired functions 0.000, from other methods 3.931 (over the thirds 3.300, 4.400, 4.111); within the caller's class 1.552, across classes 2.379
 
 ## H6, shape does not draw code in
@@ -192,6 +205,22 @@ Calls between classes each unit added (the tree after it less the tree before), 
   - candidate for redistribution: `OwnerMapper` and `OwnerRestControllerV1` (spring/blind-202608100006/chain9), changed together 7 times, calls between them 0 → 6
   - candidate for redistribution: `Owner` and `OwnerMapper` (spring/blind-202608100006/chain9), changed together 2 times, calls between them 7 → 10
 
+## H9, the cost to fix a concentration (secondary)
+
+Each class with two or more blocks at the end of the stream: its cheapest split, the fewest internal links (calls between its blocks, blocks sharing a field that holds state) a cut must cross to divide it into two parts of at least a quarter of its code each. The function arm's rate at the same size below 1, **and** the gap widening as classes grow (arm × size below 1); one-sided, 95% cluster-bootstrap intervals.
+
+- **descriptive only** (p 0.654)
+- **Cheapest split, function arm / methods arm, at the same size: 1.103 [0.680, 1.788]** (one-sided p 0.654; wald: one chain in an arm; nbinom2)
+- **The gap as classes grow (arm × log size): 0.988 [0.614, 1.588]** (one-sided p 0.480; wald: one chain in an arm; nbinom2)
+- Classes: officefloor 43, spring 47; mean cheapest split: officefloor 0.791, spring 0.745
+- Reported, the concentrations alone (8 classes): arm 1.078 [0.178, 6.527], with size 0.103 [7.06e-05, 150.216]; on the blocks instead of the volume: arm 1.061 [0.656, 1.716], with size 0.770 [0.371, 1.594]
+- Reported, officefloor: classes of two or more blocks that no split leaves a quarter on each side (one block holds most of the class), left out: 5
+- Reported, officefloor, concentrations: 4 classes at the end, 7.000 blocks, cheapest split 0.750 (0.188 a block; over the thirds 1.000, 1.500, 0.750); already in separate pieces 0.250; found exactly 0.750
+- Reported, officefloor, rest: 39 classes at the end, 5.872 blocks, cheapest split 0.795 (0.199 a block; over the thirds 0.800, 0.758, 0.795); already in separate pieces 0.308; found exactly 0.974
+- Reported, spring: classes of two or more blocks that no split leaves a quarter on each side (one block holds most of the class), left out: 0
+- Reported, spring, concentrations: 4 classes at the end, 19.500 blocks, cheapest split 1.000 (0.162 a block; over the thirds 0.500, 1.000, 1.000); already in separate pieces 0.250; found exactly 0.500
+- Reported, spring, rest: 43 classes at the end, 6.581 blocks, cheapest split 0.721 (0.155 a block; over the thirds 0.711, 0.698, 0.721); already in separate pieces 0.442; found exactly 0.953
+
 ## Reported: where forced coupling came from
 
 Each class a forced change went into: *contained* (no call added across its boundary); *problem or reuse* (every call it added joins two classes whose private data the change needed, or reaches a member that was already open); *other* (some call reaches a member the change opened, in a class whose data it did not need: a utility, as the author reads it). The calls are counted once each by the same sources.
@@ -235,15 +264,15 @@ A class's surface (calls out and in) against its volume (methods). The exponent 
 
 Each class (and, in the function arm, each wiring flow file) as a container of blocks of logic (methods). At each chain's last checkpoint: blocks, volume a block, the largest block's share and internal links a block. The growth exponent: within a container over the stream, log(blocks) on log(volume); near 1 it grows by adding blocks (pebbles), near 0 by swelling the blocks it has (a filled ball); 95% interval over containers resampled.
 
-- officefloor, class, concentrations: 5 at the end; blocks 5.800, volume a block 3.413, largest block 0.574, internal links a block 0.453; growth exponent 0.670 [0.352, 0.954] (6 containers that grew)
-- officefloor, class, rest: 167 at the end; blocks 2.168, volume a block 3.039, largest block 0.858, internal links a block 0.240; growth exponent 0.220 [0.012, 0.513] (24 containers that grew)
-- officefloor, class, all: 172 at the end; blocks 2.273, volume a block 3.050, largest block 0.850, internal links a block 0.247; growth exponent 0.462 [0.149, 0.741] (30 containers that grew)
-- officefloor, flow, concentrations: 1 at the end; blocks 31.000, volume a block 5.226, largest block 0.099, internal links a block 1.097; growth exponent 0.045 [0.000, 0.630] (6 containers that grew)
-- officefloor, flow, rest: 50 at the end; blocks 2.360, volume a block 2.290, largest block 0.699, internal links a block 0.873; growth exponent 0.000162 [-0.00046, 0.001] (13 containers that grew)
-- officefloor, flow, all: 51 at the end; blocks 2.922, volume a block 2.347, largest block 0.687, internal links a block 0.878; growth exponent 0.000537 [-0.000277, 0.002] (19 containers that grew)
+- officefloor, class, concentrations: 5 at the end; blocks 5.800, volume a block 3.413, largest block 0.574, internal links a block 0.453; growth exponent 0.670 [0.352, 0.946] (6 containers that grew)
+- officefloor, class, rest: 167 at the end; blocks 2.168, volume a block 3.039, largest block 0.858, internal links a block 0.240; growth exponent 0.220 [0.015, 0.529] (24 containers that grew)
+- officefloor, class, all: 172 at the end; blocks 2.273, volume a block 3.050, largest block 0.850, internal links a block 0.247; growth exponent 0.462 [0.182, 0.753] (30 containers that grew)
+- officefloor, flow, concentrations: 1 at the end; blocks 31.000, volume a block 5.226, largest block 0.099, internal links a block 1.097; growth exponent 0.750 [–, –] (1 containers that grew)
+- officefloor, flow, rest: 50 at the end; blocks 2.360, volume a block 2.290, largest block 0.699, internal links a block 0.873; growth exponent 0.229 [0.000, 0.289] (11 containers that grew)
+- officefloor, flow, all: 51 at the end; blocks 2.922, volume a block 2.347, largest block 0.687, internal links a block 0.878; growth exponent 0.541 [0.000, 0.711] (12 containers that grew)
 - spring, class, concentrations: 5 at the end; blocks 15.800, volume a block 4.279, largest block 0.450, internal links a block 0.662; growth exponent 0.902 [0.887, 1.253] (3 containers that grew)
 - spring, class, rest: 59 at the end; blocks 5.068, volume a block 3.706, largest block 0.547, internal links a block 0.676; growth exponent 1.453 [0.000, 1.456] (2 containers that grew)
-- spring, class, all: 64 at the end; blocks 5.906, volume a block 3.751, largest block 0.539, internal links a block 0.675; growth exponent 0.922 [0.889, 1.425] (5 containers that grew)
+- spring, class, all: 64 at the end; blocks 5.906, volume a block 3.751, largest block 0.539, internal links a block 0.675; growth exponent 0.922 [0.889, 1.405] (5 containers that grew)
 
 ## Reported: encapsulation and the reader
 

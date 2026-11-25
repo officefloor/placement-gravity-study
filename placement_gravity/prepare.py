@@ -546,7 +546,7 @@ def container_summary(rows: list[dict], checkpoints: int, seed: int = SEED, resa
                 end = [r for k in keys for r in series[k] if int(r["cp"]) == last_cp[r["chain_id"]]]
                 mean = lambda f: statistics.fmean(f(r) for r in end) if end else None
                 pts = []
-                for k in keys:
+                for k in sorted(keys):      # a fixed order, so the resampling is the same on every run
                     xs = [(math.log(num(r["volume"])), math.log(num(r["blocks"]))) for r in series[k]]
                     if len({x for x, _ in xs}) < 2:
                         continue

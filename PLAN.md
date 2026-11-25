@@ -3032,6 +3032,30 @@ binomial mixed model). These details are fixed with the code before any run is r
   hand a chain measured after another the earlier chain's graph** (row 102), which may touch
   every figure built on the call graph for the second chain of a run, here Spring's, since 19
   November. These figures are therefore superseded by the run at `MEASURE_VERSION` 39.
+- **The development chain under rows 99 to 105** (25 November 2026, `MEASURE_VERSION` 40;
+  descriptive only). **The cache fault of row 102 did not bite** on this chain: every figure of
+  the run at 38 and 39 came back the same, H1 to H7, H5's weights and its breakdown, and the
+  containers' exponents. Only the containers' intervals moved, because their resampling followed an
+  order Python draws afresh on each run; sorted since (row 106), and now the same run to run. **The
+  wiring edges whose weight could not be read: 0 of 55** (row 99). **The flow containers** (row 103)
+  now grow: exponent 0.54 [0.00, 0.71] over 12 flows that grew (0.23 for those that are not
+  concentrations; the one concentrated flow, 31 blocks, 0.75). **H9: no difference.** Of the classes
+  of two or more blocks at the end, 43 in OfficeFloor and 47 in Spring, the cheapest split cut 0.79
+  and 0.75 links on average; the function arm's ratio at the same size **1.10 [0.68, 1.79]**, the
+  gap as classes grow 0.99 [0.61, 1.59]. Spring's concentrations had 19.5 blocks and split for 1.0
+  link, OfficeFloor's 7 blocks for 0.75; five OfficeFloor classes could not be split into quarters
+  (one block holding most) and were left out, none in Spring. **The sinew shape** says why Spring's
+  core splits cheaply here: at the class its uses fall almost on one value, `OwnerRestControllerV1`'s
+  `clinicService` (22 of 37 uses; effective number 1.15; 65% of changes repeating a combination
+  already used there), and `clinicService` is an **injected** service, which is not state (§4.2c):
+  methods sharing it are not tied together, and the controller can be split by injecting it into
+  both halves. The author's case of a rewrite is a class whose blocks share state no one injects,
+  which the petclinic stream hardly makes. At the method Spring's effective number was 1.74 (over
+  the thirds 1.60, 1.56, 1.91), OfficeFloor's 2.19 (2.86, 2.40, 1.87). **H9 is left as it is** for
+  the ui runs to decide, as H5 was; its population (every class of two or more blocks) is still the
+  drafter's choice for the author to confirm, now after these figures have been seen. *The
+  histories* were not read again: every clone failed for want of the network ("Could not resolve
+  host: github.com"), and step 4 rightly left out their tables made at `HISTORY_VERSION` 14.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
@@ -3609,9 +3633,12 @@ author's to set, on the plan and code as they then stand, and starts the experim
   stream, at the same size, the concentrations reported beside it (the function arm forms too few
   concentrations to test on); a class no split of which leaves a quarter on each side left out and
   counted. Built and tested before any ui run is read; not yet computed on any chain.
-- *To finish for rows 99 to 105:* the pilot measured again at `MEASURE_VERSION` 40 (it was measured
-  at 39 on 25 November; step 3 again), the histories at `HISTORY_VERSION` 15, then steps 4 and 5;
-  whether the call-graph figures moved (row 102) and H9's first figures go into §6.
+- *To finish for rows 99 to 106:* the pilot is done at `MEASURE_VERSION` 40 (§6). **The histories
+  at `HISTORY_VERSION` 15**, which failed for want of the network on 25 November:
+  `./step3b_histories.sh --analysis open-source-development --force`, then `./step4_analyse.sh
+  --analysis pilot open-source-development` and `./step5_report.sh`; whether their figures moved
+  under row 102 goes into §6. *Still the author's to confirm:* H9's population (every class of two
+  or more blocks, the concentrations reported beside), now after the development figures.
 - *As it stood for rows 99 to 103:* the pilot measured again at `MEASURE_VERSION` 39 and the
   development histories at `HISTORY_VERSION` 15 (row 102 touches both: several chains or
   repositories are measured in one process): `./step3_measure.sh --analysis pilot`,
@@ -3873,6 +3900,7 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 103 | The flow containers of the ball-or-pebbles reading (row 98) are named by their wiring file, not by the classes in them, so a flow that gains a function stays one container (`chain.flows` gives the files, `flow_files` in the tree index) | §4.2g, `chain.flows`, `chain.tree_places`, `flow.Graph`, `tables.container_rows`, `tests/`; `MEASURE_VERSION` 39 | Found on reading the reading's first figures (§6): every flow's growth exponent was near 0 because a flow that grew became a new container. A fault, not a choice |
 | 104 | Stated, not yet built: a reported reading, **the cost to fix a concentration**: per container of §4.2g, the fewest internal links (calls between its blocks, blocks sharing a field holding state) a cut must cross to split it into two parts of at least a quarter of its volume each; the direction stated, cheaper in OfficeFloor than in Spring at the same size and the gap widening as concentrations grow. To be built before the tag. Corpus B by issue, landing ranks on a history and what unbound code leaves behind left as exploratory, after the experiment | §2, §4.2h, §8 | The author's, 25 November 2026: "fixing in OfficeFloor is simple when concentration gets high. It is potentially a rewrite in Spring if this happens"; "write the direction now". Stated after the development chain had been seen (H5's drift, §6) and before any ui run is read; the measure is the drafter's, accepted by the author |
 | 105 | **H9, the cost to fix a concentration**, a secondary hypothesis: per class of two or more blocks at the end of each chain, its cheapest split (the fewest internal calls and shared-field links a cut must cross to leave at least a quarter of its volume on each side; exact up to 14 blocks, a seeded local search above, recorded); at the same size the function arm's below the methods arm's, and the gap widening with size (arm × log size), both below 1 on one cluster bootstrap, p the larger, on its own p at α = 0.05. Classes no split of which leaves a quarter on each side are left out and counted. The concentrations alone reported beside | §2, §4.2h, §5, §8, `tables.split_cost`, `tables.container_rows`, `prepare.h9_rows`, `prepare.h9_summary`, `analyse.R` (`H9`), `verdict.h9` (`SECONDARY`), `report.h9_section`, `selftest.R`, `tests/`, `README.md`; `MEASURE_VERSION` 40 | The author's, 25 November 2026: "write the code for concentration and make it a H9". The direction was stated before the ui runs (row 104); the test's population (every class of two or more blocks rather than the concentrations alone) is the drafter's, to be confirmed. Not yet computed on any chain |
+| 106 | The containers' growth exponent resampled in a fixed order: its intervals had followed the order of a Python set, drawn afresh on each run, so they differed run to run (the exponents did not) | `prepare.container_summary`, `tests/test_analysis.py` | Found on comparing the development rerun with the run before it (§6). A fault, not a choice |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

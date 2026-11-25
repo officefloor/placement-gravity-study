@@ -483,6 +483,52 @@
    "tier": "secondary",
    "p_holm": 0.348830207848476,
    "verdict": "descriptive only"
+  },
+  "H9": {
+   "p": 0.65425544115949,
+   "reversed": false,
+   "conditions_met": false,
+   "detail": {
+    "arm": {
+     "estimate": 0.0978508560040435,
+     "se": 0.24657817188054,
+     "lower": -0.385433480255541,
+     "upper": 0.581135192263628,
+     "level": 0.95,
+     "p_greater": 0.34574455884051,
+     "p_less": 0.65425544115949,
+     "irr": 1.10279829709785,
+     "irr_lower": 0.680155738209769,
+     "irr_upper": 1.78806707899425,
+     "interval": "wald: one chain in an arm"
+    },
+    "size": {
+     "estimate": -0.0123555904116064,
+     "se": 0.24241066924201,
+     "lower": -0.487471771594197,
+     "upper": 0.462760590770984,
+     "level": 0.95,
+     "p_greater": 0.520325153214308,
+     "p_less": 0.479674846785692,
+     "irr": 0.987720426495591,
+     "irr_lower": 0.614177213222649,
+     "irr_upper": 1.58845300658031,
+     "interval": "wald: one chain in an arm"
+    },
+    "n": 90,
+    "family": "nbinom2",
+    "mean": {
+     "officefloor": 0.790697674418605,
+     "spring": 0.74468085106383
+    },
+    "classes": {
+     "officefloor": 43,
+     "spring": 47
+    }
+   },
+   "tier": "secondary",
+   "p_holm": 0.65425544115949,
+   "verdict": "descriptive only"
   }
  },
  "sensitivity": {

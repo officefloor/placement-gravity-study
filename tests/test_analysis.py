@@ -807,3 +807,14 @@ def test_h9_rows_take_each_class_of_two_or_more_blocks_at_the_end():
     assert [(r["container"], r["blocks"]) for r in got] == [("A", 5)]
     s = prepare.h9_summary(rows)["spring"]["concentrations"]
     assert (s["classes"], s["split_cost"]) == (1, 3)
+
+
+def test_the_growth_exponent_interval_does_not_depend_on_the_order_of_the_rows():
+    import random as _r
+    rows = [{"arm": "spring", "kind": "class", "chain_id": "c", "container": f"C{k}", "cp": str(cp),
+             "concentration": "True", "volume": str(v * (k + 1)), "blocks": str(max(1, (v * (k + 1)) // (7 + k))),
+             "largest_share": "0.5", "internal_links": "1"}
+            for k in range(6) for cp, v in enumerate((10, 20, 35, 60), 1)]
+    a = prepare.container_summary(rows, 4, resamples=200)
+    _r.Random(3).shuffle(rows)
+    assert prepare.container_summary(rows, 4, resamples=200) == a
