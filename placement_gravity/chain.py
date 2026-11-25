@@ -133,10 +133,11 @@ def materialise_many(repo: Path, rev: str, paths: list[str], dest: Path) -> None
         i = nl + 1 + size + 1
 
 
-def flows(repo: Path, rev: str, root: str = WIRING) -> list[list[str]]:
+def flows(repo: Path, rev: str, root: str = WIRING, paths: list | None = None) -> list[list[str]]:
     """The OfficeFloor control flows at rev (H1, PLAN.md 4.2a): per wiring file, the simple names of
     the classes it wires. A request's functions are the classes of its file, joined by ``next`` and
-    ``outputs``, not by Java calls. None for an arm without wiring."""
+    ``outputs``, not by Java calls. None for an arm without wiring. ``paths``, if given, receives
+    each flow's wiring file in the same order (the container of PLAN.md 4.2g is the file)."""
     out = []
     for f in git(repo, "ls-tree", "-r", "--name-only", rev, "--", root).splitlines():
         if f.endswith((".yml", ".yaml")):
@@ -147,6 +148,8 @@ def flows(repo: Path, rev: str, root: str = WIRING) -> list[list[str]]:
                     names.append(m.group(1).split(".")[-1].split("$")[-1])
             if names:
                 out.append(sorted(set(names)))
+                if paths is not None:
+                    paths.append(f)
     return out
 
 
@@ -306,8 +309,10 @@ def tree_places(repo: Path, cps: list, work: Path, java_src: str, wiring_root: s
             files = dict(running)
         else:
             files = by_unit.get(unit, {})
+        flow_files: list[str] = []
         out[unit] = {"files": files,
-                     "flows": [] if light else flows(repo, c.parent, wiring_root)}
+                     "flows": [] if light else flows(repo, c.parent, wiring_root, flow_files),
+                     "flow_files": flow_files}
     return out
 
 

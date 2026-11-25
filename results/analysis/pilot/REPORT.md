@@ -123,10 +123,10 @@ Per checkpoint, the links it added between blocks of logic (the surface: a metho
 - Reported, lost links weighed: function arm / methods arm 2.873 [1.428, 5.781], over the stream 0.210 [0.018, 2.436]; a checkpoint officefloor 4.559, spring 3.931
 - Reported, without the logic in the model: arm 1.044 [0.904, 1.205], over the stream 2.135 [1.272, 3.585]; the methods arm's own rise over the stream 1.035 [0.534, 2.003]; links per e-fold logic 1.875 [1.538, 2.287]
 - Reported, officefloor: 59 checkpoints; links added a checkpoint 5.797 (call 4.186, state 0.678, flow 0.932; lost 2.305); over the thirds 4.650, 6.200, 6.579; links per position of logic 0.603; the tree's links per method at the end 1.701
-  - weighed: 12.102 a checkpoint (call 10.492, state 0.678, flow 0.932; lost 4.559); per position of logic 1.259
+  - weighed: 12.102 a checkpoint (call 10.492, state 0.678, flow 0.932; lost 4.559); per position of logic 1.259; wiring edges whose weight could not be read from the Java (weighed 1) – of –
   - its call links by caller: from wired functions 2.915, from other methods 1.271 (over the thirds 0.050, 1.800, 2.000); within the caller's class 0.847, across classes 3.339
 - Reported, spring: 58 checkpoints; links added a checkpoint 4.672 (call 3.931, state 0.741, flow 0.000; lost 1.655); over the thirds 4.300, 5.000, 4.722; links per position of logic 0.517; the tree's links per method at the end 1.779
-  - weighed: 10.966 a checkpoint (call 10.224, state 0.741, flow 0.000; lost 3.931); per position of logic 1.214
+  - weighed: 10.966 a checkpoint (call 10.224, state 0.741, flow 0.000; lost 3.931); per position of logic 1.214; wiring edges whose weight could not be read from the Java (weighed 1) – of –
   - its call links by caller: from wired functions 0.000, from other methods 3.931 (over the thirds 3.300, 4.400, 4.111); within the caller's class 1.552, across classes 2.379
 
 ## H6, shape does not draw code in
@@ -230,6 +230,20 @@ A class's surface (calls out and in) against its volume (methods). The exponent 
 - Ripple, spring arm, forced, existing: 61 new calls; 2 reach a method changed later, 3 later changes, 3 of them changing the caller too (1.000; by chance 0.729; ratio 1.372)
 - Ripple, spring arm, unforced, opened: 13 new calls; 1 reach a method changed later, 1 later changes, 1 of them changing the caller too (1.000; by chance 0.729; ratio 1.372)
 - Ripple, spring arm, unforced, existing: 41 new calls; 0 reach a method changed later, 0 later changes, 0 of them changing the caller too (–; by chance –; ratio –)
+
+## Reported: a filled ball or pebbles
+
+Each class (and, in the function arm, each wiring flow file) as a container of blocks of logic (methods). At each chain's last checkpoint: blocks, volume a block, the largest block's share and internal links a block. The growth exponent: within a container over the stream, log(blocks) on log(volume); near 1 it grows by adding blocks (pebbles), near 0 by swelling the blocks it has (a filled ball); 95% interval over containers resampled.
+
+- officefloor, class, concentrations: 5 at the end; blocks 5.800, volume a block 3.413, largest block 0.574, internal links a block 0.453; growth exponent 0.670 [0.352, 0.954] (6 containers that grew)
+- officefloor, class, rest: 167 at the end; blocks 2.168, volume a block 3.039, largest block 0.858, internal links a block 0.240; growth exponent 0.220 [0.012, 0.513] (24 containers that grew)
+- officefloor, class, all: 172 at the end; blocks 2.273, volume a block 3.050, largest block 0.850, internal links a block 0.247; growth exponent 0.462 [0.149, 0.741] (30 containers that grew)
+- officefloor, flow, concentrations: 1 at the end; blocks 31.000, volume a block 5.226, largest block 0.099, internal links a block 1.097; growth exponent 0.045 [0.000, 0.630] (6 containers that grew)
+- officefloor, flow, rest: 50 at the end; blocks 2.360, volume a block 2.290, largest block 0.699, internal links a block 0.873; growth exponent 0.000162 [-0.00046, 0.001] (13 containers that grew)
+- officefloor, flow, all: 51 at the end; blocks 2.922, volume a block 2.347, largest block 0.687, internal links a block 0.878; growth exponent 0.000537 [-0.000277, 0.002] (19 containers that grew)
+- spring, class, concentrations: 5 at the end; blocks 15.800, volume a block 4.279, largest block 0.450, internal links a block 0.662; growth exponent 0.902 [0.887, 1.253] (3 containers that grew)
+- spring, class, rest: 59 at the end; blocks 5.068, volume a block 3.706, largest block 0.547, internal links a block 0.676; growth exponent 1.453 [0.000, 1.456] (2 containers that grew)
+- spring, class, all: 64 at the end; blocks 5.906, volume a block 3.751, largest block 0.539, internal links a block 0.675; growth exponent 0.922 [0.889, 1.425] (5 containers that grew)
 
 ## Reported: encapsulation and the reader
 

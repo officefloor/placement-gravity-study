@@ -1324,7 +1324,8 @@ ball**, whose cost the shape literature sees (H6). **No direction is stated** (t
 expectation"); it enters no verdict.
 
 As built: `tables.container_rows` (`containers.csv`), `prepare.container_summary`
-(`readings.json`, `containers`), `report.containers_section`; `MEASURE_VERSION` 37. Corpus A only.
+(`readings.json`, `containers`), `report.containers_section`; `MEASURE_VERSION` 37; a flow is named
+by its wiring file since `MEASURE_VERSION` 39 (§9 row 103). Corpus A only.
 
 ### 4.3 Bindings (Q2), the measure of gravitation
 
@@ -2962,6 +2963,17 @@ binomial mixed model). These details are fixed with the code before any run is r
   ui runs, not yet read, decide it, with the breakdown reported beside. A call made on an injected
   object stays a call link (§4.2c): a call is control flow whatever its receiver. That was the
   drafter's reading and is kept on that principle, not on these figures.
+- **A filled ball or pebbles, first look** (25 November 2026, `MEASURE_VERSION` 37; descriptive
+  only). Spring's concentrations grew as **pebbles**: growth exponent 0.90 [0.89, 1.25] (five core
+  classes at the end, 15.8 methods each, the largest holding 0.45 of the volume; three of them
+  grew); OfficeFloor's concentrations 0.67 [0.35, 0.95] (5.8 methods), its other classes 0.22
+  [0.01, 0.51], mostly swelling (2.2 methods, the largest 0.86). Two faults were found on reading
+  it, both corrected before it was read again (rows 102, 103): **the flow containers were named
+  by the classes in them**, so a flow that gained a function became a new container, and every
+  flow's exponent came out near 0, which is not a reading; and **the cache of call graphs could
+  hand a chain measured after another the earlier chain's graph** (row 102), which may touch
+  every figure built on the call graph for the second chain of a run, here Spring's, since 19
+  November. These figures are therefore superseded by the run at `MEASURE_VERSION` 39.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
@@ -3526,6 +3538,12 @@ author's to set, on the plan and code as they then stand, and starts the experim
   undeclared commits are a third group, never pooled, and a band with fewer than 10 repositories
   is shown and marked thin. With these, every drafter's choice listed above as not yet spoken to
   has been spoken to; the Run D choices of row 76 were settled with it.
+- *To finish for rows 99 to 103:* the pilot measured again at `MEASURE_VERSION` 39 and the
+  development histories at `HISTORY_VERSION` 15 (row 102 touches both: several chains or
+  repositories are measured in one process): `./step3_measure.sh --analysis pilot`,
+  `./step3b_histories.sh --analysis open-source-development --force`, `./step4_analyse.sh
+  --analysis pilot open-source-development`, `./step5_report.sh`. Then whether the figures built on
+  the call graph moved goes into §6, as for row 80.
 - *Done for rows 94 and 95:* the pilot measured again at `MEASURE_VERSION` 36 (§6). **H5 frozen**
   (the author, 24 November 2026, agreeing with the drafter): no further change to it before the ui
   runs are read. **A call made on an injected object is a call link**, confirmed by the author
@@ -3777,6 +3795,8 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 99 | H5's weights: an edge whose function or flow interface is not found in the function's own file still weighs 1, and the number of such edges is now counted and reported (`Pull --places` `flows` gives -1 for an interface not found, VERSION 19) | §4.2c, `Pull.java`, `flow.Graph.flow_resolved`, `tables.link_rows` (`flow_unresolved_added`), `prepare.links_summary`, `report.h5_section`, `tests/`; `MEASURE_VERSION` 38 | Decided by the author on 25 November 2026 (walk-through, item 3): a weight missed this way would favour the function arm unseen. On the development chain every interface was nested; no figure changes there |
 | 100 | A reported reading beside H2, the sinew shape: per place, each value's uses, the combinations used together, and the effective number of values (inverse Simpson) over a place's uses and over the thirds of the stream; the most used values and combinations by name. No direction stated | §5, `readings.sinew_shape`, `readings.effective_number`, `prepare.py`, `report.sinew_lines`, `tests/` | The author's, 25 November 2026: "I would however be interested in seeing the sinew shape as reported. In other words, how often each value is used. How often are the combinations used. And is there a trend to number of values that would be considered the sinew core". The effective number chosen by the author over a share cut-off. Not yet computed on any chain |
 | 101 | The drafter's remaining choices settled by the author, one at a time (§8, 25 November 2026): H1's no-ops left out and its Poisson fallback; the edge count (row 99); the containers' pooled exponent; H2's per-placement core; the reader reading's bands and its two display rules. No rule changes beyond rows 99 and 100 | §8 | The author's answers to the drafter's walk-through |
+| 102 | **A fault, found on 25 November 2026 before any run named for analysis was read:** the cache of call graphs (`tables._graph`) was keyed by a tree's id without holding the tree, so once a chain's trees were freed, a later chain or repository measured in the same process could be handed an earlier one's graph for a tree whose id had been reused. Corrected: the tree is kept with its graph. It may have touched every figure built on the call graph (H1 at the method, H7's pairs, H5's links, the calls across the encapsulation, surface, ripple, containers) for the second chain or repository of a process since row 54; the bindings, from the instrument, were not | `tables._graph`, `tests/test_stream.py`; `MEASURE_VERSION` 39, `HISTORY_VERSION` 15 | Found while testing row 103, when a new test was handed an earlier test's graph. No rule changes: the code now does what the plan said. Whether the development figures moved is to be read from the rerun (§6) |
+| 103 | The flow containers of the ball-or-pebbles reading (row 98) are named by their wiring file, not by the classes in them, so a flow that gains a function stays one container (`chain.flows` gives the files, `flow_files` in the tree index) | §4.2g, `chain.flows`, `chain.tree_places`, `flow.Graph`, `tables.container_rows`, `tests/`; `MEASURE_VERSION` 39 | Found on reading the reading's first figures (§6): every flow's growth exponent was near 0 because a flow that grew became a new container. A fault, not a choice |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

@@ -83,6 +83,8 @@ class Graph:
                     if name in self.fields.get(c, {}):
                         self.reads[i].add((c, f"#{name}"))
         self.flows = [set(f) for f in index.get("flows", [])]
+        # each flow's wiring file, in the same order (since MEASURE_VERSION 39; PLAN.md 4.2g)
+        self.flow_files = list(index.get("flow_files") or [])
         # the fields of a class that hold state (Pull VERSION 17): not injected, not constants, not
         # utilities; and each method's uses of its own class's fields (H5, PLAN.md 4.2c)
         self.state: dict[str, set[str]] = defaultdict(set)

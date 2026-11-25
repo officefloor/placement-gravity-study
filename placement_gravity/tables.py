@@ -97,16 +97,20 @@ def _type(t: str | None) -> str:
     return (t or "").replace("$", ".")
 
 
-_GRAPHS: dict[int, "flow.Graph"] = {}
+#: The call graphs of trees, by the tree's id, each kept with its tree. The tree is held so that its
+#: id cannot be given to another tree while the graph is cached: until 25 November 2026 only the
+#: graph was kept, and a chain measured after another in the same process could be handed the
+#: earlier chain's graph for a tree whose id had been reused (PLAN.md 9 row 102).
+_GRAPHS: dict[int, tuple[dict, "flow.Graph"]] = {}
 
 
 def _graph(index: dict):
-    g = _GRAPHS.get(id(index))
-    if g is None:
+    hit = _GRAPHS.get(id(index))
+    if hit is None or hit[0] is not index:
         if len(_GRAPHS) > 64:
             _GRAPHS.clear()
-        g = _GRAPHS[id(index)] = flow.Graph(index)
-    return g
+        hit = _GRAPHS[id(index)] = (index, flow.Graph(index))
+    return hit[1]
 
 
 def choice(r: dict, tm: list[str], tf: list[str], ti: list[str], tc: list[str], places: dict | None) -> dict:
@@ -595,7 +599,10 @@ def container_rows(arm: str, chain: str, hosts: list[dict], measured: dict) -> l
             k = (flow.simple(m["type"]), m["signature"])
             by_class.setdefault(k[0], []).append(k)
         groups = [("class", c, {c}) for c in sorted(by_class)]
-        groups += [("flow", "+".join(sorted(f)), set(f)) for f in g.flows if f & set(by_class)]
+        # a flow is named by its wiring file, so a flow that gains a function stays one container
+        # (until 25 November 2026 it was named by its classes, and a flow that grew became a new one)
+        groups += [("flow", g.flow_files[i] if i < len(g.flow_files) else "+".join(sorted(f)), set(f))
+                   for i, f in enumerate(g.flows) if f & set(by_class)]
         for kind, name, members in groups:
             blocks = [k for c in sorted(members) for k in by_class.get(c, [])]
             if not blocks:

@@ -543,3 +543,28 @@ def test_containers_count_blocks_volume_and_the_links_inside_and_out(tmp_path):
     # inside: add -> check, add -> #seen, check -> #seen; out: add -> Repo.count()
     assert (o["internal_calls"], o["internal_state"], o["external_calls"]) == (1, 2, 1)
     assert next(r for r in rows if r["container"] == "Repo")["concentration"] is False
+
+
+def test_a_flow_container_keeps_its_name_as_it_gains_functions():
+    """PLAN.md 4.2g: a flow is its wiring file, so adding a function grows the same container."""
+    def tree(names):
+        files = {f"{n}.java": {"classes": [{"name": n, "supers": [], "fields": {}}],
+                               "methods": [{"type": n, "name": "service", "signature": "service()", "params": 0,
+                                            "calls": [], "access": "public", "reads": []}]} for n in names}
+        return {"files": files, "flows": [sorted(names)], "flow_files": ["rest/a.POST.yml"]}
+    shape = [{"unit": f"cp0{u}", "type": n, "signature": "service()", "positions": 4}
+             for u, names in ((1, ["A"]), (2, ["A", "B"])) for n in names]
+    rows = tables.container_rows("officefloor", "c", [], {"places": {"cp01": tree(["A"]), "cp02": tree(["A", "B"])},
+                                                          "shape": shape})
+    flows = [(r["cp"], r["container"], r["blocks"]) for r in rows if r["kind"] == "flow"]
+    assert flows == [(1, "rest/a.POST.yml", 1), (2, "rest/a.POST.yml", 2)]
+
+
+def test_the_graph_cache_never_hands_one_tree_another_tree_s_graph():
+    """PLAN.md 9 row 102: a cached graph is kept with its tree, so a new tree whose id happens to be
+    an old one's gets its own graph."""
+    from placement_gravity import flow
+    a = {"files": {}, "flows": []}
+    tables._GRAPHS[id(a)] = ({"files": {"stale": {}}}, flow.Graph({"files": {}}))   # as if a freed tree's
+    g = tables._graph(a)
+    assert tables._GRAPHS[id(a)][0] is a and tables._graph(a) is g
