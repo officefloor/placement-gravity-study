@@ -21,18 +21,15 @@
   and (since 22 November 2026) its changes going back into less well-trodden files, production
   Java and wiring counted alike (``trodden``: the earlier checkpoints that had changed each file
   it changed), the rate ratio below 1 (p = the largest of the five one-sided p-values); the amount within its band; and neither wiring condition against.
-- **H1** (19 November 2026; a fall since 22 November 2026): in the methods arm, the alternatives a
-  bound addition had (other places holding what its code was bound to) **fall** over the stream:
-  the ratio of the end of the stream to its start below 1 (one-sided, cluster bootstrap), at the
-  class, the encapsulation (20 November 2026: the method level shows the encapsulation's volume
-  growing, so it is reported, not tested). Reversed if its interval lies wholly above 1. A class
-  level where every placement was forced (no alternative anywhere) has no choice to narrow: not
-  testable. (Until 22 November 2026: shown below the upper margin 1.25, so that a flat count
-  passed, and a level with every placement forced passed with p 0; reported.) **And** (since 24
-  November 2026, PLAN.md §9 row 92) the arm contrast: the placements forced at the class per
-  checkpoint fewer in the function arm half-way through (rate ratio below 1) and rising less
-  (the arm's interaction with the index below 1). p = the largest of the three. Not read on a
-  history (no arms solving the same problems).
+- **H1, the force: forced less with function injection** (restated 25 November 2026, PLAN.md §9
+  row 107; the author's: "this just needs to be OfficeFloor is forced less especially over time"):
+  per checkpoint, the placements forced at the class (bound there with no other class holding what
+  the code was bound to) fewer in the function arm half-way through the stream (rate ratio below 1)
+  **and** rising less over it (the arm's interaction with the index below 1); p = the larger of the
+  two one-sided bootstrap p-values, as H4 and H5. Reversed if the arm term's interval lies wholly
+  above 1. Not testable on a history (no arms solving the same problems). (From 19 November 2026,
+  *choice narrows*: the methods arm's alternatives at the class falling over the stream, needed
+  with the contrast from 24 November; reported since, in ``detail.class``.)
 - **H7, spread does not see it** (restated 21 November 2026, PLAN.md §9 row 67; one-sided, as
   H6): in the methods arm, a unit with a placement forced at the class does not place or edit code
   in more of the classes that existed before it than a unit without one, at the same change size
@@ -40,17 +37,15 @@
   Not supported when its interval lies wholly above the margin; unresolved when it reaches above
   it. (Until then, *forced changes spread*: the ratio above 1.) The spread's rise is reported.
 - **H5, surface against volume** (restated 24 November 2026, PLAN.md §9 row 89; the author's):
-  for the same logic added (the volume), the function arm adds fewer links between blocks of logic
-  (the surface: call, state and flow links, each counted once, injection not among them) half-way
-  through the stream, the rate ratio below 1, **and** the gap widens, the arm's interaction with the
-  checkpoint index below 1 (p = the larger of the two one-sided bootstrap p-values, as H4).
-  Reversed if the arm's interval lies wholly above 1. Not testable on a history (no arms solving
-  the same problems). (Until 24 November 2026, *forced changes couple*: in the methods arm the
-  calls a forced class gained across its boundary, the ratio on forced above 1; deleted the same
-  day, PLAN.md §9 row 90.)
-- **H9, the cost to fix a concentration** (25 November 2026, secondary): the function arm's
-  cheapest split of a class with two or more blocks below the methods arm's at the same size, and
-  its interaction with the class's size below 1 (the gap widens); p the larger; on its own p.
+  for the same logic added (the volume), the function arm adds less weight of links between blocks
+  of logic (the surface: call, state and flow links, each weighed by the data it carries since row
+  95, constants counted as state since row 109, injection not among them) half-way through the
+  stream, the rate ratio below 1, **and** the gap widens, the arm's interaction with the checkpoint
+  index below 1 (p = the larger of the two one-sided bootstrap p-values, as H4). Reversed if the
+  arm's interval lies wholly above 1. Not testable on a history (no arms solving the same
+  problems). (Until 24 November 2026, *forced changes couple*: in the methods arm the calls a
+  forced class gained across its boundary, the ratio on forced above 1; deleted the same day,
+  PLAN.md §9 row 90.)
 - **Two tiers** (decided by the author on 21 November 2026): the **confirmatory** family is the
   force and its two outlets, with the control: H2, H4, H1 and H5, Holm over the four at α = 0.05
   (H7 left it when restated, later the same day). H3, H6 and H7 are **secondary**: each keeps its
@@ -69,7 +64,7 @@
 
 Verdicts: ``supported``; ``not supported``; ``reversed`` (an interval wholly on the wrong side);
 ``unresolved`` (H6, H7: an interval reaching above the upper margin without lying above it);
-``not testable`` (H6: no shape measure varies; H1: every placement forced); ``descriptive only``
+``not testable`` (H6: no shape measure varies; H1 and H5: a history); ``descriptive only``
 (fewer than 6 chains in an arm, or the development analysis).
 """
 
@@ -82,7 +77,7 @@ ALPHA = 0.05
 #: The confirmatory family (Holm) and the secondary hypotheses (their own p), 21 November 2026;
 #: H7 secondary since its restatement the same day.
 CONFIRMATORY = ("H1", "H2", "H4", "H5")
-SECONDARY = ("H3", "H6", "H7", "H9")
+SECONDARY = ("H3", "H6", "H7")
 #: H6's measures (PLAN.md §2, §5): at the method, long, cognitive and cyclomatic complexity; at the
 #: class, concentration, WMC and lack of cohesion. Each is fitted alone. Not slimmable and
 #: junction are sinew measures, and fan-out and CBO measures of reach, reported apart.
@@ -200,26 +195,19 @@ def h4(est: dict, cond: dict) -> dict:
 
 
 def h1(est: dict) -> dict:
+    """The force (restated 25 November 2026, PLAN.md §9 row 107): forced placements at the class
+    per checkpoint fewer in the function arm half-way through, and rising less; both below 1. The
+    methods arm's alternatives over the stream (choice narrows, the test until then) are reported in
+    ``detail``. Not testable on a history."""
     x = est.get("H1") or {}
-    b = x.get("class") or {}         # the method level is reported (20 November 2026)
-    if b.get("all_forced"):          # no alternative anywhere: no choice to narrow
-        return {"p": None, "verdict": "not testable", "state": "every placement forced", "detail": x}
-    if not _ok(b) or "irr_upper" not in b or "p_less" not in b:
-        return {"p": None, "verdict": "not estimable", "detail": x}
-    state = "falls" if b["irr_upper"] < 1 else "rises" if b["irr_lower"] > 1 else "not shown to fall"
-    # the arm contrast (24 November 2026): forced placements per checkpoint fewer in the function arm,
-    # and rising less; read where the arms solve the same problems (absent on a history)
     c = x.get("contrast")
-    if c is None:
-        return {"p": b["p_less"], "reversed": b["irr_lower"] > 1, "conditions_met": b["irr_upper"] < 1,
-                "state": state, "arm_contrast": False, "detail": x}
+    if c is None:                    # a history: no arms solving the same problems
+        return {"p": None, "verdict": "not testable", "state": "a history", "detail": x}
     arm, trend = c.get("arm"), c.get("trend")
     if not (_ok(c) and _ok(arm) and _ok(trend)) or "irr_upper" not in arm or "irr_upper" not in trend:
-        return {"p": None, "verdict": "not estimable", "state": state, "detail": x}
-    return {"p": max(b["p_less"], arm["p_less"], trend["p_less"]),
-            "reversed": b["irr_lower"] > 1 or arm["irr_lower"] > 1,
-            "conditions_met": b["irr_upper"] < 1 and arm["irr_upper"] < 1 and trend["irr_upper"] < 1,
-            "state": state, "arm_contrast": True, "detail": x}
+        return {"p": None, "verdict": "not estimable", "detail": x}
+    return {"p": max(arm["p_less"], trend["p_less"]), "reversed": arm["irr_lower"] > 1,
+            "conditions_met": arm["irr_upper"] < 1 and trend["irr_upper"] < 1, "detail": x}
 
 
 def h7(est: dict) -> dict:
@@ -247,20 +235,6 @@ def h5(est: dict) -> dict:
             "conditions_met": arm["irr_upper"] < 1 and trend["irr_upper"] < 1, "detail": x}
 
 
-def h9(est: dict) -> dict:
-    """The cost to fix a concentration (secondary, 25 November 2026, PLAN.md §9 row 105): the
-    function arm's cheapest split of a class below the methods arm's at the same size, and the gap
-    widening as classes grow; both below 1, p the larger. Not testable on a history."""
-    x = est.get("H9") or {}
-    if x.get("not_applicable"):
-        return {"p": None, "verdict": "not testable", "state": "a history", "detail": x}
-    arm, size = x.get("arm"), x.get("size")
-    if not (_ok(x) and _ok(arm) and _ok(size)) or "irr_upper" not in arm or "irr_upper" not in size:
-        return {"p": None, "verdict": "not estimable", "detail": x}
-    return {"p": max(arm["p_less"], size["p_less"]), "reversed": arm["irr_lower"] > 1,
-            "conditions_met": arm["irr_upper"] < 1 and size["irr_upper"] < 1, "detail": x}
-
-
 def h8(est: dict, cond: dict) -> dict:
     """Run D, the no-encapsulation run, against Run A's same stack (PLAN.md §3.1a): without
     encapsulation code disperses. The open arm is the analysis's function arm."""
@@ -281,7 +255,7 @@ def h8(est: dict, cond: dict) -> dict:
 
 def decide(est: dict, cond: dict) -> dict:
     parts = {"H1": h1(est), "H2": h2(est), "H3": h3(est), "H4": h4(est, cond), "H5": h5(est),
-             "H6": h6(est), "H7": h7(est), "H9": h9(est)}
+             "H6": h6(est), "H7": h7(est)}
     adjusted = holm({k: parts[k]["p"] for k in CONFIRMATORY})
     for k, v in parts.items():
         v["tier"] = "confirmatory" if k in CONFIRMATORY else "secondary"

@@ -49,22 +49,24 @@ def width_lines(rep: dict) -> list[str]:
 
 
 def h1_section(est: dict, hyp: dict, rep: dict) -> list[str]:
-    """H1, choice narrows (PLAN.md §2, §4.2a, §5)."""
+    """H1, the force: forced less with function injection (PLAN.md §2, §4.2a, §5; restated 25
+    November 2026, §9 row 107). The methods arm's alternatives (choice narrows) are reported."""
     b = est.get("H1") or {}
     h = hyp.get("H1") or {}
-    L = ["", "## H1, choice narrows (and less often forced in the function arm)", "",
-         "Per bound addition, the other places in the code before its checkpoint that hold what its code "
-         "was bound to: at the class, another class holding injected dependencies of the same types (code "
-         "bound to the class's own state, constants or methods has none); at the method, another method "
-         "with a parameter or local of each type. The ratio of the alternatives at the end of the stream "
-         "to its start: a fall, one-sided below 1, at the class, 95% cluster-bootstrap interval (chains "
-         "resampled). The method level is reported.", "",
-         f"- **{h.get('verdict', '–')}** ({h.get('state', '–')})"]
+    L = ["", "## H1, the force: forced less with function injection", "",
+         "Per checkpoint, the placements forced at the class (bound there with no other class holding what "
+         "the code was bound to), function arm / methods arm half-way through the stream, **and** the gap "
+         "over the stream (arm × checkpoint index); both one-sided below 1, 95% cluster-bootstrap intervals "
+         "(chains resampled). Reported beside it: choice narrows (the test until 25 November 2026), per bound "
+         "addition the other places in the code before its checkpoint that hold what its code was bound to, "
+         "the ratio of the end of the stream to its start, at the class and at the method.", "",
+         f"- **{h.get('verdict', '–')}**" + (f" ({h['state']})" if h.get("state") else "")
+         + (f" (p {f(h.get('p'))})" if h.get("p") is not None else "")]
     c = b.get("contrast")
+    if c is None:
+        L.append("- The test is not read on a history: its arms do not solve the same problems.")
+    if c is not None:    c = b.get("contrast")
     if c is not None:
-        L.append("- The arm contrast (since 24 November 2026): the placements forced at the class per checkpoint "
-                 "(bound there with no other place to go), function arm / methods arm half-way through the "
-                 "stream, and the gap over the stream; both one-sided below 1.")
         if "error" in c:
             L.append(f"- **Arm contrast: not estimated** ({c['error']})")
         for k, lab in (("arm", "Forced per checkpoint, function arm / methods arm"),
@@ -79,9 +81,9 @@ def h1_section(est: dict, hyp: dict, rep: dict) -> list[str]:
     for lev in ("class", "method"):
         x = b.get(lev) or {}
         if x.get("all_forced"):
-            L.append(f"- **At the {lev}: every placement forced** ({f(x.get('n'))} rows; no alternative anywhere)")
+            L.append(f"- Reported, choice narrows at the {lev}: every placement forced ({f(x.get('n'))} rows; no alternative anywhere)")
         else:
-            L.append(f"- **At the {lev}: {ratio(x)}** (n = {f(x.get('n'))}"
+            L.append(f"- Reported, choice narrows at the {lev}: {ratio(x)} (n = {f(x.get('n'))}"
                      + (f"; one-sided p {f(x.get('p_less'))}" if "p_less" in x else "")
                      + (f"; {x['interval']}" if x.get("interval") else "") + ")")
             L.append(f"- Reported, at the {lev} against the upper margin "
@@ -227,6 +229,10 @@ def h5_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
         x = b.get(k) or {}
         L.append(f"- **{lab}: {ratio(x)}** (one-sided p {f(x.get('p_less'))}; {x.get('interval', '–')})"
                  + (f"; Wald: {ratio(x['wald'])}" if x.get("wald") else ""))
+    wc = rep.get("H5_without_constants")
+    if wc:
+        L.append(f"- Reported, constants not counted as state links (the test until 25 November 2026): arm "
+                 f"{ratio(wc.get('arm'))}, over the stream {ratio(wc.get('trend'))}")
     uw = rep.get("H5_unweighted") or {}
     L.append(f"- Reported, the links counted, not weighed (the test until 24 November 2026): arm {ratio(uw.get('arm'))}, "
              f"over the stream {ratio(uw.get('trend'))}")
@@ -243,14 +249,16 @@ def h5_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
     for arm, a in ((rd or {}).get("links") or {}).items():
         th = a.get("thirds") or {}
         L.append(f"- Reported, {arm}: {f(a.get('checkpoints'))} checkpoints; links added a checkpoint {f(a.get('links_added'))} "
-                 f"(call {f(a.get('call_links_added'))}, state {f(a.get('state_links_added'))}, flow "
+                 f"(call {f(a.get('call_links_added'))}, state {f(a.get('state_links_added'))}, constant "
+                 f"{f(a.get('constant_links_added'))}, flow "
                  f"{f(a.get('flow_links_added'))}; lost {f(a.get('links_lost'))}); over the thirds "
                  + ", ".join(f(th.get(t)) for t in ("1", "2", "3"))
                  + f"; links per position of logic {f(a.get('links_per_logic'))}; the tree's links per method at the "
                  f"end {f(a.get('tree_links_per_method'))}")
         if a.get("weight_added") is not None:
             L.append(f"  - weighed: {f(a.get('weight_added'))} a checkpoint (call {f(a.get('call_weight_added'))}, state "
-                     f"{f(a.get('state_weight_added'))}, flow {f(a.get('flow_weight_added'))}; lost {f(a.get('weight_lost'))}); "
+                     f"{f(a.get('state_weight_added'))}, constant {f(a.get('constant_weight_added'))}, flow "
+                     f"{f(a.get('flow_weight_added'))}; lost {f(a.get('weight_lost'))}); "
                      f"per position of logic {f(a.get('weight_per_logic'))}; wiring edges whose weight could not "
                      f"be read from the Java (weighed 1) {f(a.get('flow_unresolved_added_total'))} of "
                      f"{f(a.get('flow_links_added_total'))}")
@@ -607,47 +615,6 @@ def reuse_lines(r: dict) -> list[str]:
     return L
 
 
-def h9_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
-    """H9, the cost to fix a concentration (PLAN.md §2, §4.2h, §5; secondary)."""
-    b = est.get("H9") or {}
-    h = hyp.get("H9") or {}
-    L = ["", "## H9, the cost to fix a concentration (secondary)", "",
-         "Each class with two or more blocks at the end of the stream: its cheapest split, the fewest internal "
-         "links (calls between its blocks, blocks sharing a field that holds state) a cut must cross to divide "
-         "it into two parts of at least a quarter of its code each. The function arm's rate at the same size "
-         "below 1, **and** the gap widening as classes grow (arm × size below 1); one-sided, 95% "
-         "cluster-bootstrap intervals.", "",
-         f"- **{h.get('verdict', '–')}**" + (f" (p {f(h.get('p'))})" if h.get("p") is not None else "")]
-    if b.get("not_applicable"):
-        return L + ["- Not testable on a history: its arms do not solve the same problems."]
-    if b.get("error"):
-        return L + [f"- Not estimated ({b['error']})"]
-    for k, lab in (("arm", "Cheapest split, function arm / methods arm, at the same size"),
-                   ("size", "The gap as classes grow (arm × log size)")):
-        x = b.get(k) or {}
-        L.append(f"- **{lab}: {ratio(x)}** (one-sided p {f(x.get('p_less'))}; {x.get('interval', '–')}; "
-                 f"{b.get('family', '–')})")
-    L.append("- Classes: " + ", ".join(f"{a} {f(v)}" for a, v in (b.get("classes") or {}).items())
-             + "; mean cheapest split: " + ", ".join(f"{a} {f(v)}" for a, v in (b.get("mean") or {}).items()))
-    c, k = rep.get("H9_concentrations") or {}, rep.get("H9_by_blocks") or {}
-    L.append(f"- Reported, the concentrations alone ({f(c.get('n'))} classes): arm {ratio(c.get('arm'))}, with size "
-             f"{ratio(c.get('size'))}; on the blocks instead of the volume: arm {ratio(k.get('arm'))}, with size "
-             f"{ratio(k.get('size'))}")
-    for arm, a in ((rd or {}).get("h9") or {}).items():
-        L.append(f"- Reported, {arm}: classes of two or more blocks that no split leaves a quarter on each side "
-                 f"(one block holds most of the class), left out: {f(a.get('not_splittable'))}")
-        for g in ("concentrations", "rest"):
-            x = a.get(g) or {}
-            if not x.get("classes"):
-                continue
-            th = x.get("thirds") or {}
-            L.append(f"- Reported, {arm}, {g}: {f(x['classes'])} classes at the end, {f(x.get('blocks'))} blocks, "
-                     f"cheapest split {f(x.get('split_cost'))} ({f(x.get('cost_per_block'))} a block; over the thirds "
-                     + ", ".join(f(th.get(t)) for t in ("1", "2", "3"))
-                     + f"); already in separate pieces {f(x.get('zero_share'))}; found exactly {f(x.get('exact_share'))}")
-    return L
-
-
 def sinew_lines(r: dict) -> list[str]:
     """Beside H2: the sinew shape (PLAN.md §5, 25 November 2026), how a place's bound uses fall on
     its values and their combinations, and the effective number of values they fall on."""
@@ -995,7 +962,7 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
     seg["end"] = len(L)
     L = (L[:seg["H3"]] + h1_section(est, hyp, rep) + L[seg["H2"]:seg["H6"]] + L[seg["H3"]:seg["H2"]]
          + L[seg["H4"]:seg["end"]] + h5_section(est, hyp, rep, readings or {}) + L[seg["H6"]:seg["H4"]]
-         + h7_section(est, hyp, rep, readings or {}) + h9_section(est, hyp, rep, readings or {}))
+         + h7_section(est, hyp, rep, readings or {}))
     L += [
           *h8_section(est, hyp, cond),
           *coupling_source_section(readings or {}),
@@ -1027,8 +994,8 @@ def main() -> None:
     heads = runs.read_heads()
     tag = reg["registration_tag"]
     drift = runs.drift(tag) if runs.registered(tag) else None
-    index = ["# Results", "", "| Analysis | Role | H1 | H2 | H3 | H4 | H5 | H6 | H7 | H9 |",
-             "|---|---|---|---|---|---|---|---|---|---|"]
+    index = ["# Results", "", "| Analysis | Role | H1 | H2 | H3 | H4 | H5 | H6 | H7 |",
+             "|---|---|---|---|---|---|---|---|---|"]
     for analysis in reg["analyses"]:
         name = analysis["name"]
         d = OUT / name

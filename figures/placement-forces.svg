@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 640" width="1060" height="640" role="img" aria-labelledby="title desc">
   <title id="title">Placement forces map</title>
-  <desc id="desc">Encapsulation binds code to private data. H1, the force: code is forced into a class, choice of class narrows, and the function arm is forced less. A forced change either concentrates into its class, costing size (H2 a core draws code in, H3 the encapsulation fills, growth accounting), or reaches out to other classes; the concentrations are kept coordinated by links, the surface, costing coupling (H5 surface against volume: weighed links per unit of logic; coupling accounting, ripple). The literature's two readings, shape (H6) and co-change spread (H7), are rivals predicted not to see the force; change size and tail coupling are held fixed. Function injection (H4, the control) forms no core. Run D (H8) removes encapsulation by hand. Confirmatory: H1, H2, H4, H5. PLAN.md section 2, numbering of row 93, revisions through row 96, 24 November 2026.</desc>
+  <desc id="desc">Encapsulation binds code to private data. H1, the force: code is forced into a class, less often under function injection, and the gap widens over time. A forced change either concentrates into its class, costing size (H2 a core draws code in, H3 the encapsulation fills, growth accounting), or reaches out to other classes; the concentrations are kept coordinated by links, the surface, costing coupling (H5 surface against volume: weighed links per unit of logic, constants among the state links; coupling accounting, ripple). The literature's two readings, shape (H6) and co-change spread (H7), are rivals predicted not to see the force; change size and tail coupling are held fixed. Function injection (H4, the control) forms no core. Run D (H8) removes encapsulation by hand. Confirmatory: H1, H2, H4, H5. PLAN.md section 2, numbering of row 93, revisions through row 110, 25 November 2026.</desc>
   <style>
     svg { --bg: #ffffff; --fg: #1d2421; --muted: #5d6863; --force: #2f5d8a; --conc: #b5651d; --disp: #1f7a6d; }
     @media (prefers-color-scheme: dark) {
@@ -56,9 +56,9 @@
   <!-- H1 -->
   <rect class="box" x="230" y="250" width="180" height="92" rx="6"/>
   <text class="t" x="244" y="276">H1 the force</text>
-  <text x="244" y="296">choice of class narrows;</text>
-  <text x="244" y="314">forced less often with</text>
-  <text x="244" y="332">function injection</text>
+  <text x="244" y="296">forced less often with</text>
+  <text x="244" y="314">function injection, and</text>
+  <text x="244" y="332">less so over time</text>
   <line class="edge" x1="410" y1="296" x2="448" y2="296" marker-end="url(#ah)"/>
 
   <!-- forced change -->
@@ -82,7 +82,8 @@
   <rect class="box disp" x="648" y="442" width="170" height="90" rx="6"/>
   <text class="t hd" x="662" y="468">Coordinate</text>
   <text x="662" y="488">links join the blocks:</text>
-  <text x="662" y="506">calls, state, wiring</text>
+  <text x="662" y="506">calls, state, constants,</text>
+  <text x="662" y="524">wiring</text>
 
   <!-- tension -->
   <line class="edge tension" x1="733" y1="152" x2="733" y2="250" marker-start="url(#ah)"/>

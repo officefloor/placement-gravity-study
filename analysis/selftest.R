@@ -149,9 +149,14 @@ lk$call_links_added <- lk$links_added - lk$flow_links_added - lk$state_links_add
 lk$links_lost <- rpois(nrow(lk), 1)
 # the weights: each link about twice its count, so the weighted model sees the same effects
 lk$call_weight_added <- lk$call_links_added + rbinom(nrow(lk), lk$call_links_added * 2, 0.5)
-lk$state_weight_added <- lk$state_links_added
 lk$flow_weight_added <- lk$flow_links_added + rbinom(nrow(lk), lk$flow_links_added, 0.5)
-lk$weight_added <- lk$call_weight_added + lk$state_weight_added + lk$flow_weight_added
+# a third of the state links are a constant's use (state links since 25 November 2026, row 109)
+lk$constant_links_added <- lk$state_links_added %/% 3
+lk$state_links_added <- lk$state_links_added - lk$constant_links_added
+lk$state_weight_added <- lk$state_links_added
+lk$constant_weight_added <- lk$constant_links_added
+lk$weight_added <- lk$call_weight_added + lk$state_weight_added + lk$constant_weight_added + lk$flow_weight_added
+lk$weight_added_without_constants <- lk$weight_added - lk$constant_weight_added
 lk$weight_lost <- lk$links_lost
 write.csv(lk, file.path(dir, "h5.csv"), row.names = FALSE)
 assign(".Random.seed", kept_seed, envir = .GlobalEnv)
@@ -184,22 +189,6 @@ h1f <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, func
   data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = cp, forced_class = rpois(60, mu))
 }))))
 write.csv(h1f, file.path(dir, "h1_forced.csv"), row.names = FALSE)
-assign(".Random.seed", kept_seed, envir = .GlobalEnv)
-# H9, the cost to fix a concentration, on its own random stream: per class of two or more blocks, the
-# cheapest split; the methods arm's rises as volume^0.8, the function arm's is a third of it at the mean
-# size and rises as volume^0.3 (the interaction exp(-0.5) per e-fold of size)
-kept_seed <- .Random.seed
-set.seed(20261126)
-h9 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
-  n <- 40
-  v <- round(exp(runif(n, log(8), log(400))))
-  lv <- log1p(v) - log1p(60)
-  mu <- if (arm == "spring") 3 * exp(0.8 * lv) else 1 * exp(0.3 * lv)
-  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", container = paste0("C", 1:n),
-             concentration = rbinom(n, 1, 0.3) == 1, blocks = 2 + rpois(n, v / 20), volume = v,
-             split_cost = rnbinom(n, size = 5, mu = mu), split_exact = TRUE)
-}))))
-write.csv(h9, file.path(dir, "h9.csv"), row.names = FALSE)
 assign(".Random.seed", kept_seed, envir = .GlobalEnv)
 # change spread (H7): in the methods arm the classes beyond the first double over the stream and
 # are 1.5 times as many where a placement was forced; the function arm's stay where they are.
@@ -431,10 +420,6 @@ for (lev in c("class", "method")) {
   check(!is.null(e$reported[[paste0("H1_spread_", lev)]]$methods$forced), paste("the share forced is reported,", lev))
   check(length(e$reported[[paste0("H2_core_width_", lev)]]) > 0, paste("the core's width is reported,", lev))
 }
-check(e$H9$arm$irr_upper < 1 && e$H9$arm$interval == "cluster bootstrap",
-      paste("H9 recovers the function arm's cheaper split at the same size (ratio", signif(e$H9$arm$irr, 3), ")"))
-check(abs(log(e$H9$size$irr) - (-0.5)) < 0.3 && e$H9$size$irr_upper < 1, "H9 recovers the gap widening as classes grow")
-check(!is.null(e$reported$H9_concentrations$arm$irr), "H9 on the concentrations alone is reported")
 h1c <- e$H1$contrast
 check(abs(log(h1c$arm$irr) - log(0.1 / sqrt(0.27))) < 0.35 && h1c$arm$irr_upper < 1 && h1c$arm$interval == "cluster bootstrap",
       "H1's arm contrast recovers fewer forced placements in the function arm half-way through")
@@ -463,6 +448,8 @@ check(abs(log(e$H5$trend$irr) - log(0.5)) < 0.3 && e$H5$trend$irr_upper < 1 && e
 check(abs(log(e$reported$H5_methods_rise$irr) - log(2)) < 0.3, "the methods arm's links doubling over the stream is reported")
 check(abs(e$reported$H5_logic$estimate - 0.8) < 0.15, "links rising as logic^0.8 is recovered")
 check(abs(log(e$reported$H5_unweighted$arm$irr) - log(0.6)) < 0.2, "the plain count of links is reported beside the weights")
+check(abs(log(e$reported$H5_without_constants$arm$irr) - log(0.6)) < 0.2 && !is.null(e$reported$H5_kinds$constant$arm$irr),
+      "H5 without constants as state links, and the constant links apart, are reported")
 check(is.null(e$reported$H5_kinds$flow$arm) && !is.null(e$reported$H5_kinds$call$arm$irr),
       "each kind of link is reported; flow links, none in the methods arm, have no ratio")
 check(abs(log(e$coupled_arm$irr) - log(1 / 1.4)) < 0.3,

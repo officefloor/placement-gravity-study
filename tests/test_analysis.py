@@ -289,7 +289,8 @@ def test_reversed_and_holm_failures():
                "intrusion_class": {"irr": 0.4, "irr_lower": 0.3, "irr_upper": 0.9, "p_less": 0.02},
                "intrusion_method": {"irr": 0.4, "irr_lower": 0.3, "irr_upper": 0.9, "p_less": 0.02},
                "trodden": {"irr": 0.7, "irr_lower": 0.5, "irr_upper": 0.9, "p_less": 0.02}}
-    e["H1"] = {"margin": [0.8, 1.25], "class": {"irr": 0.6, "irr_lower": 0.4, "irr_upper": 0.9, "p_less": 0.02}}
+    e["H1"] = {"contrast": {"arm": {"irr": 0.6, "irr_lower": 0.4, "irr_upper": 0.9, "p_less": 0.02},
+                            "trend": {"irr": 0.7, "irr_lower": 0.5, "irr_upper": 0.95, "p_less": 0.02}}}
     up = {"irr": 1.5, "irr_lower": 1.1, "irr_upper": 2.0, "p_greater": 0.02}
     e["H7"] = {"margin": [0.8, 1.25], "forced": {"irr": 0.9, "irr_lower": 0.7, "irr_upper": 1.1, "p_upper": 0.02}}
     e["H5"] = {"arm": {"irr": 0.6, "irr_lower": 0.4, "irr_upper": 0.9, "p_less": 0.02},
@@ -326,7 +327,7 @@ def test_the_report_names_every_hypothesis_and_commit():
     cond = {**COND, "chains": {"spring": 9, "officefloor": 9}}
     heads = [{"arm": "spring", "run": "r", "chain": 1, "excluded": False, "sha": "a" * 40}]
     md = report.render("petclinic-primary", "primary", est, ver, cond, {"shape_counts": {}}, heads)
-    for k in ("H3", "H2", "H6", "H4", "supported", "`aaaaaaaaaaaa`", "s3_junction", "At the class (the private members the code was bound to)", "H1, choice narrows", "H7, spread does not see it", "H5, surface against volume", "Within a class",
+    for k in ("H3", "H2", "H6", "H4", "supported", "`aaaaaaaaaaaa`", "s3_junction", "At the class (the private members the code was bound to)", "H1, the force: forced less with function injection", "H7, spread does not see it", "H5, surface against volume", "Within a class",
               "the sinew measures", "s3_junction at the method 1.400 [1.100, 1.800]",
               "Later intrusion where bound code was placed"):
         assert k in md
@@ -343,40 +344,48 @@ def test_the_report_names_every_hypothesis_and_commit():
         assert k in md
 
 
-def h1_levels(c, m):
-    return {"H1": {"margin": [0.8, 1.25], "class": c, "method": m}}
-
-
 FALL = {"irr": 0.5, "irr_lower": 0.3, "irr_upper": 0.8, "p_less": 0.004}
+LESS = {"irr": 0.3, "irr_lower": 0.2, "irr_upper": 0.6, "p_less": 0.001}
 
 
-def test_h1_is_a_fall_a_flat_count_does_not_pass_and_a_rise_is_reversed():
-    v = verdict.decide(estimates(**h1_levels(FALL, FALL)), COND)["hypotheses"]["H1"]
-    assert (v["state"], v["verdict"]) == ("falls", "supported")
-    # flat: below the old margin of 1.25, which passed until 22 November 2026; not a fall
-    flat = {"irr": 0.9, "irr_lower": 0.7, "irr_upper": 1.1, "p_less": 0.2}
-    v = verdict.decide(estimates(**h1_levels(flat, FALL)), COND)["hypotheses"]["H1"]
-    assert (v["state"], v["verdict"]) == ("not shown to fall", "not supported")
+def h1_contrast(arm, trend, fall=FALL):
+    return {"H1": {"class": fall, "contrast": {"arm": arm, "trend": trend}}}
+
+
+def test_h1_is_the_function_arm_forced_less_and_rising_less():
+    # restated 25 November 2026 (PLAN.md 9 row 107): both terms below 1, p the larger
+    flat = {"irr": 1.0, "irr_lower": 0.7, "irr_upper": 1.4, "p_less": 0.5}
+    more = {"irr": 2.0, "irr_lower": 1.3, "irr_upper": 3.0, "p_less": 0.999}
+    def v(**h):
+        return verdict.decide(estimates(**h1_contrast(**h)), COND)["hypotheses"]["H1"]
+    assert v(arm=LESS, trend=LESS)["verdict"] == "supported"
+    got = v(arm=LESS, trend=flat)
+    assert got["verdict"] == "not supported" and got["p"] == 0.5
+    assert v(arm=more, trend=LESS)["verdict"] == "reversed"
+
+
+def test_h1_does_not_need_choice_to_narrow():
+    # the methods arm's alternatives (choice narrows, the test until 25 November 2026) are reported:
+    # neither a rise nor every placement forced from the start keeps the contrast from deciding H1
     rising = {"irr": 2.0, "irr_lower": 1.5, "irr_upper": 2.6, "p_less": 0.999}
-    v = verdict.decide(estimates(**h1_levels(rising, FALL)), COND)["hypotheses"]["H1"]
-    assert (v["state"], v["verdict"]) == ("rises", "reversed")
-    # the method level is reported, not tested: rising there does not count against H1
-    assert verdict.decide(estimates(**h1_levels(FALL, rising)), COND)["hypotheses"]["H1"]["verdict"] == "supported"
+    for fall in (rising, {"error": "every placement forced", "all_forced": True}):
+        v = verdict.decide(estimates(**h1_contrast(LESS, LESS, fall)), COND)["hypotheses"]["H1"]
+        assert v["verdict"] == "supported" and v["detail"]["class"] == fall
 
 
-def test_h1_a_level_where_every_placement_was_forced_has_no_choice_to_narrow():
-    v = verdict.decide(estimates(**h1_levels({"error": "every placement forced", "all_forced": True}, FALL)),
-                       COND)["hypotheses"]
-    assert v["H1"]["verdict"] == "not testable" and v["H1"]["p"] is None
-    # it does not enter Holm as a p of 0: the others are corrected over those that have a p
+def test_h1_is_not_testable_on_a_history_and_does_not_enter_holm():
+    v = verdict.decide(estimates(H1={"class": FALL}), COND)["hypotheses"]
+    assert (v["H1"]["verdict"], v["H1"]["state"], v["H1"]["p"]) == ("not testable", "a history", None)
     assert v["H2"]["p_holm"] == pytest.approx(0.006)   # over H2 and H4 only
+    v = verdict.decide(estimates(H1={"contrast": {"error": "no checkpoints in both arms"}}), COND)["hypotheses"]
+    assert v["H1"]["verdict"] == "not estimable"
 
 
 def test_holm_runs_over_the_four_confirmatory_and_the_secondary_keep_their_own_p():
-    v = verdict.decide(estimates(**h1_levels({**FALL, "p_less": 0.011}, FALL)), COND)["hypotheses"]
-    assert len(v) == 8
+    v = verdict.decide(estimates(**h1_contrast({**LESS, "p_less": 0.011}, LESS)), COND)["hypotheses"]
+    assert len(v) == 7
     assert {k for k, x in v.items() if x["tier"] == "confirmatory"} == {"H2", "H4", "H1", "H5"}
-    assert {k for k, x in v.items() if x["tier"] == "secondary"} == {"H3", "H6", "H7", "H9"}
+    assert {k for k, x in v.items() if x["tier"] == "secondary"} == {"H3", "H6", "H7"}
     assert v["H1"]["p_holm"] >= 0.011
     assert v["H3"]["tier"] == "secondary" and v["H3"]["p_holm"] == v["H3"]["p"]
 
@@ -733,21 +742,6 @@ def test_a_history_is_bootstrapped_with_fewer_refits_than_a_paired_run():
     assert prepare.BOOT_HISTORY == 200 and prepare.BOOT == 1000
 
 
-def test_h1_needs_the_fall_and_the_arm_contrast_where_the_arms_solve_the_same_problems():
-    # 24 November 2026 (PLAN.md 9 row 92): fewer forced placements a checkpoint in the function arm,
-    # rising less, beside the methods arm's fall in alternatives
-    fall = {"irr": 0.4, "irr_lower": 0.2, "irr_upper": 0.8, "p_less": 0.001}
-    lo = {"irr": 0.3, "irr_lower": 0.2, "irr_upper": 0.6, "p_less": 0.001}
-    flat = {"irr": 1.0, "irr_lower": 0.7, "irr_upper": 1.4, "p_less": 0.5}
-
-    def v(**c):
-        return verdict.decide(estimates(H1={"class": fall, **({"contrast": c} if c else {})}), COND)["hypotheses"]["H1"]
-    assert v()["verdict"] == "supported" and not v()["arm_contrast"]       # a history: the fall alone
-    assert v(arm=lo, trend=lo)["verdict"] == "supported"
-    assert v(arm=lo, trend=flat)["verdict"] == "not supported" and v(arm=lo, trend=flat)["p"] == 0.5
-    assert v(error="no checkpoints in both arms")["verdict"] == "not estimable"
-
-
 def test_h1_forced_rows_count_every_checkpoint_that_did_something():
     h1 = [{"chain_id": "c", "level": "class", "forced": True, "cp": 2},
           {"chain_id": "c", "level": "class", "forced": True, "cp": 2},
@@ -784,29 +778,6 @@ def test_the_sinew_shape_counts_values_combinations_and_their_effective_number()
     assert readings.effective_number([10]) == 1 and readings.effective_number([5, 5, 5, 5]) == 4
     assert s["top_combinations"][0]["values"] == ["owners"] and s["top_combinations"][0]["uses"] == 16
     assert s["repeated_combination_share"] == 21 / 25
-
-
-def test_h9_is_secondary_and_needs_both_terms():
-    lo = {"irr": 0.4, "irr_lower": 0.2, "irr_upper": 0.8, "p_less": 0.001}
-    flat = {"irr": 1.0, "irr_lower": 0.7, "irr_upper": 1.4, "p_less": 0.5}
-    hi = {"irr": 2.0, "irr_lower": 1.3, "irr_upper": 3.0, "p_less": 0.999}
-    def v(**h9):
-        return verdict.decide(estimates(H9=h9), COND)["hypotheses"]["H9"]
-    assert v(arm=lo, size=lo)["verdict"] == "supported" and v(arm=lo, size=lo)["tier"] == "secondary"
-    assert v(arm=lo, size=flat)["verdict"] == "not supported"
-    assert v(arm=hi, size=lo)["verdict"] == "reversed"
-    assert v(not_applicable=True)["verdict"] == "not testable"
-    assert v(error="no classes")["verdict"] == "not estimable"
-
-
-def test_h9_rows_take_each_class_of_two_or_more_blocks_at_the_end():
-    rows = [{"chain_id": "c", "arm": "spring", "kind": k, "container": n, "cp": str(cp), "blocks": str(b),
-             "volume": "20", "concentration": "True", "split_cost": "3", "split_exact": "True"}
-            for k, n, cp, b in (("class", "A", 1, 4), ("class", "A", 2, 5), ("class", "B", 2, 1), ("flow", "f", 2, 6))]
-    got = prepare.h9_rows(rows)
-    assert [(r["container"], r["blocks"]) for r in got] == [("A", 5)]
-    s = prepare.h9_summary(rows)["spring"]["concentrations"]
-    assert (s["classes"], s["split_cost"]) == (1, 3)
 
 
 def test_the_growth_exponent_interval_does_not_depend_on_the_order_of_the_rows():

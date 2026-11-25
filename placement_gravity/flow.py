@@ -88,9 +88,13 @@ class Graph:
         # the fields of a class that hold state (Pull VERSION 17): not injected, not constants, not
         # utilities; and each method's uses of its own class's fields (H5, PLAN.md 4.2c)
         self.state: dict[str, set[str]] = defaultdict(set)
+        # its constants (static and final, not utilities): state links too since 25 November 2026
+        # (H5, PLAN.md 4.2c, 9 row 109), kept apart so the count without them can be reported
+        self.constants: dict[str, set[str]] = defaultdict(set)
         for f in files.values():
             for c in f.get("classes", []):
                 self.state[simple(c["name"])].update(c.get("state") or [])
+                self.constants[simple(c["name"])].update(c.get("constants") or [])
 
     def class_calls(self) -> dict[tuple[str, str], int]:
         """Calls followed from one class's methods to another's (H7, PLAN.md 4.2b), keyed by the
@@ -120,20 +124,24 @@ class Graph:
         """The links between blocks of logic (H5, PLAN.md 4.2c, restated 24 November 2026), each
         counted once however heavy: **call links**, a method to a method it calls, in its own class or
         another (a call that may reach several overrides is a link to each), not to itself; and
-        **state links**, a method to a field holding state that it uses, of its own class or another's.
-        A field holding an injected dependency is not a state link, nor is a constant: injection is
-        not bound to the control flow. A method is (its class's simple name, its signature), a field
-        (its class's simple name, "#name")."""
+        **state links**, a method to a field holding state that it uses, of its own class or another's;
+        and **constant links**, a method to a constant it uses, of its own class or another's (decided
+        by the author on 25 November 2026, PLAN.md 9 row 109: a constant is a state link, weight 1;
+        kept apart here so that the count as it stood can be reported). A field holding an injected
+        dependency is not a link: injection is not bound to the control flow. A method is (its
+        class's simple name, its signature), a field (its class's simple name, "#name")."""
         if getattr(self, "_links", None) is None:
             def k(i):
                 return simple(self.methods[i]["type"]), self.methods[i]["signature"]
             calls = {(k(i), k(j)) for i, js in enumerate(self.out) for j in js if i != j}
-            state = set()
+            state, constant = set(), set()
             for i, m in enumerate(self.methods):
                 c = simple(m["type"])
                 state |= {(k(i), (c, f"#{x}")) for x in m.get("own", []) if x in self.state.get(c, ())}
                 state |= {(k(i), (rc, f)) for rc, f in self.reads[i] if f[1:] in self.state.get(rc, ())}
-            self._links = {"call": calls, "state": state}
+                constant |= {(k(i), (c, f"#{x}")) for x in m.get("own", []) if x in self.constants.get(c, ())}
+                constant |= {(k(i), (rc, f)) for rc, f in self.reads[i] if f[1:] in self.constants.get(rc, ())}
+            self._links = {"call": calls, "state": state, "constant": constant}
         return self._links
 
     def call_weight(self, callee: tuple[str, str]) -> int:

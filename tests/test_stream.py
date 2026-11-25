@@ -430,9 +430,10 @@ public class Repo { int rows; public int count() { return rows; } }
 """
 
 
-def test_links_count_calls_and_state_but_not_injection_or_constants(tmp_path):
+def test_links_count_calls_state_and_constants_but_not_injection(tmp_path):
     """H5 (PLAN.md 4.2c, restated 24 November 2026): a link between blocks of logic is a call or a
-    use of a field holding state, each once; an injected dependency and a constant are not state."""
+    use of a field holding state or (since 25 November 2026, row 109) of a constant; an injected
+    dependency is not a link."""
     import json
     import subprocess
     from placement_gravity import chain, flow
@@ -455,6 +456,7 @@ def test_links_count_calls_and_state_but_not_injection_or_constants(tmp_path):
     assert links["state"] == {(("Owners", "add(String)"), ("Owners", "#seen")),
                               (("Owners", "check(String)"), ("Owners", "#seen")),
                               (("Repo", "count()"), ("Repo", "#rows"))}
+    assert links["constant"] == {(("Owners", "add(String)"), ("Owners", "#MAX"))}
     # per checkpoint: the links added, Java against the next tree, the wiring against its commit
     empty = {"files": {}, "flows": []}
     measured = {"places": {"cp01": empty, "cp02": {"files": files, "flows": []}, "cp03": {"files": files, "flows": []}},
@@ -467,9 +469,11 @@ def test_links_count_calls_and_state_but_not_injection_or_constants(tmp_path):
     assert (r1["call_links_added_from_functions"], r1["call_links_added_from_methods"]) == (2, 0)
     assert (r1["call_links_added_within_class"], r1["call_links_added_across_classes"]) == (1, 1)
     # the weights: check(String) 1 + 1 parameter + 1 returned, Repo.count() 1 + 0 + 1; the state links
-    # 1 each; the wiring edge 1 (where it leaves from is not known here)
-    assert (r1["call_weight_added"], r1["state_weight_added"], r1["flow_weight_added"], r1["weight_added"]) == (5, 3, 1, 9)
-    assert (r1["call_links_added"], r1["state_links_added"], r1["flow_links_added"], r1["links_added"]) == (2, 3, 1, 6)
+    # 1 each, the constant MAX 1; the wiring edge 1 (where it leaves from is not known here)
+    assert (r1["call_weight_added"], r1["state_weight_added"], r1["constant_weight_added"], r1["flow_weight_added"],
+            r1["weight_added"], r1["weight_added_without_constants"]) == (5, 3, 1, 1, 10, 9)
+    assert (r1["call_links_added"], r1["state_links_added"], r1["constant_links_added"], r1["flow_links_added"],
+            r1["links_added"]) == (2, 3, 1, 1, 7)
     assert (r2["links_added"], r2["links_lost"], r2["call_links"], r2["methods"]) == (0, 0, 2, 4)
 
 
@@ -570,16 +574,3 @@ def test_the_graph_cache_never_hands_one_tree_another_tree_s_graph():
     assert tables._GRAPHS[id(a)][0] is a and tables._graph(a) is g
 
 
-def test_the_cheapest_split_counts_the_calls_and_shared_fields_a_cut_crosses():
-    """H9 (PLAN.md 4.2h): the same rule in both arms."""
-    # a function grown into helpers: a chain of calls, no shared state; one call cut splits it
-    assert tables.split_cost([5, 5, 5, 5], [(0, 1), (1, 2), (2, 3)], {}) == (1, True)
-    # a handler whose four methods all use two fields: any quarter split cuts a use of each
-    assert tables.split_cost([5, 5, 5, 5], [], {"owners": [0, 1, 2, 3], "clock": [0, 1, 2, 3]}) == (2, True)
-    # already two separate pieces
-    assert tables.split_cost([5, 5, 5, 5], [(0, 1), (2, 3)], {}) == (0, True)
-    # one large block and two small ones: no split leaves a quarter on each side, so not splittable
-    assert tables.split_cost([18, 1, 1], [(0, 1), (0, 2)], {}) == (None, True)
-    # above the exact limit, the local search, reproducible
-    big = tables.split_cost([3] * 20, [(i, i + 1) for i in range(19)], {})
-    assert big == tables.split_cost([3] * 20, [(i, i + 1) for i in range(19)], {}) and big == (1, False)

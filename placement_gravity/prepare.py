@@ -406,8 +406,10 @@ def co_change(pairs: list[dict], top: int = 10) -> dict:
 
 def h5_rows(links: list[dict], split: list[dict]) -> list[dict]:
     """Surface against volume (H5, PLAN.md 4.2c, restated 24 November 2026): per checkpoint and
-    chain, the links between blocks of logic it added (``links_added``: call, state and flow, each
-    counted once, injection not among them) and the logic it added (``logic_added``, the volume,
+    chain, the links between blocks of logic it added, weighed by the data each carries
+    (``weight_added``, the test since 24 November 2026, row 95; ``links_added`` the plain count),
+    call, state, constant (a state link since 25 November 2026, row 109; ``weight_added_without_constants``
+    as it stood) and flow, injection not among them; and the logic it added (``logic_added``, the volume,
     from the logic and organisation reading, §4.9). Only checkpoints with both: the last has no tree
     after it, and a no-op checkpoint's lines are not read."""
     logic = {(r["chain_id"], int(r["cp"])): r for r in split}
@@ -421,7 +423,8 @@ def h5_rows(links: list[dict], split: list[dict]) -> list[dict]:
         row.update({k: int(num(r.get(k), 0)) for k in (
             "links_added", "links_lost", "call_links_added", "state_links_added", "flow_links_added",
             "call_links_lost", "state_links_lost", "flow_links_lost", "call_links", "state_links",
-            "flow_links", "methods", "call_links_added_from_functions", "call_links_added_from_methods",
+            "flow_links", "methods", "constant_links_added", "constant_links_lost", "constant_links",
+            "constant_weight_added", "weight_added_without_constants", "call_links_added_from_functions", "call_links_added_from_methods",
             "call_links_added_within_class", "call_links_added_across_classes", "weight_added", "weight_lost",
             "call_weight_added", "state_weight_added", "flow_weight_added", "flow_unresolved_added")})
         out.append(row)
@@ -448,7 +451,8 @@ def links_summary(rows: list[dict], checkpoints: int) -> dict:
                                                  "call_links_added_from_functions", "call_links_added_from_methods",
                                                  "call_links_added_within_class", "call_links_added_across_classes",
                                                  "weight_added", "call_weight_added", "state_weight_added",
-                                                 "flow_weight_added", "weight_lost")},
+                                                 "flow_weight_added", "weight_lost", "constant_links_added",
+                                                 "constant_weight_added", "weight_added_without_constants")},
                     "weight_per_logic": sum(r["weight_added"] for r in rs) / logic if logic else None,
                     "flow_links_added_total": sum(r["flow_links_added"] for r in rs),
                     "flow_unresolved_added_total": sum(r.get("flow_unresolved_added", 0) for r in rs),
@@ -457,63 +461,8 @@ def links_summary(rows: list[dict], checkpoints: int) -> dict:
                     "thirds": {str(t): mean("links_added", [r for r in rs if third(r) == t]) for t in (1, 2, 3)},
                     "links_per_logic": sum(r["links_added"] for r in rs) / logic if logic else None,
                     "tree_links_per_method": statistics.fmean(
-                        (r["call_links"] + r["state_links"] + r["flow_links"]) / r["methods"]
+                        (r["call_links"] + r["state_links"] + r["constant_links"] + r["flow_links"]) / r["methods"]
                         for r in ends if r["methods"]) if any(r["methods"] for r in ends) else None}
-    return out
-
-
-def h9_rows(containers: list[dict]) -> list[dict]:
-    """H9, the cost to fix a concentration (PLAN.md §2, §4.2h, §5): one row per class with at least
-    two blocks at its chain's last checkpoint, with its cheapest split, its size, and whether it is a
-    concentration. Corpus A only."""
-    last: dict[str, int] = {}
-    for r in containers:
-        last[r["chain_id"]] = max(last.get(r["chain_id"], 0), int(r["cp"]))
-    out = []
-    for r in containers:
-        if r["kind"] != "class" or int(r["cp"]) != last[r["chain_id"]] or int(num(r["blocks"], 0)) < 2 \
-                or r.get("split_cost") in (None, "", "None"):
-            continue
-        out.append({"chain_id": r["chain_id"], "arm": r["arm"], "frontend": r.get("frontend", ""),
-                    "container": r["container"], "concentration": truth(r["concentration"]),
-                    "blocks": int(num(r["blocks"])), "volume": int(num(r["volume"], 0)),
-                    "split_cost": int(num(r["split_cost"])), "split_exact": truth(r.get("split_exact"))})
-    return out
-
-
-def h9_summary(containers: list[dict]) -> dict:
-    """Beside H9: per arm, for the concentrations and the rest of the classes with two or more blocks,
-    the cheapest split at the end and at the last checkpoint of each third of the stream, the share
-    that cost nothing (already in separate pieces) and the share found exactly."""
-    multi = [r for r in containers if r["kind"] == "class" and int(num(r["blocks"], 0)) >= 2]
-    rows = [r for r in multi if r.get("split_cost") not in (None, "", "None")]
-    ends: dict[str, int] = {}
-    for r in multi:
-        ends[r["chain_id"]] = max(ends.get(r["chain_id"], 0), int(r["cp"]))
-    out: dict = {}
-    for arm in sorted({r["arm"] for r in rows}):
-        rs = [r for r in rows if r["arm"] == arm]
-        last: dict[str, int] = {}
-        for r in rs:
-            last[r["chain_id"]] = max(last.get(r["chain_id"], 0), int(r["cp"]))
-        a = {}
-        for group, keep in (("concentrations", lambda r: truth(r["concentration"])),
-                            ("rest", lambda r: not truth(r["concentration"]))):
-            g = [r for r in rs if keep(r)]
-            def at(frac):
-                return [r for r in g if int(r["cp"]) == max(1, round(last[r["chain_id"]] * frac))]
-            end = [r for r in g if int(r["cp"]) == last[r["chain_id"]]]
-            mean = lambda xs, f: statistics.fmean(f(r) for r in xs) if xs else None
-            a[group] = {"classes": len(end), "split_cost": mean(end, lambda r: num(r["split_cost"])),
-                        "blocks": mean(end, lambda r: num(r["blocks"])),
-                        "cost_per_block": mean(end, lambda r: num(r["split_cost"]) / num(r["blocks"])),
-                        "zero_share": mean(end, lambda r: float(num(r["split_cost"]) == 0)),
-                        "exact_share": mean(end, lambda r: float(truth(r.get("split_exact")))),
-                        "thirds": {str(t): mean(at(t / 3), lambda r: num(r["split_cost"])) for t in (1, 2, 3)}}
-        # classes of two or more blocks with no split leaving a quarter on each side (one block holds most)
-        a["not_splittable"] = sum(1 for r in multi if r["arm"] == arm and int(r["cp"]) == ends[r["chain_id"]]
-                                  and r.get("split_cost") in (None, "", "None"))
-        out[arm] = a
     return out
 
 
@@ -1262,7 +1211,6 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
     surfaced = [] if past else h5_rows(table("links"), split)
     write_csv(out / "h5.csv", surfaced)
     contained = [] if past else table("containers")
-    write_csv(out / "h9.csv", h9_rows(contained))
     write_csv(out / "surface.csv", surface_rows(table("boundary")))
     edges = table("edges")
     rippled = ripple(hosts, edges)
@@ -1326,7 +1274,6 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
         "split": split_summary(split, len(streamed)),
         "links": links_summary(surfaced, len(streamed)),
         "containers": {} if past else container_summary(contained, len(streamed)),
-        "h9": h9_summary(contained),
         "coupling_added": coupling_accounting(paired, coupled, h7),
         "coupling_source": coupling_source(h5, edges),
         "redesign": redesign(hosts, paired),
