@@ -11,18 +11,18 @@ Role: **development**. Chains: human 2, agent 1. **Descriptive only.**
 | H5 | confirmatory | descriptive only | – |
 | H6 | secondary | descriptive only | 0.033 |
 | H7 | secondary | descriptive only | 0.002 |
-| H9 | secondary | descriptive only | – |
 
-## H1, choice narrows (and less often forced in the function arm)
+## H1, the force: forced less with function injection
 
-Per bound addition, the other places in the code before its checkpoint that hold what its code was bound to: at the class, another class holding injected dependencies of the same types (code bound to the class's own state, constants or methods has none); at the method, another method with a parameter or local of each type. The ratio of the alternatives at the end of the stream to its start: a fall, one-sided below 1, at the class, 95% cluster-bootstrap interval (chains resampled). The method level is reported.
+Per checkpoint, the placements forced at the class (bound there with no other class holding what the code was bound to), function arm / methods arm half-way through the stream, **and** the gap over the stream (arm × checkpoint index); both one-sided below 1, 95% cluster-bootstrap intervals (chains resampled). Reported beside it: choice narrows (the test until 25 November 2026), per bound addition the other places in the code before its checkpoint that hold what its code was bound to, the ratio of the end of the stream to its start, at the class and at the method.
 
-- **descriptive only** (every placement forced)
-- **At the class: every placement forced** (638 rows; no alternative anywhere)
+- **descriptive only** (a history)
+- The test is not read on a history: its arms do not solve the same problems.
+- Reported, choice narrows at the class: every placement forced (638 rows; no alternative anywhere)
 - Reported, methods arm at the class: 638 rows, 1 forced, 0 alternatives a row; over the thirds, forced 1, 1, 1; alternatives 0, 0, 0
 - Reported, function arm at the class: 25 rows, 0.520 forced, 3.480 alternatives a row; over the thirds, forced 0.389, 0.857, –; alternatives 3.444, 3.571, –
 - Reported, the function arm's ratio at the class: 6.530 [0.006, 7253.304]; function arm / methods arm: not estimated (standard error not computed: armagent)
-- **At the method: 1.842 [0.963, 23.612]** (n = 627; one-sided p 0.796; cluster bootstrap)
+- Reported, choice narrows at the method: 1.842 [0.963, 23.612] (n = 627; one-sided p 0.796; cluster bootstrap)
 - Reported, at the method against the upper margin 1.250 (as H1 stood until 22 November 2026, 90% Wald interval): 1.842 [1.195, 2.841]
 - Reported, methods arm at the method: 627 rows, 0.434 forced, 5.509 alternatives a row; over the thirds, forced 0.297, 0.509, 0.470; alternatives 5.621, 3.961, 7.041
 - Reported, function arm at the method: 30 rows, 0.400 forced, 2.367 alternatives a row; over the thirds, forced 0.231, 0.529, –; alternatives 1.692, 2.882, –
@@ -187,13 +187,6 @@ Calls between classes each unit added (the tree after it less the tree before), 
   - candidate for redistribution: `UsbSerialDevice` and `UsbSerialDevice.WorkerThread` (human/felHR85__UsbSerial), changed together 4 times, calls between them 1 → 4
   - candidate for redistribution: `CDCSerialDevice` and `UsbSerialDevice` (human/felHR85__UsbSerial), changed together 4 times, calls between them 2 → 4
   - candidate for redistribution: `PL2303SerialDevice` and `UsbSerialDevice` (human/felHR85__UsbSerial), changed together 4 times, calls between them 2 → 3
-
-## H9, the cost to fix a concentration (secondary)
-
-Each class with two or more blocks at the end of the stream: its cheapest split, the fewest internal links (calls between its blocks, blocks sharing a field that holds state) a cut must cross to divide it into two parts of at least a quarter of its code each. The function arm's rate at the same size below 1, **and** the gap widening as classes grow (arm × size below 1); one-sided, 95% cluster-bootstrap intervals.
-
-- **descriptive only**
-- Not testable on a history: its arms do not solve the same problems.
 
 ## Reported: where forced coupling came from
 

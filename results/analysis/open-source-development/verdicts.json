@@ -5,7 +5,7 @@
   "H1": {
    "p": null,
    "verdict": "descriptive only",
-   "state": "every placement forced",
+   "state": "a history",
    "detail": {
     "margin": [
      0.8,
@@ -360,16 +360,6 @@
    "tier": "secondary",
    "p_holm": 0.00231651286967686,
    "verdict": "descriptive only"
-  },
-  "H9": {
-   "p": null,
-   "verdict": "descriptive only",
-   "state": "a history",
-   "detail": {
-    "not_applicable": true
-   },
-   "tier": "secondary",
-   "p_holm": null
   }
  },
  "sensitivity": {

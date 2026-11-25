@@ -3030,6 +3030,22 @@ binomial mixed model). These details are fixed with the code before any run is r
   is only what rows 99 to 105 added: the sinew shape (human, at the class, effective number 4.51
   over 1257 uses; agent 2.94 over 36) and H9, not testable on a history, whose arms do not solve
   the same problems.
+- **The development chain under rows 107 to 110** (25 November 2026, `MEASURE_VERSION` 41;
+  descriptive only). **Only H5 moved**, and H9 is gone: every other estimate came back the same to
+  the last digit. **H5 with constants as state links** (row 109): 1.05 [0.91, 1.21] at the level,
+  the gap over the stream 1.70 [1.03, 2.79]; without them, the test as it stood, 1.06 [0.92, 1.23]
+  and 1.73 [1.02, 2.92], the figures of the run before, so measuring again changed nothing else.
+  The constant links a checkpoint: OfficeFloor 0.37, Spring 0.47 (0.71 [0.37, 1.37]). Counting
+  constants hardly moves H5 here. **H1 on the contrast alone** (row 107): forced at the class a
+  checkpoint, OfficeFloor 0.15 against Spring 0.44, **0.25 [0.09, 0.65]** at the level; the gap
+  over the stream **7.48 [0.36, 156]**, which rests on OfficeFloor's nine forced placements and
+  cannot be read on one chain an arm; Spring's own rise 2.57 [0.66, 10.0]. H1's p, the larger of
+  the two, is 0.90, from the trend: on this chain the level goes the form's way and the trend says
+  nothing, so *especially over time* is the half of H1 the ui runs have to show. Choice narrows,
+  now reported: 0.16 [0.02, 1.28] at the class. *The histories*, analysed again (their tables
+  unchanged): H1 is not testable there, and its reading of choice narrows is **every placement
+  forced, no alternative in any of 638 rows**, the case the review found would have silenced H1
+  under its old rule (row 107). Nothing else moved.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
@@ -3631,11 +3647,8 @@ author's to set, on the plan and code as they then stand, and starts the experim
   Wald intervals, where H3 is on the bootstrap; §4.2c opened with the plain count; the tiers
   paragraph named the readings §4.2b–4.2e; the sinew shape did not say it counts constants; code
   comments in `verdict.py` and `prepare.h5_rows` were out of date. Each corrected, no rule changed.
-- *To finish for rows 107 to 110:* the pilot measured again at `MEASURE_VERSION` 41 (H5's constant
-  links; H9's columns gone) and analysed again with H1 restated; the histories' tables are not
-  remade (no history table changed), only analysed again: `./step3_measure.sh --analysis pilot`,
-  `./step4_analyse.sh --analysis pilot open-source-development`, `./step5_report.sh`. What moved
-  goes into §6.
+- *Done for rows 107 to 110:* the pilot measured again at `MEASURE_VERSION` 41 and both analysed
+  again (§6); only H5 moved. The results index lost a column left for H9 (`report.main`).
 - *Done for rows 99 to 106:* the pilot at `MEASURE_VERSION` 40 and the histories at
   `HISTORY_VERSION` 15 (§6); no figure moved under row 102. (H9's population, left there to the
   author, fell with H9, row 108.)

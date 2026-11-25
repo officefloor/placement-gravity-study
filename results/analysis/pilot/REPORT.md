@@ -11,23 +11,21 @@ Role: **development**. Chains: officefloor 1, spring 1. **Descriptive only.**
 | H5 | confirmatory | descriptive only | 1.000 |
 | H6 | secondary | descriptive only | 3.06e-06 |
 | H7 | secondary | descriptive only | 0.349 |
-| H9 | secondary | descriptive only | 0.654 |
 
-## H1, choice narrows (and less often forced in the function arm)
+## H1, the force: forced less with function injection
 
-Per bound addition, the other places in the code before its checkpoint that hold what its code was bound to: at the class, another class holding injected dependencies of the same types (code bound to the class's own state, constants or methods has none); at the method, another method with a parameter or local of each type. The ratio of the alternatives at the end of the stream to its start: a fall, one-sided below 1, at the class, 95% cluster-bootstrap interval (chains resampled). The method level is reported.
+Per checkpoint, the placements forced at the class (bound there with no other class holding what the code was bound to), function arm / methods arm half-way through the stream, **and** the gap over the stream (arm × checkpoint index); both one-sided below 1, 95% cluster-bootstrap intervals (chains resampled). Reported beside it: choice narrows (the test until 25 November 2026), per bound addition the other places in the code before its checkpoint that hold what its code was bound to, the ratio of the end of the stream to its start, at the class and at the method.
 
-- **descriptive only** (not shown to fall)
-- The arm contrast (since 24 November 2026): the placements forced at the class per checkpoint (bound there with no other place to go), function arm / methods arm half-way through the stream, and the gap over the stream; both one-sided below 1.
+- **descriptive only** (p 0.903)
 - **Forced per checkpoint, function arm / methods arm: 0.247 [0.093, 0.654]** (one-sided p 0.002; wald: one chain in an arm; nbinom2)
 - **Its change over the stream (arm × checkpoint index): 7.483 [0.358, 156.260]** (one-sided p 0.903; wald: one chain in an arm; nbinom2)
 - Forced at the class a checkpoint: officefloor 0.150, spring 0.441; the methods arm's own rise over the stream 2.574 [0.662, 10.007]
-- **At the class: 0.162 [0.021, 1.277]** (n = 48; one-sided p 0.042; wald: one chain in an arm)
+- Reported, choice narrows at the class: 0.162 [0.021, 1.277] (n = 48; one-sided p 0.042; wald: one chain in an arm)
 - Reported, at the class against the upper margin 1.250 (as H1 stood until 22 November 2026, 90% Wald interval): 0.162 [0.029, 0.916]
 - Reported, methods arm at the class: 48 rows, 0.542 forced, 2.583 alternatives a row; over the thirds, forced 0.500, 0.333, 0.722; alternatives 3.500, 3.167, 1.278
 - Reported, function arm at the class: 10 rows, 0.900 forced, 0.100 alternatives a row; over the thirds, forced 1, 1, 0.857; alternatives 0, 0, 0.143
 - Reported, the function arm's ratio at the class: 22.363 [4.55e-05, 10984478.990]; function arm / methods arm: 0.000765 [3.43e-10, 1702.055]
-- **At the method: 4.750 [1.189, 18.975]** (n = 56; one-sided p 0.986; wald: one chain in an arm)
+- Reported, choice narrows at the method: 4.750 [1.189, 18.975] (n = 56; one-sided p 0.986; wald: one chain in an arm)
 - Reported, at the method against the upper margin 1.250 (as H1 stood until 22 November 2026, 90% Wald interval): 4.750 [1.486, 15.188]
 - Reported, methods arm at the method: 56 rows, 0.339 forced, 6.161 alternatives a row; over the thirds, forced 0.538, 0.350, 0.217; alternatives 3.385, 4.600, 9.087
 - Reported, function arm at the method: 27 rows, 0.222 forced, 9.667 alternatives a row; over the thirds, forced 0.250, 0.200, 0.222; alternatives 4.750, 12.400, 10
@@ -125,21 +123,23 @@ Runs that need a pre-existing value 91 over 1 chains; the slope of log(1 + bysta
 
 Per checkpoint, the links it added between blocks of logic (the surface: a method calling a method, a method using a field that holds state, a function wired to the next), each weighed by the data it carries (a call 1, +1 per parameter, +1 if it returns a value; a state link 1; a wiring edge 1, +1 if it carries a value), an injected dependency weighing nothing; against the logic it added (the volume). The function arm's ratio half-way through the stream, for the same logic, below 1, **and** its interaction with the checkpoint index below 1 (the gap widens); one-sided, 95% cluster-bootstrap intervals (chains resampled).
 
-- **descriptive only** (p 0.979)
-- **Weighted links added, function arm / methods arm, for the same logic: 1.062 [0.915, 1.232]** (one-sided p 0.785; wald: one chain in an arm)
-- **The gap over the stream (arm × checkpoint index): 1.726 [1.022, 2.917]** (one-sided p 0.979; wald: one chain in an arm)
-- Reported, the links counted, not weighed (the test until 24 November 2026): arm 1.249 [1.063, 1.468], over the stream 1.126 [0.642, 1.975]
-- Weight added a checkpoint: officefloor 12.102, spring 10.966; links added: officefloor 5.797, spring 4.672; logic added: officefloor 9.610, spring 9.034
+- **descriptive only** (p 0.982)
+- **Weighted links added, function arm / methods arm, for the same logic: 1.047 [0.909, 1.205]** (one-sided p 0.737; wald: one chain in an arm)
+- **The gap over the stream (arm × checkpoint index): 1.698 [1.034, 2.788]** (one-sided p 0.982; wald: one chain in an arm)
+- Reported, constants not counted as state links (the test until 25 November 2026): arm 1.062 [0.915, 1.232], over the stream 1.726 [1.022, 2.917]
+- Reported, the links counted, not weighed (the test until 24 November 2026): arm 1.245 [0.977, 1.587], over the stream 1.143 [0.493, 2.648]
+- Weight added a checkpoint: officefloor 12.475, spring 11.431; links added: officefloor 6.169, spring 5.138; logic added: officefloor 9.610, spring 9.034
 - Reported, call links weighed: function arm / methods arm 0.941 [0.808, 1.096], over the stream 2.094 [1.209, 3.628]; a checkpoint officefloor 10.492, spring 10.224
 - Reported, state links weighed: function arm / methods arm 1.017 [0.514, 2.014], over the stream 1.718 [0.174, 16.919]; a checkpoint officefloor 0.678, spring 0.741
+- Reported, constant links weighed: function arm / methods arm 0.715 [0.374, 1.367], over the stream 2.310 [0.258, 20.690]; a checkpoint officefloor 0.373, spring 0.466
 - Reported, flow links weighed: function arm / methods arm not estimated (no data), over the stream not estimated (no data); a checkpoint officefloor 0.932, spring 0
-- Reported, lost links weighed: function arm / methods arm 2.873 [1.428, 5.781], over the stream 0.210 [0.018, 2.436]; a checkpoint officefloor 4.559, spring 3.931
-- Reported, without the logic in the model: arm 1.044 [0.904, 1.205], over the stream 2.135 [1.272, 3.585]; the methods arm's own rise over the stream 1.035 [0.534, 2.003]; links per e-fold logic 1.875 [1.538, 2.287]
-- Reported, officefloor: 59 checkpoints; links added a checkpoint 5.797 (call 4.186, state 0.678, flow 0.932; lost 2.305); over the thirds 4.650, 6.200, 6.579; links per position of logic 0.603; the tree's links per method at the end 1.701
-  - weighed: 12.102 a checkpoint (call 10.492, state 0.678, flow 0.932; lost 4.559); per position of logic 1.259; wiring edges whose weight could not be read from the Java (weighed 1) 0 of 55
+- Reported, lost links weighed: function arm / methods arm 2.852 [1.419, 5.732], over the stream 0.245 [0.021, 2.805]; a checkpoint officefloor 4.576, spring 3.983
+- Reported, without the logic in the model: arm 1.029 [0.899, 1.178], over the stream 2.073 [1.272, 3.379]; the methods arm's own rise over the stream 1.099 [0.586, 2.063]; links per e-fold logic 1.829 [1.514, 2.211]
+- Reported, officefloor: 59 checkpoints; links added a checkpoint 6.169 (call 4.186, state 0.678, constant 0.373, flow 0.932; lost 2.322); over the thirds 4.850, 6.500, 7.211; links per position of logic 0.642; the tree's links per method at the end 1.754
+  - weighed: 12.475 a checkpoint (call 10.492, state 0.678, constant 0.373, flow 0.932; lost 4.576); per position of logic 1.298; wiring edges whose weight could not be read from the Java (weighed 1) 0 of 55
   - its call links by caller: from wired functions 2.915, from other methods 1.271 (over the thirds 0.050, 1.800, 2.000); within the caller's class 0.847, across classes 3.339
-- Reported, spring: 58 checkpoints; links added a checkpoint 4.672 (call 3.931, state 0.741, flow 0.000; lost 1.655); over the thirds 4.300, 5.000, 4.722; links per position of logic 0.517; the tree's links per method at the end 1.779
-  - weighed: 10.966 a checkpoint (call 10.224, state 0.741, flow 0.000; lost 3.931); per position of logic 1.214; wiring edges whose weight could not be read from the Java (weighed 1) 0 of 0
+- Reported, spring: 58 checkpoints; links added a checkpoint 5.138 (call 3.931, state 0.741, constant 0.466, flow 0.000; lost 1.707); over the thirds 4.650, 5.400, 5.389; links per position of logic 0.569; the tree's links per method at the end 1.845
+  - weighed: 11.431 a checkpoint (call 10.224, state 0.741, constant 0.466, flow 0.000; lost 3.983); per position of logic 1.265; wiring edges whose weight could not be read from the Java (weighed 1) 0 of 0
   - its call links by caller: from wired functions 0.000, from other methods 3.931 (over the thirds 3.300, 4.400, 4.111); within the caller's class 1.552, across classes 2.379
 
 ## H6, shape does not draw code in
@@ -204,22 +204,6 @@ Calls between classes each unit added (the tree after it less the tree before), 
   - candidate for redistribution: `Owner` and `OwnerRestControllerV1` (spring/blind-202608100006/chain9), changed together 9 times, calls between them 3 → 8
   - candidate for redistribution: `OwnerMapper` and `OwnerRestControllerV1` (spring/blind-202608100006/chain9), changed together 7 times, calls between them 0 → 6
   - candidate for redistribution: `Owner` and `OwnerMapper` (spring/blind-202608100006/chain9), changed together 2 times, calls between them 7 → 10
-
-## H9, the cost to fix a concentration (secondary)
-
-Each class with two or more blocks at the end of the stream: its cheapest split, the fewest internal links (calls between its blocks, blocks sharing a field that holds state) a cut must cross to divide it into two parts of at least a quarter of its code each. The function arm's rate at the same size below 1, **and** the gap widening as classes grow (arm × size below 1); one-sided, 95% cluster-bootstrap intervals.
-
-- **descriptive only** (p 0.654)
-- **Cheapest split, function arm / methods arm, at the same size: 1.103 [0.680, 1.788]** (one-sided p 0.654; wald: one chain in an arm; nbinom2)
-- **The gap as classes grow (arm × log size): 0.988 [0.614, 1.588]** (one-sided p 0.480; wald: one chain in an arm; nbinom2)
-- Classes: officefloor 43, spring 47; mean cheapest split: officefloor 0.791, spring 0.745
-- Reported, the concentrations alone (8 classes): arm 1.078 [0.178, 6.527], with size 0.103 [7.06e-05, 150.216]; on the blocks instead of the volume: arm 1.061 [0.656, 1.716], with size 0.770 [0.371, 1.594]
-- Reported, officefloor: classes of two or more blocks that no split leaves a quarter on each side (one block holds most of the class), left out: 5
-- Reported, officefloor, concentrations: 4 classes at the end, 7.000 blocks, cheapest split 0.750 (0.188 a block; over the thirds 1.000, 1.500, 0.750); already in separate pieces 0.250; found exactly 0.750
-- Reported, officefloor, rest: 39 classes at the end, 5.872 blocks, cheapest split 0.795 (0.199 a block; over the thirds 0.800, 0.758, 0.795); already in separate pieces 0.308; found exactly 0.974
-- Reported, spring: classes of two or more blocks that no split leaves a quarter on each side (one block holds most of the class), left out: 0
-- Reported, spring, concentrations: 4 classes at the end, 19.500 blocks, cheapest split 1.000 (0.162 a block; over the thirds 0.500, 1.000, 1.000); already in separate pieces 0.250; found exactly 0.500
-- Reported, spring, rest: 43 classes at the end, 6.581 blocks, cheapest split 0.721 (0.155 a block; over the thirds 0.711, 0.698, 0.721); already in separate pieces 0.442; found exactly 0.953
 
 ## Reported: where forced coupling came from
 

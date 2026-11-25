@@ -1011,7 +1011,7 @@ def main() -> None:
         (d / "REPORT.md").write_text(render(name, analysis["role"], est, ver, cond, spec, mine, drift, rd))
         hy = ver["hypotheses"]
         index.append(f"| [{name}]({name}/REPORT.md) | {analysis['role']} | "
-                     + " | ".join(hy.get(f"H{i}", {}).get("verdict", "–") for i in (1, 2, 3, 4, 5, 6, 7, 9)) + " |")
+                     + " | ".join(hy.get(f"H{i}", {}).get("verdict", "–") for i in (1, 2, 3, 4, 5, 6, 7)) + " |")
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "REPORT.md").write_text("\n".join(index) + "\n")
     print((OUT / "REPORT.md").read_text())

@@ -1,6 +1,6 @@
 # Results
 
-| Analysis | Role | H1 | H2 | H3 | H4 | H5 | H6 | H7 | H9 |
-|---|---|---|---|---|---|---|---|---|---|
-| [pilot](pilot/REPORT.md) | development | descriptive only | descriptive only | descriptive only | descriptive only | descriptive only | descriptive only | descriptive only | descriptive only |
-| [open-source-development](open-source-development/REPORT.md) | development | descriptive only | descriptive only | descriptive only | descriptive only | descriptive only | descriptive only | descriptive only | descriptive only |
+| Analysis | Role | H1 | H2 | H3 | H4 | H5 | H6 | H7 |
+|---|---|---|---|---|---|---|---|---|
+| [pilot](pilot/REPORT.md) | development | descriptive only | descriptive only | descriptive only | descriptive only | descriptive only | descriptive only | descriptive only |
+| [open-source-development](open-source-development/REPORT.md) | development | descriptive only | descriptive only | descriptive only | descriptive only | descriptive only | descriptive only | descriptive only |
