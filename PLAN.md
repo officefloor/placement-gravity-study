@@ -3054,8 +3054,12 @@ binomial mixed model). These details are fixed with the code before any run is r
   the thirds 1.60, 1.56, 1.91), OfficeFloor's 2.19 (2.86, 2.40, 1.87). **H9 is left as it is** for
   the ui runs to decide, as H5 was; its population (every class of two or more blocks) is still the
   drafter's choice for the author to confirm, now after these figures have been seen. *The
-  histories* were not read again: every clone failed for want of the network ("Could not resolve
-  host: github.com"), and step 4 rightly left out their tables made at `HISTORY_VERSION` 14.
+  histories*, read again at `HISTORY_VERSION` 15 once the network was back (the first try failed:
+  "Could not resolve host: github.com"): **the cache fault of row 102 did not bite there either**.
+  Every figure already in their report came back the same, H1 to H7 and every reading; what is new
+  is only what rows 99 to 105 added: the sinew shape (human, at the class, effective number 4.51
+  over 1257 uses; agent 2.94 over 36) and H9, not testable on a history, whose arms do not solve
+  the same problems.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
@@ -3633,11 +3637,8 @@ author's to set, on the plan and code as they then stand, and starts the experim
   stream, at the same size, the concentrations reported beside it (the function arm forms too few
   concentrations to test on); a class no split of which leaves a quarter on each side left out and
   counted. Built and tested before any ui run is read; not yet computed on any chain.
-- *To finish for rows 99 to 106:* the pilot is done at `MEASURE_VERSION` 40 (§6). **The histories
-  at `HISTORY_VERSION` 15**, which failed for want of the network on 25 November:
-  `./step3b_histories.sh --analysis open-source-development --force`, then `./step4_analyse.sh
-  --analysis pilot open-source-development` and `./step5_report.sh`; whether their figures moved
-  under row 102 goes into §6. *Still the author's to confirm:* H9's population (every class of two
+- *Done for rows 99 to 106:* the pilot at `MEASURE_VERSION` 40 and the histories at
+  `HISTORY_VERSION` 15 (§6); no figure moved under row 102. *Still the author's to confirm:* H9's population (every class of two
   or more blocks, the concentrations reported beside), now after the development figures.
 - *As it stood for rows 99 to 103:* the pilot measured again at `MEASURE_VERSION` 39 and the
   development histories at `HISTORY_VERSION` 15 (row 102 touches both: several chains or

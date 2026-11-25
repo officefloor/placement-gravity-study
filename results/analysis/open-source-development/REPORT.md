@@ -11,6 +11,7 @@ Role: **development**. Chains: human 2, agent 1. **Descriptive only.**
 | H5 | confirmatory | descriptive only | – |
 | H6 | secondary | descriptive only | 0.033 |
 | H7 | secondary | descriptive only | 0.002 |
+| H9 | secondary | descriptive only | – |
 
 ## H1, choice narrows (and less often forced in the function arm)
 
@@ -40,6 +41,18 @@ Where code was bound to a class or a method (1077 of 1788 problem and host rows,
 - Reported, the function arm: class 3.342 [0.915, 12.211]; method 1.14e-07 [0, –]
 - Reported, agent, how bound uses are spread: at the class 36 uses of 28 fields, 0.278 to a chain's three most used, 0.944 to fields no checkpoint introduced; of 14 fields introduced, 2 used by later bound code (0.143); at the method 71 uses of 70 values, 0.056 to the three most used, 0.958 to values no checkpoint introduced; of 128 introduced, 3 used later (0.023)
 - Reported, human, how bound uses are spread: at the class 1257 uses of 553 fields, 0.045 to a chain's three most used, 0.721 to fields no checkpoint introduced; of 389 fields introduced, 138 used by later bound code (0.355); at the method 1312 uses of 802 values, 0.028 to the three most used, 0.628 to values no checkpoint introduced; of 1704 introduced, 259 used later (0.152)
+- Reported, agent, the sinew shape at the class: 9 places, 36 uses; effective number of values 2.944 (over the thirds 1.900, 2.000, 5.000); the most used value's share 0.712; changes repeating a combination already used there 0.167 of 18
+  - most used values: `PrepaidSubscriptionModelHandler` billingProperties 4; `UserServiceImpl` userRepository 3; `PrepaidSubscriptionModelHandler` billingSubscriptionService 3; `PrepaidSubscriptionModelHandler` stripeClient 2; `WorkflowValidatorFacadeImpl` workflowTestConfigurationService 1
+  - most used combinations: `UserServiceImpl` {userRepository} 3; `PrepaidSubscriptionModelHandler` {billingProperties} 2; `BillingWebhookEventHandler` {billingSubscriptionService, subscriptionModelHandlerRegistry} 1; `MeteredSubscriptionModelHandler` {billingSubscriptionService} 1; `PrepaidSubscriptionModelHandler` {billingSubscriptionService, stripeClient} 1
+- Reported, agent, the sinew shape at the method: 29 places, 71 uses; effective number of values 2.399 (over the thirds 1.000, 4.667, 2.161); the most used value's share 0.635; changes repeating a combination already used there 0.000 of 30
+  - most used values: `WebSocketStreamTaskExecutionPostOutputProcessor process` emitter 2; `WorkflowValidatorFacadeImpl resolveVariableOutput` workflowNodeType 1; `WorkflowValidatorFacadeImpl resolveVariableOutput` inputParameters 1; `WorkflowValidatorFacadeImpl resolveTestOutput` typeClass 1; `WorkflowValidatorFacadeImpl buildNodeOutputMaps` workflowJsonNode 1
+  - most used combinations: `BillingWebhookEventHandler handleSubscriptionUpdated` {stripeSubscription} 1; `PrepaidSubscriptionModelHandler handleSubscriptionUpdated` {subscription} 1; `BillingWebhookEventHandler handleCheckoutSessionCompleted` {session} 1; `BillingUsageServiceImpl doReportUsage` {subscription} 1; `SubscriptionModelHandlerRegistry SubscriptionModelHandlerRegistry` {handler} 1
+- Reported, human, the sinew shape at the class: 99 places, 1257 uses; effective number of values 4.506 (over the thirds 4.500, 5.018, 3.459); the most used value's share 0.526; changes repeating a combination already used there 0.322 of 544
+  - most used values: `FTDISerialDevice` FTDI_SIO_SET_DATA 13; `FTDISerialDevice` FTDI_SIO_MODEM_CTRL 12; `PL2303SerialDevice` PL2303_REQTYPE_HOST2DEVICE 9; `CP2102SerialDevice` mInterface 9; `Query` attr 8
+  - most used combinations: `FTDISerialDevice` {FTDI_SIO_SET_DATA, currentSioSetData} 7; `UsbService` {device} 6; `UsbSerialDevice` {workerThread} 5; `PL2303SerialDevice` {PL2303_REQTYPE_HOST2DEVICE, PL2303_SET_LINE_CODING} 5; `StatsDWriter` {bucketType, rootPrefix} 5
+- Reported, human, the sinew shape at the method: 326 places, 1312 uses; effective number of values 2.325 (over the thirds 2.035, 2.669, 1.852); the most used value's share 0.688; changes repeating a combination already used there 0.203 of 626
+  - most used values: `Server.Builder Builder` server 9; `ServerJob execute` server 8; `UsbSerialDevice.WorkerThread run` data 7; `KeyUtils getKeyString` sb 6; `KeyUtils getKeyString` result 6
+  - most used combinations: `Server.Builder Builder` {server} 9; `UsbSerialDevice.WorkerThread run` {data} 7; `ServerJob execute` {server} 5; `StatsDWriter internalWrite` {query, result, server, typeNames, values} 5; `JmxTransformer scheduleJob` {minuteTrigger, server, trigger} 4
 - Reported, at the class on its fields only (as until 19 November 2026): 1.789 [1.536, 2.083]
 - Reported, at the class with every member the code was bound to as the core, private or not (as until 22 November 2026): 3.150 [2.734, 3.629]
 - Reported, human, the core's width at the class: 2.046 values a row (median 1, 502 rows); over the thirds of the stream 2.158, 1.790, 2.213
@@ -174,6 +187,13 @@ Calls between classes each unit added (the tree after it less the tree before), 
   - candidate for redistribution: `UsbSerialDevice` and `UsbSerialDevice.WorkerThread` (human/felHR85__UsbSerial), changed together 4 times, calls between them 1 → 4
   - candidate for redistribution: `CDCSerialDevice` and `UsbSerialDevice` (human/felHR85__UsbSerial), changed together 4 times, calls between them 2 → 4
   - candidate for redistribution: `PL2303SerialDevice` and `UsbSerialDevice` (human/felHR85__UsbSerial), changed together 4 times, calls between them 2 → 3
+
+## H9, the cost to fix a concentration (secondary)
+
+Each class with two or more blocks at the end of the stream: its cheapest split, the fewest internal links (calls between its blocks, blocks sharing a field that holds state) a cut must cross to divide it into two parts of at least a quarter of its code each. The function arm's rate at the same size below 1, **and** the gap widening as classes grow (arm × size below 1); one-sided, 95% cluster-bootstrap intervals.
+
+- **descriptive only**
+- Not testable on a history: its arms do not solve the same problems.
 
 ## Reported: where forced coupling came from
 
