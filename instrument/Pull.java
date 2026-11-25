@@ -96,7 +96,7 @@ import net.officefloor.sinewslim.javaparser.ParsedFile;
 public final class Pull {
 
 	/** Bump whenever a field's meaning changes. */
-	static final int VERSION = 18;
+	static final int VERSION = 19;
 
 	/** A removed position's text must be at least this long to mark an added one as moved. */
 	static final int MOVED_MIN_CHARS = 12;
@@ -1268,7 +1268,7 @@ public final class Pull {
 	/**
 	 * A function's outputs (H5's weights, VERSION 18): each parameter annotated {@code @Flow("name")}, with
 	 * the number of arguments its flow interface's method takes, where that interface is declared in
-	 * the same source file (an OfficeFloor function's own nested interface); 0 where it is not found.
+	 * the same source file (an OfficeFloor function's own nested interface); -1 where it is not found.
 	 */
 	static Map<String, Integer> flows(Node n) {
 		Map<String, Integer> out = new TreeMap<>();
@@ -1296,7 +1296,7 @@ public final class Pull {
 					continue;
 				}
 				String type = rawSimple(p.getType().asString());
-				int arity = 0;
+				int arity = -1;   // not found in the function's own file (VERSION 19); counted by the reader
 				var cu = n.findCompilationUnit();
 				if (cu.isPresent()) {
 					for (var t : cu.get().findAll(com.github.javaparser.ast.body.ClassOrInterfaceDeclaration.class)) {

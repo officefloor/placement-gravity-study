@@ -549,6 +549,7 @@ def link_rows(arm: str, chain: str, measured: dict) -> list[dict]:
         row["state_weight_added"] = row["state_links_added"]
         row["state_weight_lost"] = row["state_links_lost"]
         row["flow_weight_added"] = sum(g1.flow_weight(lf1.get(x)) for x in f1 - f0)
+        row["flow_unresolved_added"] = sum(1 for x in f1 - f0 if not g1.flow_resolved(lf1.get(x)))
         row["flow_weight_lost"] = sum(g0.flow_weight(lf0.get(x)) for x in f0 - f1)
         row["weight_added"] = row["call_weight_added"] + row["state_weight_added"] + row["flow_weight_added"]
         row["weight_lost"] = row["call_weight_lost"] + row["state_weight_lost"] + row["flow_weight_lost"]

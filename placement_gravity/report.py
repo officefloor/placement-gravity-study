@@ -251,7 +251,9 @@ def h5_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
         if a.get("weight_added") is not None:
             L.append(f"  - weighed: {f(a.get('weight_added'))} a checkpoint (call {f(a.get('call_weight_added'))}, state "
                      f"{f(a.get('state_weight_added'))}, flow {f(a.get('flow_weight_added'))}; lost {f(a.get('weight_lost'))}); "
-                     f"per position of logic {f(a.get('weight_per_logic'))}")
+                     f"per position of logic {f(a.get('weight_per_logic'))}; wiring edges whose weight could not "
+                     f"be read from the Java (weighed 1) {f(a.get('flow_unresolved_added_total'))} of "
+                     f"{f(a.get('flow_links_added_total'))}")
         if a.get("call_links_added_from_functions") is not None:
             ct = a.get("calls_from_methods_thirds") or {}
             L.append(f"  - its call links by caller: from wired functions {f(a.get('call_links_added_from_functions'))}, "
@@ -605,6 +607,30 @@ def reuse_lines(r: dict) -> list[str]:
     return L
 
 
+def sinew_lines(r: dict) -> list[str]:
+    """Beside H2: the sinew shape (PLAN.md §5, 25 November 2026), how a place's bound uses fall on
+    its values and their combinations, and the effective number of values they fall on."""
+    L = []
+    for arm, x in (r.get("sinew_shape") or {}).items():
+        for lev in ("class", "method"):
+            s = x.get(lev) or {}
+            if not s.get("places"):
+                continue
+            th = s.get("effective_number_thirds") or {}
+            L.append(f"- Reported, {arm}, the sinew shape at the {lev}: {f(s['places'])} places, {f(s['uses'])} uses; "
+                     f"effective number of values {f(s['effective_number'])} (over the thirds "
+                     + ", ".join(f(th.get(t)) for t in ("1", "2", "3"))
+                     + f"); the most used value's share {f(s['top_value_share'])}; changes repeating a combination "
+                     f"already used there {f(s['repeated_combination_share'])} of {f(s['changes'])}")
+            if s.get("top_values"):
+                L.append("  - most used values: " + "; ".join(
+                    f"`{v['place']}` {v['value']} {v['uses']}" for v in s["top_values"]))
+            if s.get("top_combinations"):
+                L.append("  - most used combinations: " + "; ".join(
+                    f"`{c['place']}` {{{', '.join(c['values'])}}} {c['uses']}" for c in s["top_combinations"]))
+    return L
+
+
 def core_lines(r: dict) -> list[str]:
     """The description beside H2: how the bound uses of a place's values are spread over them, and
     how many of the values the changes introduced are used again (PLAN.md §5)."""
@@ -791,6 +817,7 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           f"- Reported, the function arm: class {ratio(rep.get('H2_core_function_arm_class'))}; method "
           f"{ratio(rep.get('H2_core_function_arm_method'))}",
           *core_lines(readings or {}),
+          *sinew_lines(readings or {}),
           f"- Reported, at the class on its fields only (as until 19 November 2026): "
           f"{ratio(rep.get('H2_class_fields'))}",
           f"- Reported, at the class with every member the code was bound to as the core, private or not "

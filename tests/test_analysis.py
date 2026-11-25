@@ -767,3 +767,20 @@ def test_the_growth_exponent_tells_pebbles_from_a_filled_ball():
     assert abs(s["spring"]["class"]["concentrations"]["growth_exponent"] - 1) < 1e-9
     assert abs(s["officefloor"]["class"]["concentrations"]["growth_exponent"]) < 1e-9
     assert s["spring"]["class"]["rest"]["containers_at_end"] == 0
+
+
+def test_the_sinew_shape_counts_values_combinations_and_their_effective_number():
+    from placement_gravity import readings
+    def host(cp, vals):
+        return {"arm": "spring", "chain_id": "c", "cp": cp, "type": "OwnerService", "name": "add",
+                "binding": 1, "net_added": 3, "replacement": "False", "need_class_values": vals,
+                "need_method_values": ""}
+    hs = [host(k, "owners clock") for k in range(1, 8)] + [host(k, "owners") for k in range(8, 24)] \
+        + [host(24, "clock dailyLimit"), host(25, "clock")]
+    s = readings.sinew_shape(hs)["spring"]["class"]
+    # owners 23, clock 9, dailyLimit 1: about 1.8 values carry the place
+    assert s["top_values"][0] == {"place": "OwnerService", "chain_id": "c", "value": "owners", "uses": 23}
+    assert abs(s["effective_number"] - readings.effective_number([23, 9, 1])) < 1e-9
+    assert readings.effective_number([10]) == 1 and readings.effective_number([5, 5, 5, 5]) == 4
+    assert s["top_combinations"][0]["values"] == ["owners"] and s["top_combinations"][0]["uses"] == 16
+    assert s["repeated_combination_share"] == 21 / 25

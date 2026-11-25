@@ -350,3 +350,76 @@ def core_summary(hosts: list[dict]) -> dict:
                       "promoted_share": (len(later) / len(born)) if born else None}
         out[arm] = x
     return out
+
+
+def effective_number(counts: list[int]) -> float | None:
+    """How many values the uses are really spread over (the inverse Simpson index): 1 when one value
+    takes every use, n when n values share them evenly. No threshold is chosen."""
+    total = sum(counts)
+    return 1 / sum((c / total) ** 2 for c in counts) if total else None
+
+
+def sinew_shape(hosts: list[dict], top: int = 5) -> dict:
+    """The sinew shape (a reported reading beside H2, PLAN.md §5, 25 November 2026): per arm and
+    level, over the places that bound code was put in (at the class, its fields; at the method, its
+    parameters and locals), how the bound uses of a place's values are spread. Per place: the uses of
+    each value; the **combinations** (the set of the place's values one change used); and the
+    **effective number** of values its uses fall on (``effective_number``). Reported: the places
+    with uses; the mean effective number over all of a place's uses and over each third of its
+    chain's stream (a falling number: the sinew tightening onto fewer values); the mean share of a
+    place's uses taken by its most used value; the share of changes that used a combination already
+    used at that place; and the most used values and combinations by name."""
+    truth = lambda x: str(x) == "True"
+    out = {}
+    for arm in sorted({h["arm"] for h in hosts}):
+        mine = [h for h in hosts if h["arm"] == arm]
+        if not mine or "need_class_values" not in mine[0] or "binding" not in mine[0]:
+            continue
+        last: dict = {}
+        for h in mine:
+            c = h.get("chain_id", h.get("chain"))
+            last[c] = max(last.get(c, 0), int(h["cp"]))
+        x = {}
+        for lev, col in (("class", "need_class_values"), ("method", "need_method_values")):
+            place = (lambda h: (h.get("chain_id", h.get("chain")), h["type"])) if lev == "class" else \
+                (lambda h: (h.get("chain_id", h.get("chain")), h["type"], h["name"]))
+            uses: dict[tuple, dict[str, int]] = {}
+            thirds: dict[tuple, dict[int, dict[str, int]]] = {}
+            combos: dict[tuple, dict[frozenset, int]] = {}
+            changes = repeated = 0
+            for h in sorted(mine, key=lambda h: int(h["cp"])):
+                if int(h["binding"]) < 1 or int(h["net_added"]) <= 0 or truth(h.get("replacement")):
+                    continue
+                vs = frozenset((h.get(col) or "").split())
+                if not vs:
+                    continue
+                p = place(h)
+                t = min(3, 1 + 3 * (int(h["cp"]) - 1) // max(last[p[0]], 1))
+                for v in vs:
+                    uses.setdefault(p, {})[v] = uses.setdefault(p, {}).get(v, 0) + 1
+                    th = thirds.setdefault(p, {}).setdefault(t, {})
+                    th[v] = th.get(v, 0) + 1
+                seen = combos.setdefault(p, {})
+                changes += 1
+                repeated += vs in seen
+                seen[vs] = seen.get(vs, 0) + 1
+            if not uses:
+                x[lev] = {"places": 0}
+                continue
+            eff = [effective_number(list(u.values())) for u in uses.values()]
+            by_third = {str(t): [effective_number(list(d[t].values())) for d in thirds.values() if t in d]
+                        for t in (1, 2, 3)}
+            values = sorted(((n, p, v) for p, u in uses.items() for v, n in u.items()), reverse=True)[:top]
+            sets = sorted(((n, p, sorted(c)) for p, cs in combos.items() for c, n in cs.items()),
+                          key=lambda r: -r[0])[:top]
+            x[lev] = {"places": len(uses), "uses": sum(sum(u.values()) for u in uses.values()),
+                      "effective_number": statistics.fmean(eff),
+                      "effective_number_thirds": {t: statistics.fmean(v) if v else None for t, v in by_third.items()},
+                      "top_value_share": statistics.fmean(max(u.values()) / sum(u.values()) for u in uses.values()),
+                      "changes": changes, "repeated_combination_share": repeated / changes if changes else None,
+                      "top_values": [{"place": " ".join(map(str, p[1:])), "chain_id": p[0], "value": v, "uses": n}
+                                     for n, p, v in values],
+                      "top_combinations": [{"place": " ".join(map(str, p[1:])), "chain_id": p[0], "values": c, "uses": n}
+                                           for n, p, c in sets]}
+        out[arm] = x
+    return out

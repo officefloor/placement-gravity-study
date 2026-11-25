@@ -3,8 +3,10 @@
 > **Status: NOT YET REGISTERED. The tag `plan-v1` was withdrawn on 17 November 2026, before any
 > run named for analysis was read, while the hypotheses are worked out on the development chain
 > (§9, five revisions so far, the last still growing: rows 72 to 88 follow a review of the plan on
-> 22 November 2026). It will be set again when that work is done; until then only the
-> development chain can be read.** As first registered, on 16 November 2026: the tag was first pushed on commit
+> 22 November 2026; rows 89 to 101, of 24 and 25 November, restate H5 as surface against volume,
+> make H1 an arm contrast, number the hypotheses in the order of the study's story and settle the
+> drafter's remaining choices). It will be set again when that work is done, and waits now on Run
+> B's ids; until then only the development chain can be read.** As first registered, on 16 November 2026: the tag was first pushed on commit
 > `4bb8973` and moved the same day, before any run named for analysis was read, to this revision,
 > which adds bindings to injected dependencies reported apart (§4.3, §5). The instrument is piloted on
 > one pair of chains
@@ -1135,8 +1137,10 @@ the links it added and lost, each counted once however heavy:
   for each parameter the callee takes and 1 if it returns a value (`Pull --places`, `returns`,
   VERSION 18); a state link 1; a flow link 1, plus 1 if it carries a value: a `next:` from a
   function whose method returns one, or an output whose `@Flow` interface's method takes an
-  argument (`flows`, VERSION 18; the interface read in the function's own file, 0 where it is not
-  found there). The function is the node's `method:`, or else its class's first public method. A
+  argument (`flows`, VERSION 18; the interface read in the function's own file). An edge whose
+  function or flow interface is not found there weighs 1, and **the number of such edges is
+  reported** beside the weights (decided by the author on 25 November 2026, §9 row 99): a weight
+  missed this way would favour the function arm unseen. The function is the node's `method:`, or else its class's first public method. A
   link lost weighs as it did before it was lost.
 
 *What it cannot say.* How often a link runs is not read. A parameter weighs 1 whatever it holds.
@@ -2295,6 +2299,17 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   model without the logic, the methods arm's own rise over the stream, and the links per e-fold of
   logic; per arm, the links a checkpoint by kind and third, the links per position of logic, and
   the tree's links per method at the end.
+- **The sinew shape** (reported beside H2, no direction stated; the author's, 25 November 2026, §9
+  row 100). On top of each placement's own core: per place that bound code was put in (at the
+  class, its fields; at the method, its parameters and locals), how often each value is used by
+  bound code, how often each **combination** of values is used together, and the **effective
+  number** of values the uses fall on (the inverse Simpson index: 1 when one value takes every use,
+  n when n share them evenly; no threshold is chosen). Reported per arm and level: the mean
+  effective number over a place's uses and over each third of its chain's stream (a falling
+  number: the sinew tightening onto fewer values), the most used value's share, the share of
+  changes repeating a combination already used at that place, and the most used values and
+  combinations by name. As built: `readings.sinew_shape`, `readings.effective_number`
+  (`readings.json`, `sinew_shape`), `report.sinew_lines`.
 - **Encapsulation and the reader** (22 November 2026, §4.2f; reported, not tested; built the
   same day): on corpora B and C, per unit, (1) the private share of introduced members as a binomial
   mixed model, (2) the forced share of positions added to existing classes as a binomial mixed
@@ -3495,6 +3510,22 @@ author's to set, on the plan and code as they then stand, and starts the experim
   **a filled ball or pebbles** (row 98, §4.2g): every class, the concentrations apart; in the function
   arm the wiring flow files as containers too; no direction stated ("no expectation"). The pilot is
   to be measured again at `MEASURE_VERSION` 37 for it.
+- *Decided by the author on 25 November 2026, walking through the drafter's remaining choices one
+  at a time* (row 101; each put plainly, with examples where asked for): **(1)** H1's arm contrast
+  leaves out checkpoints where the agent changed nothing. **(2)** Where H1's negative binomial
+  cannot be fitted it falls back to Poisson, recorded; the bootstrap interval carries the chains'
+  variation either way. **(3)** A wiring edge whose weight cannot be read from the Java weighs 1,
+  and how many there are is reported (row 99). **(4)** The ball-or-pebbles exponent is pooled
+  over containers, those that grew most counting most, not the median container (worked on an
+  example: 0.40 against 0.17). **(5)** H2's core is each placement's own (what its code was bound
+  to), with no threshold; uses counted value by value; core and periphery compared within the
+  placement. A class's methods as core values had already been settled by row 71 (its private
+  methods are core). On top of it, the author asked for **the sinew shape** (row 100), with the
+  effective number of values rather than a share cut-off. **(6)** The reader reading's size bands
+  stay at 200,000 and 1,000,000 tokens (display only). **(7)** In the reader reading, corpus C's
+  undeclared commits are a third group, never pooled, and a band with fewer than 10 repositories
+  is shown and marked thin. With these, every drafter's choice listed above as not yet spoken to
+  has been spoken to; the Run D choices of row 76 were settled with it.
 - *Done for rows 94 and 95:* the pilot measured again at `MEASURE_VERSION` 36 (§6). **H5 frozen**
   (the author, 24 November 2026, agreeing with the drafter): no further change to it before the ui
   runs are read. **A call made on an injected object is a call link**, confirmed by the author
@@ -3743,6 +3774,9 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 96 | Confirmed: a call made on an injected object (a repository, a mapper, a store handed to a function or held in a Spring field the container fills) is a call link, weighed as any call; receiving the injected object is not surface | §4.2c, §8 | The author, 24 November 2026: "keep it counted", after the drafter laid out both readings. It had been the drafter's reading since row 89. **Decided after the development chain had been seen** (§6: many of the function arm's 3.34 call links a checkpoint across classes are such calls, and Spring has the same kind), on the principle that injection removes the finding of the target, not the call. No code changes |
 | 97 | The forces map redrawn: the numbering of row 93; H1 the force with the function arm forced less; H3 *encapsulation fills*; the dispersing branch now *coordinate*, its cost H5 surface against volume (weighed links per unit of logic); H8 Run D as a box that removes encapsulation; the confirmatory four named; a label that ran past its box shortened | §2, `figures/placement-forces.svg` | The author, 24 November 2026: "redraw the forces-map figure with the new numbering". A drawing only |
 | 98 | A reported reading, a filled ball or pebbles: per checkpoint each container of blocks of logic (every class; in the function arm also each wiring flow file) with its blocks (methods), volume, largest block's share, Gini, internal and external links, and whether it is a concentration; per arm and kind, the concentrations, the rest and all, at the end and by the growth exponent of blocks on volume within a container. No direction stated; no verdict depends on it | §4.2g, §8, `tables.container_rows`, `measure.py` (`containers.csv`), `prepare.container_summary`, `report.containers_section`, `tests/`; `MEASURE_VERSION` 37 | The author's, 25 November 2026: "I'm thinking more that we need the number of blocks of code (methods). Need to determine if dealing with a filled ball or is it full of smaller pebbles". The classes, the containers and no expectation chosen by the author from the drafter's options. Not yet computed on any chain |
+| 99 | H5's weights: an edge whose function or flow interface is not found in the function's own file still weighs 1, and the number of such edges is now counted and reported (`Pull --places` `flows` gives -1 for an interface not found, VERSION 19) | §4.2c, `Pull.java`, `flow.Graph.flow_resolved`, `tables.link_rows` (`flow_unresolved_added`), `prepare.links_summary`, `report.h5_section`, `tests/`; `MEASURE_VERSION` 38 | Decided by the author on 25 November 2026 (walk-through, item 3): a weight missed this way would favour the function arm unseen. On the development chain every interface was nested; no figure changes there |
+| 100 | A reported reading beside H2, the sinew shape: per place, each value's uses, the combinations used together, and the effective number of values (inverse Simpson) over a place's uses and over the thirds of the stream; the most used values and combinations by name. No direction stated | §5, `readings.sinew_shape`, `readings.effective_number`, `prepare.py`, `report.sinew_lines`, `tests/` | The author's, 25 November 2026: "I would however be interested in seeing the sinew shape as reported. In other words, how often each value is used. How often are the combinations used. And is there a trend to number of values that would be considered the sinew core". The effective number chosen by the author over a share cut-off. Not yet computed on any chain |
+| 101 | The drafter's remaining choices settled by the author, one at a time (§8, 25 November 2026): H1's no-ops left out and its Poisson fallback; the edge count (row 99); the containers' pooled exponent; H2's per-placement core; the reader reading's bands and its two display rules. No rule changes beyond rows 99 and 100 | §8 | The author's answers to the drafter's walk-through |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

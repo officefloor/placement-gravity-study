@@ -142,6 +142,18 @@ class Graph:
             return 1
         return 1 + max(int(m.get("params", 0)), 0) + (1 if m.get("returns") else 0)
 
+    def flow_resolved(self, source: dict | None) -> bool:
+        """Whether a wiring edge's weight could be read from the Java (decided by the author on 25
+        November 2026, PLAN.md 9 row 99): its function found, and for an output its flow interface
+        found in the function's own file. An edge that is not weighs 1 and is counted."""
+        if not source or not source.get("class"):
+            return False
+        ms = [m for m in self.methods if simple(m["type"]) == source["class"]
+              and (m.get("name") == source.get("method") if source.get("method") else m.get("access") == "public")]
+        if not ms:
+            return False
+        return source.get("output") is None or (ms[0].get("flows") or {}).get(source["output"], -1) >= 0
+
     def flow_weight(self, source: dict | None) -> int:
         """A wiring edge's weight (H5, 24 November 2026): 1, and 1 more if it carries a value: a
         ``next:`` from a function that returns one, or an output whose flow takes an argument. The

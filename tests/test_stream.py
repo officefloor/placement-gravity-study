@@ -505,9 +505,19 @@ def test_a_wiring_edge_weighs_one_more_where_it_carries_a_value(tmp_path):
     assert (m["returns"], m["flows"]) == (False, {"proceed": 1, "stop": 0})
     g = flow.Graph({"files": files})
     assert g.flow_weight({"class": "Check", "method": None, "output": "proceed"}) == 2
+    assert g.flow_resolved({"class": "Check", "method": None, "output": "proceed"})
     assert g.flow_weight({"class": "Check", "method": None, "output": "stop"}) == 1
     assert g.flow_weight({"class": "Load", "method": "service", "output": None}) == 2
     assert g.flow_weight({"class": "Check", "method": None, "output": None}) == 1
+    # an interface in another file is not found: the edge weighs 1 and is counted as unresolved
+    (src / "Elsewhere.java").write_text("package f; public class Elsewhere { public void service("
+                                        "@Flow(\"go\") Go go) { } }")
+    subprocess.run(["java", "-cp", chain.CLASSPATH, "Pull", "--places", str(tmp_path / "places.tsv"),
+                    str(tmp_path / "places.jsonl")], check=True)
+    files = {r["path"]: r for r in map(json.loads, (tmp_path / "places.jsonl").read_text().splitlines())}
+    g = flow.Graph({"files": files})
+    src_go = {"class": "Elsewhere", "method": None, "output": "go"}
+    assert (g.flow_weight(src_go), g.flow_resolved(src_go)) == (1, False)
 
 
 def test_containers_count_blocks_volume_and_the_links_inside_and_out(tmp_path):
