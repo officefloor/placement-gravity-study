@@ -1,0 +1,165 @@
+{
+ "change_size": {
+  "agent": {
+   "units": 8,
+   "forced_units": 5,
+   "positions": {
+    "forced": 24.4,
+    "not": 23.666666666666668
+   },
+   "methods": {
+    "forced": 9.0,
+    "not": 3.6666666666666665
+   },
+   "median_methods": 5.5,
+   "existing_classes_small": {
+    "forced": 1.0,
+    "not": 0.0
+   },
+   "existing_classes_large": {
+    "forced": 3.3333333333333335,
+    "not": 2.0
+   }
+  },
+  "human": {
+   "units": 462,
+   "forced_units": 306,
+   "positions": {
+    "forced": 11.581699346405228,
+    "not": 5.916666666666667
+   },
+   "methods": {
+    "forced": 4.045751633986928,
+    "not": 2.3333333333333335
+   },
+   "median_methods": 2.0,
+   "existing_classes_small": {
+    "forced": 0.1402439024390244,
+    "not": 0.06837606837606838
+   },
+   "existing_classes_large": {
+    "forced": 2.4014084507042255,
+    "not": 1.641025641025641
+   }
+  },
+  "agent/bytechefhq__bytechef": {
+   "units": 8,
+   "forced_units": 5,
+   "positions": {
+    "forced": 24.4,
+    "not": 23.666666666666668
+   },
+   "methods": {
+    "forced": 9.0,
+    "not": 3.6666666666666665
+   },
+   "median_methods": 5.5,
+   "existing_classes_small": {
+    "forced": 1.0,
+    "not": 0.0
+   },
+   "existing_classes_large": {
+    "forced": 3.3333333333333335,
+    "not": 2.0
+   }
+  },
+  "human/felHR85__UsbSerial": {
+   "units": 166,
+   "forced_units": 133,
+   "positions": {
+    "forced": 13.278195488721805,
+    "not": 8.909090909090908
+   },
+   "methods": {
+    "forced": 3.3684210526315788,
+    "not": 3.272727272727273
+   },
+   "median_methods": 2.0,
+   "existing_classes_small": {
+    "forced": 0.1038961038961039,
+    "not": 0.1111111111111111
+   },
+   "existing_classes_large": {
+    "forced": 1.3928571428571428,
+    "not": 1.4
+   }
+  },
+  "human/jmxtrans__jmxtrans": {
+   "units": 296,
+   "forced_units": 173,
+   "positions": {
+    "forced": 10.277456647398845,
+    "not": 5.1138211382113825
+   },
+   "methods": {
+    "forced": 4.566473988439307,
+    "not": 2.0813008130081303
+   },
+   "median_methods": 2.0,
+   "existing_classes_small": {
+    "forced": 0.1724137931034483,
+    "not": 0.06060606060606061
+   },
+   "existing_classes_large": {
+    "forced": 3.058139534883721,
+    "not": 1.7916666666666667
+   }
+  }
+ },
+ "timing": {
+  "step4": {
+   "seconds": 206.3,
+   "refits": 200
+  }
+ },
+ "repositories": {
+  "open-source-development": {
+   "drawn": 5,
+   "usable": 2,
+   "repositories": {
+    "felHR85/UsbSerial": {
+     "commits": "422",
+     "agent_commits": "0",
+     "agents": "",
+     "units": 227,
+     "class_rows": 305,
+     "class_alternatives": 0.0,
+     "own_share": 1.0,
+     "method_rows": 115,
+     "method_alternatives": 5.643478260869565,
+     "calls_followed": 0.7943228946780242
+    },
+    "jmxtrans/jmxtrans": {
+     "commits": "1461",
+     "agent_commits": "0",
+     "agents": "",
+     "units": 422,
+     "class_rows": 362,
+     "class_alternatives": 0.0,
+     "own_share": 1.0,
+     "method_rows": 535,
+     "method_alternatives": 6.072897196261683,
+     "calls_followed": 0.612653676662297
+    }
+   }
+  },
+  "open-source-development-agent": {
+   "drawn": 39,
+   "usable": 1,
+   "repositories": {
+    "bytechefhq/bytechef": {
+     "commits": "23215",
+     "agent_commits": "1608",
+     "agents": "claude:1587;copilot:15;cursor:6",
+     "units": 300,
+     "class_rows": 383,
+     "class_alternatives": 2.4073107049608353,
+     "own_share": 0.6422976501305483,
+     "method_rows": 457,
+     "method_alternatives": 21.62800875273523,
+     "calls_followed": 0.4901375003367327
+    }
+   }
+  }
+ }
+}

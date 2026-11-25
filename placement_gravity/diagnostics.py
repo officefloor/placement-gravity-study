@@ -488,12 +488,23 @@ def _fmt(x) -> str:
     return "–" if x is None else str(x)
 
 
+def _ratio(x: dict) -> str:
+    """A model's rate ratio and its 95% interval, as the report prints them."""
+    return f"{_fmt(x['irr'])} [{_fmt(x.get('irr_lower'))}, {_fmt(x.get('irr_upper'))}]"
+
+
 def _lines(x, depth: int = 0) -> list[str]:
     pad = "  " * depth
+    if isinstance(x, dict) and "irr" in x:
+        return [f"{pad}- {_ratio(x)}"]
     if isinstance(x, dict):
         out = []
         for k, v in x.items():
-            if isinstance(v, dict):
+            if isinstance(v, dict) and "irr" in v:
+                out.append(f"{pad}- {k}: {_ratio(v)}")
+            elif isinstance(v, dict) and set(v) == {"error"}:
+                out.append(f"{pad}- {k}: not estimated ({v['error']})")
+            elif isinstance(v, dict):
                 out += [f"{pad}- {k}:"] + _lines(v, depth + 1)
             elif isinstance(v, list) and v and isinstance(v[0], dict):
                 out += [f"{pad}- {k}:"] + [ln for item in v for ln in _lines(item, depth + 1)]

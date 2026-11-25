@@ -3047,6 +3047,33 @@ binomial mixed model). These details are fixed with the code before any run is r
   unchanged): H1 is not testable there, and its reading of choice narrows is **every placement
   forced, no alternative in any of 638 rows**, the case the review found would have silenced H1
   under its old rule (row 107). Nothing else moved.
+- **The diagnostics, first made by the steps** (26 November 2026, `MEASURE_VERSION` 42, row 112;
+  descriptive only). Every estimate came back the same; step 4 only added the fits within each arm.
+  **Most figures the plan had from one-off queries come back exactly**: the files (1.03 and 0.15
+  new Java files a checkpoint, 203 and 94 at the end, the largest 15.5 and 51 kB, the busiest gone
+  back into at 24 of 60 and 43, the three busiest 44% and 83% of the returns, `OwnerMapper` 24 in
+  each arm and `Owner` 16 and 13); the new methods (35 wired functions at 1.9 injected parameters,
+  80 and 81 called methods with logic, 85 and 100 parameters, 4 and 12 values passed, 32 and 13
+  classes, 36 in Spring's controller); the well-trodden count over the thirds; the runs into
+  existing methods (74, 12 injected; 71 to 67; 20 to 10); Spring's bound new methods (9 by a call
+  only, 4 by both; 4 and 288 later arrivals; 102 values introduced, 1 used; 13 rows, 43 arrivals,
+  all `addOwner`); the change sizes; the bystanders and their thirds; `addOwner`; the controller's
+  Gini 0.20 to 0.45 and its correlation −0.50; the junctions; the sample's draws, commits and
+  units; bytechef's class rows. **Some differ, from tables remade since or rules made exact**:
+  existing files gone back into 48 and 9 (§6 had 49 and 10); new methods bound by a field only 16
+  (15); Spring's arrivals at the method 319 (396) and at the class 9.2 a row (10.9); the arrival
+  rate of new and existing methods 0.004 and 0.19 a later checkpoint (0.005 and 0.24); the busiest
+  class's runs 106, its fields standing by 4 to 17 (41 arrivals, 4 to 16), `addOwner`'s 33 runs (25);
+  H6's class rows 268, the controller 76 and 79% of the arrivals (77, 37, 87%); fields added where no
+  unbound code landed 0.35 and 0.09 (0.35 and 0.06); bytechef's method alternatives 21.6 (26);
+  the methods on a host's flow, Spring 27 early and 69 late (64 and 114); and the domain-typed
+  rows' alternatives over the thirds, 6.0, 3.2, 5.9 in Spring (10, 15, 23), the split now by a
+  stated rule (a value named after a class of the system) where the first was by eye. **Size or
+  data within Spring alone**: at the method size alone 3.31 [2.17, 5.03], with what stood by 5.00
+  and what stood by 0.88 [0.76, 1.03] (§6 had 3.20 [2.42, 4.23], 4.43 and 0.88 [0.78, 0.99]); at
+  the class 1.28 [1.03, 1.60], 2.10 and 0.91 [0.87, 0.95] (1.22, 1.89, 0.92): the same reading,
+  size draws and what stood by does not once size is held, the method's interval now reaching 1.
+  Step 4 took 174 seconds on the pilot at 1,000 refits. None of this changes a rule.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.

@@ -1,0 +1,614 @@
+{
+ "files": {
+  "officefloor": {
+   "checkpoints": 60,
+   "new_java_files_per_checkpoint": 1.0333333333333334,
+   "java_files_at_end": 203,
+   "largest_java_file_kb": 15.537,
+   "existing_files_gone_back_into": 48,
+   "busiest": {
+    "path": "src/main/resources/officefloor/rest/api/owners.POST.yml",
+    "checkpoints": 24
+   },
+   "share_gone_back_into_at_four_or_fewer": 0.9375,
+   "three_busiest_share_of_returns": 0.4444444444444444
+  },
+  "spring": {
+   "checkpoints": 60,
+   "new_java_files_per_checkpoint": 0.15,
+   "java_files_at_end": 94,
+   "largest_java_file_kb": 51.388,
+   "existing_files_gone_back_into": 9,
+   "busiest": {
+    "path": "src/main/java/org/springframework/samples/petclinic/rest/controller/v1/OwnerRestControllerV1.java",
+    "checkpoints": 43
+   },
+   "share_gone_back_into_at_four_or_fewer": 0.5555555555555556,
+   "three_busiest_share_of_returns": 0.8333333333333334
+  },
+  "gone_back_into_by_both": [
+   {
+    "file": "OwnerMapper.java",
+    "officefloor": 24,
+    "spring": 24
+   },
+   {
+    "file": "Owner.java",
+    "officefloor": 16,
+    "spring": 13
+   },
+   {
+    "file": "OwnerCreatedEvent.java",
+    "officefloor": 2,
+    "spring": 2
+   }
+  ]
+ },
+ "new_methods": {
+  "officefloor": {
+   "wired_functions": 35,
+   "injected_parameters_each": 1.8857142857142857,
+   "called_with_logic": 80,
+   "their_parameters": 85.0,
+   "values_callers_pass": 4.0,
+   "classes": 32,
+   "most": {
+    "class": "OwnerMapper",
+    "methods": 17
+   }
+  },
+  "spring": {
+   "wired_functions": 0,
+   "injected_parameters_each": null,
+   "called_with_logic": 81,
+   "their_parameters": 100.0,
+   "values_callers_pass": 12.0,
+   "classes": 13,
+   "most": {
+    "class": "OwnerRestControllerV1",
+    "methods": 36
+   }
+  }
+ },
+ "trodden_thirds": {
+  "officefloor": {
+   "all": 13.416666666666666,
+   "thirds": [
+    5.3,
+    15.0,
+    19.95
+   ]
+  },
+  "spring": {
+   "all": 21.683333333333334,
+   "thirds": [
+    7.5,
+    22.15,
+    35.4
+   ]
+  }
+ },
+ "injected_runs": {
+  "officefloor": {
+   "runs_into_existing_methods": 61,
+   "with_an_injected_binding": 0,
+   "bound": 29,
+   "bound_without_injected": 29,
+   "bound_at_the_class": 6,
+   "bound_at_the_class_without_injected": 6
+  },
+  "spring": {
+   "runs_into_existing_methods": 74,
+   "with_an_injected_binding": 12,
+   "bound": 71,
+   "bound_without_injected": 67,
+   "bound_at_the_class": 20,
+   "bound_at_the_class_without_injected": 10
+  }
+ },
+ "bound_new_methods": {
+  "officefloor": {
+   "new_methods_bound_at_the_class": 4,
+   "by_a_field_only": 1,
+   "by_a_call_only": 3,
+   "by_both": 0,
+   "bound_rows_new": 4,
+   "their_later_arrivals_at_the_method": 0.0,
+   "bound_rows_existing": 27,
+   "existing_later_arrivals_at_the_method": 3.0,
+   "values_new_ones_introduced": 13.0,
+   "later_arrivals_bound_to_those": 0.0,
+   "rows_with_an_arrival_bound_to_what_stood_by": 1,
+   "those_arrivals": 1.0,
+   "their_methods": {
+    "service": 1
+   }
+  },
+  "spring": {
+   "new_methods_bound_at_the_class": 29,
+   "by_a_field_only": 16,
+   "by_a_call_only": 9,
+   "by_both": 4,
+   "bound_rows_new": 29,
+   "their_later_arrivals_at_the_method": 4.0,
+   "bound_rows_existing": 60,
+   "existing_later_arrivals_at_the_method": 288.0,
+   "values_new_ones_introduced": 102.0,
+   "later_arrivals_bound_to_those": 1.0,
+   "rows_with_an_arrival_bound_to_what_stood_by": 13,
+   "those_arrivals": 43.0,
+   "their_methods": {
+    "addOwner": 13
+   }
+  }
+ },
+ "alternatives_thirds": {
+  "officefloor": {
+   "rows": 30,
+   "domain_rows": 6,
+   "domain_thirds": [
+    null,
+    0.0,
+    5.4
+   ],
+   "other_thirds": [
+    5.4,
+    15.6,
+    11.142857142857142
+   ],
+   "flow_methods_thirds": [
+    28.6,
+    54.0,
+    46.10526315789474
+   ]
+  },
+  "spring": {
+   "rows": 59,
+   "domain_rows": 39,
+   "domain_thirds": [
+    6.0,
+    3.2,
+    5.894736842105263
+   ],
+   "other_thirds": [
+    4.0,
+    8.8,
+    24.25
+   ],
+   "flow_methods_thirds": [
+    27.4375,
+    45.2,
+    69.17391304347827
+   ]
+  }
+ },
+ "change_size": {
+  "officefloor": {
+   "units": 42,
+   "forced_units": 9,
+   "positions": {
+    "forced": 19.0,
+    "not": 10.484848484848484
+   },
+   "methods": {
+    "forced": 5.222222222222222,
+    "not": 3.1818181818181817
+   },
+   "median_methods": 3.0,
+   "existing_classes_small": {
+    "forced": 0.5,
+    "not": 0.18181818181818182
+   },
+   "existing_classes_large": {
+    "forced": 2.142857142857143,
+    "not": 1.4545454545454546
+   }
+  },
+  "spring": {
+   "units": 59,
+   "forced_units": 21,
+   "positions": {
+    "forced": 13.238095238095237,
+    "not": 7.684210526315789
+   },
+   "methods": {
+    "forced": 3.9047619047619047,
+    "not": 2.4210526315789473
+   },
+   "median_methods": 3.0,
+   "existing_classes_small": {
+    "forced": 0.0,
+    "not": 0.14285714285714285
+   },
+   "existing_classes_large": {
+    "forced": 1.0714285714285714,
+    "not": 1.0
+   }
+  },
+  "officefloor/blind-202608100006/chain9": {
+   "units": 42,
+   "forced_units": 9,
+   "positions": {
+    "forced": 19.0,
+    "not": 10.484848484848484
+   },
+   "methods": {
+    "forced": 5.222222222222222,
+    "not": 3.1818181818181817
+   },
+   "median_methods": 3.0,
+   "existing_classes_small": {
+    "forced": 0.5,
+    "not": 0.18181818181818182
+   },
+   "existing_classes_large": {
+    "forced": 2.142857142857143,
+    "not": 1.4545454545454546
+   }
+  },
+  "spring/blind-202608100006/chain9": {
+   "units": 59,
+   "forced_units": 21,
+   "positions": {
+    "forced": 13.238095238095237,
+    "not": 7.684210526315789
+   },
+   "methods": {
+    "forced": 3.9047619047619047,
+    "not": 2.4210526315789473
+   },
+   "median_methods": 3.0,
+   "existing_classes_small": {
+    "forced": 0.0,
+    "not": 0.14285714285714285
+   },
+   "existing_classes_large": {
+    "forced": 1.0714285714285714,
+    "not": 1.0
+   }
+  }
+ },
+ "problem_hosts": {
+  "officefloor": {
+   "rows": 192,
+   "most_problems_in_one_method": 6,
+   "arrivals_at_the_method": 18.0,
+   "in_methods_holding_several": 18.0,
+   "new_methods": {
+    "bindings": 0.03571428571428571,
+    "arrivals_per_later_checkpoint": 0.002542764678687009
+   },
+   "existing_methods": {
+    "bindings": 0.9615384615384616,
+    "arrivals_per_later_checkpoint": 0.008323424494649227
+   },
+   "arrivals": {
+    "class": 117.0,
+    "method": 18.0,
+    "lines": 26.0
+   },
+   "arrivals_a_row": {
+    "class": 0.609375,
+    "method": 0.09375,
+    "lines": 0.13541666666666666
+   },
+   "bound_rows": 31,
+   "arrivals_a_bound_row": {
+    "class": 0.8387096774193549,
+    "method": 0.0967741935483871
+   }
+  },
+  "spring": {
+   "rows": 174,
+   "most_problems_in_one_method": 26,
+   "arrivals_at_the_method": 319.0,
+   "in_methods_holding_several": 319.0,
+   "new_methods": {
+    "bindings": 0.32142857142857145,
+    "arrivals_per_later_checkpoint": 0.0040551500405515
+   },
+   "existing_methods": {
+    "bindings": 1.8064516129032258,
+    "arrivals_per_later_checkpoint": 0.1922833649588868
+   },
+   "arrivals": {
+    "class": 1602.0,
+    "method": 319.0,
+    "lines": 23.0
+   },
+   "arrivals_a_row": {
+    "class": 9.206896551724139,
+    "method": 1.8333333333333333,
+    "lines": 0.13218390804597702
+   },
+   "bound_rows": 89,
+   "arrivals_a_bound_row": {
+    "class": 11.865168539325843,
+    "method": 3.2808988764044944
+   }
+  }
+ },
+ "bystanders": {
+  "officefloor": {
+   "runs": 61,
+   "bystanders": 1.360655737704918,
+   "without_constants": 1.2295081967213115,
+   "thirds": [
+    1.6666666666666667,
+    1.0,
+    1.368421052631579
+   ],
+   "thirds_without_constants": [
+    1.5833333333333333,
+    1.0,
+    1.1842105263157894
+   ],
+   "class_thirds": [
+    0.08333333333333333,
+    0.0,
+    0.3684210526315789
+   ],
+   "method_thirds": [
+    1.5833333333333333,
+    1.0,
+    1.0
+   ],
+   "busiest_class": {
+    "place": "OwnerMapper",
+    "runs": 29,
+    "first": 0.0,
+    "last": 1.0
+   },
+   "busiest_method": {
+    "place": "AssignOwnerCustomerCode service",
+    "runs": 6,
+    "first": 0.0,
+    "last": 4.0
+   }
+  },
+  "spring": {
+   "runs": 74,
+   "bystanders": 11.891891891891891,
+   "without_constants": 6.77027027027027,
+   "thirds": [
+    7.166666666666667,
+    11.136363636363637,
+    14.882352941176471
+   ],
+   "thirds_without_constants": [
+    5.944444444444445,
+    6.590909090909091,
+    7.323529411764706
+   ],
+   "class_thirds": [
+    4.611111111111111,
+    7.7272727272727275,
+    11.382352941176471
+   ],
+   "method_thirds": [
+    2.5555555555555554,
+    3.409090909090909,
+    3.5
+   ],
+   "busiest_class": {
+    "place": "OwnerRestControllerV1",
+    "runs": 106,
+    "first": 4.0,
+    "last": 17.0
+   },
+   "busiest_method": {
+    "place": "OwnerRestControllerV1 addOwner",
+    "runs": 33,
+    "first": 0.0,
+    "last": 13.0
+   }
+  }
+ },
+ "busiest_method": {
+  "officefloor": {
+   "method": "CheckOwnerHouseholdUnique service",
+   "rows": 2,
+   "size": 17.0,
+   "cognitive": 6.0,
+   "arrivals_per_100_later_checkpoints": 1.0309278350515463
+  },
+  "spring": {
+   "method": "OwnerRestControllerV1 addOwner",
+   "rows": 25,
+   "size": 34.88,
+   "cognitive": 5.484848484848484,
+   "arrivals_per_100_later_checkpoints": 35.30166880616174
+  }
+ },
+ "class_rows": {
+  "rows": 268,
+  "classes": 31,
+  "busiest": "OwnerRestControllerV1",
+  "busiest_rows": 76,
+  "busiest_share_of_arrivals": 0.7879320445225542,
+  "busiest_gini_first": 0.2041,
+  "busiest_gini_last": 0.4511,
+  "gini_against_arrivals": {
+   "CheckOwnerHouseholdUnique": 0.4242640687119285,
+   "OwnerMapper": 0.3482663041338839,
+   "AuditOwnerCreated": -0.31622776601683794,
+   "ExceptionControllerAdvice": 0.9451560928652786,
+   "OwnerRestControllerV1": -0.4993363528140009
+  }
+ },
+ "fields_and_landings": {
+  "officefloor": {
+   "with_an_unbound_landing": 0.631578947368421,
+   "without": 0.09090909090909091,
+   "rank_correlation": 0.6061509653664693
+  },
+  "spring": {
+   "with_an_unbound_landing": 0.7142857142857143,
+   "without": 0.35294117647058826,
+   "rank_correlation": 0.4108207346842186
+  }
+ },
+ "junctions": {
+  "officefloor": {
+   "junction_share": [
+    0.2177,
+    0.3599
+   ],
+   "junction_share_injection_aware": [
+    0.2984,
+    0.4248
+   ]
+  },
+  "spring": {
+   "junction_share": [
+    0.3291,
+    0.31
+   ],
+   "junction_share_injection_aware": [
+    0.3291,
+    0.31
+   ]
+  }
+ },
+ "size_or_data_by_arm": {
+  "class": {
+   "officefloor": {
+    "n": 22,
+    "size_alone": {
+     "error": "standard error not computed: log_class"
+    },
+    "size": {
+     "error": "standard error not computed: log_class"
+    },
+    "bystanders": {
+     "error": "standard error not computed: bystanders_class"
+    }
+   },
+   "spring": {
+    "n": 55,
+    "size_alone": {
+     "estimate": 0.247598803076867,
+     "se": 0.11250220465455,
+     "lower": 0.0270985337725944,
+     "upper": 0.468099072381139,
+     "level": 0.95,
+     "p_greater": 0.0138738491746228,
+     "p_less": 0.986126150825377,
+     "irr": 1.28094591752955,
+     "irr_lower": 1.02746903817641,
+     "irr_upper": 1.59695560904474
+    },
+    "size": {
+     "estimate": 0.742201683093213,
+     "se": 0.162445328163901,
+     "lower": 0.423814690435178,
+     "upper": 1.06058867575125,
+     "level": 0.95,
+     "p_greater": 2.45107712462954e-06,
+     "p_less": 0.999997548922875,
+     "irr": 2.10055518393903,
+     "irr_lower": 1.52777845559001,
+     "irr_upper": 2.88807062609686
+    },
+    "bystanders": {
+     "estimate": -0.0973822977534632,
+     "se": 0.0245464837873933,
+     "lower": -0.14549252192385,
+     "upper": -0.049272073583076,
+     "level": 0.95,
+     "p_greater": 0.99996364825748,
+     "p_less": 3.63517425204628e-05,
+     "irr": 0.907209115822904,
+     "irr_lower": 0.864596355567164,
+     "irr_upper": 0.951922101605759
+    }
+   }
+  },
+  "method": {
+   "officefloor": {
+    "n": 26,
+    "size_alone": {
+     "estimate": 0.693993336444258,
+     "se": 1.09431180901115,
+     "lower": -1.45081839707446,
+     "upper": 2.83880506996298,
+     "level": 0.95,
+     "p_greater": 0.262980882065894,
+     "p_less": 0.737019117934106,
+     "irr": 2.00169302795039,
+     "irr_lower": 0.234378394989354,
+     "irr_upper": 17.0953256093728
+    },
+    "size": {
+     "estimate": 0.664650553906378,
+     "se": 1.17317530242369,
+     "lower": -1.63473078639594,
+     "upper": 2.96403189420869,
+     "level": 0.95,
+     "p_greater": 0.285513427339466,
+     "p_less": 0.714486572660534,
+     "irr": 1.94381114542961,
+     "irr_lower": 0.195004862194995,
+     "irr_upper": 19.3759362026478
+    },
+    "bystanders": {
+     "estimate": 0.029006791713019,
+     "se": 0.408915861488881,
+     "lower": -0.772453569512356,
+     "upper": 0.830467152938394,
+     "level": 0.95,
+     "p_greater": 0.471724407960818,
+     "p_less": 0.528275592039182,
+     "irr": 1.02943158605529,
+     "irr_lower": 0.461878426093985,
+     "irr_upper": 2.29439032112896
+    }
+   },
+   "spring": {
+    "n": 83,
+    "size_alone": {
+     "estimate": 1.19592079611803,
+     "se": 0.213827127718854,
+     "lower": 0.776827326871426,
+     "upper": 1.61501426536463,
+     "level": 0.95,
+     "p_greater": 1.11632740457063e-08,
+     "p_less": 0.999999988836726,
+     "irr": 3.30660107458869,
+     "irr_lower": 2.17456213465032,
+     "irr_upper": 5.02795964863487
+    },
+    "size": {
+     "estimate": 1.61033164220456,
+     "se": 0.339667738374687,
+     "lower": 0.944595108280005,
+     "upper": 2.27606817612912,
+     "level": 0.95,
+     "p_greater": 1.06384136932912e-06,
+     "p_less": 0.999998936158631,
+     "irr": 5.0044706463296,
+     "irr_lower": 2.57177187861583,
+     "irr_upper": 9.7383156951907
+    },
+    "bystanders": {
+     "estimate": -0.126293837207407,
+     "se": 0.0777899800981918,
+     "lower": -0.27875939655795,
+     "upper": 0.0261717221431364,
+     "level": 0.95,
+     "p_greater": 0.947761195701792,
+     "p_less": 0.0522388042982084,
+     "irr": 0.881355833594548,
+     "irr_lower": 0.756721951219619,
+     "irr_upper": 1.02651720907419
+    }
+   }
+  }
+ },
+ "timing": {
+  "step4": {
+   "seconds": 174.4,
+   "refits": 1000
+  }
+ }
+}
