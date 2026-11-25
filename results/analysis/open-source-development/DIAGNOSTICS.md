@@ -94,6 +94,21 @@ Every figure PLAN.md quotes that REPORT.md does not print, made by step 5 from t
 - step4:
   - seconds: 206
   - refits: 200
+- fits:
+  - date: 2026-11-25T17:21:23Z
+  - cores: 16
+  - glmmTMB: 1.1.14
+  - fits:
+    - rows: 1800
+    - seconds: 1.64
+    - rows: 15000
+    - seconds: 12.5
+    - rows: 30000
+    - seconds: 28.2
+    - rows: 200000
+    - seconds: 213
+    - rows: 1000000
+    - seconds: 1,681
 
 ## repositories
 

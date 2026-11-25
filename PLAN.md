@@ -3074,6 +3074,12 @@ binomial mixed model). These details are fixed with the code before any run is r
   the class 1.28 [1.03, 1.60], 2.10 and 0.91 [0.87, 0.95] (1.22, 1.89, 0.92): the same reading,
   size draws and what stood by does not once size is held, the method's interval now reaching 1.
   Step 4 took 174 seconds on the pilot at 1,000 refits. None of this changes a rule.
+- **The fit timings made by step 1b** (26 November 2026, row 112; `results/timing.json`, on
+  simulated rows shaped as H2's base model, this machine's 16 cores): one fit took 1.6 seconds on
+  1,800 rows, 12.5 and 28 seconds on 15,000 and 30,000, 3.5 minutes on 200,000 and 28 minutes on
+  1,000,000, against the 2 seconds, 22 to 50 seconds, 5.6 and 37 minutes §5 quotes from the
+  one-off fits of 22 November. Somewhat faster, the same order: at 1,000 refits a model of
+  corpus B's size would still take days to weeks, so the 200 refits of row 84 stand.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
