@@ -607,6 +607,47 @@ def reuse_lines(r: dict) -> list[str]:
     return L
 
 
+def h9_section(est: dict, hyp: dict, rep: dict, rd: dict) -> list[str]:
+    """H9, the cost to fix a concentration (PLAN.md §2, §4.2h, §5; secondary)."""
+    b = est.get("H9") or {}
+    h = hyp.get("H9") or {}
+    L = ["", "## H9, the cost to fix a concentration (secondary)", "",
+         "Each class with two or more blocks at the end of the stream: its cheapest split, the fewest internal "
+         "links (calls between its blocks, blocks sharing a field that holds state) a cut must cross to divide "
+         "it into two parts of at least a quarter of its code each. The function arm's rate at the same size "
+         "below 1, **and** the gap widening as classes grow (arm × size below 1); one-sided, 95% "
+         "cluster-bootstrap intervals.", "",
+         f"- **{h.get('verdict', '–')}**" + (f" (p {f(h.get('p'))})" if h.get("p") is not None else "")]
+    if b.get("not_applicable"):
+        return L + ["- Not testable on a history: its arms do not solve the same problems."]
+    if b.get("error"):
+        return L + [f"- Not estimated ({b['error']})"]
+    for k, lab in (("arm", "Cheapest split, function arm / methods arm, at the same size"),
+                   ("size", "The gap as classes grow (arm × log size)")):
+        x = b.get(k) or {}
+        L.append(f"- **{lab}: {ratio(x)}** (one-sided p {f(x.get('p_less'))}; {x.get('interval', '–')}; "
+                 f"{b.get('family', '–')})")
+    L.append("- Classes: " + ", ".join(f"{a} {f(v)}" for a, v in (b.get("classes") or {}).items())
+             + "; mean cheapest split: " + ", ".join(f"{a} {f(v)}" for a, v in (b.get("mean") or {}).items()))
+    c, k = rep.get("H9_concentrations") or {}, rep.get("H9_by_blocks") or {}
+    L.append(f"- Reported, the concentrations alone ({f(c.get('n'))} classes): arm {ratio(c.get('arm'))}, with size "
+             f"{ratio(c.get('size'))}; on the blocks instead of the volume: arm {ratio(k.get('arm'))}, with size "
+             f"{ratio(k.get('size'))}")
+    for arm, a in ((rd or {}).get("h9") or {}).items():
+        L.append(f"- Reported, {arm}: classes of two or more blocks that no split leaves a quarter on each side "
+                 f"(one block holds most of the class), left out: {f(a.get('not_splittable'))}")
+        for g in ("concentrations", "rest"):
+            x = a.get(g) or {}
+            if not x.get("classes"):
+                continue
+            th = x.get("thirds") or {}
+            L.append(f"- Reported, {arm}, {g}: {f(x['classes'])} classes at the end, {f(x.get('blocks'))} blocks, "
+                     f"cheapest split {f(x.get('split_cost'))} ({f(x.get('cost_per_block'))} a block; over the thirds "
+                     + ", ".join(f(th.get(t)) for t in ("1", "2", "3"))
+                     + f"); already in separate pieces {f(x.get('zero_share'))}; found exactly {f(x.get('exact_share'))}")
+    return L
+
+
 def sinew_lines(r: dict) -> list[str]:
     """Beside H2: the sinew shape (PLAN.md §5, 25 November 2026), how a place's bound uses fall on
     its values and their combinations, and the effective number of values they fall on."""
@@ -954,7 +995,7 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
     seg["end"] = len(L)
     L = (L[:seg["H3"]] + h1_section(est, hyp, rep) + L[seg["H2"]:seg["H6"]] + L[seg["H3"]:seg["H2"]]
          + L[seg["H4"]:seg["end"]] + h5_section(est, hyp, rep, readings or {}) + L[seg["H6"]:seg["H4"]]
-         + h7_section(est, hyp, rep, readings or {}))
+         + h7_section(est, hyp, rep, readings or {}) + h9_section(est, hyp, rep, readings or {}))
     L += [
           *h8_section(est, hyp, cond),
           *coupling_source_section(readings or {}),
@@ -986,8 +1027,8 @@ def main() -> None:
     heads = runs.read_heads()
     tag = reg["registration_tag"]
     drift = runs.drift(tag) if runs.registered(tag) else None
-    index = ["# Results", "", "| Analysis | Role | H1 | H2 | H3 | H4 | H5 | H6 | H7 |",
-             "|---|---|---|---|---|---|---|---|---|"]
+    index = ["# Results", "", "| Analysis | Role | H1 | H2 | H3 | H4 | H5 | H6 | H7 | H9 |",
+             "|---|---|---|---|---|---|---|---|---|---|"]
     for analysis in reg["analyses"]:
         name = analysis["name"]
         d = OUT / name
@@ -1003,7 +1044,7 @@ def main() -> None:
         (d / "REPORT.md").write_text(render(name, analysis["role"], est, ver, cond, spec, mine, drift, rd))
         hy = ver["hypotheses"]
         index.append(f"| [{name}]({name}/REPORT.md) | {analysis['role']} | "
-                     + " | ".join(hy.get(f"H{i}", {}).get("verdict", "–") for i in range(1, 8)) + " |")
+                     + " | ".join(hy.get(f"H{i}", {}).get("verdict", "–") for i in (1, 2, 3, 4, 5, 6, 7, 9)) + " |")
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "REPORT.md").write_text("\n".join(index) + "\n")
     print((OUT / "REPORT.md").read_text())

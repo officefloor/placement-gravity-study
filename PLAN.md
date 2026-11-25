@@ -227,7 +227,8 @@ is forced less), **H2** (concentration: a core draws code in), **H4** (the contr
 injection forms no core) and **H5** (the surface: for the same logic, fewer links between blocks
 of logic under function injection, and the gap widening; restated 24 November 2026, §9 row 89).
 Holm over these four. **H3** (the encapsulation fills, the cost of concentration), **H6** (shape
-does not draw code in) and **H7** (spread does not see it) are **secondary**: each keeps its direction and rule and is decided on its own p, outside the
+does not draw code in), **H7** (spread does not see it) and **H9** (the cost to fix a
+concentration; 25 November 2026, row 105) are **secondary**: each keeps its direction and rule and is decided on its own p, outside the
 correction. H6 and H7 are the existing literature's two ways of looking for the cause, by shape
 and by co-change, each predicted not to find it. (Until 21 November 2026, later, H7 was
 confirmatory, as *forced changes spread*, and Holm was over five; §9 row 67.) The readings
@@ -567,6 +568,28 @@ alternatives at the class are the other classes that already hold the same depen
     together). Together these say how much of the growth in size, and of the growth in coupling,
     arrived by forcing: by absorbing into a class, or by spreading to the classes holding the
     other data.
+- **H9, the cost to fix a concentration** (stated 25 November 2026, §9 row 104, before any ui run
+  is read; a **secondary** hypothesis since the same day, row 105; the author's). The form cannot be
+  forced on the agent: a function that is not kept to function injection grows a method structure,
+  a handler under another name, and suffers as Spring does (the drift seen on the development
+  chain, §4.9, §6). The author's claim is about what follows: "unlike spring where the whole handler
+  is this situation, leaving little options for fixing, function injection allows it to be split up
+  easily due to lack of method coupling through its wiring configuration, so it is ideally easy to
+  fix. In other words, fixing in OfficeFloor is simple when concentration gets high. It is
+  potentially a rewrite in Spring if this happens." Read as the **cheapest split** of a class
+  (§4.2h): the fewest links between its blocks that a cut must cross to divide it into two parts
+  each holding at least a quarter of its volume, the links being its blocks' calls to each other
+  and their uses of the same field holding state, counted alike in both arms. **The test**, on
+  every class of two or more blocks at the end of each chain: at the same size (log volume), the
+  function arm's cheapest split is lower (rate ratio below 1), **and** the gap widens as classes
+  grow (the arm's interaction with size below 1): a function that grows a method structure stays
+  cheap to split, a Spring handler does not. Decided on its own p at α = 0.05, outside the Holm
+  family, as H3, H6 and H7. The concentrations alone are reported beside it.
+  - *Why every class of two or more blocks, and not only the concentrations* (the drafter's,
+    to be confirmed): the claim is about a function that has grown a method structure, forced into
+    or not; and the function arm forms few concentrations at the class (5 at the end of the
+    development chain), too few to test on. The direction as first stated (row 104) named
+    concentrations of the same size.
 - **A reading: split or concentrate** (added 20 November 2026, §9; the author's; reported, not
   among the confirmatory tests). Encapsulation forces code into a class
   (concentration); the counter force is to separate it into more encapsulated units, which opens
@@ -593,23 +616,6 @@ alternatives at the class are the other classes that already hold the same depen
   where the system fits in a context window, and the difference narrows where it does not. If
   none of the four differs, encapsulation's use is the same for both readers and the question is
   answered the other way; both outcomes are reported.
-- **A reading: the cost to fix a concentration** (stated 25 November 2026, §9 row 104, before any ui
-  run is read; the author's; reported, not among the tests; to be built before the tag, §4.2h). The
-  form cannot be forced on the agent: a function that is not kept to function injection grows a
-  method structure, a handler under another name, and suffers as Spring does (the drift seen on
-  the development chain, §4.9, §6). The author's claim is about what follows: "unlike spring where
-  the whole handler is this situation, leaving little options for fixing, function injection
-  allows it to be split up easily due to lack of method coupling through its wiring
-  configuration, so it is ideally easy to fix. In other words, fixing in OfficeFloor is simple
-  when concentration gets high. It is potentially a rewrite in Spring if this happens." Read as
-  the **cheapest split** of a container (§4.2g): the fewest links between its blocks that must be
-  cut to divide it into two parts each holding at least a quarter of its volume, the links being
-  its blocks' calls to each other and their uses of the same field holding state, counted alike in
-  both arms. **Stated direction:** for concentrations of the same size, the cheapest split cuts
-  fewer links in OfficeFloor than in Spring, and the gap widens as concentrations grow: a function
-  that grows a method structure stays cheap to split, a Spring handler does not. Whether it becomes
-  a secondary hypothesis (decided on its own p, as H3) is the author's to decide once it is built;
-  until then it is a reading with a stated direction.
 - **Q1 is descriptive.** Its expected baseline (Steidl and Deissenboeck 2015) is that most
   growth is new methods. So the share of additions that land in an existing host is reported as
   found, with no direction predicted.
@@ -659,6 +665,10 @@ alternatives at the class are the other classes that already hold the same depen
   same change size. Co-change would then see the force of encapsulation, and the change-coupling
   literature would find what this study says it misses. (As first drafted, H7 was the opposite:
   a spread no wider where forced would have refuted it.)
+- H9: a function arm whose classes, once grown to two or more blocks, cost as much to split as
+  Spring's of the same size, or more, or a gap that does not widen as they grow. Then a function
+  that grows a method structure is as hard to fix as a handler, and the form's advantage lasts
+  only while it is kept to.
 - H8 (Run D, §3.1a): with nothing private, bound code come back to as much at the class, or no
   more calls and field reads added across class boundaries. Encapsulation would then not be what
   concentrates code, or removing it would not disperse it.
@@ -1344,20 +1354,26 @@ As built: `tables.container_rows` (`containers.csv`), `prepare.container_summary
 (`readings.json`, `containers`), `report.containers_section`; `MEASURE_VERSION` 37; a flow is named
 by its wiring file since `MEASURE_VERSION` 39 (§9 row 103). Corpus A only.
 
-### 4.2h The cost to fix a concentration (reported reading; stated, not yet built)
+### 4.2h The cost to fix a concentration (H9)
 
-Stated 25 November 2026 (§9 row 104), to be built before the tag. Per container of §4.2g with at
+Stated 25 November 2026 (§9 row 104) and built the same day as H9's measure (row 105). Per container of §4.2g with at
 least two blocks, at each checkpoint, its blocks (methods) as the points of a graph whose edges are
 its **internal links**: a call from one of its blocks to another, and two of its blocks using the
 same field holding state (§4.2c; injected dependencies and constants are not state). The **cost to
 split** is the fewest edges a cut must cross to divide the blocks into two parts, each holding at
 least a quarter of the container's volume (so that lifting off one small block does not count as
-a split); found exactly where the container is small enough and by a fixed local search where it is
-not, recorded which. A container whose blocks already fall into separate pieces costs 0. Reported
+a split); found exactly up to 14 blocks and above that by a fixed local search (20 random balanced
+starts, seed 20261125, single blocks moved while the cost falls), recorded which. A container whose
+blocks already fall into separate pieces costs 0. A container no split of which leaves a quarter on
+each side (one block holding most of it) is **not splittable**: left out of H9 and counted. Reported
 per arm and kind of container, for the concentrations and the rest: the cost at each chain's last
 checkpoint against the container's blocks and volume, and over the thirds of the stream; the share
-of containers that cost 0. The direction is stated in §2 (*A reading: the cost to fix a
-concentration*). The same rule in both arms: a difference has to come from the code.
+of containers that cost 0. The direction is stated in §2 (H9). The same rule in both arms: a
+difference has to come from the code.
+
+As built: `tables.split_cost`, `tables.container_rows` (`split_cost`, `split_exact` in
+`containers.csv`), `prepare.h9_rows` (`h9.csv`), `prepare.h9_summary`, `analyse.R` (`H9`),
+`verdict.h9`, `report.h9_section`, `selftest.R`, `tests/`; `MEASURE_VERSION` 40.
 
 ### 4.3 Bindings (Q2), the measure of gravitation
 
@@ -2332,6 +2348,16 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   model without the logic, the methods arm's own rise over the stream, and the links per e-fold of
   logic; per arm, the links a checkpoint by kind and third, the links per position of logic, and
   the tree's links per method at the end.
+- **H9** (25 November 2026, §9 row 105; secondary): one row per class of two or more blocks at its
+  chain's last checkpoint, splittable (§4.2h), its cheapest split as a negative binomial
+  (nbinom2) model on the arm, its size (log(1 + volume), centred on all rows' mean) and their
+  interaction, with the chain's intercept (Poisson where the negative binomial cannot be fitted,
+  recorded). The arm term (the function arm's rate at the mean size) and the interaction both
+  one-sided below 1, from one cluster bootstrap; p the larger; reversed if the arm term's interval
+  lies wholly above 1. Decided on its own p at α = 0.05. Reported: the same on the concentrations
+  alone and on the blocks instead of the volume; per arm, for the concentrations and the rest, the
+  cheapest split at the end and over the thirds, the share costing nothing, the share found
+  exactly, and the classes not splittable. Not testable on a history.
 - **The sinew shape** (reported beside H2, no direction stated; the author's, 25 November 2026, §9
   row 100). On top of each placement's own core: per place that bound code was put in (at the
   class, its fields; at the method, its parameters and locals), how often each value is used by
@@ -2379,9 +2405,9 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   in an arm (the development chain) a resample is the data again, so the Wald reading is what
   there is; so too if fewer than half the refits can be fitted; either is recorded. The secondary
   hypotheses and every reported reading keep their Wald intervals.
-- **Multiplicity** (21 November 2026, §9 rows 66 and 67): the confirmatory family H2, H4, H1 and
+- **Multiplicity** (21 November 2026, §9 rows 66 and 67): the confirmatory family H1, H2, H4 and
   H5, Holm-corrected at α = 0.05 over those of the four that have a p (H1 has none where it is
-  not testable). H8 (Run D, §3.1a) is decided at α = 0.05 on its own p, on its own run. H3, H6 and H7 are secondary, each decided at α = 0.05 on its
+  not testable). H8 (Run D, §3.1a) is decided at α = 0.05 on its own p, on its own run. H3, H6, H7 and H9 (since 25 November 2026, row 105) are secondary, each decided at α = 0.05 on its
   own p outside the correction and reported as secondary. (Until 20 November 2026, every
   hypothesis was in one Holm family: four, then five, six and seven; on 21 November 2026 the
   confirmatory family was H2, H4, H1, H7 and H5 until H7 was restated the same day.) All else is
@@ -2415,7 +2441,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   (over all runs, within a class, within a method);
   H2, of the class level and the method level and of the arm contrasts that are needed (row 77); H6, of every shape measure's one-sided test; H4, of the arm
   term, the interaction, the arm's rate ratio in intrusion at the class and at the method and its rate ratio in how well-trodden the files gone back into were (rows 78, 82); H1, its
-  class level's and its arm contrast's two terms (the method level is reported, row 64); H7, its forced ratio's; H5, the larger of its arm term and its interaction (as H4). A hypothesis is
+  class level's and its arm contrast's two terms (the method level is reported, row 64); H7, its forced ratio's; H5 and H9, the larger of the arm term and its interaction (as H4). A hypothesis is
   supported when its p (Holm-adjusted over the confirmatory four; its own for a secondary one) is at most 0.05 **and** its conditions hold (H4: the amount in its band and neither wiring
   condition against). The verdicts are supported, not supported, reversed (an interval wholly on
   the wrong side), unresolved (H6 and H7: an interval reaching above the upper margin), not testable (H6: no
@@ -3577,7 +3603,16 @@ author's to set, on the plan and code as they then stand, and starts the experim
   items not built (corpus B by issue, landing ranks on a history, what unbound code leaves behind)
   are left as **exploratory**, for after the experiment ("are all of these extra things we can do
   after the experiment as exploratory?"), reported as such if done.
-- *To finish for rows 99 to 103:* the pilot measured again at `MEASURE_VERSION` 39 and the
+- *Decided by the author on 25 November 2026 (later still):* **the cost to fix a concentration is
+  H9**, a secondary hypothesis ("write the code for concentration and make it a H9"; row 105). Its
+  rule, the drafter's, to be confirmed: tested on every class of two or more blocks at the end of the
+  stream, at the same size, the concentrations reported beside it (the function arm forms too few
+  concentrations to test on); a class no split of which leaves a quarter on each side left out and
+  counted. Built and tested before any ui run is read; not yet computed on any chain.
+- *To finish for rows 99 to 105:* the pilot measured again at `MEASURE_VERSION` 40 (it was measured
+  at 39 on 25 November; step 3 again), the histories at `HISTORY_VERSION` 15, then steps 4 and 5;
+  whether the call-graph figures moved (row 102) and H9's first figures go into §6.
+- *As it stood for rows 99 to 103:* the pilot measured again at `MEASURE_VERSION` 39 and the
   development histories at `HISTORY_VERSION` 15 (row 102 touches both: several chains or
   repositories are measured in one process): `./step3_measure.sh --analysis pilot`,
   `./step3b_histories.sh --analysis open-source-development --force`, `./step4_analyse.sh
@@ -3837,6 +3872,7 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 102 | **A fault, found on 25 November 2026 before any run named for analysis was read:** the cache of call graphs (`tables._graph`) was keyed by a tree's id without holding the tree, so once a chain's trees were freed, a later chain or repository measured in the same process could be handed an earlier one's graph for a tree whose id had been reused. Corrected: the tree is kept with its graph. It may have touched every figure built on the call graph (H1 at the method, H7's pairs, H5's links, the calls across the encapsulation, surface, ripple, containers) for the second chain or repository of a process since row 54; the bindings, from the instrument, were not | `tables._graph`, `tests/test_stream.py`; `MEASURE_VERSION` 39, `HISTORY_VERSION` 15 | Found while testing row 103, when a new test was handed an earlier test's graph. No rule changes: the code now does what the plan said. Whether the development figures moved is to be read from the rerun (§6) |
 | 103 | The flow containers of the ball-or-pebbles reading (row 98) are named by their wiring file, not by the classes in them, so a flow that gains a function stays one container (`chain.flows` gives the files, `flow_files` in the tree index) | §4.2g, `chain.flows`, `chain.tree_places`, `flow.Graph`, `tables.container_rows`, `tests/`; `MEASURE_VERSION` 39 | Found on reading the reading's first figures (§6): every flow's growth exponent was near 0 because a flow that grew became a new container. A fault, not a choice |
 | 104 | Stated, not yet built: a reported reading, **the cost to fix a concentration**: per container of §4.2g, the fewest internal links (calls between its blocks, blocks sharing a field holding state) a cut must cross to split it into two parts of at least a quarter of its volume each; the direction stated, cheaper in OfficeFloor than in Spring at the same size and the gap widening as concentrations grow. To be built before the tag. Corpus B by issue, landing ranks on a history and what unbound code leaves behind left as exploratory, after the experiment | §2, §4.2h, §8 | The author's, 25 November 2026: "fixing in OfficeFloor is simple when concentration gets high. It is potentially a rewrite in Spring if this happens"; "write the direction now". Stated after the development chain had been seen (H5's drift, §6) and before any ui run is read; the measure is the drafter's, accepted by the author |
+| 105 | **H9, the cost to fix a concentration**, a secondary hypothesis: per class of two or more blocks at the end of each chain, its cheapest split (the fewest internal calls and shared-field links a cut must cross to leave at least a quarter of its volume on each side; exact up to 14 blocks, a seeded local search above, recorded); at the same size the function arm's below the methods arm's, and the gap widening with size (arm × log size), both below 1 on one cluster bootstrap, p the larger, on its own p at α = 0.05. Classes no split of which leaves a quarter on each side are left out and counted. The concentrations alone reported beside | §2, §4.2h, §5, §8, `tables.split_cost`, `tables.container_rows`, `prepare.h9_rows`, `prepare.h9_summary`, `analyse.R` (`H9`), `verdict.h9` (`SECONDARY`), `report.h9_section`, `selftest.R`, `tests/`, `README.md`; `MEASURE_VERSION` 40 | The author's, 25 November 2026: "write the code for concentration and make it a H9". The direction was stated before the ui runs (row 104); the test's population (every class of two or more blocks rather than the concentrations alone) is the drafter's, to be confirmed. Not yet computed on any chain |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

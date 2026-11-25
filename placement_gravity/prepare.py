@@ -462,6 +462,61 @@ def links_summary(rows: list[dict], checkpoints: int) -> dict:
     return out
 
 
+def h9_rows(containers: list[dict]) -> list[dict]:
+    """H9, the cost to fix a concentration (PLAN.md §2, §4.2h, §5): one row per class with at least
+    two blocks at its chain's last checkpoint, with its cheapest split, its size, and whether it is a
+    concentration. Corpus A only."""
+    last: dict[str, int] = {}
+    for r in containers:
+        last[r["chain_id"]] = max(last.get(r["chain_id"], 0), int(r["cp"]))
+    out = []
+    for r in containers:
+        if r["kind"] != "class" or int(r["cp"]) != last[r["chain_id"]] or int(num(r["blocks"], 0)) < 2 \
+                or r.get("split_cost") in (None, "", "None"):
+            continue
+        out.append({"chain_id": r["chain_id"], "arm": r["arm"], "frontend": r.get("frontend", ""),
+                    "container": r["container"], "concentration": truth(r["concentration"]),
+                    "blocks": int(num(r["blocks"])), "volume": int(num(r["volume"], 0)),
+                    "split_cost": int(num(r["split_cost"])), "split_exact": truth(r.get("split_exact"))})
+    return out
+
+
+def h9_summary(containers: list[dict]) -> dict:
+    """Beside H9: per arm, for the concentrations and the rest of the classes with two or more blocks,
+    the cheapest split at the end and at the last checkpoint of each third of the stream, the share
+    that cost nothing (already in separate pieces) and the share found exactly."""
+    multi = [r for r in containers if r["kind"] == "class" and int(num(r["blocks"], 0)) >= 2]
+    rows = [r for r in multi if r.get("split_cost") not in (None, "", "None")]
+    ends: dict[str, int] = {}
+    for r in multi:
+        ends[r["chain_id"]] = max(ends.get(r["chain_id"], 0), int(r["cp"]))
+    out: dict = {}
+    for arm in sorted({r["arm"] for r in rows}):
+        rs = [r for r in rows if r["arm"] == arm]
+        last: dict[str, int] = {}
+        for r in rs:
+            last[r["chain_id"]] = max(last.get(r["chain_id"], 0), int(r["cp"]))
+        a = {}
+        for group, keep in (("concentrations", lambda r: truth(r["concentration"])),
+                            ("rest", lambda r: not truth(r["concentration"]))):
+            g = [r for r in rs if keep(r)]
+            def at(frac):
+                return [r for r in g if int(r["cp"]) == max(1, round(last[r["chain_id"]] * frac))]
+            end = [r for r in g if int(r["cp"]) == last[r["chain_id"]]]
+            mean = lambda xs, f: statistics.fmean(f(r) for r in xs) if xs else None
+            a[group] = {"classes": len(end), "split_cost": mean(end, lambda r: num(r["split_cost"])),
+                        "blocks": mean(end, lambda r: num(r["blocks"])),
+                        "cost_per_block": mean(end, lambda r: num(r["split_cost"]) / num(r["blocks"])),
+                        "zero_share": mean(end, lambda r: float(num(r["split_cost"]) == 0)),
+                        "exact_share": mean(end, lambda r: float(truth(r.get("split_exact")))),
+                        "thirds": {str(t): mean(at(t / 3), lambda r: num(r["split_cost"])) for t in (1, 2, 3)}}
+        # classes of two or more blocks with no split leaving a quarter on each side (one block holds most)
+        a["not_splittable"] = sum(1 for r in multi if r["arm"] == arm and int(r["cp"]) == ends[r["chain_id"]]
+                                  and r.get("split_cost") in (None, "", "None"))
+        out[arm] = a
+    return out
+
+
 def container_summary(rows: list[dict], checkpoints: int, seed: int = SEED, resamples: int = 1000) -> dict:
     """A filled ball or pebbles (a reported reading, PLAN.md 4.2g; no direction stated). Per arm and
     kind of container (class; flow, the function arm's wiring files), for the concentrations, the
@@ -1206,6 +1261,8 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
     write_csv(out / "calls_across.csv", h5)
     surfaced = [] if past else h5_rows(table("links"), split)
     write_csv(out / "h5.csv", surfaced)
+    contained = [] if past else table("containers")
+    write_csv(out / "h9.csv", h9_rows(contained))
     write_csv(out / "surface.csv", surface_rows(table("boundary")))
     edges = table("edges")
     rippled = ripple(hosts, edges)
@@ -1268,7 +1325,8 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
         "validation_flags": validate.flags(checked),
         "split": split_summary(split, len(streamed)),
         "links": links_summary(surfaced, len(streamed)),
-        "containers": {} if past else container_summary(table("containers"), len(streamed)),
+        "containers": {} if past else container_summary(contained, len(streamed)),
+        "h9": h9_summary(contained),
         "coupling_added": coupling_accounting(paired, coupled, h7),
         "coupling_source": coupling_source(h5, edges),
         "redesign": redesign(hosts, paired),

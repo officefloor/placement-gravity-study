@@ -48,6 +48,9 @@
   the same problems). (Until 24 November 2026, *forced changes couple*: in the methods arm the
   calls a forced class gained across its boundary, the ratio on forced above 1; deleted the same
   day, PLAN.md §9 row 90.)
+- **H9, the cost to fix a concentration** (25 November 2026, secondary): the function arm's
+  cheapest split of a class with two or more blocks below the methods arm's at the same size, and
+  its interaction with the class's size below 1 (the gap widens); p the larger; on its own p.
 - **Two tiers** (decided by the author on 21 November 2026): the **confirmatory** family is the
   force and its two outlets, with the control: H2, H4, H1 and H5, Holm over the four at α = 0.05
   (H7 left it when restated, later the same day). H3, H6 and H7 are **secondary**: each keeps its
@@ -79,7 +82,7 @@ ALPHA = 0.05
 #: The confirmatory family (Holm) and the secondary hypotheses (their own p), 21 November 2026;
 #: H7 secondary since its restatement the same day.
 CONFIRMATORY = ("H1", "H2", "H4", "H5")
-SECONDARY = ("H3", "H6", "H7")
+SECONDARY = ("H3", "H6", "H7", "H9")
 #: H6's measures (PLAN.md §2, §5): at the method, long, cognitive and cyclomatic complexity; at the
 #: class, concentration, WMC and lack of cohesion. Each is fitted alone. Not slimmable and
 #: junction are sinew measures, and fan-out and CBO measures of reach, reported apart.
@@ -244,6 +247,20 @@ def h5(est: dict) -> dict:
             "conditions_met": arm["irr_upper"] < 1 and trend["irr_upper"] < 1, "detail": x}
 
 
+def h9(est: dict) -> dict:
+    """The cost to fix a concentration (secondary, 25 November 2026, PLAN.md §9 row 105): the
+    function arm's cheapest split of a class below the methods arm's at the same size, and the gap
+    widening as classes grow; both below 1, p the larger. Not testable on a history."""
+    x = est.get("H9") or {}
+    if x.get("not_applicable"):
+        return {"p": None, "verdict": "not testable", "state": "a history", "detail": x}
+    arm, size = x.get("arm"), x.get("size")
+    if not (_ok(x) and _ok(arm) and _ok(size)) or "irr_upper" not in arm or "irr_upper" not in size:
+        return {"p": None, "verdict": "not estimable", "detail": x}
+    return {"p": max(arm["p_less"], size["p_less"]), "reversed": arm["irr_lower"] > 1,
+            "conditions_met": arm["irr_upper"] < 1 and size["irr_upper"] < 1, "detail": x}
+
+
 def h8(est: dict, cond: dict) -> dict:
     """Run D, the no-encapsulation run, against Run A's same stack (PLAN.md §3.1a): without
     encapsulation code disperses. The open arm is the analysis's function arm."""
@@ -264,7 +281,7 @@ def h8(est: dict, cond: dict) -> dict:
 
 def decide(est: dict, cond: dict) -> dict:
     parts = {"H1": h1(est), "H2": h2(est), "H3": h3(est), "H4": h4(est, cond), "H5": h5(est),
-             "H6": h6(est), "H7": h7(est)}
+             "H6": h6(est), "H7": h7(est), "H9": h9(est)}
     adjusted = holm({k: parts[k]["p"] for k in CONFIRMATORY})
     for k, v in parts.items():
         v["tier"] = "confirmatory" if k in CONFIRMATORY else "secondary"

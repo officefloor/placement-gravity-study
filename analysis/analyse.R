@@ -971,6 +971,52 @@ if (isFALSE(spec$problem_fixed)) {
   res$reported$H5_logic <- irr(wald(ml$fit, "log1p(logic_added)"))
 }
 
+# ---------------------------------------------------------------- H9: the cost to fix a concentration
+# Stated 25 November 2026, a secondary hypothesis since (PLAN.md §2, §4.2h, §9 rows 104, 105; the
+# author's). One row per class with at least two blocks at its chain's last checkpoint: its cheapest
+# split (the fewest internal calls and shared-field links a cut must cross to divide it into two
+# parts of at least a quarter of its volume each). A negative binomial model on the arm, the
+# class's size (log(1 + volume), centred on all rows' mean) and their interaction, with the chain's
+# intercept (Poisson where the negative binomial cannot be fitted, recorded): the function arm's
+# rate at the mean size below 1, **and** the interaction below 1 (the gap widens as classes grow);
+# both from one cluster bootstrap. Reported: the same on the concentrations alone, and on the
+# blocks instead of the volume. Corpus A only.
+h9 <- read("h9.csv")
+if (isFALSE(spec$problem_fixed)) {
+  res$H9 <- list(not_applicable = TRUE)
+} else if (is.null(h9) || nrow(h9) == 0 || !multi(h9$arm)) {
+  res$H9 <- list(error = "no classes of two or more blocks in both arms")
+} else {
+  h9 <- h9[as.character(h9$arm) %in% c(spec$methods_arm, spec$function_arm), ]
+  h9$arm <- droplevels(as_arm(as.character(h9$arm)))
+  h9$lv_c <- log1p(h9$volume) - mean(log1p(h9$volume))
+  h9$lb_c <- log(h9$blocks) - mean(log(h9$blocks))
+  fe9 <- if (multi(h9$frontend)) " + frontend" else ""
+  INT9 <- paste0(FARM, ":lv_c")
+  fit9 <- function(d, rhs) {
+    if (nrow(d) < 5 || !multi(as.character(d$arm))) return(list(fit = structure(list(msg = "too few classes"), class = "fit_error")))
+    if (all(d$split_cost == 0)) return(list(fit = structure(list(msg = "every class splits for nothing"), class = "fit_error")))
+    f <- as.formula(paste0("split_cost ~ ", rhs, fe9, " + (1 | chain_id)"))
+    nb <- fit_or_error(glmmTMB(f, data = d, family = nbinom2()))
+    good <- !inherits(nb, "fit_error") && isTRUE(nb$sdr$pdHess) &&
+      all(is.finite(summary(nb)$coefficients$cond[, "Std. Error"]))
+    if (good) return(list(fit = nb, formula = f, fam = nbinom2(), family = "nbinom2", data = d))
+    list(fit = fit_or_error(glmmTMB(f, data = d, family = poisson())), formula = f, fam = poisson(),
+         family = "poisson", data = d)
+  }
+  m9 <- fit9(h9, "arm * lv_c")
+  b9 <- if (inherits(m9$fit, "fit_error")) list(error = m9$fit$msg) else boot_irrs(m9$fit, m9$formula, m9$data, m9$fam, c(FARM, INT9))
+  res$H9 <- if (!is.null(b9$error)) list(error = b9$error) else
+    list(arm = b9[[FARM]], size = b9[[INT9]], n = nrow(h9), family = m9$family,
+         mean = as.list(tapply(h9$split_cost, as.character(h9$arm), mean)),
+         classes = as.list(tapply(h9$split_cost, as.character(h9$arm), length)))
+  hc <- h9[as.logical(h9$concentration), ]
+  mc9 <- fit9(hc, "arm * lv_c")
+  res$reported$H9_concentrations <- list(arm = irr(wald(mc9$fit, FARM)), size = irr(wald(mc9$fit, INT9)), n = nrow(hc))
+  mb9 <- fit9(h9, "arm * lb_c")
+  res$reported$H9_by_blocks <- list(arm = irr(wald(mb9$fit, FARM)), size = irr(wald(mb9$fit, paste0(FARM, ":lb_c"))))
+}
+
 # ---------------------------------------------------------------- surface against volume (reported)
 # A class's surface (calls out of and into it) against its volume (its methods), PLAN.md 4.2e, per
 # arm: across the classes of each chain's last tree, log(1 + surface) on log(methods) with the

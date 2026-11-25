@@ -568,3 +568,18 @@ def test_the_graph_cache_never_hands_one_tree_another_tree_s_graph():
     tables._GRAPHS[id(a)] = ({"files": {"stale": {}}}, flow.Graph({"files": {}}))   # as if a freed tree's
     g = tables._graph(a)
     assert tables._GRAPHS[id(a)][0] is a and tables._graph(a) is g
+
+
+def test_the_cheapest_split_counts_the_calls_and_shared_fields_a_cut_crosses():
+    """H9 (PLAN.md 4.2h): the same rule in both arms."""
+    # a function grown into helpers: a chain of calls, no shared state; one call cut splits it
+    assert tables.split_cost([5, 5, 5, 5], [(0, 1), (1, 2), (2, 3)], {}) == (1, True)
+    # a handler whose four methods all use two fields: any quarter split cuts a use of each
+    assert tables.split_cost([5, 5, 5, 5], [], {"owners": [0, 1, 2, 3], "clock": [0, 1, 2, 3]}) == (2, True)
+    # already two separate pieces
+    assert tables.split_cost([5, 5, 5, 5], [(0, 1), (2, 3)], {}) == (0, True)
+    # one large block and two small ones: no split leaves a quarter on each side, so not splittable
+    assert tables.split_cost([18, 1, 1], [(0, 1), (0, 2)], {}) == (None, True)
+    # above the exact limit, the local search, reproducible
+    big = tables.split_cost([3] * 20, [(i, i + 1) for i in range(19)], {})
+    assert big == tables.split_cost([3] * 20, [(i, i + 1) for i in range(19)], {}) and big == (1, False)

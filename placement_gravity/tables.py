@@ -569,6 +569,71 @@ def link_rows(arm: str, chain: str, measured: dict) -> list[dict]:
     return rows
 
 
+#: H9's cheapest split is found exactly up to this many blocks, and by a fixed local search above.
+SPLIT_EXACT = 14
+SPLIT_SEED = 20261125
+
+
+def split_cost(volumes: list[int], calls: list[tuple[int, int]], uses: dict[str, list[int]]) -> tuple[int, bool]:
+    """H9, the cost to fix a concentration (PLAN.md 4.2h): the fewest internal links a cut must cross
+    to divide a container's blocks into two parts, each holding at least a quarter of its volume
+    (of its blocks, where it has no volume). ``calls``: pairs of blocks, one calling the other.
+    ``uses``: for each field holding state, the blocks that use it; a field goes to the side that
+    uses it more, and each use from the other side is a link cut. Returns the cost and whether it
+    was found exactly (up to ``SPLIT_EXACT`` blocks) or by the local search. A container with no
+    split that leaves a quarter on each side (one block holding most of it) is not splittable: None."""
+    import random
+    n = len(volumes)
+    if n < 2:
+        return 0, True
+    weight = volumes if sum(volumes) > 0 else [1] * n
+    total, floor = sum(weight), sum(weight) / 4
+
+    def cost(side: list[bool]) -> int:
+        c = sum(1 for a, b in calls if side[a] != side[b])
+        for users in uses.values():
+            k = sum(1 for u in users if side[u])
+            c += min(k, len(users) - k)
+        return c
+
+    def balanced(side: list[bool]) -> bool:
+        w = sum(w for w, x in zip(weight, side) if x)
+        return floor <= w <= total - floor
+
+    best = None
+    if n <= SPLIT_EXACT:
+        for mask in range(1, 1 << (n - 1)):          # block n - 1 always on the far side: each cut once
+            side = [bool(mask >> i & 1) for i in range(n - 1)] + [False]
+            if balanced(side):
+                c = cost(side)
+                best = c if best is None else min(best, c)
+        return best, True
+    rng = random.Random(SPLIT_SEED)
+    for _ in range(20):
+        order = list(range(n))
+        rng.shuffle(order)
+        side, w = [False] * n, 0
+        for i in order:                               # a random half by volume to start from
+            if w < total / 2:
+                side[i], w = True, w + weight[i]
+        if not balanced(side):
+            continue
+        c = cost(side)
+        improved = True
+        while improved:
+            improved = False
+            for i in range(n):
+                side[i] = not side[i]
+                if balanced(side):
+                    d = cost(side)
+                    if d < c:
+                        c, improved = d, True
+                        continue
+                side[i] = not side[i]
+        best = c if best is None else min(best, c)
+    return best, False
+
+
 def container_rows(arm: str, chain: str, hosts: list[dict], measured: dict) -> list[dict]:
     """A filled ball or pebbles (a reported reading, PLAN.md 4.2g, 25 November 2026): per checkpoint,
     in the tree before it, each **container** of blocks of logic: every class (``kind`` class), and in
@@ -615,13 +680,21 @@ def container_rows(arm: str, chain: str, hosts: list[dict], measured: dict) -> l
             calls_out = sum(1 for a, b in links["call"] if (a in inside) != (b in inside))
             flows_in = sum(1 for x in wired_now if ((wl.get("link_from") or {}).get(x) or {}).get("class") in members) \
                 if kind == "flow" else 0
+            # H9: the cheapest split of the container into two parts (PLAN.md 4.2h)
+            at = {k: i for i, k in enumerate(blocks)}
+            cut_calls = [(at[a], at[b]) for a, b in links["call"] if a in at and b in at]
+            field_users: dict[tuple, list[int]] = {}
+            for a, fld in links["state"]:
+                if a in at and fld[0] in members:
+                    field_users.setdefault(fld, []).append(at[a])
+            sc, exact = split_cost(vols, cut_calls, {f"{c}{x}": u for (c, x), u in field_users.items()})
             rows.append({"arm": arm, "chain": chain, "cp": cp, "kind": kind, "container": name,
                          "concentration": any(forced_at.get(c, cp + 1) <= cp for c in members),
                          "blocks": len(blocks), "volume": volume,
                          "largest_share": max(vols) / volume if volume else None,
                          "gini": gini(vols), "internal_links": calls_in + state_in + flows_in,
                          "internal_calls": calls_in, "internal_state": state_in, "internal_flow": flows_in,
-                         "external_calls": calls_out})
+                         "external_calls": calls_out, "split_cost": sc, "split_exact": exact})
     return rows
 
 

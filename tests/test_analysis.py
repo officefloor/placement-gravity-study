@@ -374,9 +374,9 @@ def test_h1_a_level_where_every_placement_was_forced_has_no_choice_to_narrow():
 
 def test_holm_runs_over_the_four_confirmatory_and_the_secondary_keep_their_own_p():
     v = verdict.decide(estimates(**h1_levels({**FALL, "p_less": 0.011}, FALL)), COND)["hypotheses"]
-    assert len(v) == 7
+    assert len(v) == 8
     assert {k for k, x in v.items() if x["tier"] == "confirmatory"} == {"H2", "H4", "H1", "H5"}
-    assert {k for k, x in v.items() if x["tier"] == "secondary"} == {"H3", "H6", "H7"}
+    assert {k for k, x in v.items() if x["tier"] == "secondary"} == {"H3", "H6", "H7", "H9"}
     assert v["H1"]["p_holm"] >= 0.011
     assert v["H3"]["tier"] == "secondary" and v["H3"]["p_holm"] == v["H3"]["p"]
 
@@ -784,3 +784,26 @@ def test_the_sinew_shape_counts_values_combinations_and_their_effective_number()
     assert readings.effective_number([10]) == 1 and readings.effective_number([5, 5, 5, 5]) == 4
     assert s["top_combinations"][0]["values"] == ["owners"] and s["top_combinations"][0]["uses"] == 16
     assert s["repeated_combination_share"] == 21 / 25
+
+
+def test_h9_is_secondary_and_needs_both_terms():
+    lo = {"irr": 0.4, "irr_lower": 0.2, "irr_upper": 0.8, "p_less": 0.001}
+    flat = {"irr": 1.0, "irr_lower": 0.7, "irr_upper": 1.4, "p_less": 0.5}
+    hi = {"irr": 2.0, "irr_lower": 1.3, "irr_upper": 3.0, "p_less": 0.999}
+    def v(**h9):
+        return verdict.decide(estimates(H9=h9), COND)["hypotheses"]["H9"]
+    assert v(arm=lo, size=lo)["verdict"] == "supported" and v(arm=lo, size=lo)["tier"] == "secondary"
+    assert v(arm=lo, size=flat)["verdict"] == "not supported"
+    assert v(arm=hi, size=lo)["verdict"] == "reversed"
+    assert v(not_applicable=True)["verdict"] == "not testable"
+    assert v(error="no classes")["verdict"] == "not estimable"
+
+
+def test_h9_rows_take_each_class_of_two_or_more_blocks_at_the_end():
+    rows = [{"chain_id": "c", "arm": "spring", "kind": k, "container": n, "cp": str(cp), "blocks": str(b),
+             "volume": "20", "concentration": "True", "split_cost": "3", "split_exact": "True"}
+            for k, n, cp, b in (("class", "A", 1, 4), ("class", "A", 2, 5), ("class", "B", 2, 1), ("flow", "f", 2, 6))]
+    got = prepare.h9_rows(rows)
+    assert [(r["container"], r["blocks"]) for r in got] == [("A", 5)]
+    s = prepare.h9_summary(rows)["spring"]["concentrations"]
+    assert (s["classes"], s["split_cost"]) == (1, 3)
