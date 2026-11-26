@@ -3822,10 +3822,13 @@ author's to set, on the plan and code as they then stand, and starts the experim
   not a binding; a function is a class holding nothing privately), so the evidence that does not
   lean on them is the bystanders, the well-trodden files and H5's links; on the development chain H5
   went against and H1's trend could not be read, so with both parts needed *not supported* is a
-  likely verdict for either; and no power was worked out for the confirmatory four. *Left open by
-  the review, the author's to answer:* whether the ui harness shows any figure of the backend Java
-  while it runs (§3.1a asks that such a reading be listed in the report); and a reported reading
-  with injected parameters counted as bindings in both arms, offered and not asked for.
+  likely verdict for either; and no power was worked out for the confirmatory four. *Asked by
+  the review and answered by the author the same day:* whether the ui harness shows any figure of
+  the backend Java while its runs are made (§3.1a asks that such a reading be listed in the
+  report). The author, who runs its scripts by hand: "It does not print backend figures, only
+  progress". So nothing of Run A's or Run B's backend Java has been seen through the harness, and
+  there is nothing to list. *Left open:* a reported reading with injected parameters counted as
+  bindings in both arms, offered by the review and not asked for.
 - *Done for rows 99 to 106:* the pilot at `MEASURE_VERSION` 40 and the histories at
   `HISTORY_VERSION` 15 (§6); no figure moved under row 102. (H9's population, left there to the
   author, fell with H9, row 108.)
