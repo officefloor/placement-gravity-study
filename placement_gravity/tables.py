@@ -737,6 +737,11 @@ def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
             "binding_none": len(tn) + len(tf) - len(ti) + len(tc),
             "binding_method_all": len(ta), "binding_method_none": len(tn),
             "framework_params": " ".join(sorted(fw)),
+            # H2's core at the method is what the code was bound to (PLAN.md 4.4): the injected
+            # parameters of a wired function that its code used are not bindings (4.3), so they are
+            # not core; they join the periphery (27 November 2026, PLAN.md 9 row 124)
+            "unbound_method_values": " ".join(sorted(
+                fw & {v for x in runs for v in x.get("need_method", [])})) if r["injected"] else "",
             "class_injected": " ".join(sorted(r.get("class_injected", []))),
             "choice_method_all": choice(r, ta, [], [], [], measured.get("places"))["choice_method"],
             "choice_method_none": choice(r, tn, [], [], [], measured.get("places"))["choice_method"],
@@ -963,7 +968,8 @@ def outcome_rows(arm: str, chain: str, hosts: list[dict], streamed: dict[int, di
 
     **Core and periphery** (H2 since 19 November 2026, PLAN.md §4.4): for this problem and host the
     **core** is the pre-existing values its code was bound to there (``core_*``: the method's
-    values it used, the class's fields it used) and the **periphery** is the rest of what the
+    values it used, less the injected parameters of a wired function, which do not bind
+    (``unbound_method_values``) and are periphery; the class's fields it used) and the **periphery** is the rest of what the
     place then held (``periphery_*``: what stood by and what it introduced). ``uses_core_*`` and
     ``uses_periphery_*`` count, over the later intrusions, each value of those it uses, once
     (19 November 2026): at the class, each method the later change's bound code is in is scored on
@@ -1054,13 +1060,16 @@ def outcome_rows(arm: str, chain: str, hosts: list[dict], streamed: dict[int, di
         left_c = split([j for j in later_class if uses_c.get((c, j), set()) & (stood_c | new_c)], k)[2]
         # core and periphery (H2): the values this code was bound to, and the rest the place held;
         # each later intrusion's uses of them, value by value
-        core_m = set(h.get("need_method_values", "").split())
+        # the method's core is the values the code was bound to: an injected parameter of a wired
+        # function is not a binding, so one the code used is periphery (PLAN.md 9 row 124)
+        unbound_m = set((h.get("unbound_method_values") or "").split())
+        core_m = set(h.get("need_method_values", "").split()) - unbound_m
         core_f = set(h.get("need_class_values", "").split())
         called = set(h.get("called_class_methods", "").split())
         bound_c = core_f | called
         methods_there = (set(h.get("class_methods_pre", "").split()) - called) \
             | set(h.get("class_methods_added", "").split())
-        peri_m, peri_f = (stood_m | new_m) - core_m, (stood_c | new_c) - core_f
+        peri_m, peri_f = (stood_m | new_m | unbound_m) - core_m, (stood_c | new_c) - core_f
         # as until 22 November 2026, reported: the core is all the class's members the code was bound to
         all_peri_c = (peri_f | methods_there) - bound_c
         # the core is the encapsulated part of it (decided by the author on 22 November 2026: "the
@@ -1252,6 +1261,9 @@ def at_level(hosts: list[dict], level: str) -> list[dict]:
     for h in hosts:
         h = dict(h)
         h["binding"] = h[f"binding_{level}"]
+        # with injection ignored an injected parameter the code used is core; with injection excluded
+        # it is not a value of the place (below)
+        h["unbound_method_values"] = ""
         if level == "none":
             fw, inj = set(h["framework_params"].split()), set(h["class_injected"].split())
             for k, drop in (("need_method_values", fw), ("by_method_values", fw), ("introduced_method_values", fw),

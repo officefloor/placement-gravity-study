@@ -5,7 +5,7 @@ Role: **development**. Chains: officefloor 1, spring 1. **Descriptive only.**
 | Hypothesis | Tier | Verdict | p (Holm over the confirmatory; own p for secondary) |
 |---|---|---|---|
 | H1 | confirmatory | descriptive only | 1.000 |
-| H2 | confirmatory | descriptive only | 0.00039 |
+| H2 | confirmatory | descriptive only | 0.003 |
 | H3 | secondary | descriptive only | 0.000999 |
 | H4 | confirmatory | descriptive only | – |
 | H5 | confirmatory | descriptive only | 1.000 |
@@ -40,8 +40,8 @@ Where code was bound to a class or a method (109 of 350 problem and host rows, b
 - **At the class (the private members the code was bound to): 18.156 [12.455, 26.465]** (wald: one chain in an arm; Wald: not estimated (no data))
 - **At the method (its values): 20.269 [11.842, 34.693]** (wald: one chain in an arm; Wald: not estimated (no data))
 - The arm contrast at the class is not part of the test here: too few core records in an arm to compare (core records: methods arm 41 (227 uses), function arm 3 (0 uses); at least 10 in each needed)
-- **A core value come back to, function arm / methods arm, at the method: 0.088 [0.024, 0.316]** (needed below 1; one-sided p 9.74e-05; wald: one chain in an arm; core records: methods arm 51 (185 uses), function arm 22 (4 uses))
-- Reported, the function arm: class 5.09e-07 [0, –]; method 4.276 [0.477, 38.309]
+- **A core value come back to, function arm / methods arm, at the method: 0.106 [0.026, 0.425]** (needed below 1; one-sided p 0.000762; wald: one chain in an arm; core records: methods arm 51 (185 uses), function arm 22 (3 uses))
+- Reported, the function arm: class 5.09e-07 [0, –]; method 3.441 [0.572, 20.718]
 - Reported, officefloor, how bound uses are spread: at the class 2 uses of 2 fields, 1.000 to a chain's three most used, 0.500 to fields no checkpoint introduced; of 24 fields introduced, 1 used by later bound code (0.042); at the method 57 uses of 45 values, 0.105 to the three most used, 0.298 to values no checkpoint introduced; of 361 introduced, 31 used later (0.086)
 - Reported, spring, how bound uses are spread: at the class 37 uses of 11 fields, 0.784 to a chain's three most used, 0.865 to fields no checkpoint introduced; of 35 fields introduced, 5 used by later bound code (0.143); at the method 86 uses of 44 values, 0.360 to the three most used, 0.477 to values no checkpoint introduced; of 315 introduced, 27 used later (0.086)
 - Reported, officefloor, the sinew shape at the class: 2 places, 2 uses; effective number of values 1.000 (over the thirds –, –, 1.000); the most used value's share 1.000; changes repeating a combination already used there 0.000 of 2
@@ -60,7 +60,7 @@ Where code was bound to a class or a method (109 of 350 problem and host rows, b
 - Reported, at the class with every member the code was bound to as the core, private or not (as until 22 November 2026): 17.464 [11.934, 25.556]
 - Reported, officefloor, the core's width at the class: 1 values a row (median 1, 3 rows); over the thirds of the stream 1, 1, 1
 - Reported, spring, the core's width at the class: 1.268 values a row (median 1, 41 rows); over the thirds of the stream 1.100, 1.214, 1.857
-- Reported, officefloor, the core's width at the method: 2.045 values a row (median 2, 22 rows); over the thirds of the stream 3, 2.167, 1.667
+- Reported, officefloor, the core's width at the method: 1.455 values a row (median 1, 22 rows); over the thirds of the stream 1.750, 1.500, 1.333
 - Reported, spring, the core's width at the method: 1.471 values a row (median 1, 51 rows); over the thirds of the stream 1.176, 1.450, 1.857
 - Reported, H2 as it stood until 19 November 2026 (later intrusions bound to what stood by, per value that stood by): class 1.099 [1.038, 1.164]; method not estimated (standard error not computed: bystanders_method)
 - Reported, officefloor: 31 bound rows; at the class 0.548 fields stood by, 3 of 26 later intrusions bound to one of them (0.115); at the method 0.903 values stood by, 1 of 3 (0.333)
@@ -101,8 +101,8 @@ Runs that need a pre-existing value 91 over 1 chains; the slope of log(1 + bysta
 - **Later intrusion where bound code was placed, function arm / methods arm: at the class 0.162 [0.098, 0.268]; at the method 0.110 [0.029, 0.426]**
 - **How well-trodden the files a change went back into were (for each existing file it changed, production Java and wiring alike, the earlier checkpoints that had changed it), function arm / methods arm: 0.603 [0.489, 0.743]** (needed below 1; one-sided p 1.02e-06; wald: one chain in an arm); per checkpoint: officefloor 13.417 (Java 8.733, wiring 4.683); spring 21.683 (Java 21.683, wiring 0)
 - Reported, the plain number of existing files gone back into (as first built: it counts a change spread over small files as more), function arm / methods arm: 1.500 [1.159, 1.942]; per checkpoint: officefloor 2.400 (Java 1.900, wiring 0.500); spring 1.600 (Java 1.600, wiring 0)
-- How much a core value is come back to, function arm / methods arm (H2's arm contrast): at the class – [–, –]; at the method 0.088 [0.024, 0.316]
-- Reported, officefloor, uses per 100 values and later checkpoints: at the class core 0.000 (0 uses of 3 values in 3 rows), periphery 0.781; at the method core 0.395 (4 uses of 45 values in 22 rows), periphery 0.084
+- How much a core value is come back to, function arm / methods arm (H2's arm contrast): at the class – [–, –]; at the method 0.106 [0.026, 0.425]
+- Reported, officefloor, uses per 100 values and later checkpoints: at the class core 0.000 (0 uses of 3 values in 3 rows), periphery 0.781; at the method core 0.455 (3 uses of 32 values in 22 rows), periphery 0.130
 - Reported, spring, uses per 100 values and later checkpoints: at the class core 14.459 (227 uses of 52 values in 41 rows), periphery 1.184; at the method core 10.126 (185 uses of 75 values in 51 rows), periphery 0.496
 - Reported, officefloor: per checkpoint, classes its bound code goes back into 0.233, wiring files changed again 0.450
 - Reported, spring: per checkpoint, classes its bound code goes back into 0.883, wiring files changed again 0.000
@@ -284,7 +284,7 @@ Three results rest on how injection is counted. Each is read here three ways, fu
   - H4, later intrusion at the class: 0.162 [0.098, 0.268]
   - H4, later intrusion at the method: 0.110 [0.029, 0.426]
   - H2, uses of a core value at the class: not estimated (too few core records in an arm to compare; core records: function 3, methods 41)
-  - H2, uses of a core value at the method: 0.088 [0.024, 0.316] (core records: function 22, methods 51)
+  - H2, uses of a core value at the method: 0.106 [0.026, 0.425] (core records: function 22, methods 51)
 - **injection excluded (neither binds)**; bound rows followed: officefloor 25, spring 59
   - H1, placements with no other place, at the class: half-way 0.247 [0.093, 0.654], rise 7.483 [0.358, 156.260] (a checkpoint: officefloor 0.150, spring 0.441)
   - the same at the method (reported under every rule): half-way 0.499 [0.132, 1.893], rise 3.946 [0.082, 189.344] (a checkpoint: officefloor 0.100, spring 0.153)

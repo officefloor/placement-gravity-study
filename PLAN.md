@@ -9,7 +9,8 @@
 > delete H9 and count constants in H5). Run B's ids were added on 26 November 2026 (§9 row 113), so
 > nothing that needs deciding is left before the tag is set again; until it is, only the development
 > chain can be read.** Rows 114 to 122, of the same day, follow a second review of the plan before
-> the tag (§8), and row 123 adds a reported reading the review offered (§4.3c, the binding levels):
+> the tag (§8), row 123 adds a reported reading the review offered (§4.3c, the binding levels),
+> and row 124, of 27 November, makes the code build H2's core at the method as §4.4 defines it:
 > they tighten rules, make the plan and the code say the same, and change no
 > hypothesis or direction. As first registered, on 16 November 2026: the tag was first pushed on commit
 > `4bb8973` and moved the same day, before any run named for analysis was read, to this revision,
@@ -1800,7 +1801,11 @@ sinews and veins. This plan says **core** and **periphery**, because *sinew* alr
 measures of §4.7. For a problem *p* and a host its bound code went into, at each level:
 
 - **The core:** the pre-existing values *p*'s code there was bound to (the binding measure). At the
-  method, the parameters and locals it used; at the class, the fields it used **and the class's
+  method, the parameters and locals it used, **less the injected parameters of a wired function**
+  (27 November 2026, §9 row 124: they are not bindings, §4.3, so they are not core; one the code
+  used joins the periphery, as a member others can reach does at the class. Until then the code
+  counted them in the core, against this definition; with injection ignored, §4.3c, they are
+  core); at the class, the fields it used **and the class's
   methods it called** (decided by the author, 19 November 2026: a method of the class returns a
   value or does a necessary bound piece of work, so a call to one is a core value), **of those
   only the private ones** (decided by the author, 22 November 2026, §2: the force is not being
@@ -1809,7 +1814,8 @@ measures of §4.7. For a problem *p* and a host its bound code went into, at eac
   (`tables.private_members`, as *forced* is); a class not in that tree has no core. Reported: the
   core with every member the code was bound to, as until 22 November 2026.
 - **The periphery:** the rest of the data the place held once *p*'s code was in it: what stood by
-  (§4.3a) and what *p* introduced (§4.3b); at the class also the class's methods *p*'s code did not
+  (§4.3a) and what *p* introduced (§4.3b); at the method also the injected parameters of a wired
+  function that *p*'s code used; at the class also the class's methods *p*'s code did not
   call and those its checkpoint added (so that core and periphery are alike in kind; H3's
   bystanders stay fields only), and the members it was bound to that others can reach.
 - **A use:** a later intrusion, as defined above (bound there; neither declared nor crossing),
@@ -3303,6 +3309,21 @@ binomial mixed model). These details are fixed with the code before any run is r
   wider). One chain an arm: none of this is evidence for the hypotheses, only that the levels can
   be read and move as they were expected to. The R self-test checks them on simulated data and
   fixtures on the instrument: 129 checks and 184 tests pass.
+- **H2's core at the method as §4.4 defines it, on the development chain** (27 November 2026, §9
+  row 124; the pilot measured again at `MEASURE_VERSION` 44, steps 3 to 5; one chain an arm,
+  descriptive only). Only the function arm's core at the method moved: in the measured tables,
+  four columns of its outcomes (`core_method`, `periphery_method` and their uses) and nothing in
+  the methods arm; in `estimates.json`, H2's arm contrast at the method, the function arm's own
+  core against periphery, its core's width, and the registered column of the binding levels. **The
+  arm contrast at the method went from 0.088 [0.024, 0.316] to 0.106 [0.026, 0.425]** (22 core
+  records in the function arm as before, their uses 4 to 3; the methods arm's 51 and 185
+  unchanged; one-sided p 0.0001 to 0.0008, after Holm 0.0004 to 0.003; the verdict was and is
+  *descriptive only*). The function arm's core is narrower, 2.05 values a row to 1.45, and its own
+  core against periphery went from 4.28 [0.48, 38.3] to 3.44 [0.57, 20.7]. The figures of 0.088
+  above in this section are of their day. The level *injection ignored* is unchanged (0.170
+  [0.068, 0.427], 43 core records): there an injected parameter is a binding and so is core. The
+  histories are untouched (no wired functions; not measured again). 185 tests pass; `analyse.R`
+  is unchanged since the self-test of row 123.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
@@ -3964,7 +3985,13 @@ author's to set, on the plan and code as they then stand, and starts the experim
   recommended that the third, which is the registered rule, go on deciding the verdicts and the
   other two be reported beside it, and asked whether a Spring handler's parameters, which the
   framework fills, are left out with the rest when injection is excluded; the author: "go ahead,
-  excluded".
+  excluded". *Found while building the levels and decided by the author on 27 November 2026* (row
+  124): §4.4 defines H2's core as the values the code was bound to, and §4.3 says an injected
+  parameter is not a binding, but the code built the core at the method from every pre-existing
+  value the code used, so in the function arm the injected parameters a wired function's code
+  used were core (13 of its 57 core values on the development chain, in 9 of its 31 bound rows;
+  none in the methods arm). Put as the code following the plan or the plan following the code;
+  the author: "make the code follow the plan".
 - *Done for rows 99 to 106:* the pilot at `MEASURE_VERSION` 40 and the histories at
   `HISTORY_VERSION` 15 (§6); no figure moved under row 102. (H9's population, left there to the
   author, fell with H9, row 108.)
@@ -4247,6 +4274,7 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 121 | **The two pairs that share a front end are built**: `ui-angular` and `ui-tanstack`, each a secondary analysis with every hypothesis and its verdicts, read for whether the two agree in direction; in each the arm is also the run. A chain already measured for another analysis of the same stream, at the same head and version, is copied and not measured again | §3.1a, §5 (*As built*), §7, `runs.yaml`, `measure.copy_measured`, `tests/` | The same review: §3.1a promised the pairs "so that a disagreement between them shows" and nothing built them; they are the plan's answer to Run A and Run B being four weeks apart. Put as full verdicts or estimates only; the author: "A" |
 | 122 | Wording, no rule changed: §7's threat on H5 said its links are "counted, not weighed", as they were the morning it was written (row 95 weighed them that evening); a table of what is registered, in today's numbers, stands before §1, with §5 governing | the head of the plan, §7 | The same review: a reader who met the threat first would take H5 for a plain count, and the frozen rules could not be found without reading §2, §4 and §5 together. Put as both or the sentence only; the author: "A". §6, §8 and §9 keep the numbers of their day (row 93) |
 | 123 | **The binding levels, reported** (§4.3c): H1's count of forced placements, H2's arm contrast and H4's later intrusion are each read three ways, with injection ignored (an injected parameter binds as an injected field does), as registered (the field binds, the parameter does not) and with injection excluded (neither binds; a Spring handler's parameters, which the framework fills, among them), the function arm against the methods arm on 95% Wald intervals. The registered rule goes on deciding every verdict; the levels are outside the correction. The instrument now also writes the parameters the framework fills, in either arm, the class's injected fields, and each run's method bindings with injected parameters counted; no value read before changes | §4.3, §4.3c, §5, §7, §8, `Pull.java` (VERSION 20), `tables.py`, `measure.py` (`MEASURE_VERSION` 43), `prepare.py`, `analyse.R`, `report.py`, `tests/` | The second review of 26 November 2026 found that H1's level, H2's arm contrast and H4's later intrusion lean on the rule that an injected parameter is not a binding, and offered one reading without it. The author made it three levels: "Everything, so ignore injection for both Spring and OfficeFloor, so includes all. Exclude injection as that can be loaded to other encapsulations. Include only injection in Spring, as the choice of duplicating the injection is often not used, and falls back to pull"; and, on a Spring handler's parameters under the second, "excluded". What is expected at each level, and how the three are read together, were written before any level was computed on any chain. Corpus A only; the histories are not measured again |
+| 124 | **H2's core at the method is what the code was bound to, as §4.4 says**: the injected parameters of a wired function that its code used are no longer core (they are not bindings, §4.3) and join the periphery. Until then the code counted every pre-existing value the code used. The function arm alone changes, at the method alone: its core records and their uses in H2's arm contrast, and its reported core against periphery. The methods arm, the class level and the histories are untouched. The reading with them in the core is the level *injection ignored* (§4.3c). The reported spread of uses over values (`readings.core_summary`, `readings.core_reuse`) goes on counting every value used | §4.4, §6, §8, `tables.host_rows` (`unbound_method_values`), `tables.outcome_rows`, `tables.at_level`, `measure.py` (`MEASURE_VERSION` 44), `tests/` | Found on 26 November 2026 while building row 123: the plan and the code disagreed on an input of a confirmatory test. On the development chain 13 of the function arm's 57 core values at the method were injected parameters. The author, 27 November 2026: "make the code follow the plan". Seen before it was decided: the development chain's figures under the code as it was (§6); no ui chain read |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

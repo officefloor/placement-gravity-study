@@ -585,3 +585,29 @@ def test_file_rows_count_the_earlier_checkpoints_that_changed_each_file():
     assert [(r["cp"], r["kind"], r["path"], r["status"], r["earlier"]) for r in rows] == [
         (1, "java", "A.java", "A", 0), (2, "java", "A.java", "M", 1), (2, "wiring", "w.yml", "A", 0),
         (3, "java", "B.java", "M", 2), (3, "wiring", "w.yml", "M", 1)]
+
+
+def test_an_injected_parameter_a_wired_function_used_is_periphery_not_core():
+    """H2's core at the method is what the code was bound to (PLAN.md 4.4, 9 row 124). cp3 adds to
+    a wired function `service(request, repo)` code that uses its local `owner` and its injected
+    parameter `request`; cp5 comes back and uses both."""
+    host = {"type": "A", "name": "service", "before_type": "A", "before_name": "service", "removed": 0,
+            "replacement": False, "pre_positions": 5, "binding_method": 1, "binding_class": 0, "binding": 1,
+            "net_added": 2, "host_new": False, "need_class_values": "", "by_class_values": "",
+            "need_method_values": "owner request", "by_method_values": "repo", "private_class_members": "",
+            "unbound_method_values": "request", "framework_params": "repo request", "class_injected": "",
+            "binding_all": 2, "binding_none": 1}
+    hosts = [{**host, "cp": 3}, {**host, "cp": 5}]
+    r = {r["cp"]: r for r in tables.outcome_rows("x", "c", hosts, {})}[3]
+    assert (r["core_method"], r["uses_core_method"]) == (1, 1)                 # owner
+    assert (r["periphery_method"], r["uses_periphery_method"]) == (2, 1)       # repo, request; request used
+    # with injection ignored the injected parameter is a binding, so it is core
+    r = {r["cp"]: r for r in tables.outcome_rows("x", "c", tables.at_level(hosts, "all"), {})}[3]
+    assert (r["core_method"], r["uses_core_method"], r["periphery_method"]) == (2, 2, 1)
+    # with injection excluded neither parameter is a value of the place
+    r = {r["cp"]: r for r in tables.outcome_rows("x", "c", tables.at_level(hosts, "none"), {})}[3]
+    assert (r["core_method"], r["uses_core_method"], r["periphery_method"]) == (1, 1, 0)
+    # a method the framework does not fill (the methods arm, a history) is read as before
+    plain = [{**h, "unbound_method_values": ""} for h in hosts]
+    r = {r["cp"]: r for r in tables.outcome_rows("x", "c", plain, {})}[3]
+    assert (r["core_method"], r["uses_core_method"], r["periphery_method"]) == (2, 2, 1)

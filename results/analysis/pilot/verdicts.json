@@ -94,7 +94,7 @@
    "verdict": "descriptive only"
   },
   "H2": {
-   "p": 9.73888380130506e-05,
+   "p": 0.000761649866330011,
    "reversed": false,
    "conditions_met": true,
    "arm_contrast": [
@@ -141,28 +141,28 @@
      "note": "too few core records in an arm to compare"
     },
     "reuse_method": {
-     "estimate": -2.43286544187746,
-     "se": 0.652996375287852,
-     "lower": -3.71271481947685,
-     "upper": -1.15301606427807,
+     "estimate": -2.24417872241284,
+     "se": 0.707896417765599,
+     "lower": -3.63163020601833,
+     "upper": -0.856727238807343,
      "level": 0.95,
-     "p_greater": 0.999902611161987,
-     "p_less": 9.73888380130506e-05,
-     "irr": 0.087784929235092,
-     "irr_lower": 0.0244111613358263,
-     "irr_upper": 0.315683211248961,
+     "p_greater": 0.99923835013367,
+     "p_less": 0.000761649866330011,
+     "irr": 0.106014572021997,
+     "irr_lower": 0.0264729927806792,
+     "irr_upper": 0.424549259470572,
      "interval": "wald: one chain in an arm",
      "records": 73,
      "function_records": 22,
      "methods_records": 51,
-     "function_uses": 4,
+     "function_uses": 3,
      "methods_uses": 185,
      "min_records": 10,
      "required": true
     }
    },
    "tier": "confirmatory",
-   "p_holm": 0.0003895553520522024,
+   "p_holm": 0.003046599465320044,
    "verdict": "descriptive only"
   },
   "H3": {
