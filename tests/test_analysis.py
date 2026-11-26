@@ -938,3 +938,37 @@ def test_diagnostics_count_the_files_a_chain_went_back_into(tmp_path, monkeypatc
     assert (s["new_java_files_per_checkpoint"], s["java_files_at_end"], s["largest_java_file_kb"]) == (0.5, 2, 15.5)
     assert s["existing_files_gone_back_into"] == 2 and s["busiest"] == {"path": "A.java", "checkpoints": 3}
     assert s["three_busiest_share_of_returns"] == 1.0
+
+
+# ---- the binding levels (PLAN.md 4.3c, reported)
+
+def test_h1_at_each_binding_level_counts_the_placements_with_no_other_place():
+    def host(chain, arm, cp, **k):
+        return {"chain_id": chain, "arm": arm, "cp": cp, "replacement": "False", "choice_class": "",
+                "choice_class_own": "", "choice_method": "", "choice_method_all": "", "choice_method_none": "", **k}
+    hosts = [
+        # bound at the class only to an injected field no other class holds: forced as registered and
+        # with injection ignored, not bound at the class at all with injection excluded
+        host("s1", "spring", 1, choice_class="0", choice_class_own="False"),
+        # bound to the class's own state: forced at every level
+        host("s1", "spring", 1, choice_class="0", choice_class_own="True"),
+        # another class holds the same dependency: not forced
+        host("s1", "spring", 2, choice_class="2", choice_class_own="False"),
+        # a wired function bound only to its injected parameters, which no other function on the flow
+        # holds: forced at the method with injection ignored, not bound otherwise
+        host("o1", "officefloor", 1, choice_method_all="0"),
+        # a moved method is not a placement
+        {**host("o1", "officefloor", 2, choice_method="0", choice_method_all="0", choice_method_none="0"),
+         "replacement": "True"},
+    ]
+    additions = [{"chain_id": c, "arm": a, "cp": cp, "noop": "False"}
+                 for c, a in (("s1", "spring"), ("o1", "officefloor")) for cp in (1, 2)]
+    rows = {(r["chain_id"], r["cp"]): r for r in prepare.h1_level_rows(hosts, additions)}
+    s = rows[("s1", 1)]
+    assert (s["forced_class_spring"], s["forced_class_all"], s["forced_class_none"]) == (2, 2, 1)
+    assert rows[("s1", 2)]["forced_class_spring"] == 0
+    o = rows[("o1", 1)]
+    assert (o["forced_method_spring"], o["forced_method_all"], o["forced_method_none"]) == (0, 1, 0)
+    assert rows[("o1", 2)]["forced_method_all"] == 0
+    # tables measured before the levels were read give no rows, not noughts
+    assert prepare.h1_level_rows([{"chain_id": "s1"}], additions) == []

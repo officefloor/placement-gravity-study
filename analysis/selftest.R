@@ -193,6 +193,16 @@ h1f <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, func
   data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = FE(ch), cp = cp, forced_class = rpois(60, mu))
 }))))
 write.csv(h1f, file.path(dir, "h1_forced.csv"), row.names = FALSE)
+# the binding levels (PLAN.md 4.3c): as registered and with injection ignored the count above; with
+# injection excluded the arms alike (0.2 a checkpoint). The outcomes with injection ignored are the
+# registered ones; with injection excluded only the methods arm has a row bound.
+h1l <- data.frame(h1f[c("chain_id", "arm", "frontend", "cp")], forced_class_spring = h1f$forced_class,
+                  forced_class_all = h1f$forced_class, forced_class_none = rpois(nrow(h1f), 0.2),
+                  forced_method_spring = h1f$forced_class, forced_method_all = h1f$forced_class,
+                  forced_method_none = 0)
+write.csv(h1l, file.path(dir, "h1_levels.csv"), row.names = FALSE)
+write.csv(h2, file.path(dir, "h2_all.csv"), row.names = FALSE)
+write.csv(h2[h2$arm == "spring", ], file.path(dir, "h2_none.csv"), row.names = FALSE)
 assign(".Random.seed", kept_seed, envir = .GlobalEnv)
 # change spread (H7): in the methods arm the classes beyond the first double over the stream and
 # are 1.5 times as many where a placement was forced; the function arm's stay where they are.
@@ -356,6 +366,22 @@ for (lev in c("class", "method")) {
         !is.null(x$correlation$spring), paste("size or data is reported at the", lev))
 }
 check(e$H2$n < e$reported$intrusion_rows$bound, "H2 is read on the methods arm's bound rows")
+# the binding levels (PLAN.md 4.3c)
+bl <- e$reported$binding_levels
+check(abs(log(bl$spring$H1_class$arm$irr) - log(0.19)) < 0.35 && bl$spring$H1_class$arm$irr_upper < 1 &&
+      bl$spring$H1_class$trend$irr_upper < 1,
+      "the binding levels recover H1's count as registered: fewer in the function arm and rising less")
+check(isTRUE(all.equal(bl$all$H1_class$arm$irr, bl$spring$H1_class$arm$irr)) &&
+      isTRUE(all.equal(bl$all$H4_intrusion_method$irr, bl$spring$H4_intrusion_method$irr)) &&
+      isTRUE(all.equal(bl$all$H2_reuse_method$irr, bl$spring$H2_reuse_method$irr)),
+      "the same data at two levels gives the same ratios")
+check(bl$none$H1_class$arm$irr_lower < 1 && 1 < bl$none$H1_class$arm$irr_upper,
+      "with injection excluded and the arms simulated alike, H1's interval holds 1")
+check(!is.null(bl$none$H1_method$error) && !is.null(bl$none$H4_intrusion_method$error) &&
+      !is.null(bl$none$H2_reuse_class$note),
+      "a level with nothing forced, or with rows in one arm only, is reported as not estimated")
+check(!is.null(bl$spring$H4_intrusion_class$irr) && bl$spring$rows$spring > 0 && bl$spring$rows$officefloor > 0,
+      "each level reports its bound rows per arm and H4's later intrusion at the class")
 check(abs(log(e$reported$bindings_lines$irr)) < 0.05,
       "intrusion on the problem's own lines, simulated unrelated to bindings, is reported as such")
 for (k in names(e$H6$measures)) {

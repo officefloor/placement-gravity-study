@@ -725,6 +725,56 @@ def literature_section(est: dict, spec: dict) -> list[str]:
     return L
 
 
+def levels_section(rep: dict) -> list[str]:
+    """The binding levels (PLAN.md §4.3c, reported): H1's count, H2's arm contrast and H4's later
+    intrusion at three levels of the rule on injection, the function arm against the methods arm
+    on 95% Wald intervals. Nothing here decides a hypothesis."""
+    levels = rep.get("binding_levels") or {}
+    if not levels:
+        return []
+    names = {"all": "injection ignored (an injected field and an injected parameter both bind)",
+             "spring": "the registered rule (an injected field binds, an injected parameter does not)",
+             "none": "injection excluded (neither binds)"}
+    L = ["", "## Reported: the binding levels", "",
+         "Three results rest on how injection is counted. Each is read here three ways, function arm "
+         "against methods arm, rate ratio with its 95% Wald interval (the tests above are on the "
+         "registered rule and the cluster bootstrap; these decide nothing). A result that points the "
+         "same way at all three does not depend on the rule; one that holds only as registered rests "
+         "on the reasoning for it (PLAN.md §2, *An injected private field forces too*).", ""]
+
+    def contrast(e):
+        if not e or "error" in e:
+            means = ", ".join(f"{k} {f(v)}" for k, v in ((e or {}).get("mean") or {}).items())
+            return f"not estimated ({(e or {}).get('error', 'no data')}{'; a checkpoint: ' + means if means else ''})"
+        means = ", ".join(f"{k} {f(v)}" for k, v in (e.get("mean") or {}).items())
+        return f"half-way {ratio(e.get('arm'))}, rise {ratio(e.get('trend'))} (a checkpoint: {means})"
+
+    def reuse(e):
+        if not e:
+            return "not measured"
+        n = f"core records: function {f(e.get('function_records'))}, methods {f(e.get('methods_records'))}"
+        if "irr" in e:
+            return f"{ratio(e)} ({n})"
+        return f"not estimated ({e.get('error') or e.get('note')}; {n})"
+
+    for key in ("all", "spring", "none"):
+        x = levels.get(key)
+        if not x:
+            continue
+        rows = ", ".join(f"{k} {f(v)}" for k, v in (x.get("rows") or {}).items())
+        L.append(f"- **{names[key]}**" + (f"; bound rows followed: {rows}" if rows else ""))
+        L.append(f"  - H1, placements with no other place, at the class: {contrast(x.get('H1_class'))}")
+        L.append(f"  - the same at the method (reported under every rule): {contrast(x.get('H1_method'))}")
+        if "error" in x:
+            L.append(f"  - H2 and H4: {x['error']}")
+            continue
+        for lev in ("class", "method"):
+            L.append(f"  - H4, later intrusion at the {lev}: {ratio(x.get('H4_intrusion_' + lev))}")
+        for lev in ("class", "method"):
+            L.append(f"  - H2, uses of a core value at the {lev}: {reuse(x.get('H2_reuse_' + lev))}")
+    return L
+
+
 def readings_section(est: dict, r: dict) -> list[str]:
     """Choice at a checkpoint, formation and review (PLAN.md §5): reported, not confirmatory."""
     rep = est.get("reported") or {}
@@ -970,6 +1020,7 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
           *surface_section(rep, readings or {}),
           *containers_section(readings or {}),
           *reader_section(rep, readings or {}),
+          *levels_section(rep),
           *readings_section(est, readings or {}),
           *landing_section({**(readings or {}), "_estimates": rep}),
           *literature_section(est, spec),

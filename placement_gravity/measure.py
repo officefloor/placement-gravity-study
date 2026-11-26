@@ -21,7 +21,7 @@ from . import chain, crosscheck, lines, places, runs, shape, tables, validate
 OUT = runs.RESULTS / "measure"
 WORK = chain.ROOT / ".tmp" / "measure"
 #: Bump when a table's meaning changes, so measured chains are redone.
-MEASURE_VERSION = 42
+MEASURE_VERSION = 43
 
 
 def write(path: Path, rows: list[dict]) -> None:
@@ -103,6 +103,10 @@ def measure_chain(reg: dict, analysis: dict, head: dict, streamed: dict, stacks:
     write(out / "additions.csv", label(tables.addition_rows(arm, name, measured, h, streamed), head))
     followed = lines.follow(measured["records"], final_keys(work))
     write(out / "outcomes.csv", label(tables.outcome_rows(arm, name, h, streamed, cc, followed), head))
+    # the binding levels (PLAN.md 4.3c, reported): the same outcomes with injection ignored, and excluded
+    for level in tables.LEVELS:
+        write(out / f"outcomes_{level}.csv",
+              label(tables.outcome_rows(arm, name, tables.at_level(h, level), streamed, cc, followed), head))
     write(out / "pairs.csv", label(tables.pair_rows(arm, name, h, measured), head))
     write(out / "coupling.csv", label(tables.coupling_rows(arm, name, measured), head))
     write(out / "encapsulation.csv", label(tables.encapsulation_rows(arm, name, h, measured), head))

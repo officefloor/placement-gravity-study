@@ -9,7 +9,8 @@
 > delete H9 and count constants in H5). Run B's ids were added on 26 November 2026 (§9 row 113), so
 > nothing that needs deciding is left before the tag is set again; until it is, only the development
 > chain can be read.** Rows 114 to 122, of the same day, follow a second review of the plan before
-> the tag (§8): they tighten rules, make the plan and the code say the same, and change no
+> the tag (§8), and row 123 adds a reported reading the review offered (§4.3c, the binding levels):
+> they tighten rules, make the plan and the code say the same, and change no
 > hypothesis or direction. As first registered, on 16 November 2026: the tag was first pushed on commit
 > `4bb8973` and moved the same day, before any run named for analysis was read, to this revision,
 > which adds bindings to injected dependencies reported apart (§4.3, §5). The instrument is piloted on
@@ -1448,6 +1449,9 @@ a class the container does not manage is data, and a constant (`static final`) s
   are read on all bindings.
 - **Reported beside it** (§5): H3, at method level and at class level, H4 and H2, each with the
   bindings to injected dependencies left out (`binding_no_injected`, `binding_class_no_injected`).
+- **Reported beside it, both ways** (26 November 2026, §4.3c): H1, H2's arm contrast and H4's
+  later intrusion with injection ignored (an injected parameter binds too) and with injection
+  excluded (neither binds, in either arm).
 
 **Pull is graded by where the value comes from** (stated 16 November 2026, §9). The expected
 order, from the least pull to the most:
@@ -1616,6 +1620,79 @@ A method's introduced values are those it has after the change less its pre-exis
 does not count as pre-existing there. A field renamed by the change counts as introduced, as it
 always has in accretion. A later intrusion is bound to an introduced value when its own bound code
 in that method, or that class, uses it.
+
+### 4.3c The binding levels (reported)
+
+Added 26 November 2026, before the tag (§9 row 123; decided by the author, §8). The plan counts
+injection unevenly, and says why (§2, *An injected private field forces too*; §4.3): a field
+holding an injected dependency binds code to its class, because the choice to declare it in
+another class is mostly not taken; a parameter the framework injects does not bind code to its
+method, because a function placed anywhere can declare it. Three results lean on that rule:
+H1's count of forced placements, H2's arm contrast and H4's later intrusion. A reader may say the
+arms differ because they are counted differently. So each of the three is read at three levels of
+the rule. The author: "I'm thinking of considering injected parameters in different levels.
+Everything, so ignore injection for both Spring and OfficeFloor, so includes all. Exclude
+injection as that can be loaded to other encapsulations. Include only injection in Spring, as the
+choice of duplicating the injection is often not used, and falls back to pull."
+
+| Level | A field holding an injected dependency | A parameter the framework fills | |
+|---|---|---|---|
+| **All** (injection ignored) | binds | binds | both arms alike |
+| **Spring only** | binds | does not bind | **the registered rule**: every test is decided on it |
+| **None** (injection excluded) | does not bind | does not bind | both arms alike |
+
+- **A parameter the framework fills** is, in the function arm, every parameter of a wired
+  function (§4.3). In the methods arm it is every parameter of a **handler**: a method annotated
+  as called by the framework (`@RequestMapping`, `@GetMapping`, `@PostMapping`, `@PutMapping`,
+  `@DeleteMapping`, `@PatchMapping`, `@ExceptionHandler`, `@EventListener`,
+  `@TransactionalEventListener`, `@Bean`, `@Autowired`, `@Inject`, `@Scheduled`,
+  `@MessageMapping`, `@ModelAttribute`, `@InitBinder`), or a public method marked `@Override` in
+  a class annotated `@Controller`, `@RestController`, `@ControllerAdvice` or
+  `@RestControllerAdvice` (the mappings are then on the interface it implements, as with a
+  generated OpenAPI interface; the development chain's handlers are of this kind). Asked whether
+  a Spring handler's parameters are left out under *none*, as a wired function's are, the author:
+  "excluded". Under the registered rule and under *all* a handler's parameter binds, as it always
+  has: it is the request on the control flow (§4.3, grade 3). A public method of a controller
+  that the framework does not call keeps its parameters at every level: a caller hands them to it.
+- **Under *none* the injected values are not values of the place at all:** not what code is bound
+  to, not what stands by, not what a change introduces. Otherwise H2's periphery would hold values
+  that no later use could ever be counted on.
+- **What is read at each level**, the function arm against the methods arm, each a rate ratio on
+  its 95% Wald interval, in the model of its test (§5):
+  - *H1:* the placements with no other place to go, per checkpoint, half-way through the stream
+    and their rise over it; at the class and at the method. At the class *all* is the registered
+    count by construction (a parameter is a value of its method, not of its class). Under *none* a
+    placement is bound at the class only by the class's own state, constants and methods, which no
+    other class holds, so each such placement is forced. At the method a placement is forced when
+    no other method on its control flow holds the types of the values it was bound to at that
+    level (§4.2a).
+  - *H4's later intrusion*, at the class and at the method: which problems are followed (those
+    bound at that level) and which later changes count as drawn in (those bound at that level).
+  - *H2's arm contrast*, at the class and at the method: the uses of a core value, the core being
+    what the code was bound to at that level.
+- **Nothing here decides a hypothesis.** The verdicts stand on the registered rule alone, and the
+  levels are outside the correction.
+- **How the three are read together** (written before any level was computed on any chain). A
+  result that points the same way at all three levels does not depend on the rule. One that holds
+  as registered and not at *all* or at *none* rests on the author's reasoning for the rule, and
+  the write-up says so.
+- **What is expected** (written before any level was computed on any chain). Under *all*, nearly
+  any line added to an existing wired function uses one of its parameters, so the function arm has
+  more placements bound at the method and more rows followed: its counts at the method are
+  expected to rise, and the arms' gap there to shrink or to turn round. That is the known cost of
+  counting an injected parameter as a binding, not a failure of H4: the function arm's functions
+  are small and many, and the class level and the well-trodden files (H4), which count where
+  problems pile up, do not rest on the rule. Under *none*, the methods arm loses its bindings to
+  repositories and services and to the request: fewer of its rows are followed, and what is left
+  is the pull of a class's own state and of a method's locals.
+
+As built: `instrument/Pull.java` (`params_framework`, `class_injected`, `binding_method_all`;
+`isHandler`), `tables.host_rows` (`binding_all`, `binding_none`, `choice_method_all`,
+`choice_method_none`), `tables.at_level`, `measure.py` (`outcomes_all.csv`, `outcomes_none.csv`),
+`prepare.h1_level_rows` (`h1_levels.csv`; `h2_all.csv`, `h2_none.csv`), `analyse.R`
+(`reported.binding_levels`), `report.levels_section`; `MEASURE_VERSION` 43. Corpus A only: each
+reading is an arm contrast, which a history does not have, so the histories are not measured
+again.
 
 ### 4.4 Consequence (Q3)
 
@@ -2285,6 +2362,15 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   in both arms, and reported.
 - **Without injected dependencies** (reported, §4.3): H3 at method and class level, H4 and H2,
   each with bindings to injected dependencies left out. These do not change any verdict.
+- **The binding levels** (reported, §4.3c; added 26 November 2026, §9 row 123). H1's count of
+  forced placements (at the class and at the method), H2's arm contrast and H4's later intrusion
+  (each at the class and at the method), read three ways: with injection ignored, as registered,
+  and with injection excluded. Each is the function arm against the methods arm in the model of
+  its test (H1: the count on the arm, the centred checkpoint index and their interaction; H2 and
+  H4: the base model with the arm term), with the chain's and the checkpoint's intercepts and the
+  front end where there is more than one, on the 95% Wald interval. The registered level is shown
+  there on its Wald interval too, so that the three can be set side by side; its test is the one
+  above, on the cluster bootstrap. These do not change any verdict.
 - **Choice at a checkpoint** (reported; added 16 November 2026, §9). Per checkpoint and arm, over
   the chains: the share of chains that placed any of the addition in an existing host, the number
   of distinct hosts the chains used between them, and the standard deviation of the bindings per
@@ -3188,6 +3274,35 @@ binomial mixed model). These details are fixed with the code before any run is r
   row 119:* the strata were first sorted by name, which put the arms in another order than before
   and so drew other resamples on the histories (one bootstrap p of H4 there moved from 0.786 to
   0.776); they are now in the arms' order, and the histories' figures are the committed ones again.
+- **The binding levels on the development chain** (26 November 2026, §9 row 123; the pilot
+  measured again at `MEASURE_VERSION` 43, steps 3 to 5; one chain an arm, descriptive only, Wald
+  intervals; `REPORT.md`, *the binding levels*). **No figure read before moved:** every column the
+  measured tables had came back the same, value for value, in both arms, and `estimates.json`
+  gained the levels and lost nothing. The histories were not measured again. Function arm against
+  methods arm:
+
+  | | Injection ignored | As registered | Injection excluded |
+  |---|---|---|---|
+  | Bound rows followed (function, methods) | 47, 83 | 26, 83 | 25, 59 |
+  | H1 at the class, half-way | 0.25 [0.09, 0.65] | 0.25 [0.09, 0.65] | 0.25 [0.09, 0.65] |
+  | H1's count at the method, half-way (reported) | 0.59 [0.27, 1.31] | 0.21 [0.06, 0.72] | 0.50 [0.13, 1.89] |
+  | H4, later intrusion at the class | 0.11 [0.07, 0.18] | 0.16 [0.10, 0.27] | 0.16 [0.09, 0.28] |
+  | H4, later intrusion at the method | 0.20 [0.08, 0.49] | 0.11 [0.03, 0.43] | not estimated |
+  | H2, uses of a core value at the method | 0.17 [0.07, 0.43] | 0.09 [0.02, 0.32] | 0.10 [0.03, 0.43] |
+
+  H1 at the class is the same at all three: on this chain every placement with no other class to
+  go to was bound to the class's own members (26 in the methods arm, 9 in the function arm), none
+  to an injected field alone, so excluding injection removes none of them; with injection ignored
+  it is the registered count by construction. At the method, as expected (§4.3c), counting injected
+  parameters takes the function arm's placements with no other method from 6 to 20, against the
+  methods arm's 19, and the gap there closes; excluding injection takes the methods arm's from 19
+  to 9. Later intrusion and the uses of a core value stay below 1 at every level where they could
+  be fitted. H2's contrast at the class has too few core records in the function arm at every
+  level (3). H4's intrusion at the method with injection excluded could not be fitted (no standard
+  error for the arm). The trends of H1 are not readable on one chain (intervals from 0.4 to 156 and
+  wider). One chain an arm: none of this is evidence for the hypotheses, only that the levels can
+  be read and move as they were expected to. The R self-test checks them on simulated data and
+  fixtures on the instrument: 129 checks and 184 tests pass.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
@@ -3309,6 +3424,19 @@ binomial mixed model). These details are fixed with the code before any run is r
   one-endpoint petclinic stream makes this strongest there. The own-lines reading, which does not
   share counts, is reported for comparison; following lines is the weaker provenance, and the share
   of lines lost track of is reported per arm.
+- **Three results lean on how injection is counted** (added 26 November 2026, §9 row 123). An
+  injected field binds code to its class and an injected parameter does not bind it to its method
+  (§4.3): the plan gives its reason, but the reason is an argument, and under it the arms are
+  counted differently before any code is read. H1's count, H2's arm contrast and H4's later
+  intrusion are therefore read at three levels of the rule (§4.3c), two of which treat the arms
+  alike. A result that holds only at the registered level rests on the argument, and is written up
+  so. The readings are on Wald intervals and decide nothing; the bystanders, the well-trodden
+  files and H5's links do not rest on the rule at all. Under *injection excluded* a Spring handler
+  is told by its annotations, or by overriding a declared API in a controller class; a handler
+  declared another way keeps its parameters as bindings there, which leans towards the methods arm
+  looking more bound, the direction that favours H4. No ui run's backend Java was read to choose
+  the annotations: they are Spring's own, and the development chain's handlers are of the second
+  kind.
 - **The function arm's calling method is its wiring.** Intrusion at the class and the method is
   read on Java. Where the methods arm goes back into a handler, the function arm goes back into a
   flow configuration file, and that is not in H4's intrusion. The wiring conditions of §4.5 and the
@@ -3827,8 +3955,16 @@ author's to set, on the plan and code as they then stand, and starts the experim
   the backend Java while its runs are made (§3.1a asks that such a reading be listed in the
   report). The author, who runs its scripts by hand: "It does not print backend figures, only
   progress". So nothing of Run A's or Run B's backend Java has been seen through the harness, and
-  there is nothing to list. *Left open:* a reported reading with injected parameters counted as
-  bindings in both arms, offered by the review and not asked for.
+  there is nothing to list. *Offered by the review and taken up by the author the same day, as
+  three levels* (row 123, §4.3c): a reported reading with injected parameters counted as bindings
+  in both arms. The author: "I'm thinking of considering injected parameters in different levels.
+  Everything, so ignore injection for both Spring and OfficeFloor, so includes all. Exclude
+  injection as that can be loaded to other encapsulations. Include only injection in Spring, as
+  the choice of duplicating the injection is often not used, and falls back to pull." The review
+  recommended that the third, which is the registered rule, go on deciding the verdicts and the
+  other two be reported beside it, and asked whether a Spring handler's parameters, which the
+  framework fills, are left out with the rest when injection is excluded; the author: "go ahead,
+  excluded".
 - *Done for rows 99 to 106:* the pilot at `MEASURE_VERSION` 40 and the histories at
   `HISTORY_VERSION` 15 (§6); no figure moved under row 102. (H9's population, left there to the
   author, fell with H9, row 108.)
@@ -4110,6 +4246,7 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 120 | **H4's amount band is read on the whole 95% interval of the ratio, on positions**; the ratio alone is reported beside (`ratio_in_band`). §2's "positions, tokens" becomes positions: tokens were never in the table the band is read from. **A wiring condition that could not be read leaves H4 *not estimable***; until then it counted as not against | §2 (H4), §4.6, §5 (H4), `prepare.amount`, `verdict.h4`, `tests/` | The same review: the plan did not say whether the ratio or its interval decides, and the code took the ratio; "the same amount" is a claim of no difference, for which the plan elsewhere asks the interval. Put as interval or point, and positions or both; the author: "Interval A, tokens A". On the development chain the ratio is 1.08, with one chain an arm and so no width |
 | 121 | **The two pairs that share a front end are built**: `ui-angular` and `ui-tanstack`, each a secondary analysis with every hypothesis and its verdicts, read for whether the two agree in direction; in each the arm is also the run. A chain already measured for another analysis of the same stream, at the same head and version, is copied and not measured again | §3.1a, §5 (*As built*), §7, `runs.yaml`, `measure.copy_measured`, `tests/` | The same review: §3.1a promised the pairs "so that a disagreement between them shows" and nothing built them; they are the plan's answer to Run A and Run B being four weeks apart. Put as full verdicts or estimates only; the author: "A" |
 | 122 | Wording, no rule changed: §7's threat on H5 said its links are "counted, not weighed", as they were the morning it was written (row 95 weighed them that evening); a table of what is registered, in today's numbers, stands before §1, with §5 governing | the head of the plan, §7 | The same review: a reader who met the threat first would take H5 for a plain count, and the frozen rules could not be found without reading §2, §4 and §5 together. Put as both or the sentence only; the author: "A". §6, §8 and §9 keep the numbers of their day (row 93) |
+| 123 | **The binding levels, reported** (§4.3c): H1's count of forced placements, H2's arm contrast and H4's later intrusion are each read three ways, with injection ignored (an injected parameter binds as an injected field does), as registered (the field binds, the parameter does not) and with injection excluded (neither binds; a Spring handler's parameters, which the framework fills, among them), the function arm against the methods arm on 95% Wald intervals. The registered rule goes on deciding every verdict; the levels are outside the correction. The instrument now also writes the parameters the framework fills, in either arm, the class's injected fields, and each run's method bindings with injected parameters counted; no value read before changes | §4.3, §4.3c, §5, §7, §8, `Pull.java` (VERSION 20), `tables.py`, `measure.py` (`MEASURE_VERSION` 43), `prepare.py`, `analyse.R`, `report.py`, `tests/` | The second review of 26 November 2026 found that H1's level, H2's arm contrast and H4's later intrusion lean on the rule that an injected parameter is not a binding, and offered one reading without it. The author made it three levels: "Everything, so ignore injection for both Spring and OfficeFloor, so includes all. Exclude injection as that can be loaded to other encapsulations. Include only injection in Spring, as the choice of duplicating the injection is often not used, and falls back to pull"; and, on a Spring handler's parameters under the second, "excluded". What is expected at each level, and how the three are read together, were written before any level was computed on any chain. Corpus A only; the histories are not measured again |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

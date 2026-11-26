@@ -851,6 +851,85 @@ if (!is.null(res$H1) && !isFALSE(spec$problem_fixed)) {
   }
 }
 
+# ---------------------------------------------------------------- the binding levels (reported)
+# PLAN.md 4.3c (added 26 November 2026, before the tag). Three results rest on a rule of the plan,
+# that a field holding an injected dependency binds code to its class and a parameter the framework
+# injects does not bind it to its method: H1's count, H2's arm contrast and H4's later intrusion.
+# Each is read here at three levels of that rule, the arms' ratio on its 95% Wald interval:
+#   all     injection ignored: an injected parameter binds as an injected field does;
+#   none    injection excluded: neither binds, in either arm (a Spring handler's parameters, which
+#           the framework fills, among them);
+#   spring  the registered rule, between the two: only the field binds.
+# Nothing here decides a hypothesis: the tests above stand on the registered rule alone.
+if (!is.null(h2) && nrow(h2) > 0 && !isFALSE(spec$problem_fixed) && multi(as.character(h2$arm))) {
+  prep_level <- function(d) {
+    if (is.null(d) || nrow(d) == 0) return(NULL)
+    d <- d[d$later_checkpoints > 0 & as.logical(d$bound), ]
+    if (nrow(d) == 0) return(NULL)
+    d$arm <- as_arm(d$arm)
+    d$log_size <- log1p(d$addition_positions)
+    d$log_host <- log1p(d$pre_positions)
+    d$log_later <- log(d$later_checkpoints)
+    d$host_new <- as.numeric(as.logical(d$host_new))
+    if (isTRUE(spec$acts)) d$act <- factor(d$act)
+    d
+  }
+  arm_ratio <- function(d, y) {
+    if (!multi(as.character(d$arm))) return(list(error = "no row bound in one arm at this level"))
+    irr(wald(fit_cp(base(d, y), d, nb)$fit, FARM))
+  }
+  reuse_level <- function(d, lev) {
+    long <- core_long(d, lev)
+    long <- if (is.null(long)) NULL else long[long$core == 1, ]
+    if (is.null(long) || nrow(long) == 0) return(list(error = "no core to compare"))
+    fa <- as.character(long$arm) == spec$function_arm
+    out <- list(function_records = sum(fa), methods_records = sum(!fa),
+                function_uses = sum(long$uses[fa]), methods_uses = sum(long$uses[!fa]))
+    if (sum(fa) < MIN_CORE || sum(!fa) < MIN_CORE)
+      return(c(out, list(note = "too few core records in an arm to compare")))
+    if (out$function_uses == 0 || out$methods_uses == 0)
+      return(c(out, list(note = "an arm's core is never come back to: no ratio to fit")))
+    c(irr(wald(fit_cp(base(long, "uses"), long, nb)$fit, FARM)), out)
+  }
+  hl <- read("h1_levels.csv")
+  forced_level <- function(col) {
+    if (is.null(hl) || nrow(hl) == 0 || !multi(hl$arm)) return(list(error = "the levels were not measured"))
+    d <- hl[as.character(hl$arm) %in% c(spec$methods_arm, spec$function_arm), ]
+    d$arm <- droplevels(as_arm(as.character(d$arm)))
+    d$cp_c <- (d$cp - (max(spec$checkpoints, 1) + 1) / 2) / max(spec$checkpoints - 1, 1)
+    d$y <- d[[col]]
+    per <- as.list(tapply(d$y, as.character(d$arm), mean))
+    if (all(d$y == 0)) return(list(error = "no placement forced in either arm", mean = per))
+    fixed <- paste0("y ~ cp_c * arm", if (multi(d$frontend)) " + frontend" else "")
+    fine <- function(m) !inherits(m$fit, "fit_error") && isTRUE(m$fit$sdr$pdHess) &&
+      all(is.finite(summary(m$fit)$coefficients$cond[, "Std. Error"]))
+    m <- fit_cp(fixed, d, nbinom2())
+    fam <- "nbinom2"
+    if (!fine(m)) {
+      m <- fit_cp(fixed, d, poisson())
+      fam <- "poisson"
+    }
+    list(arm = irr(wald(m$fit, FARM)), trend = irr(wald(m$fit, paste0("cp_c:", FARM))),
+         mean = per, n = nrow(d), family = fam)
+  }
+  res$reported$binding_levels <- list()
+  for (L in c("all", "spring", "none")) {
+    d <- if (L == "spring") h2 else prep_level(read(paste0("h2_", L, ".csv")))
+    one <- list(H1_class = forced_level(paste0("forced_class_", L)),
+                H1_method = forced_level(paste0("forced_method_", L)))
+    if (is.null(d)) {
+      one$error <- "no row bound at this level, or the level was not measured"
+    } else {
+      one$rows <- as.list(table(as.character(d$arm)))
+      for (lev in c("class", "method")) {
+        one[[paste0("H4_intrusion_", lev)]] <- arm_ratio(d, paste0("intrusion_", lev))
+        one[[paste0("H2_reuse_", lev)]] <- reuse_level(d, lev)
+      }
+    }
+    res$reported$binding_levels[[L]] <- one
+  }
+}
+
 # ---------------------------------------------------------------- H7: spread does not see it
 # Per unit that placed or edited code in a class that existed before it, those classes beyond the
 # first (spread; a new class is a free choice and is not counted; PLAN.md 4.2b). H7's test, in the

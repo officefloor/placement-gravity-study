@@ -96,7 +96,7 @@ import net.officefloor.sinewslim.javaparser.ParsedFile;
 public final class Pull {
 
 	/** Bump whenever a field's meaning changes. */
-	static final int VERSION = 19;
+	static final int VERSION = 20;
 
 	/** A removed position's text must be at least this long to mark an added one as moved. */
 	static final int MOVED_MIN_CHARS = 12;
@@ -520,6 +520,15 @@ public final class Pull {
 			s.append(",\"moved_text\":").append(nMovedText);
 			s.append(",\"removed\":").append(removed);
 			s.append(",\"params\":").append(paramCount(m.signature));
+			// the binding levels (PLAN.md 4.3c): the parameters the framework fills, in either arm (a wired
+			// OfficeFloor function's, a Spring handler's)
+			s.append(",\"params_framework\":").append(strs(new TreeSet<>(frameworkParams(m))));
+			// and the fields of the class that hold injected dependencies, before the change or after it
+			Set<String> classInjected = new TreeSet<>(preInjected);
+			if (m.owner != null) {
+				classInjected.addAll(m.owner.injected);
+			}
+			s.append(",\"class_injected\":").append(strs(classInjected));
 			// choice (H5, PLAN.md 4.2a): the declared type of each of the method's parameters and locals,
 			// and of each field of its class, so that the places holding the same types can be found
 			s.append(",\"var_types\":").append(typeMap(varTypes(m.node)));
@@ -636,6 +645,12 @@ public final class Pull {
 				s.append(",\"inputs\":").append(seam.inputs().size());
 				s.append(",\"outputs\":").append(seam.outputs().size());
 				s.append(",\"binding_method\":").append(strs(tm));
+				// every pre-existing parameter and local the run's lines use, injected parameters among
+				// them (the binding levels, PLAN.md 4.3c)
+				Set<String> ta = new TreeSet<>();
+				bindings(m, from, to, lineTokens, preAll, ownVars, preFields, preMethods, ta, new TreeSet<>(),
+						new TreeSet<>());
+				s.append(",\"binding_method_all\":").append(strs(ta));
 				Set<String> tp = new TreeSet<>(tm);
 				tp.retainAll(params(m));
 				s.append(",\"binding_param\":").append(strs(tp));
@@ -760,6 +775,38 @@ public final class Pull {
 		boolean isInjected(M m) {
 			String simple = m.type.substring(m.type.lastIndexOf('.') + 1);
 			return injected.contains(simple) && m.node instanceof MethodDeclaration md && md.isPublic();
+		}
+
+		/** Annotations of a method the framework calls, filling its parameters (Spring). */
+		static final Set<String> CALLED = Set.of("RequestMapping", "GetMapping", "PostMapping", "PutMapping",
+				"DeleteMapping", "PatchMapping", "ExceptionHandler", "EventListener", "TransactionalEventListener",
+				"Bean", "Autowired", "Inject", "Scheduled", "MessageMapping", "ModelAttribute", "InitBinder");
+
+		/** Annotations of a class whose public methods overriding a declared API are request handlers. */
+		static final Set<String> CONTROLLERS = Set.of("Controller", "RestController", "ControllerAdvice",
+				"RestControllerAdvice");
+
+		/**
+		 * A Spring method whose parameters the framework fills (the binding levels, PLAN.md 4.3c): one
+		 * annotated as called by the framework (a request mapping, an exception or event handler, a bean
+		 * or injection method), or a public method of a controller class that overrides a declared API
+		 * (the mappings are then on the interface, as with a generated OpenAPI interface).
+		 */
+		static boolean isHandler(M m) {
+			if (!(m.node instanceof MethodDeclaration md)) {
+				return false;
+			}
+			if (annotated(md, CALLED)) {
+				return true;
+			}
+			return md.isPublic() && annotated(md, Set.of("Override"))
+					&& md.getParentNode().orElse(null) instanceof com.github.javaparser.ast.nodeTypes.NodeWithAnnotations<?> c
+					&& annotated(c, CONTROLLERS);
+		}
+
+		/** The parameters of m that the framework fills: a wired function's, a Spring handler's; else none. */
+		Set<String> frameworkParams(M m) {
+			return isInjected(m) || isHandler(m) ? params(m) : Set.of();
 		}
 
 		/**

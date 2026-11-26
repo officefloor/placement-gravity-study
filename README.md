@@ -93,6 +93,7 @@ cloned into `~/placement-gravity-data/`. The streams are read at the commits `ru
 | `placement_gravity/crosscheck.py` | CodeTracker against the instrument's following of hosts. |
 | `placement_gravity/chain.py` | A chain's checkpoints from git, the files of each addition, the wiring. |
 | `placement_gravity/tables.py` | Hosts, runs, additions and outcomes from the instrument's output. |
+| `placement_gravity/tables.py` (`at_level`) | The binding levels: H1's count, H2's arm contrast and H4's later intrusion read with injection ignored, as registered, and with injection excluded (PLAN.md §4.3c, reported; decides nothing). |
 | `placement_gravity/lines.py` | A problem's own lines followed from checkpoint to checkpoint: reported for information beside intrusion at the class and the method (PLAN.md §4.4). |
 | `placement_gravity/literature.py` | The literature's shape measures on every method and class (CK, PMD, jscpd, Halstead, Maintainability Index; PLAN.md §4.7a). |
 | `placement_gravity/places.py` | Where bound and unbound code lands among the methods and classes it could have gone to, ranked by complexity and by data width (PLAN.md §5, reported). |

@@ -683,6 +683,11 @@ def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
         tc = sorted({v for x in runs for v in x["binding_class_method"]})
         tu = sorted({v for x in runs for v in x["utility"]})
         un = sorted({v for x in runs for v in x["unresolved"]})
+        # the binding levels (PLAN.md 4.3c): the method's values with every injected parameter counted
+        # (``all``), and with none (``none``: not a wired function's, not a Spring handler's)
+        fw = set(r.get("params_framework", []))
+        ta = sorted({v for x in runs for v in x.get("binding_method_all", x["binding_method"])})
+        tn = [v for v in ta if v not in fw]
         rows.append({
             "arm": arm, "chain": chain, "cp": int(r["unit"][2:]), "path": r["path"],
             "type": r["type"], "name": r["name"], "signature": r["signature"],
@@ -725,6 +730,16 @@ def host_rows(arm: str, chain: str, measured: dict) -> list[dict]:
             # within forced: bound only to injected private fields (the lever of injection was there,
             # not exercised) or to the class's own private members
             "forced_lever": lever(r, tf, ti, tc, measured.get("places")),
+            # the binding levels (PLAN.md 4.3c, reported). ``all``: injection ignored, an injected
+            # parameter binds as an injected field does. ``none``: injection excluded, neither binds.
+            # The registered rule lies between: an injected field binds, an injected parameter does not.
+            "binding_all": len(ta) + len(tf) + len(tc),
+            "binding_none": len(tn) + len(tf) - len(ti) + len(tc),
+            "binding_method_all": len(ta), "binding_method_none": len(tn),
+            "framework_params": " ".join(sorted(fw)),
+            "class_injected": " ".join(sorted(r.get("class_injected", []))),
+            "choice_method_all": choice(r, ta, [], [], [], measured.get("places"))["choice_method"],
+            "choice_method_none": choice(r, tn, [], [], [], measured.get("places"))["choice_method"],
         })
         if shaped:
             rows[-1].update(shape.host_shape(rows[-1], shaped, in_class))
@@ -1219,6 +1234,31 @@ def organisation_split(lines: dict | None, hosts: list[dict]) -> dict:
         return {**out, "declaration_lines_added": None, "import_lines_added": None, "wiring_lines_added": None}
     return {**out, "declaration_lines_added": max(lines["java"] - lines["imports"] - body, 0),
             "import_lines_added": lines["imports"], "wiring_lines_added": lines["wiring"]}
+
+
+#: The binding levels read beside the registered rule (PLAN.md 4.3c).
+LEVELS = ("all", "none")
+
+
+def at_level(hosts: list[dict], level: str) -> list[dict]:
+    """The hosts read at a binding level (PLAN.md 4.3c, reported), for ``outcome_rows``. ``all``:
+    injection is ignored, so an injected parameter binds like any other and a host bound only to one
+    is bound. ``none``: injection is excluded in both arms, so the parameters the framework fills (a
+    wired function's, a Spring handler's) and the fields holding injected dependencies are not values
+    of the place at all: not what code is bound to, not what stands by, not what is introduced."""
+    if level not in LEVELS:
+        raise ValueError(level)
+    out = []
+    for h in hosts:
+        h = dict(h)
+        h["binding"] = h[f"binding_{level}"]
+        if level == "none":
+            fw, inj = set(h["framework_params"].split()), set(h["class_injected"].split())
+            for k, drop in (("need_method_values", fw), ("by_method_values", fw), ("introduced_method_values", fw),
+                            ("need_class_values", inj), ("by_class_values", inj), ("introduced_class_values", inj)):
+                h[k] = " ".join(v for v in (h.get(k) or "").split() if v not in drop)
+        out.append(h)
+    return out
 
 
 def is_bound(h: dict) -> bool:

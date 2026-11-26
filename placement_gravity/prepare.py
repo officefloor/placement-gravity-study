@@ -174,6 +174,36 @@ def h1_forced_rows(h1: list[dict], additions: list[dict]) -> list[dict]:
             for a in additions if not truth(a.get("noop"))]
 
 
+def h1_level_rows(host_rows: list[dict], additions: list[dict]) -> list[dict]:
+    """The binding levels on H1 (PLAN.md 4.3c, reported): per checkpoint and chain, the placements
+    with no other place to go, at the class and at the method, at each level. ``spring`` is the
+    registered rule (an injected field binds, an injected parameter does not); ``all`` ignores
+    injection (both bind); ``none`` excludes it (neither binds). At the class ``all`` is the
+    registered count, since an injected parameter is a value of the method; under ``none`` a
+    placement is bound at the class only by the class's own members, which no other class holds, so
+    each one is forced. At the method a placement is forced when no other method on its control
+    flow holds the types of the values it was bound to at that level. Empty where the levels were
+    not measured."""
+    if not host_rows or "choice_method_all" not in host_rows[0]:
+        return []
+    cols = {"forced_class_spring": lambda h: num(h.get("choice_class")) == 0,
+            "forced_class_all": lambda h: num(h.get("choice_class")) == 0,
+            "forced_class_none": lambda h: num(h.get("choice_class")) is not None and truth(h.get("choice_class_own")),
+            "forced_method_spring": lambda h: num(h.get("choice_method")) == 0,
+            "forced_method_all": lambda h: num(h.get("choice_method_all")) == 0,
+            "forced_method_none": lambda h: num(h.get("choice_method_none")) == 0}
+    n: dict[tuple, dict[str, int]] = {}
+    for h in host_rows:
+        if truth(h.get("replacement")):
+            continue
+        row = n.setdefault((h["chain_id"], int(h["cp"])), dict.fromkeys(cols, 0))
+        for c, f in cols.items():
+            row[c] += int(f(h))
+    return [{"chain_id": a["chain_id"], "arm": a["arm"], "frontend": a.get("frontend", ""), "cp": int(a["cp"]),
+             **n.get((a["chain_id"], int(a["cp"])), dict.fromkeys(cols, 0))}
+            for a in additions if not truth(a.get("noop"))]
+
+
 def added(h: dict) -> float:
     """The positions a host gained (its net addition, none below 0): the size of a change there."""
     return max(num(h.get("net_added"), 0) or 0, 0)
@@ -1209,6 +1239,13 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
     chosen5 = h1_rows(hosts, streamed)
     write_csv(out / "h1.csv", chosen5)
     write_csv(out / "h1_forced.csv", [] if past else h1_forced_rows(chosen5, additions))
+    # the binding levels (PLAN.md 4.3c, reported): H1's count, and the outcomes H2's arm contrast and
+    # H4's later intrusion are read on, with injection ignored and with injection excluded. Corpus A
+    # only: each is an arm contrast, which a history does not have.
+    write_csv(out / "h1_levels.csv", [] if past else h1_level_rows(hosts, additions))
+    for level in tables.LEVELS:
+        write_csv(out / f"h2_{level}.csv",
+                  [] if past else h2_rows(table(f"outcomes_{level}"), hosts, additions, streamed))
     h7 = h7_rows(hosts, streamed)
     write_csv(out / "h7.csv", h7)
     paired = pair_rows(table("pairs"))

@@ -11,7 +11,8 @@ from placement_gravity import chain, refactor, tables
 
 FX = Path(__file__).parent / "fixtures"
 CASES = ["accrete", "helper", "extract", "writeback", "lambda", "modify", "newclass",
-         "injected", "rename", "classmethod", "organisation", "inherited", "constant", "injection"]
+         "injected", "rename", "classmethod", "organisation", "inherited", "constant", "injection",
+         "handler"]
 #: hints as RefactoringMiner and the wiring would give them
 HINTS = [
     "injected\tinjected\tCheckX",
@@ -104,6 +105,47 @@ def test_injected_parameters_binding_when_not_wired(tmp_path):
     r = measure(tmp_path, ["injected"], [])[("injected", "service")]
     assert not r["injected"] and run(r)["binding_method"] == ["a", "repo", "request"]
     assert run(r)["binding_param"] == ["repo", "request"]   # a is a local
+
+
+# ---- the binding levels (PLAN.md 4.3c): injection ignored, injection excluded
+
+def test_a_wired_functions_parameters_are_the_frameworks_and_bind_when_injection_is_ignored(records):
+    r = records[("injected", "service")]
+    assert r["params_framework"] == ["repo", "request"]
+    assert run(r)["binding_method"] == ["a"]                            # the registered rule
+    assert run(r)["binding_method_all"] == ["a", "repo", "request"]     # injection ignored
+
+
+def test_a_spring_handlers_parameters_are_the_frameworks(records):
+    # a controller's public method overriding its declared API, and a method with a request mapping
+    assert records[("handler", "getOwner")]["params_framework"] == ["ownerId"]
+    assert records[("handler", "listOwners")]["params_framework"] == ["lastName"]
+    # a public method the framework does not call: its parameters are handed to it by a caller
+    assert records[("handler", "helper")]["params_framework"] == []
+    # under the registered rule a handler's parameter binds, as any method's does
+    assert run(records[("handler", "getOwner")])["binding_method"] == ["found", "ownerId"]
+    assert records[("handler", "getOwner")]["class_injected"] == ["repo"]
+
+
+def test_binding_counts_at_each_level(tmp_path):
+    out = measure(tmp_path, ["handler", "injected"], ["injected\tinjected\tCheckX"])
+    measured = {"records": [{**r, "unit": "cp01"} for r in out.values()], "places": None, "shape": []}
+    rows = {r["name"]: r for r in tables.host_rows("x", "chain1", measured)}
+    # getOwner: found and ownerId of the method; repo (injected) and served (state) of the class
+    g = rows["getOwner"]
+    assert (g["binding"], g["binding_all"], g["binding_none"]) == (4, 4, 2)   # none: found, served
+    # helper: lastName is handed by a caller, so it binds at every level; repo does not under none
+    h = rows["helper"]
+    assert (h["binding"], h["binding_all"], h["binding_none"]) == (2, 2, 1)
+    # the wired function: a alone binds as registered, its parameters too with injection ignored
+    s = rows["service"]
+    assert (s["binding"], s["binding_all"], s["binding_none"]) == (1, 3, 1)
+    # the hosts read at a level: what counts as bound, and under none the injected values are gone
+    none = {r["name"]: r for r in tables.at_level(list(rows.values()), "none")}
+    assert none["getOwner"]["need_method_values"] == "found" and none["getOwner"]["need_class_values"] == "served"
+    assert {r["name"]: r["binding"] for r in tables.at_level(list(rows.values()), "all")}["service"] == 3
+    with pytest.raises(ValueError):
+        tables.at_level([], "spring")
 
 
 def test_parameter_bindings_are_split_out(records):
