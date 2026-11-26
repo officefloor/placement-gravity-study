@@ -1,5 +1,5 @@
 #!/usr/bin/env Rscript
-# Step 4, second half: the models of PLAN.md §5, fitted with glmmTMB.
+# The analysis, second half: the models of PLAN.md §5, fitted with glmmTMB.
 #
 #   Rscript analysis/analyse.R data/analysis/<name> results/analysis/<name>/estimates.json
 #
@@ -339,10 +339,16 @@ if (!is.null(by)) {
   # every other model of the paired chains carries it
   mb1 <- fit_cp(paste0("y ~ cp", if (multi(dm$frontend)) " + frontend" else ""), dm, gaussian())
   note("H3", mb1)
-  bb1 <- if (inherits(mb1$fit, "fit_error")) NULL else
-    cluster_boot(mb1$data, mb1$formula, gaussian(), "cp", spec$boot)
+  # With one chain there is nothing to resample: every draw is the same chain, the interval a point
+  # and p the smallest it can be. The Wald reading is then what there is, recorded, as for every
+  # other test (27 November 2026, PLAN.md 9 row 126; until then H3 alone lacked this).
+  boot_slope <- function(m, term) {
+    if (length(unique(m$data$chain_id)) < 2) return(c(wald(m$fit, term), list(interval = "wald: one chain")))
+    c(boot_summary(m$fit, cluster_boot(m$data, m$formula, gaussian(), term, spec$boot), term),
+      list(interval = "cluster bootstrap"))
+  }
   res$H3 <- list(n_runs = nrow(dm), n_chains = length(unique(dm$chain_id)),
-                 cp = if (is.null(bb1)) list(error = mb1$fit$msg) else boot_summary(mb1$fit, bb1, "cp"))
+                 cp = if (inherits(mb1$fit, "fit_error")) list(error = mb1$fit$msg) else boot_slope(mb1, "cp"))
   # H3 within a place: among the runs in one class, the class's bystanders, and among the runs in
   # one method, the method's, on the checkpoint index less the place's mean (the place's mean is in
   # the model, so the slope is not the code moving to places that hold more)
@@ -353,7 +359,7 @@ if (!is.null(by)) {
     if (length(unique(d$cp_w)) < 2) return(list(error = "no place with runs at two checkpoints"))
     mw <- fit_cp(paste0("yy ~ cp_w + cp_m", if (multi(d$frontend)) " + frontend" else ""), d, gaussian())
     if (inherits(mw$fit, "fit_error")) return(list(error = mw$fit$msg))
-    c(boot_summary(mw$fit, cluster_boot(mw$data, mw$formula, gaussian(), "cp_w", spec$boot), "cp_w"),
+    c(boot_slope(mw, "cp_w"),
       list(places = sum(tapply(d$cp_w, d[[place]], function(v) length(unique(v)) > 1)),
            checkpoint_intercept = mw$cp))
   }

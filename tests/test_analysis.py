@@ -1,4 +1,4 @@
-"""Steps 2, 4 and 5 without R: the registry and its registration guard, the analysis datasets, every
+"""Step 03, the analysis and the report without R: the registry and its registration guard, the analysis datasets, every
 verdict rule with the Holm correction, and the report."""
 
 import csv
@@ -11,7 +11,7 @@ import pytest
 from placement_gravity import prepare, report, runs, tables, verdict
 
 
-# ---------------------------------------------------------------- step 2
+# ---------------------------------------------------------------- step 03
 
 def test_the_registry_names_every_analysis_with_its_stream():
     reg = runs.load()
@@ -146,7 +146,7 @@ def test_a_stack_declares_its_backend_and_wiring_roots():
         runs.roots_from_stack({"layers": {}})
 
 
-# ---------------------------------------------------------------- step 4: datasets
+# ---------------------------------------------------------------- the analysis: datasets
 
 def write(path: Path, rows: list[dict]):
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -250,7 +250,7 @@ def test_fewer_than_six_chains_is_descriptive(tmp_path):
     assert json.loads((out / "conditions.json").read_text())["descriptive_only"]
 
 
-# ---------------------------------------------------------------- step 4: verdicts
+# ---------------------------------------------------------------- the analysis: verdicts
 
 def test_holm():
     adj = verdict.holm({"H3": 0.01, "H2": 0.04, "H6": 0.03, "H4": None})
@@ -398,7 +398,7 @@ def test_an_error_in_a_model_is_not_estimable():
     assert v["H2"]["verdict"] == "not estimable" and v["H3"]["verdict"] == "supported"
 
 
-# ---------------------------------------------------------------- step 5
+# ---------------------------------------------------------------- the report
 
 def test_the_report_names_every_hypothesis_and_commit():
     est = {**estimates(), "boot": 1000, "seed": 1, "versions": {"R": "x"}, "reported": {

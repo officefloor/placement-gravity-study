@@ -1,6 +1,6 @@
 """Diagnostics: every figure PLAN.md quotes that the report itself does not print, made by the
-steps from the tables steps 3 and 4 wrote, so that no value in the plan comes from a query run by
-hand (decided by the author on 25 November 2026, PLAN.md 9 row 112). Step 5 writes them beside each
+steps from the tables the measuring and the analysis wrote, so that no value in the plan comes from a query run by
+hand (decided by the author on 25 November 2026, PLAN.md 9 row 112). The report writes them beside each
 report, ``results/analysis/<name>/DIAGNOSTICS.md`` and ``diagnostics.json``; each section names
 the place in the plan that quotes it.
 
@@ -407,7 +407,7 @@ def junctions(name: str) -> dict:
 
 
 def size_or_data_by_arm(name: str) -> dict:
-    """§6 (17 November 2026): size or data within each arm alone (from step 4's estimates)."""
+    """§6 (17 November 2026): size or data within each arm alone (from the analysis's estimates)."""
     est = OUT / name / "estimates.json"
     if not est.exists():
         return {}
@@ -424,7 +424,7 @@ def repositories(name: str, analysis: dict) -> dict:
     to the class's own values, its method rows and their alternatives, and the share of calls the
     control flow followed."""
     out = {}
-    for s in {x["sample"] for x in analysis["sources"]}:
+    for s in sorted({x["sample"] for x in analysis["sources"]}):
         der = SAMPLES / s / "open-source-repository-sample.derivation.json"
         summary = json.loads(der.read_text()).get("summary", {}) if der.exists() else {}
         sample = {r["full_name"]: r for r in _read(SAMPLES / s / "open-source-repository-sample.csv")}
@@ -451,8 +451,8 @@ def repositories(name: str, analysis: dict) -> dict:
 # ---- timing ----
 
 def timing(name: str) -> dict:
-    """§5 and §6: how long step 4 took on this analysis, and one model fit by the size of the data
-    on this machine (step 1b, ``results/timing.json``)."""
+    """§5 and §6: how long the analysis took on this analysis, and one model fit by the size of the data
+    on this machine (step 02, ``results/timing.json``)."""
     out = {}
     t = OUT / name / "timing.json"
     if t.exists():
@@ -517,8 +517,8 @@ def _lines(x, depth: int = 0) -> list[str]:
 def render(name: str, d: dict) -> str:
     funcs = dict(PAIRED + HISTORY)
     L = [f"# Diagnostics: {name}", "",
-         "Every figure PLAN.md quotes that REPORT.md does not print, made by step 5 from the tables of steps 3 "
-         "and 4 (PLAN.md 9 row 112). They describe and enter no verdict. Each section says where the plan "
+         "Every figure PLAN.md quotes that REPORT.md does not print, made by the report from the tables of the measuring "
+         "and the analysis (PLAN.md 9 row 112). They describe and enter no verdict. Each section says where the plan "
          "quotes it; figures §6 recorded on an earlier `MEASURE_VERSION` may differ from these.", ""]
     for k, v in d.items():
         doc = (funcs.get(k) or repositories).__doc__ or ""

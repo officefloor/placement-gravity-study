@@ -1,6 +1,6 @@
 # Diagnostics: pilot
 
-Every figure PLAN.md quotes that REPORT.md does not print, made by step 5 from the tables of steps 3 and 4 (PLAN.md 9 row 112). They describe and enter no verdict. Each section says where the plan quotes it; figures §6 recorded on an earlier `MEASURE_VERSION` may differ from these.
+Every figure PLAN.md quotes that REPORT.md does not print, made by the report from the tables of the measuring and the analysis (PLAN.md 9 row 112). They describe and enter no verdict. Each section says where the plan quotes it; figures §6 recorded on an earlier `MEASURE_VERSION` may differ from these.
 
 ## files
 
@@ -368,7 +368,7 @@ Every figure PLAN.md quotes that REPORT.md does not print, made by step 5 from t
 
 ## size_or_data_by_arm
 
-§6 (17 November 2026): size or data within each arm alone (from step 4's estimates).
+§6 (17 November 2026): size or data within each arm alone (from the analysis's estimates).
 
 - class:
   - officefloor:
@@ -395,10 +395,10 @@ Every figure PLAN.md quotes that REPORT.md does not print, made by step 5 from t
 
 ## timing
 
-§5 and §6: how long step 4 took on this analysis, and one model fit by the size of the data on this machine (step 1b, ``results/timing.json``).
+§5 and §6: how long the analysis took on this analysis, and one model fit by the size of the data on this machine (step 02, ``results/timing.json``).
 
 - step4:
-  - seconds: 144
+  - seconds: 53.5
   - refits: 1000
 - fits:
   - date: 2026-11-25T17:21:23Z

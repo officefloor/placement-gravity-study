@@ -40,41 +40,80 @@ SinewSlim analysis plan, and sinew identification (`PLAN.md` §1.1).
 
 ## Running
 
+One order, each script printing the command to run next. Every results step ends a block with a
+progress point: it writes the summary again and says which lab note can now be written, and from
+what.
+
 ```sh
-./step1_setup.sh    # .venv, the pinned OfficeFloorSlim 0.5.4 jar (sha256-checked), RefactoringMiner and
-                    # CodeTracker (Maven), the instrument and tests; then checks R and glmmTMB, records
-                    # every version in results/versions.txt and runs analysis/selftest.R.
-                    # Needs JDK 17+, Maven, and R with glmmTMB (Ubuntu: r-base r-cran-glmmtmb r-cran-jsonlite).
-./step1b_timing.sh  # optional, about 45 minutes: one model fit by data size -> results/timing.json (PLAN.md 5)
-./step2_runs.sh     # each stack's declared roots, then the chains runs.yaml names, pinned in results/heads.tsv;
-                    # the problem streams are cloned at their pinned refs where missing
-./step3_measure.sh  # the instrument over every pinned chain -> results/measure/<analysis>/
-./step2b_samples.sh NAME ...   # corpora B and C: draw each sample, or copy another study's at its pinned commit
-./step3b_histories.sh          # the instrument over each sample's histories -> results/measure/_history/
-./step4_analyse.sh  # datasets (data/analysis/), models in R (estimates.json), verdicts with Holm (verdicts.json)
-./step5_report.sh   # results/analysis/<analysis>/REPORT.md and results/analysis/REPORT.md; beside each report,
-                    # DIAGNOSTICS.md: every figure PLAN.md quotes that the report does not print
+./step01_setup.sh              # .venv, the pinned OfficeFloorSlim 0.5.4 jar (sha256-checked), RefactoringMiner and
+                               # CodeTracker (Maven), the instrument and tests; then checks R and glmmTMB, records
+                               # every version in results/versions.txt and runs analysis/selftest.R.
+                               # Needs JDK 17+, Maven, and R with glmmTMB (Ubuntu: r-base r-cran-glmmtmb r-cran-jsonlite).
+./step02_timing.sh             # optional, about 45 minutes: one model fit by data size -> results/timing.json (PLAN.md 5)
+
+./step03_pin_chains.sh         # the petclinic chains runs.yaml names, pinned in results/heads.tsv; the problem
+                               # streams are cloned at their pinned refs where missing
+./step04_measure_chains.sh     # the instrument over every pinned chain -> results/measure/<analysis>/
+./step05_chain_results.sh      # datasets (data/analysis/), models in R (estimates.json), verdicts with Holm
+                               # (verdicts.json), the reports and the summary        -> LAB NOTE 1: petclinic
+
+./step06_samples.sh            # corpora B and C: draw each sample, or copy another study's at its pinned commit
+                               # (needs the network and `gh auth login`)
+./step07_measure_histories.sh  # the instrument over each sample's histories -> results/measure/_history/
+./step08_history_results.sh    # the same results for the histories                -> LAB NOTE 2: open source
+
+./step09_run_b.sh              # when Run B is complete: ui-primary, the study's test, and the two pairs that share
+                               # a front end, from pinning their chains to results   -> LAB NOTE 3: the main test
+./step10_run_c.sh              # when Run C is in runs.yaml (a dated amendment) and complete -> LAB NOTE 4: no injection
+./step11_run_d.sh              # when Run D is in runs.yaml and complete; 10 and 11 in either order
+                               #                                                      -> LAB NOTE 5: no encapsulation (H8)
+./step12_summary.sh            # the last summary, for the write-up; reads nothing new, can be run at any time
 ```
 
-Each step ends by printing the command to run next, with the analyses it was given (before the
-tag, the development analyses): the paired chains go 2, 3, 4, 5 and the histories 2b, 3b, 4, 5.
-Every input is fetched by the steps from a pinned commit, and every figure the plan quotes is made by
-a step (the report, or its diagnostics); nothing is copied in or computed by hand.
+**What a results step leaves.** `results/analysis/REPORT.md`, the summary: every analysis read so
+far with each hypothesis's verdict and p, then the main figure of each hypothesis with its
+interval (one ratio or slope a hypothesis, named under the table), then what is still to come.
+Beside it, per analysis, `results/analysis/<analysis>/REPORT.md` (every figure of the plan's tests
+and readings) and `DIAGNOSTICS.md` (the other figures the plan quotes). The step prints which
+analyses it added and what the summary does not hold yet.
 
-Each step takes `--analysis NAME ...` to run only some analyses of `runs.yaml`. **Until the tag
-`plan-v1` exists, only the development analysis (`pilot`, chain 9) can be read**: steps 2 to 4
-refuse every other. The ui analyses (`ui-primary`, the study's test, and the two pairs that share a front end, `ui-angular` and `ui-tanstack`) are read only when every one of their runs' ten chains is pushed and has reached checkpoint 250, and a head once recorded in `results/heads.tsv` is not replaced (PLAN.md §3.1a). They also refuse while the plan, the registry, the instrument or the analysis
-code has uncommitted changes, and each report lists the registered files changed since the tag. `./pilot.sh` regenerates the pilot report in `results/pilot/`: **do not run it** unless that is meant, since `results/pilot/PILOT.md` is the record of the pilot as it was on 15–16 November 2026, with the terms and hypothesis numbers of that day, and the instrument has changed since.
+**What can be run when.** Steps 01 to 08 need only the tag `plan-v1`: the petclinic runs and the
+open-source histories exist already. Their summaries show what the replications and the histories
+say before the ui runs are in. Steps 09, 10 and 11 each
+refuse, reading nothing, until every chain of their run is pushed and has reached its last
+checkpoint, so each is safe to try early; a head once recorded in `results/heads.tsv` is not
+replaced (PLAN.md §3.1a). Run C and Run D are not in `runs.yaml` yet: each is added with its run
+ids by a dated amendment (PLAN.md §9), committed, before any of its backend Java is read, and its
+step says so until then. After each of them the summary is written again with what it added.
+**The study's test is `ui-primary` (step 09)**: what steps 01 to 08 show are replications and outside
+evidence, never the verdict, and the harness and the stream are not changed for anything they show
+while a run is still being made.
+
+With no argument a step reads everything of its stage; before the tag that is the development
+analyses only (`pilot`, chain 9; `open-source-development`), which is how the steps are tried
+out. Steps 03, 04, 05, 07 and 08 take `--analysis NAME ...` to read only some analyses of `runs.yaml`,
+and step 06 takes sample names; the next command printed then carries them on. **Until the tag
+`plan-v1` exists, only the development analyses can be read**: every step refuses any other. They
+also refuse while the plan, the registry, the instrument or the analysis code has uncommitted
+changes, and each report lists the registered files changed since the tag. Every input is fetched by
+the steps from a pinned commit, and every figure the plan quotes is made by a step (the report, or
+its diagnostics); nothing is copied in or computed by hand. Until 27 November 2026 the steps were
+numbered 1, 1b, 2, 2b, 3, 3b, 4, 5 (now 01, 02, 03, 06, 04, 07, and 4 and 5 together in each
+results step: 05, 08 and each run's); PLAN.md's text of before
+that day uses those numbers (§9 row 125). `./pilot.sh` regenerates the pilot report in
+`results/pilot/`: **do not run it** unless that is meant, since `results/pilot/PILOT.md` is the
+record of the pilot as it was on 15–16 November 2026, with the terms and hypothesis numbers of that
+day, and the instrument has changed since.
 
 **Working on the code.**
 
 - Tests: `.venv/bin/python -m pytest -q` and `Rscript analysis/selftest.R`.
 - After editing `instrument/Pull.java`, recompile it (`javac --release 17 -nowarn -d instrument/classes -cp lib/officefloorslim.jar instrument/Pull.java`, as `setup.sh` does); likewise `instrument/Check.java` (`javac --release 17 -nowarn -d instrument/classes instrument/Check.java`).
-- After changing what a measured table means (the instrument, `tables.py`, `chain.py`), raise `MEASURE_VERSION` in `placement_gravity/measure.py` and `HISTORY_VERSION` in `placement_gravity/history.py`: steps 3 and 3b otherwise reuse the old measurements silently.
-- Do not change the code while steps 3, 3b or 4 run: step 3b starts a fresh Python process per repository, so a change mid-run mixes two versions of the measurement, and step 4 reads the analysis code as it stands when each analysis starts. Before editing, check that no run is in progress (`pgrep -af 'step[0-9]|placement_gravity|analyse.R'`); a rerun may have been started in the background by an earlier session.
-- Step 4 decides the confirmatory tests on a cluster bootstrap (1,000 refits each), which takes far longer than the models alone. Since 26 November 2026 (PLAN.md §9 row 116) H6's measures and H7 are refitted on it too, so a paired analysis takes longer again (roughly seven more models at 1,000 refits), and so does the R self-test. The refits run on `PG_CORES` cores (four by default); each holds its own copy of the model, so more cores need more memory. Do not run the R self-test, or anything else heavy, beside step 3b: the machine has run out of memory that way and the kernel killed a measurement.
+- After changing what a measured table means (the instrument, `tables.py`, `chain.py`), raise `MEASURE_VERSION` in `placement_gravity/measure.py` and `HISTORY_VERSION` in `placement_gravity/history.py`: steps 04 and 07 otherwise reuse the old measurements silently.
+- Do not change the code while steps 04, 07 or a results step run: step 07 starts a fresh Python process per repository, so a change mid-run mixes two versions of the measurement, and a results step reads the analysis code as it stands when each analysis starts. Before editing, check that no run is in progress (`pgrep -af 'step[0-9]|placement_gravity|analyse.R'`); a rerun may have been started in the background by an earlier session.
+- A results step (05, 08, 09 to 11) decides the confirmatory tests on a cluster bootstrap (1,000 refits each), which takes far longer than the models alone. Since 26 November 2026 (PLAN.md §9 row 116) H6's measures and H7 are refitted on it too, so a paired analysis takes longer again (roughly seven more models at 1,000 refits), and so does the R self-test. The refits run on `PG_CORES` cores (four by default); each holds its own copy of the model, so more cores need more memory. Do not run the R self-test, or anything else heavy, beside step 07: the machine has run out of memory that way and the kernel killed a measurement.
 - When chaining steps in one command, record each step's own exit status: a chain ending in `; echo exit $?` reports the last command's status, not a failed step's.
-- Step 3b clones each repository from GitHub (it needs the network); a full rerun of the pilot and the development histories takes about two hours, so keep the machine from sleeping (for example `systemd-inhibit --what=sleep:idle:handle-lid-switch`).
+- Step 07 clones each repository from GitHub (it needs the network); a full rerun of the pilot and the development histories takes about two hours, so keep the machine from sleeping (for example `systemd-inhibit --what=sleep:idle:handle-lid-switch`).
 - The diagram in PLAN.md §2 is `figures/placement-forces.svg`; it was first published as a private page (claude.ai/artifact/7ZQfbsMD3ygsJAbKzffYMJ) and the file in the repository is the record.
 
 The petclinic chains are read from the harness's local clones (`~/compare/spring`,
@@ -100,11 +139,11 @@ cloned into `~/placement-gravity-data/`. The streams are read at the commits `ru
 | `placement_gravity/readings.py` | The reported readings: choice at a checkpoint, formation and review (PLAN.md §5). |
 | `placement_gravity/shape.py` | The shape measures S1, S4 and S5 of H6 and the sinew measures S2 and S3 (PLAN.md §4.7) on each existing host at k − 1, with the complexity-concentration study's cognitive extractor and outlier rule (pinned in `requirements.txt`). |
 | `runs.yaml` | The runs read: streams pinned per run, repositories, and each analysis with its role. |
-| `placement_gravity/runs.py` | Step 2: the registry, the registration guard, the stacks' roots, fetching and pinning chains. |
-| `placement_gravity/measure.py` | Step 3: the instrument and tables over every pinned chain. |
-| `placement_gravity/prepare.py` | Step 4: the analysis datasets, the shape variation rule, the amount band and the wiring checks. |
-| `analysis/analyse.R` | Step 4: the models of PLAN.md §5 with glmmTMB (`analysis/selftest.R` checks them on simulated data). |
-| `placement_gravity/verdict.py` | Step 4: every decision rule and the Holm correction. |
-| `placement_gravity/report.py` | Step 5: the reports. |
+| `placement_gravity/runs.py` | Step 03: the registry, the registration guard, the stacks' roots, fetching and pinning chains. |
+| `placement_gravity/measure.py` | Step 04: the instrument and tables over every pinned chain. |
+| `placement_gravity/prepare.py` | The results steps: the analysis datasets, the shape variation rule, the amount band and the wiring checks. |
+| `analysis/analyse.R` | The results steps: the models of PLAN.md §5 with glmmTMB (`analysis/selftest.R` checks them on simulated data). |
+| `placement_gravity/verdict.py` | The results steps: every decision rule and the Holm correction. |
+| `placement_gravity/report.py` | The results steps and step 12: the reports and the summary. |
 | `placement_gravity/pilot.py` | The pilot. |
 | `tests/` | Fixtures with known answers. |

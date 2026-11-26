@@ -1,4 +1,4 @@
-"""Step 5: the report of every analysis, every hypothesis whichever way it falls (PLAN.md §8).
+"""The report (written by steps 05 and 08, each run's step, and step 12) of every analysis, every hypothesis whichever way it falls (PLAN.md §8).
 
     python -m placement_gravity.report
 
@@ -1040,18 +1040,104 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
     return "\n".join(L) + "\n"
 
 
+def summary_cell(h: dict) -> str:
+    """A hypothesis in the summary: its verdict, with the p it was decided on (after Holm for the
+    confirmatory four) where it has one."""
+    if not h:
+        return "–"
+    p = h.get("p_holm") if h.get("p_holm") is not None else h.get("p")
+    return h.get("verdict", "–") + (f" (p {f(float(p))})" if p is not None else "")
+
+
+#: The main figure of each hypothesis for the summary (PLAN.md 9 row 125): the column's heading,
+#: the hypothesis, where its figure lies in the verdict's detail, and what it is. Each is the
+#: quantity the hypothesis is decided on, or the first of them; the analysis's own report has the rest.
+MAIN = [
+    ("H1 forced", "H1", ("contrast", "arm"),
+     "placements forced at the class a checkpoint, function arm / methods arm, half-way through the stream (below 1)"),
+    ("H2 core", "H2", ("class",),
+     "later uses of a core value / of a periphery value, at the class, in the methods arm (above 1)"),
+    ("H2 arms", "H2", ("reuse_method",),
+     "later uses of a core value at the method, function arm / methods arm (below 1)"),
+    ("H3 rise", "H3", ("cp",),
+     "the slope of an addition's bystanders on the checkpoint index, in the methods arm (above 0; a slope, not a ratio)"),
+    ("H4 come back to", "H4", ("model", "intrusion_class"),
+     "later intrusion at the class, function arm / methods arm (below 1)"),
+    ("H4 files", "H4", ("model", "trodden"),
+     "how well-trodden the files gone back into are, function arm / methods arm (below 1)"),
+    ("H5 links", "H5", ("arm",),
+     "weighed links per unit of logic, function arm / methods arm, half-way through the stream (below 1)"),
+    ("H6 shape", "H6", None,
+     "of the shape measures tested, the one whose ratio of later intrusion is highest (each to be shown below 1.25)"),
+    ("H7 spread", "H7", ("forced",),
+     "classes a change goes into beyond the first, forced change / unforced (to be shown below 1.25)"),
+    ("H8 open", "H8", ("intrusion_class",),
+     "Run D only: later intrusion at the class, nothing private / encapsulated (below 1)"),
+]
+
+
+def main_cell(hy: dict, hyp: str, path: tuple | None) -> str:
+    """One hypothesis's main figure with its interval, or a dash where the analysis does not give it."""
+    d = (hy.get(hyp) or {}).get("detail") or {}
+    if path is None:        # H6: the measure nearest the margin
+        ms = {k: v for k, v in (d.get("measures") or {}).items() if isinstance(v, dict) and v.get("irr") is not None}
+        if not ms:
+            return "–"
+        k = max(ms, key=lambda k: ms[k]["irr"])
+        return f"{ratio(ms[k])} ({k})"
+    for k in path:
+        d = d.get(k) if isinstance(d, dict) else None
+    if not isinstance(d, dict) or "error" in d:
+        return "–"
+    if d.get("irr") is not None:
+        return ratio(d)
+    return interval(d) if d.get("estimate") is not None else "–"
+
+
+def waiting_lines(reg: dict, done: set[str]) -> list[str]:
+    """What the summary does not hold yet: the analyses of each stage not analysed, and the runs the
+    registry does not name yet (PLAN.md 9 row 125)."""
+    from . import nextstep
+    L = []
+    for stage, step in runs.STAGES.items():
+        mine = [a["name"] for a in reg["analyses"] if runs.stage(a) == stage]
+        todo = [n for n in mine if n not in done]
+        label = nextstep.RUN.get(stage, "What exists today")
+        if not mine:
+            L.append(f"- **{label}** ({step}): not in `runs.yaml` yet; added by a dated amendment before "
+                     f"any of its backend Java is read")
+        elif todo:
+            L.append(f"- **{label}** ({step}): not analysed yet: " + ", ".join(todo))
+    return L
+
+
 def main() -> None:
     reg = runs.load()
     heads = runs.read_heads()
     tag = reg["registration_tag"]
     drift = runs.drift(tag) if runs.registered(tag) else None
-    index = ["# Results", "", "| Analysis | Role | H1 | H2 | H3 | H4 | H5 | H6 | H7 |",
-             "|---|---|---|---|---|---|---|---|---|"]
+    index = ["# Results", "",
+             "Every analysis read so far, in the order of `runs.yaml`, with each hypothesis's verdict and "
+             "the p it was decided on (after Holm for H1, H2, H4 and H5). Each analysis is read on its own "
+             "and none is pooled; the study's test is the primary one. A development analysis is "
+             "descriptive only.", "",
+             "| Analysis | Role | Read by | H1 | H2 | H3 | H4 | H5 | H6 | H7 | H8 |",
+             "|---|---|---|---|---|---|---|---|---|---|---|"]
+    done = set()
+    figures = ["", "## The main figure of each hypothesis", "",
+               "One figure a hypothesis, with its interval (95%; H6 and H7 90%, against the margin 1.25): the "
+               "cluster bootstrap's where the test is decided on it, Wald where there is one chain an arm or on a "
+               "history. A dash: the analysis cannot give it (a history has no arm contrast on the same "
+               "problems), or it could not be fitted. A ratio is function arm / methods arm unless it says "
+               "otherwise. The figure does not decide by itself: each hypothesis has more than one part and "
+               "its conditions, which the analysis's own report gives.", "",
+               "| Analysis | " + " | ".join(m[0] for m in MAIN) + " |", "|---|" + "---|" * len(MAIN)]
     for analysis in reg["analyses"]:
         name = analysis["name"]
         d = OUT / name
         if not (d / "verdicts.json").exists():
             continue
+        done.add(name)
         est = json.loads((d / "estimates.json").read_text())
         ver = json.loads((d / "verdicts.json").read_text())
         data = prepare.DATA / name
@@ -1061,8 +1147,13 @@ def main() -> None:
         rd = json.loads((data / "readings.json").read_text()) if (data / "readings.json").exists() else {}
         (d / "REPORT.md").write_text(render(name, analysis["role"], est, ver, cond, spec, mine, drift, rd))
         hy = ver["hypotheses"]
-        index.append(f"| [{name}]({name}/REPORT.md) | {analysis['role']} | "
-                     + " | ".join(hy.get(f"H{i}", {}).get("verdict", "–") for i in (1, 2, 3, 4, 5, 6, 7)) + " |")
+        index.append(f"| [{name}]({name}/REPORT.md) | {analysis['role']} | {runs.STAGES[runs.stage(analysis)]} | "
+                     + " | ".join(summary_cell(hy.get(f"H{i}")) for i in range(1, 9)) + " |")
+        figures.append(f"| [{name}]({name}/REPORT.md) | " + " | ".join(main_cell(hy, h, path) for _, h, path, _ in MAIN) + " |")
+    index += figures + [""] + [f"- **{m[0]}:** {m[3]}" for m in MAIN]
+    waiting = waiting_lines(reg, done)
+    if waiting:
+        index += ["", "## Still to come", ""] + waiting
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "REPORT.md").write_text("\n".join(index) + "\n")
     print((OUT / "REPORT.md").read_text())

@@ -6,7 +6,7 @@ Role: **development**. Chains: officefloor 1, spring 1. **Descriptive only.**
 |---|---|---|---|
 | H1 | confirmatory | descriptive only | 1.000 |
 | H2 | confirmatory | descriptive only | 0.003 |
-| H3 | secondary | descriptive only | 0.000999 |
+| H3 | secondary | descriptive only | 0.001 |
 | H4 | confirmatory | descriptive only | – |
 | H5 | confirmatory | descriptive only | 1.000 |
 | H6 | secondary | descriptive only | 3.06e-06 |
@@ -80,10 +80,10 @@ Where code was bound to a class or a method (109 of 350 problem and host rows, b
 
 Runs that need a pre-existing value 91 over 1 chains; the slope of log(1 + bystanders) on the checkpoint index, cluster-bootstrap 95% interval (1000 refits).
 
-- **Bystanders on the checkpoint index: 0.015 [0.015, 0.015]**
-- **Within a class, the class's bystanders: 0.026 [0.026, 0.026]** (3 classes with runs at two or more checkpoints)
-- **Within a method, the method's bystanders: 0.023 [0.023, 0.023]** (11 methods)
-- Reported, within a place in the function arm: class 0.001 [0.001, 0.001]; method -0.001 [-0.001, -0.001]
+- **Bystanders on the checkpoint index: 0.015 [0.007, 0.022]**
+- **Within a class, the class's bystanders: 0.026 [0.018, 0.034]** (3 classes with runs at two or more checkpoints)
+- **Within a method, the method's bystanders: 0.023 [0.008, 0.038]** (11 methods)
+- Reported, within a place in the function arm: class 0.001 [-0.008, 0.010]; method -0.001 [-0.018, 0.016]
 - Reported, method bystanders 0.004 [-0.006, 0.013]; class bystanders 0.016 [0.010, 0.022]
 - Reported, without injected dependencies 0.024 [0.016, 0.031]; without constants 0.003 [-0.005, 0.012]
 - Reported, the function arm's slope: -0.000263 [-0.011, 0.010]

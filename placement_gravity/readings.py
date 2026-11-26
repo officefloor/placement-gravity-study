@@ -2,7 +2,7 @@
 (where it ends) and review. Each has a stated direction and none is a confirmatory test. The
 lagged formation term is a model and is fitted in analysis/analyse.R.
 
-All three read the chains' tables (step 3). A checkpoint is one problem, solved by every chain, so
+All three read the chains' tables (step 04). A checkpoint is one problem, solved by every chain, so
 the chains at one checkpoint show how much choice the problem left.
 """
 

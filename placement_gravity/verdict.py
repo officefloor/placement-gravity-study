@@ -1,4 +1,4 @@
-"""Step 4, the decision: each hypothesis's verdict from the R estimates and the conditions
+"""The analysis, the decision: each hypothesis's verdict from the R estimates and the conditions
 (PLAN.md §2, §5). Every decision rule of the study is here.
 
 - **H3** (the methods arm): the slope of the bystanders (PLAN.md §4.3a) on the checkpoint index

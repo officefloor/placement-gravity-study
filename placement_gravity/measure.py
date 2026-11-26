@@ -1,4 +1,4 @@
-"""Step 3: the instrument over every chain step 2 pinned (results/heads.tsv).
+"""Step 04: the instrument over every chain step 03 pinned (results/heads.tsv).
 
     python -m placement_gravity.measure [--analysis NAME ...] [--force]
 

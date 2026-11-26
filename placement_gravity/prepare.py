@@ -1,4 +1,4 @@
-"""Step 4, first half: the analysis datasets of one analysis, from its chains' tables (step 3).
+"""The analysis, first half: the analysis datasets of one analysis, from its chains' tables (step 04).
 
     python -m placement_gravity.prepare [--analysis NAME ...]
 

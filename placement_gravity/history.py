@@ -173,8 +173,8 @@ def gather(analysis: dict, table: str, root: Path | None = None) -> list[dict]:
     kept where their unit is in the source's arm, labelled as the chains' rows are (the repository
     is the chain). ``cp`` stays the unit's number; ``position`` is its place from 0 to 1. A
     repository whose tables were made by another ``HISTORY_VERSION`` is left out (23 November 2026:
-    with the network down every repository failed to be read again, step 3b ended without error,
-    and step 4 analysed the tables of the version before as if they were new)."""
+    with the network down every repository failed to be read again, step 07 ended without error,
+    and the analysis read the tables of the version before as if they were new)."""
     rows = []
     for source in analysis["sources"]:
         base = (root or OUT) / source["sample"]
@@ -229,7 +229,7 @@ def sample_path(name: str, spec: dict) -> Path:
 
 def fetch_csv(name: str, spec: dict) -> Path:
     """Another study's drawn sample (``csv``: its repository, remote, pinned commit and path),
-    copied into ``samples/<name>/`` by step 2b, so the sample read is the one pinned."""
+    copied into ``samples/<name>/`` by step 06, so the sample read is the one pinned."""
     c = spec["csv"]
     runs.ensure_at(Path(c["repo"]).expanduser(), c["remote"], c["ref"])
     out = sample_path(name, spec) / "open-source-repository-sample.csv"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Step 1: the environment. The Python environment, the pinned OfficeFloorSlim jar, RefactoringMiner and
-# CodeTracker, the instrument and its tests (setup.sh); then R and glmmTMB for the models of step 4,
+# Step 01: the environment. The Python environment, the pinned OfficeFloorSlim jar, RefactoringMiner and
+# CodeTracker, the instrument and its tests (setup.sh); then R and glmmTMB for the models of the results steps,
 # whose versions are recorded in results/versions.txt.
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -20,4 +20,4 @@ mkdir -p results
 } > results/versions.txt
 Rscript analysis/selftest.R
 cat results/versions.txt
-.venv/bin/python -m placement_gravity.nextstep 1
+.venv/bin/python -m placement_gravity.nextstep 01

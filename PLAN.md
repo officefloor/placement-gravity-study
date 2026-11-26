@@ -10,7 +10,9 @@
 > nothing that needs deciding is left before the tag is set again; until it is, only the development
 > chain can be read.** Rows 114 to 122, of the same day, follow a second review of the plan before
 > the tag (§8), row 123 adds a reported reading the review offered (§4.3c, the binding levels),
-> and row 124, of 27 November, makes the code build H2's core at the method as §4.4 defines it:
+> row 124, of 27 November, makes the code build H2's core at the method as §4.4 defines it, and
+> row 125 puts the steps in one order with the runs still being made last (§3.1a, *Order*), and
+> row 126 reads H3 on its Wald interval where there is one chain:
 > they tighten rules, make the plan and the code say the same, and change no
 > hypothesis or direction. As first registered, on 16 November 2026: the tag was first pushed on commit
 > `4bb8973` and moved the same day, before any run named for analysis was read, to this revision,
@@ -851,6 +853,49 @@ end's production Java of the four stacks of its Runs A and B, a front end × bac
 
 **Order.** The petclinic corpus (§3.1), secondary, is analysed first, because its runs exist; the
 ui runs, the primary test, follow once Run B is complete.
+
+**The order as the steps run it** (decided by the author on 27 November 2026, §9 row 125). One
+sequence of scripts, each printing the next, in blocks that each end in a **results step**: it
+analyses what the block measured, writes every report and the summary again
+(`results/analysis/REPORT.md`: every analysis read so far, each hypothesis's verdict with its p,
+the main figure of each hypothesis with its interval, and what is still to come), and says which
+lab note can now be written and from which analyses.
+
+| Steps | Block | Its results step | Lab note |
+|---|---|---|---|
+| 03, 04, 05 | the petclinic chains: pinned, measured | 05 | 1: the replications |
+| 06, 07, 08 | the open-source histories (corpora B and C): sampled, measured | 08 | 2: outside evidence |
+| 09 | Run B: `ui-primary`, the study's test, with `ui-angular` and `ui-tanstack`; once every chain of Runs A and B is complete | 09 | 3: the test |
+| 10 | Run C, once named in `runs.yaml` by its dated amendment and complete | 10 | 4: the no-injection control |
+| 11 | Run D, likewise; 10 and 11 in either order | 11 | 5: no encapsulation (H8) |
+| 12 | the last summary, for the write-up | | |
+
+Each analysis carries its stage in `runs.yaml` (`stage`), and a step reads only its own. On 27
+November 2026 Run B was under way and expected to take about a week and a half more; Runs C and D
+are then run together, about two and a half weeks more. **The main figure of a hypothesis** in the
+summary is fixed here, before any run is read, so that a lab note quotes the same quantity each
+time: H1, the forced placements' ratio half-way through the stream; H2, the core against the
+periphery at the class, and the arm contrast at the method; H3, the slope over all additions; H4,
+later intrusion at the class, and the well-trodden files; H5, the links' ratio half-way; H6, of
+the measures tested the one with the highest ratio; H7, the forced ratio; H8, later intrusion at
+the class. It is one part of each test, shown for reading: the verdict beside it is decided on
+every part and condition of §5, and a figure on the right side of 1 with a verdict of *not
+supported* means another part or a condition failed. What follows from the order:
+
+- **The first two summaries are not the study's verdict.** They hold replications (petclinic, every rule
+  on one endpoint) and outside evidence (the histories). They are read before the ui runs so that the
+  author can see whether they are worth waiting for, and so that progress can be written up as
+  lab notes along the way (the author's intention). Nothing in it decides H1 to H8.
+- **No ui run is read early.** Every ui analysis needs both Run A and Run B, whole, so Run A's
+  backend Java is not read while Run B is being made, and step 09 refuses until then (row 114).
+- **Nothing seen changes a run still being made.** The harness, the stream, the agent's prompt and
+  the registered files stay as they are whatever steps 05 and 08, or later step 09, show; Run D's
+  one added instruction (above) is the only difference registered for a later run. A change made
+  all the same is a dated amendment that says what had been seen.
+- **Runs C and D come by amendment, as before:** their run ids and their analyses are added to
+  `runs.yaml`, and committed, before any of their backend Java is read. Run C's analysis (the
+  control read against each arm, above) is written out in that amendment; Run D's is drafted in
+  `runs.yaml`.
 
 **Condition.** `just-solve` only.
 
@@ -3324,6 +3369,22 @@ binomial mixed model). These details are fixed with the code before any run is r
   [0.068, 0.427], 43 core records): there an injected parameter is a binding and so is core. The
   histories are untouched (no wired functions; not measured again). 185 tests pass; `analyse.R`
   is unchanged since the self-test of row 123.
+- **The steps in one order, and H3 with one chain, on the development data** (27 November 2026,
+  §9 rows 125 and 126; the steps run bare, in order, before the tag: 03, 04, 05, 07, 08, then 09
+  and 10, which refused as they should, one for want of the tag and one because Run C is not in the
+  registry, and 12; step 06 was not run again, its samples being drawn). Each printed the next
+  command and, at 05 and 08, that only development data had been read. **Row 125 moved no
+  estimate.** Row 126 changed what it was meant to and one thing more. *The development chain:*
+  H3's three slopes keep their estimates and now carry Wald intervals (over all additions 0.015
+  [0.008, 0.022], until then [0.015, 0.015]; p 0.001 by either route, as it happens), marked
+  `wald: one chain`. *The development histories:* the agent group there is one repository, so its
+  reported H3 within a place, which had read as a point with p 0.005 (22.1 at the class, 61.0 at
+  the method), is now *not estimated* (no standard error on one repository). And because that
+  group's bootstrap is no longer drawn, the tests after it draw other resamples: **two bootstrap
+  p-values moved with no estimate changing** (H1 at the method, one-sided, 0.209 to 0.264; H4's
+  arm on the bindings 0.786 to 0.806), which is the noise of 200 refits. This cannot happen in an
+  analysis that decides anything: each has at least six chains an arm, so nothing in it falls back
+  and its draws are those of before. 190 tests and 129 self-test checks pass.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
@@ -3991,7 +4052,18 @@ author's to set, on the plan and code as they then stand, and starts the experim
   value the code used, so in the function arm the injected parameters a wired function's code
   used were core (13 of its 57 core values on the development chain, in 9 of its 31 bound rows;
   none in the methods arm). Put as the code following the plan or the plan following the code;
-  the author: "make the code follow the plan".
+  the author: "make the code follow the plan". *Asked for by the author on 27 November 2026* (row
+  125, §3.1a *Order*): the steps as "a single 1...X order with run B, C, D being the last things to
+  do", with a summary before them, "so can see it's worth waiting for run B, C, D to complete
+  which may be a good few weeks from now", further steps as each run becomes available, and a
+  summary at the end for writing the paper; "This will allow for blog posts to be written along
+  the way as lab notes to show progress." Then: a report after the petclinic runs and before the
+  samples, "to have clear progress points with numbers to report in the lab notes"; the main ratio
+  of each hypothesis on the summary page, "yes"; and "With the scripts indicating the next command,
+  they should also indicate Lab Note X can now be produced and what data is available for the Lab
+  Note". The review's note on it, written into §3.1a: the first two summaries hold replications
+  and outside evidence, not the study's test; nothing they show changes a run still being made;
+  and which figure stands for each hypothesis is fixed there before any run is read.
 - *Done for rows 99 to 106:* the pilot at `MEASURE_VERSION` 40 and the histories at
   `HISTORY_VERSION` 15 (§6); no figure moved under row 102. (H9's population, left there to the
   author, fell with H9, row 108.)
@@ -4275,6 +4347,8 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 122 | Wording, no rule changed: §7's threat on H5 said its links are "counted, not weighed", as they were the morning it was written (row 95 weighed them that evening); a table of what is registered, in today's numbers, stands before §1, with §5 governing | the head of the plan, §7 | The same review: a reader who met the threat first would take H5 for a plain count, and the frozen rules could not be found without reading §2, §4 and §5 together. Put as both or the sentence only; the author: "A". §6, §8 and §9 keep the numbers of their day (row 93) |
 | 123 | **The binding levels, reported** (§4.3c): H1's count of forced placements, H2's arm contrast and H4's later intrusion are each read three ways, with injection ignored (an injected parameter binds as an injected field does), as registered (the field binds, the parameter does not) and with injection excluded (neither binds; a Spring handler's parameters, which the framework fills, among them), the function arm against the methods arm on 95% Wald intervals. The registered rule goes on deciding every verdict; the levels are outside the correction. The instrument now also writes the parameters the framework fills, in either arm, the class's injected fields, and each run's method bindings with injected parameters counted; no value read before changes | §4.3, §4.3c, §5, §7, §8, `Pull.java` (VERSION 20), `tables.py`, `measure.py` (`MEASURE_VERSION` 43), `prepare.py`, `analyse.R`, `report.py`, `tests/` | The second review of 26 November 2026 found that H1's level, H2's arm contrast and H4's later intrusion lean on the rule that an injected parameter is not a binding, and offered one reading without it. The author made it three levels: "Everything, so ignore injection for both Spring and OfficeFloor, so includes all. Exclude injection as that can be loaded to other encapsulations. Include only injection in Spring, as the choice of duplicating the injection is often not used, and falls back to pull"; and, on a Spring handler's parameters under the second, "excluded". What is expected at each level, and how the three are read together, were written before any level was computed on any chain. Corpus A only; the histories are not measured again |
 | 124 | **H2's core at the method is what the code was bound to, as §4.4 says**: the injected parameters of a wired function that its code used are no longer core (they are not bindings, §4.3) and join the periphery. Until then the code counted every pre-existing value the code used. The function arm alone changes, at the method alone: its core records and their uses in H2's arm contrast, and its reported core against periphery. The methods arm, the class level and the histories are untouched. The reading with them in the core is the level *injection ignored* (§4.3c). The reported spread of uses over values (`readings.core_summary`, `readings.core_reuse`) goes on counting every value used | §4.4, §6, §8, `tables.host_rows` (`unbound_method_values`), `tables.outcome_rows`, `tables.at_level`, `measure.py` (`MEASURE_VERSION` 44), `tests/` | Found on 26 November 2026 while building row 123: the plan and the code disagreed on an input of a confirmatory test. On the development chain 13 of the function arm's 57 core values at the method were injected parameters. The author, 27 November 2026: "make the code follow the plan". Seen before it was decided: the development chain's figures under the code as it was (§6); no ui chain read |
+| 125 | **The steps in one order, in blocks that each end in a results step and a lab note; the runs still being made last.** 03 to 05: the petclinic chains pinned, measured, and their results (lab note 1). 06 to 08: the histories sampled, measured, and their results (note 2). 09: Run B's analyses, `ui-primary`, `ui-angular`, `ui-tanstack` (note 3); 10: Run C (note 4); 11: Run D (note 5); each from pinning its chains to its results and only when its run is complete. 12: the last summary. Each analysis carries a `stage` in `runs.yaml` and a step reads only its own; a run not yet in the registry is refused with the reason. A results step analyses, reports, and prints which lab note can be written, the analyses it added and what is not in yet. The summary (`results/analysis/REPORT.md`) gives each verdict with its p, the main figure of each hypothesis with its interval (which figure is fixed in §3.1a), and what is still to come. No rule of analysis changes; the development figures came back the same. **Renumbered:** the steps were 1, 1b, 2, 2b, 3, 3b, 4, 5; they are now 01 (setup), 02 (timing), 03 (pin chains), 04 (measure chains), 06 (samples), 07 (measure histories), with the analysis (4) and the report (5) done together by each results step, 05 and 08 and each run's; this plan's text of before 27 November 2026 uses the old numbers | §3.1a (*Order*), §8, `runs.yaml` (`stage`), `runs.py` (`STAGES`), `nextstep.py` (`NOTES`, `note`), `report.py` (`MAIN`, `main`, `waiting_lines`), the step scripts, `run_stage.sh`, `README.md`, `tests/` | The author, 27 November 2026: one order with Runs B, C and D last, a summary before them to see whether they are worth waiting for, and lab notes along the way with "clear progress points with numbers to report"; asked whether the main ratio should be on the summary page, "yes"; and that the scripts "indicate Lab Note X can now be produced and what data is available". Until then a step given no analysis stopped at `ui-primary` while Run B was incomplete, without reaching the analyses after it or printing the next command, and the first report came only after the histories. Written into §3.1a with it: the first two summaries are replications and outside evidence, not the study's test; no ui run is read early; nothing seen changes a run still being made |
+| 126 | **H3 with one chain is read on its Wald interval, recorded as that**, as every other test already was. With one chain in the methods arm every bootstrap resample is that chain again, so H3's interval was a single point and its p the smallest the bootstrap can give (0.001). No analysis that decides anything has one chain an arm (fewer than 6 is descriptive only, §5); it shows on the development chain alone. The histories and every analysis of several chains are untouched; each H3 figure now says how its interval was made (`interval`) | §6, `analyse.R` (`boot_slope`) | Found on 27 November 2026 while putting the main figures on the summary (row 125): the development chain's H3 read 0.015 [0.015, 0.015], p 0.001. Corrected by the review without a choice to put to the author: there is nothing to resample. Seen with it (§6): on the development histories, whose agent group is one repository, that group's reported H3 is now not estimated, and two bootstrap p-values after it moved by the noise of the draws, no estimate changing |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

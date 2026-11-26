@@ -22,7 +22,7 @@ Per checkpoint, the placements forced at the class (bound there with no other cl
 - Reported, methods arm at the class: 638 rows, 1 forced, 0 alternatives a row; over the thirds, forced 1, 1, 1; alternatives 0, 0, 0
 - Reported, function arm at the class: 25 rows, 0.520 forced, 3.480 alternatives a row; over the thirds, forced 0.389, 0.857, –; alternatives 3.444, 3.571, –
 - Reported, the function arm's ratio at the class: 6.530 [0.006, 7253.304]; function arm / methods arm: not estimated (standard error not computed: armagent)
-- Reported, choice narrows at the method: 1.842 [0.963, 23.612] (n = 627; one-sided p 0.796; cluster bootstrap)
+- Reported, choice narrows at the method: 1.842 [0.963, 23.612] (n = 627; one-sided p 0.741; cluster bootstrap)
 - Reported, at the method against the upper margin 1.250 (as H1 stood until 22 November 2026, 90% Wald interval): 1.842 [1.195, 2.841]
 - Reported, methods arm at the method: 627 rows, 0.434 forced, 5.509 alternatives a row; over the thirds, forced 0.297, 0.509, 0.470; alternatives 5.621, 3.961, 7.041
 - Reported, function arm at the method: 30 rows, 0.400 forced, 2.367 alternatives a row; over the thirds, forced 0.231, 0.529, –; alternatives 1.692, 2.882, –
@@ -80,7 +80,7 @@ Runs that need a pre-existing value 1181 over 2 chains; the slope of log(1 + bys
 - **Bystanders on the checkpoint index: 0.511 [0.375, 0.734]**
 - **Within a class, the class's bystanders: 0.995 [0.786, 1.424]** (97 classes with runs at two or more checkpoints)
 - **Within a method, the method's bystanders: 0.391 [0.291, 0.499]** (221 methods)
-- Reported, within a place in the function arm: class 22.129 [22.129, 22.129]; method 60.955 [60.955, 60.955]
+- Reported, within a place in the function arm: class not estimated (standard error not computed: cp_w); method not estimated (standard error not computed: cp_w)
 - Reported, method bystanders -0.071 [-0.210, 0.067]; class bystanders 0.805 [0.600, 1.009]
 - Reported, without injected dependencies 0.510 [0.322, 0.698]; without constants 0.641 [0.484, 0.799]
 - Reported, the function arm's slope: 0.978 [-0.614, 2.570]

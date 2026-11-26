@@ -236,24 +236,14 @@
     },
     "H3_within_function_arm": {
       "class": {
-        "estimate": 22.1293638621344,
-        "lower": 22.1293638621344,
-        "upper": 22.1293638621344,
-        "p_greater": 0.00497512437810945,
-        "p_less": 1,
-        "refits": 200,
-        "failed": 0,
+        "error": "standard error not computed: cp_w",
+        "interval": "wald: one chain",
         "places": 2,
         "checkpoint_intercept": false
       },
       "method": {
-        "estimate": 60.9550925249759,
-        "lower": 60.9550925249759,
-        "upper": 60.9550925249759,
-        "p_greater": 0.00497512437810945,
-        "p_less": 1,
-        "refits": 200,
-        "failed": 0,
+        "error": "standard error not computed: cp_w",
+        "interval": "wald: one chain",
         "places": 2,
         "checkpoint_intercept": false
       }
@@ -1856,7 +1846,8 @@
       "p_greater": 0.00497512437810945,
       "p_less": 1,
       "refits": 200,
-      "failed": 0
+      "failed": 0,
+      "interval": "cluster bootstrap"
     },
     "within_class": {
       "estimate": 0.994990176513156,
@@ -1866,6 +1857,7 @@
       "p_less": 1,
       "refits": 200,
       "failed": 0,
+      "interval": "cluster bootstrap",
       "places": 97,
       "checkpoint_intercept": false
     },
@@ -1877,6 +1869,7 @@
       "p_less": 1,
       "refits": 200,
       "failed": 0,
+      "interval": "cluster bootstrap",
       "places": 221,
       "checkpoint_intercept": false
     }
@@ -1889,8 +1882,8 @@
       "estimate": -0.102224524257269,
       "lower": -0.523306979858341,
       "upper": 0.313841141391167,
-      "p_greater": 0.786069651741294,
-      "p_less": 0.218905472636816,
+      "p_greater": 0.805970149253731,
+      "p_less": 0.199004975124378,
       "refits": 200,
       "failed": 0
     },
@@ -2063,8 +2056,8 @@
       "estimate": 0.61098371147093,
       "lower": -0.0380814230500663,
       "upper": 3.16175407972058,
-      "p_greater": 0.208955223880597,
-      "p_less": 0.796019900497512,
+      "p_greater": 0.263681592039801,
+      "p_less": 0.741293532338308,
       "refits": 200,
       "failed": 0,
       "irr": 1.84224274303407,

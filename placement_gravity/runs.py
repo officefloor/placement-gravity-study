@@ -1,4 +1,4 @@
-"""Step 2: the runs this study reads (runs.yaml), fetched and pinned.
+"""Step 03: the runs this study reads (runs.yaml), fetched and pinned.
 
     python -m placement_gravity.runs stacks            # each ui stack's declared roots (no run read)
     python -m placement_gravity.runs fetch [--analysis NAME ...]
@@ -7,7 +7,7 @@
 all of them or none, each having reached ``complete_at`` where that is given, and it never
 replaces a head it has recorded with another commit. It refuses every analysis but the development
 one until the registration tag (plan-v1) is an ancestor of HEAD, so no run's backend Java is read
-before registration. It records each chain's head in results/heads.tsv; step 3 measures exactly
+before registration. It records each chain's head in results/heads.tsv; step 04 measures exactly
 those commits.
 """
 
@@ -44,11 +44,24 @@ def load(path: Path = REGISTRY) -> dict:
     return reg
 
 
+#: The stages the steps read the analyses in (PLAN.md 9 row 125): ``first`` is what exists when the
+#: plan is registered (the petclinic runs, the histories, the development data; steps 03 to 08);
+#: then one stage for each run still being made, read by its own step when its chains are complete.
+STAGES = {"first": "steps 03 to 08", "run-b": "step09_run_b.sh", "run-c": "step10_run_c.sh",
+          "run-d": "step11_run_d.sh"}
+
+
+def stage(analysis: dict) -> str:
+    return analysis.get("stage", "first")
+
+
 def validate(reg: dict) -> None:
     names = [a["name"] for a in reg["analyses"]]
     if len(names) != len(set(names)):
         raise ValueError("runs.yaml: an analysis name is used twice")
     for a in reg["analyses"]:
+        if stage(a) not in STAGES:
+            raise ValueError(f"{a['name']}: unknown stage {a['stage']!r}")
         if a["role"] not in ("primary", "secondary", "development"):
             raise ValueError(f"{a['name']}: unknown role {a['role']!r}")
         if a.get("history"):      # corpora B and C: samples of repositories, not paired chains
@@ -115,7 +128,7 @@ def streamed(reg: dict, analysis: dict) -> dict[int, dict]:
 
 
 def measured(analysis: dict) -> bool:
-    """Whether step 3 (or, for a history, ``history measure``) has left tables to read."""
+    """Whether step 04 (or, for a history, ``history measure``) has left tables to read."""
     if analysis.get("history"):
         return any((RESULTS / "measure" / "_history" / s["sample"]).exists() for s in analysis["sources"])
     return (RESULTS / "measure" / analysis["name"]).exists()

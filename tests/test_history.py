@@ -91,7 +91,7 @@ def test_a_repository_is_measured_and_gathered_into_arms(repo, tmp_path):
     # cp1's code in size(int) is come back to by cp3, bound there too; nothing is declared
     outs = history.gather(analysis, "outcomes", tmp_path / "m")
     assert next(r for r in outs if r["cp"] == "1")["intrusion_method"] == "1"
-    # and step 4's datasets are built from it, the index the unit's place from 0 to 1
+    # and the analysis's datasets are built from it, the index the unit's place from 0 to 1
     data = prepare.prepare(analysis, {}, tmp_path / "m", tmp_path / "d")
     import csv, json
     spec = json.loads((data / "spec.json").read_text())
@@ -202,7 +202,7 @@ def test_tables_of_another_version_are_not_gathered(tmp_path):
 
 
 def test_another_studys_sample_is_copied_at_its_pinned_commit(tmp_path, monkeypatch):
-    # step 2b clones the other study's repository where it is missing and copies the file as it
+    # step 06 clones the other study's repository where it is missing and copies the file as it
     # stood at the pinned commit, not as it stands now
     import subprocess
     src = tmp_path / "other"

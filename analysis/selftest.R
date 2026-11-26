@@ -1,5 +1,5 @@
 #!/usr/bin/env Rscript
-# A self-test of analysis/analyse.R on simulated data with known effects (run by step1_setup.sh):
+# A self-test of analysis/analyse.R on simulated data with known effects (run by step01_setup.sh):
 # bindings rise with host size in the methods arm and less so in the function arm; intrusion rises with
 # bindings; later intrusions bound to what stood by rise with how much stood by; the shape measures are unrelated to intrusion; every checkpoint (problem) has its own level
 # of bindings and of intrusion, shared by all chains. The models must recover each direction.

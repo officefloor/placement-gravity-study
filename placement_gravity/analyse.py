@@ -1,4 +1,4 @@
-"""Step 4: for each measured analysis, the datasets (prepare), the models (analysis/analyse.R, by
+"""The analysis (steps 05 and 08, and each run's step): for each measured analysis, the datasets (prepare), the models (analysis/analyse.R, by
 glmmTMB) and the verdicts (verdict).
 
     python -m placement_gravity.analyse [--analysis NAME ...]
@@ -23,7 +23,7 @@ def main() -> None:
     ap.add_argument("--analysis", nargs="*")
     a = ap.parse_args()
     if not shutil.which("Rscript"):
-        raise SystemExit("Rscript not found: R and glmmTMB are needed for step 4 (step1_setup.sh).")
+        raise SystemExit("Rscript not found: R and glmmTMB are needed for the analysis (step01_setup.sh).")
     reg = runs.load()
     for analysis in reg["analyses"]:
         name = analysis["name"]
