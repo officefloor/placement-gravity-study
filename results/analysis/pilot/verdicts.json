@@ -209,11 +209,9 @@
    "verdict": "descriptive only"
   },
   "H4": {
-   "p": 0.000999000999000999,
-   "reversed": false,
-   "amount_in_band": true,
-   "wiring_against": false,
-   "conditions_met": true,
+   "p": null,
+   "verdict": "descriptive only",
+   "state": "a wiring condition could not be read",
    "detail": {
     "model": {
      "n_runs": 147,
@@ -298,6 +296,7 @@
       1.0757894736842106
      ],
      "in_band": true,
+     "ratio_in_band": true,
      "band": [
       0.8,
       1.25
@@ -323,8 +322,7 @@
     }
    },
    "tier": "confirmatory",
-   "p_holm": 0.002997002997002997,
-   "verdict": "descriptive only"
+   "p_holm": null
   },
   "H5": {
    "p": 0.981730177257391,
@@ -415,6 +413,7 @@
       "above": false,
       "p_tost": 0.999719227053718,
       "outside": true,
+      "interval": "wald: one chain in an arm",
       "n": 77,
       "at": "method",
       "kind": "level",
@@ -437,6 +436,7 @@
       "above": false,
       "p_tost": 0.998360226874574,
       "outside": true,
+      "interval": "wald: one chain in an arm",
       "n": 77,
       "at": "method",
       "kind": "level",
@@ -474,6 +474,7 @@
      "above": false,
      "p_tost": 0.348830207848476,
      "outside": false,
+     "interval": "wald: one chain in an arm",
      "n": 59,
      "family": "nbinom2"
     }

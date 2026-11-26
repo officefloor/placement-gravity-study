@@ -10,17 +10,24 @@
   bootstrap over chains; PLAN.md §4.4); **and** (since 22 November 2026) a core value come back
   to less in the function arm than in the methods arm, the rate ratio below 1, at each level
   where both arms have the core records to compare (``reuse_class``, ``reuse_method``,
-  ``required``). p = the largest of the parts. On a history the arms do not solve the same
-  problems and the arm contrast is not read.
+  ``required``). p = the largest of the parts. On the paired chains, where no level has the arm
+  contrast H2 is not testable (26 November 2026, row 117): the core against the periphery can
+  hardly fail by itself. On a history the arms do not solve the same problems and the arm contrast
+  is not read.
 - **H6** (one-sided): every shape measure kept shown not to raise later intrusion at its level, the
   method or the class: its rate ratio below the upper margin (1.25), by a one-sided test, each
-  measure fitted alone with the bindings and the bystanders in the model. p = the largest of those p-values. A measure that lowers intrusion does
+  measure fitted alone with the bindings and the bystanders in the model. p = the largest of those p-values.
+  Since 26 November 2026 (row 116) each measure's interval and p on the paired chains are the wider
+  and the larger of the 90% Wald reading and the cluster bootstrap's (``analyse.R``, ``boot_tost``),
+  so both have to lie below the margin; H7 likewise. A measure that lowers intrusion does
   not count against. The two-sided reading (within 0.8 to 1.25) is reported.
 - **H4**: the function arm's bystanders fewer half-way through the stream, their slope on the
   checkpoint index flatter, and its bound code come back to less, at the class and at the method
   and (since 22 November 2026) its changes going back into less well-trodden files, production
   Java and wiring counted alike (``trodden``: the earlier checkpoints that had changed each file
-  it changed), the rate ratio below 1 (p = the largest of the five one-sided p-values); the amount within its band; and neither wiring condition against.
+  it changed), the rate ratio below 1 (p = the largest of the five one-sided p-values); the amount within its band
+  (the whole interval of the ratio of positions added, since 26 November 2026, row 120); and neither
+  wiring condition against (one that could not be read: not estimable).
 - **H1, the force: forced less with function injection** (restated 25 November 2026, PLAN.md §9
   row 107; the author's: "this just needs to be OfficeFloor is forced less especially over time"):
   per checkpoint, the placements forced at the class (bound there with no other class holding what
@@ -48,7 +55,8 @@
   PLAN.md §9 row 90.)
 - **Two tiers** (decided by the author on 21 November 2026): the **confirmatory** family is the
   force and its two outlets, with the control: H2, H4, H1 and H5, Holm over the four at α = 0.05
-  (H7 left it when restated, later the same day). H3, H6 and H7 are **secondary**: each keeps its
+  (H7 left it when restated, later the same day). On the paired chains the correction is always
+  for four: one whose model could not be fitted is ``not estimable`` and still counts (row 115). H3, H6 and H7 are **secondary**: each keeps its
   rule and direction and is decided at α = 0.05 on its own p, outside the correction, and
   reported as secondary.
 - **H6 with the coupling measures put back** (a sensitivity reading, 22 November 2026;
@@ -64,7 +72,8 @@
 
 Verdicts: ``supported``; ``not supported``; ``reversed`` (an interval wholly on the wrong side);
 ``unresolved`` (H6, H7: an interval reaching above the upper margin without lying above it);
-``not testable`` (H6: no shape measure varies; H1 and H5: a history); ``descriptive only``
+``not testable`` (H6: no shape measure varies; H1 and H5: a history; H2: no level has the arm
+contrast); ``not estimable`` (a model could not be fitted, or a condition not read); ``descriptive only``
 (fewer than 6 chains in an arm, or the development analysis).
 """
 
@@ -86,10 +95,13 @@ SHAPES = ("s1_long", "s4_cognitive", "m_cyclomatic", "c_gini", "c_wmc", "c_lcom_
 COMPLIANCE = 0.9
 
 
-def holm(ps: dict[str, float | None]) -> dict[str, float | None]:
-    """Holm-adjusted p-values over the hypotheses that have one."""
+def holm(ps: dict[str, float | None], family: int | None = None) -> dict[str, float | None]:
+    """Holm-adjusted p-values. ``family`` is the number of tests corrected for: on the paired
+    chains the registered four, whichever of them gave a p, so that a model that fails to fit does
+    not make the others easier (26 November 2026, PLAN.md §9 row 115). Without it (a history,
+    where H1 and H5 cannot be tested), the hypotheses that have a p."""
     have = sorted(((p, k) for k, p in ps.items() if p is not None))
-    m = len(have)
+    m = max(family or 0, len(have))
     out: dict[str, float | None] = {k: None for k in ps}
     running = 0.0
     for i, (p, k) in enumerate(have):
@@ -111,7 +123,7 @@ def h3(est: dict) -> dict:
             "conditions_met": all(b["lower"] > 0 for b in parts), "detail": x}
 
 
-def h2(est: dict) -> dict:
+def h2(est: dict, history: bool = False) -> dict:
     x = est.get("H2") or {}
     c, m = x.get("class"), x.get("method")
     if not (_ok(c) and _ok(m)):
@@ -122,6 +134,11 @@ def h2(est: dict) -> dict:
     need = {lev: r for lev, r in reuse.items() if r and r.get("required")}
     if any(not _ok(r) or "irr_upper" not in r for r in need.values()):
         return {"p": None, "verdict": "not estimable", "detail": x}
+    if not need and not history:
+        # the core against the periphery can hardly fail by itself (PLAN.md §2, H2): on the paired
+        # chains H2 is not decided without the arm contrast at one level at least (§9 row 117)
+        return {"p": None, "verdict": "not testable", "state": "no level has the arm contrast",
+                "arm_contrast": [], "detail": x}
     return {"p": max(c["p_greater"], m["p_greater"], *(r["p_less"] for r in need.values())),
             "reversed": c["irr_upper"] < 1 or m["irr_upper"] < 1 or any(r["irr_lower"] > 1 for r in need.values()),
             "conditions_met": c["irr_lower"] > 1 and m["irr_lower"] > 1
@@ -183,6 +200,10 @@ def h4(est: dict, cond: dict) -> dict:
         return {"p": None, "verdict": "not estimable", "detail": x}
     amount = cond.get("amount") or {}
     w = (cond.get("wiring") or {}).get("verdict") or {}
+    if not cond.get("history") and (w.get("growth_against") is None or w.get("concentration_against") is None):
+        # a wiring condition with no answer is not a condition met (§9 row 120); a history has no wiring
+        return {"p": None, "verdict": "not estimable", "state": "a wiring condition could not be read",
+                "detail": {"model": x, "amount": amount, "wiring": w}}
     wiring_against = bool(w.get("growth_against")) or bool(w.get("concentration_against"))
     lower = (arm["upper"] < 0 and slope["upper"] < 0 and ic["irr_upper"] < 1 and im["irr_upper"] < 1
              and (files is None or files["irr_upper"] < 1))
@@ -254,9 +275,11 @@ def h8(est: dict, cond: dict) -> dict:
 
 
 def decide(est: dict, cond: dict) -> dict:
-    parts = {"H1": h1(est), "H2": h2(est), "H3": h3(est), "H4": h4(est, cond), "H5": h5(est),
+    history = bool(cond.get("history"))
+    parts = {"H1": h1(est), "H2": h2(est, history), "H3": h3(est), "H4": h4(est, cond), "H5": h5(est),
              "H6": h6(est), "H7": h7(est)}
-    adjusted = holm({k: parts[k]["p"] for k in CONFIRMATORY})
+    # on the paired chains the family is the registered four, whatever could be fitted
+    adjusted = holm({k: parts[k]["p"] for k in CONFIRMATORY}, None if history else len(CONFIRMATORY))
     for k, v in parts.items():
         v["tier"] = "confirmatory" if k in CONFIRMATORY else "secondary"
         # a secondary hypothesis is decided on its own p, outside the correction

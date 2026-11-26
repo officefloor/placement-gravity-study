@@ -93,17 +93,60 @@ tost <- function(fit, term, margin) {
             outside = exp(w$upper) < margin[1] || exp(w$lower) > margin[2]))
 }
 
+# H6 and H7 on the paired chains (26 November 2026, PLAN.md 9 row 116): the same test on the
+# cluster bootstrap as well, and both needed. A Wald interval takes the rows of a chain as separate
+# and is too narrow, which for a test against a margin is what passes. So the interval is the wider
+# of the two (the 90% Wald interval and the 5th to 95th percentile of the refits), p_upper the
+# larger of the two one-sided p-values, and `above` (against) only where both lie wholly above the
+# margin. Each reading is kept beside (`wald`, `boot`). With one chain in an arm, or fewer than
+# half the refits fitted, the Wald reading is what there is, recorded; so too on a history, which
+# decides no hypothesis.
+boot_tost <- function(fit, formula, d, family, term, margin, nest = NULL) {
+  w <- tost(fit, term, margin)
+  if (!is.null(w$error) || isFALSE(spec$problem_fixed)) return(w)
+  chains <- tapply(d$chain_id, as.character(d$arm), function(v) length(unique(v)))
+  if (min(chains) < 2) return(c(w, list(interval = "wald: one chain in an arm")))
+  x <- cluster_boot(d, formula, family, term, spec$boot, nest)[, term]
+  failed <- sum(is.na(x))
+  x <- x[!is.na(x)]
+  if (length(x) < max(2, spec$boot / 2))
+    return(c(w, list(interval = "wald: fewer than half the bootstrap refits could be fitted", failed = failed)))
+  b <- list(irr_lower = exp(unname(quantile(x, 0.05))), irr_upper = exp(unname(quantile(x, 0.95))),
+            p_upper = (sum(x >= log(margin[2])) + 1) / (length(x) + 1), refits = length(x), failed = failed)
+  out <- w
+  out$wald <- w[c("irr_lower", "irr_upper", "p_upper")]
+  out$boot <- b
+  out$irr_lower <- min(w$irr_lower, b$irr_lower)
+  out$irr_upper <- max(w$irr_upper, b$irr_upper)
+  out$p_upper <- max(w$p_upper, b$p_upper)
+  out$above <- out$irr_lower > margin[2]
+  out$outside <- out$irr_upper < margin[1] || out$irr_lower > margin[2]
+  out$interval <- "wald and cluster bootstrap, the wider"
+  out
+}
+
 irr <- function(w) {
   if (!is.null(w$error)) return(w)
   c(w, list(irr = exp(w$estimate), irr_lower = exp(w$lower), irr_upper = exp(w$upper)))
 }
 
-# Chains resampled with replacement within arm; the model refitted on each resample.
+# Chains resampled with replacement within arm and front end (a stack: each is run with its own
+# number of chains, and a resample keeps that number; 26 November 2026, PLAN.md 9 row 119; an
+# analysis with no front end resamples within arm, as before); the model refitted on each resample.
 CORES <- suppressWarnings(as.integer(Sys.getenv("PG_CORES", "")))
 if (is.na(CORES) || CORES < 1) CORES <- max(1L, min(4L, parallel::detectCores() - 1L))
+BOOT_STRATA <- NULL      # the widest set of strata any bootstrap drew within, with their chains (reported)
 cluster_boot <- function(d, formula, family, terms, B, nest = NULL) {
   ids <- unique(d$chain_id)
-  strata <- split(ids, d$arm[match(ids, d$chain_id)])
+  at <- match(ids, d$chain_id)
+  fe <- if ("frontend" %in% names(d)) as.character(d$frontend[at]) else rep("", length(ids))
+  fe[is.na(fe)] <- ""
+  # the strata in the order of the arms (as when they were the arms alone, so that an analysis with
+  # no front end draws exactly the resamples it drew before), then of the front ends
+  arm_at <- if (is.factor(d$arm)) d$arm[at] else factor(d$arm[at])
+  key <- paste(as.character(arm_at), fe, sep = "|")
+  strata <- split(ids, factor(key, levels = unique(key[order(as.integer(arm_at), fe)])))
+  if (length(strata) > length(BOOT_STRATA)) BOOT_STRATA <<- vapply(strata, length, integer(1))
   by_id <- split(d, d$chain_id)
   # the resamples are drawn first, in order, from the one seeded stream; the refits, which draw
   # nothing, then run on several cores (PG_CORES; by default at most four, each holding its own copy
@@ -292,7 +335,9 @@ if (!is.null(by)) {
 
   # H3: bystanders rise with the checkpoint index in the methods arm
   dm <- by[by$arm == spec$methods_arm, ]
-  mb1 <- fit_cp("y ~ cp", dm, gaussian())
+  # the front end where the methods arm has more than one (26 November 2026, PLAN.md 9 row 118), as
+  # every other model of the paired chains carries it
+  mb1 <- fit_cp(paste0("y ~ cp", if (multi(dm$frontend)) " + frontend" else ""), dm, gaussian())
   note("H3", mb1)
   bb1 <- if (inherits(mb1$fit, "fit_error")) NULL else
     cluster_boot(mb1$data, mb1$formula, gaussian(), "cp", spec$boot)
@@ -306,7 +351,7 @@ if (!is.null(by)) {
     d$cp_m <- ave(d$cp, d[[place]])
     d$cp_w <- d$cp - d$cp_m
     if (length(unique(d$cp_w)) < 2) return(list(error = "no place with runs at two checkpoints"))
-    mw <- fit_cp("yy ~ cp_w + cp_m", d, gaussian())
+    mw <- fit_cp(paste0("yy ~ cp_w + cp_m", if (multi(d$frontend)) " + frontend" else ""), d, gaussian())
     if (inherits(mw$fit, "fit_error")) return(list(error = mw$fit$msg))
     c(boot_summary(mw$fit, cluster_boot(mw$data, mw$formula, gaussian(), "cp_w", spec$boot), "cp_w"),
       list(places = sum(tapply(d$cp_w, d[[place]], function(v) length(unique(v)) > 1)),
@@ -649,15 +694,22 @@ if (!is.null(h2)) {
         return(list(error = "does not vary", at = info$level, source = info$source))
       place <- TRUE
       if (info$level == "method") {
-        f <- fit_cp(base(d, "intrusion_method", "binding + bystanders_method + x + "), d, nb)$fit
+        m <- fit_cp(base(d, "intrusion_method", "binding + bystanders_method + x + "), d, nb)
       } else {
-        f <- fit_cp(class_base(d, "binding + bystanders_class + x + "), d, nb)$fit
-        if (!is.null(wald(f, "x")$error)) {   # refitted without the class's intercept
+        m <- fit_cp(class_base(d, "binding + bystanders_class + x + "), d, nb)
+        if (!is.null(wald(m$fit, "x")$error)) {   # refitted without the class's intercept
           place <- FALSE
-          f <- fit_cp(class_base(d, "binding + bystanders_class + x + ", FALSE), d, nb)$fit
+          m <- fit_cp(class_base(d, "binding + bystanders_class + x + ", FALSE), d, nb)
         }
       }
-      c(tost(f, "x", spec$margin), list(n = nrow(d), at = info$level, kind = info$kind,
+      f <- m$fit
+      # H6's own measures are decided on the cluster bootstrap as well (row 116); the others, and
+      # the sensitivity reading's coupling measures, are reported on their Wald interval
+      test <- if (k %in% spec$h6_measures)
+        boot_tost(f, m$formula, m$data, nb, "x", spec$margin,
+                  nest = if (info$level == "class" && place) "class_identity" else NULL) else
+        tost(f, "x", spec$margin)
+      c(test, list(n = nrow(d), at = info$level, kind = info$kind,
                                          source = info$source, reversed = isTRUE(info$reversed),
                                          class_intercept = info$level == "class" && place))
     }), names(lit))
@@ -830,8 +882,9 @@ if (!is.null(h7) && nrow(h7) > 0) {
     f <- as.formula(paste0("spread ~ ", rhs, fe, " + (1 | chain_id)"))
     nb <- fit_or_error(glmmTMB(f, data = d, family = nbinom2()))
     ok <- !inherits(nb, "fit_error") && isTRUE(nb$sdr$pdHess)
-    if (ok) return(list(fit = nb, family = "nbinom2"))
-    list(fit = fit_or_error(glmmTMB(f, data = d, family = poisson())), family = "poisson")
+    if (ok) return(list(fit = nb, family = "nbinom2", formula = f, fam = nbinom2(), data = d))
+    list(fit = fit_or_error(glmmTMB(f, data = d, family = poisson())), family = "poisson",
+         formula = f, fam = poisson(), data = d)
   }
   one <- function(m, term, n) c(irr(wald(m$fit, term)), list(n = n, family = m$family))
   dm <- h7[h7$arm == spec$methods_arm, ]
@@ -841,7 +894,10 @@ if (!is.null(h7) && nrow(h7) > 0) {
   # forced ratio shown below the upper margin (1.25), one-sided with the 90% interval, as H6.
   res$H7$margin <- spec$margin
   m6 <- fit6(dm, paste0("x + forced", sz))
-  res$H7$forced <- c(tost(m6$fit, "forced", spec$margin), list(n = nrow(dm), family = m6$family))
+  # decided on the cluster bootstrap as well as the Wald interval, both needed (row 116)
+  res$H7$forced <- c(if (is.null(m6$formula)) tost(m6$fit, "forced", spec$margin) else
+                       boot_tost(m6$fit, m6$formula, m6$data, m6$fam, "forced", spec$margin),
+                     list(n = nrow(dm), family = m6$family))
   res$reported$H7_forced_without_size <- one(fit6(dm, "x + forced"), "forced", nrow(dm))
   if ("forced_bind" %in% names(dm)) {     # forced by binding with no alternative (H1's), reported
     db <- dm
@@ -1158,6 +1214,7 @@ if (isTRUE(spec$reader_models) && !is.null(ru) && nrow(ru) > 0 && multi(ru$arm))
 }
 
 dir.create(dirname(out), recursive = TRUE, showWarnings = FALSE)
+res$bootstrap <- list(refits = spec$boot, within = "arm and front end", strata = as.list(BOOT_STRATA))
 writeLines(toJSON(res, auto_unbox = TRUE, digits = NA, null = "null", na = "null", pretty = TRUE),
            out)
 cat("wrote", out, "\n")

@@ -55,12 +55,38 @@ def final_keys(work: Path) -> set[tuple[str, str, str]] | None:
             for m in (json.loads(l) for l in listing.read_text().splitlines() if l)}
 
 
+def copy_measured(reg: dict, analysis: dict, head: dict, meta: dict, out: Path) -> bool:
+    """A chain already measured for another analysis of the same stream, at the same head and
+    version, is copied and not measured again (the per-front-end pairs read the primary's chains,
+    PLAN.md §3.1a, §9 row 121). The tables are the same but for the analysis each row names."""
+    for other in reg["analyses"]:
+        if other["name"] == head["analysis"] or other.get("history") \
+                or other.get("stream") != analysis.get("stream"):
+            continue
+        src = OUT / other["name"] / out.name
+        if not (src / "meta.json").exists() or json.loads((src / "meta.json").read_text()) != meta:
+            continue
+        out.mkdir(parents=True, exist_ok=True)
+        for f in sorted(src.iterdir()):
+            if f.suffix == ".csv":
+                with f.open(newline="") as fh:
+                    rows = [{**r, "analysis": head["analysis"]} for r in csv.DictReader(fh)]
+                write(out / f.name, rows)
+            elif f.is_file() and f.name != "meta.json":
+                shutil.copy2(f, out / f.name)
+        (out / "meta.json").write_text(json.dumps({**meta}, indent=1) + "\n")
+        return True
+    return False
+
+
 def measure_chain(reg: dict, analysis: dict, head: dict, streamed: dict, stacks: dict,
                   force: bool = False) -> Path:
     out = chain_dir(head)
     meta = {"sha": head["sha"], "branch": head["branch"], "measure_version": MEASURE_VERSION}
     if not force and (out / "meta.json").exists() \
             and json.loads((out / "meta.json").read_text()) == meta:
+        return out
+    if not force and copy_measured(reg, analysis, head, meta, out):
         return out
     repo = reg["repos"][head["repo"]]
     paths = stacks.get(head["repo"]) or runs.roots(repo)

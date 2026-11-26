@@ -1047,6 +1047,7 @@
         "above": false,
         "p_tost": 0.999719227053718,
         "outside": true,
+        "interval": "wald: one chain in an arm",
         "n": 77,
         "at": "method",
         "kind": "level",
@@ -1091,6 +1092,7 @@
         "above": false,
         "p_tost": 0.998360226874574,
         "outside": true,
+        "interval": "wald: one chain in an arm",
         "n": 77,
         "at": "method",
         "kind": "level",
@@ -1426,6 +1428,7 @@
           "above": false,
           "p_tost": 0.999719227053718,
           "outside": true,
+          "interval": "wald: one chain in an arm",
           "n": 77,
           "at": "method",
           "kind": "level",
@@ -1448,6 +1451,7 @@
           "above": false,
           "p_tost": 0.998360226874574,
           "outside": true,
+          "interval": "wald: one chain in an arm",
           "n": 77,
           "at": "method",
           "kind": "level",
@@ -3097,6 +3101,7 @@
         "above": false,
         "p_tost": 0.999719227053718,
         "outside": true,
+        "interval": "wald: one chain in an arm",
         "n": 77,
         "at": "method",
         "kind": "level",
@@ -3119,6 +3124,7 @@
         "above": false,
         "p_tost": 0.998360226874574,
         "outside": true,
+        "interval": "wald: one chain in an arm",
         "n": 77,
         "at": "method",
         "kind": "level",
@@ -3225,6 +3231,7 @@
       "above": false,
       "p_tost": 0.348830207848476,
       "outside": false,
+      "interval": "wald: one chain in an arm",
       "n": 59,
       "family": "nbinom2"
     }
@@ -3285,6 +3292,14 @@
     "logic_added": {
       "officefloor": 9.61016949152542,
       "spring": 9.03448275862069
+    }
+  },
+  "bootstrap": {
+    "refits": 1000,
+    "within": "arm and front end",
+    "strata": {
+      "spring|": 1,
+      "officefloor|": 1
     }
   }
 }

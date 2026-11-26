@@ -84,6 +84,31 @@ def test_the_amount_is_read_on_what_was_added():
     assert a["ratio_total"] == pytest.approx(1210 / 1400)                     # the totals, beside it
 
 
+def test_the_amount_is_in_its_band_only_when_its_whole_interval_is():
+    """The ratio alone can sit inside 0.8 to 1.25 while the chains leave it uncertain: 1.2 on
+    average, but one function-arm chain far above. In the band only if the interval is."""
+    def adds(function):
+        return [{"chain_id": f"{arm}{n}", "arm": arm, "cp": 50, "amount_positions": v, "amount_added": v}
+                for arm, vs in (("spring", [100, 100, 100, 100]), ("officefloor", function))
+                for n, v in enumerate(vs)]
+    wide = prepare.amount(adds([90, 90, 90, 210]), resamples=500)
+    assert wide["ratio"] == pytest.approx(1.2) and wide["ratio_in_band"]
+    assert wide["interval"][1] > 1.25 and not wide["in_band"]
+    tight = prepare.amount(adds([118, 120, 120, 122]), resamples=500)
+    assert tight["ratio"] == pytest.approx(1.2) and tight["in_band"]
+
+
+def test_the_amount_interval_draws_chains_within_each_front_end():
+    """Two stacks an arm of very different size: drawn within each stack every resample holds both,
+    so the arm's mean, and the ratio, do not move with the mix of front ends."""
+    adds = [{"chain_id": f"{arm}-{fe}-{n}", "arm": arm, "frontend": fe, "cp": 50,
+             "amount_positions": v, "amount_added": v}
+            for arm in ("spring", "officefloor") for fe, v in (("angular", 100), ("tanstack", 300))
+            for n in range(3)]
+    a = prepare.amount(adds, resamples=300)
+    assert a["interval"] == [pytest.approx(1.0), pytest.approx(1.0)] and a["in_band"]
+
+
 def test_bystanders_are_gathered_per_run_and_summarised():
     def r(arm, cp, by, need, replacement=False, new=False):
         return {"chain_id": f"{arm}/c", "arm": arm, "cp": cp, "host_new": str(new), "need": need,

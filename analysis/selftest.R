@@ -9,6 +9,10 @@ dir <- file.path(tempdir(), "pg-selftest")
 dir.create(dir, showWarnings = FALSE, recursive = TRUE)
 
 arms <- c("spring", "officefloor")
+# two front ends an arm, four chains each, as the ui primary's square has two stacks an arm (PLAN.md
+# 3.1a): no effect of the front end is simulated, so every model carries the term and recovers the
+# same effects, and the bootstrap resamples chains within arm and front end
+FE <- function(ch) if (ch <= 4) "angular" else "tanstack"
 cp_binding <- rnorm(60, 0, 0.3)   # the problem's own level, the same for every chain
 cp_int <- rnorm(60, 0, 0.5)
 h3 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
@@ -19,7 +23,7 @@ h3 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
   a <- if (arm == "spring") -0.6 else -1.4
   prior <- runif(n, 0.5, 2.5)
   binding <- rpois(n, exp(a + b * log(pre) + 0.006 * cp + cp_binding[cp] + 0.25 * prior + rnorm(1, 0, 0.1)))
-  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = cp, act = NA,
+  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = FE(ch), cp = cp, act = NA,
              binding = binding, binding_no_param = pmax(0, binding - rbinom(n, 1, 0.3)), binding_class = rpois(n, 1),
              binding_no_injected = pmax(0, binding - rbinom(n, 1, 0.3)), binding_class_no_injected = rpois(n, 0.5),
              pre_positions = pre, class_positions = pre * 3, prior_binding_mean = prior)
@@ -40,7 +44,7 @@ h2 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
   byc <- rpois(n, if (arm == "spring") 6 else 1)
   bym <- rpois(n, if (arm == "spring") 3 else 1)
   dr <- exp(-4.5 + cp_int[cp]) * later
-  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "",
+  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = FE(ch),
              cp = cp, act = NA,
              intrusion_class = rnbinom(n, size = 2, mu = 3 * mu), later_checkpoints = later,
              intrusion_method = rnbinom(n, size = 2, mu = 2 * mu),
@@ -84,7 +88,7 @@ by <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
     exp(0.3 + 0.002 * cp + cp_by[cp] + rnorm(1, 0, 0.1))
   b <- rpois(n, mu)
   m <- rbinom(n, b, 0.3)
-  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = cp,
+  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = FE(ch), cp = cp,
              place_class = paste0(arm, ch, "|C", sample(1:6, n, replace = TRUE)),
              place_method = paste0(arm, ch, "|M", sample(1:25, n, replace = TRUE)),
              host_new = rbinom(n, 1, 0.5) == 1, bystanders = b, by_method = m, by_class = b - m,
@@ -94,7 +98,7 @@ by <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
 cap <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
   heavy <- if (arm == "spring") 3 + rpois(60, (1:60) / 6) else rpois(60, 1)
   p <- plogis(-1 + (if (arm == "spring") 0.8 else 0) * log1p(heavy) + rnorm(60, 0, 0.3))
-  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = 1:60,
+  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = FE(ch), cp = 1:60,
              share_in_existing = p, heaviest_class = heavy, fields_added = rpois(60, 0.2))
 }))))
 # reopening: the methods arm reopens about three places per checkpoint, the function arm one
@@ -109,7 +113,7 @@ reopen <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, f
   # function arm
   tj <- rnbinom(60, size = 3, mu = (if (arm == "spring") 1 else 0.4) * (1:60) / 3 * exp(cp_by))
   tw <- if (arm == "spring") rep(0, 60) else rnbinom(60, size = 3, mu = 0.1 * (1:60) / 3)
-  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = 1:60,
+  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = FE(ch), cp = 1:60,
              reopened = r, reopened_classes = r - w, reopened_wiring = w,
              existing_java_files = ej, existing_wiring_files = ew, existing_files = ej + ew,
              trodden_java = tj, trodden_wiring = tw, trodden = tj + tw)
@@ -123,7 +127,7 @@ split <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, fu
   pr <- rnbinom(60, size = 5, mu = if (arm == "spring") 3 * exp(log(2) * (cp - 30.5) / 59) else rep(1.2, 60))
   dl <- rpois(60, if (arm == "spring") 6 else 9)
   wl <- if (arm == "spring") rep(0, 60) else rpois(60, 2)
-  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = cp, logic_added = lg,
+  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = FE(ch), cp = cp, logic_added = lg,
              organisation_added = rpois(60, 1), declaration_lines_added = dl, import_lines_added = rpois(60, 2),
              wiring_lines_added = wl, params_new_methods = pr + (if (arm == "spring") 0 else rpois(60, 1)),
              params_called_methods = pr, params_wired_functions = if (arm == "spring") rep(0, 60) else rpois(60, 1),
@@ -171,7 +175,7 @@ h1 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
   cp <- sample(1:60, n, replace = TRUE)
   mu <- if (arm == "spring") 3 * exp(log(1 / 3) * (cp - 1) / 59) else rep(4, n)
   a <- rnbinom(n, size = 4, mu = mu)
-  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = cp, act = NA,
+  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = FE(ch), cp = cp, act = NA,
              level = sample(c("class", "method"), n, replace = TRUE), alternatives = a, forced = a == 0,
              own = rbinom(n, 1, 0.3) == 1, untyped = rpois(n, 0.1), places = "",
              by_type = a + rpois(n, cp / 3), flow_methods = 20 + rpois(n, 5),
@@ -186,7 +190,7 @@ set.seed(20261125)
 h1f <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
   cp <- 1:60
   mu <- if (arm == "spring") 0.3 * exp(log(3) * (cp - 1) / 59) else rep(0.1, 60)
-  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = cp, forced_class = rpois(60, mu))
+  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = FE(ch), cp = cp, forced_class = rpois(60, mu))
 }))))
 write.csv(h1f, file.path(dir, "h1_forced.csv"), row.names = FALSE)
 assign(".Random.seed", kept_seed, envir = .GlobalEnv)
@@ -201,7 +205,7 @@ h7 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
   mu <- (if (arm == "spring") 0.8 * exp(log(2) * (cp - 1) / 59) * ifelse(forced, 1.5, 1) else rep(0.8, 60)) *
     (1 + methods) / 3
   sp <- rnbinom(60, size = 5, mu = mu)
-  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = cp, act = NA,
+  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = FE(ch), cp = cp, act = NA,
              positions = positions, methods = methods,
              classes = sp + 1, spread = sp, all_classes = sp + 1, forced = forced, forced_classes = as.integer(forced),
              chosen = !forced, new_classes = 0, class_names = "")
@@ -211,7 +215,7 @@ pairs <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, fu
   do.call(rbind, lapply(1:6, function(k) {
     cp <- sort(sample(1:60, 5))
     mu <- if (arm == "spring") 2 * exp(log(3) * (cp - 1) / 59) else rep(2, 5)
-    data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = cp,
+    data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = FE(ch), cp = cp,
                pair = paste0(arm, "/r/chain", ch, "|A", k, "|B", k), coupling = rnbinom(5, size = 10, mu = mu),
                times = 1:5, in_tree = TRUE)
   }))
@@ -229,7 +233,7 @@ h5 <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
   out <- rnbinom(n, size = 4, mu = mu * 0.6)
   inn <- rnbinom(n, size = 4, mu = mu * 0.4)
   op <- rbinom(n, out + inn, ifelse(forced & arm == "spring", 0.5, 0.2))
-  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = cp, unit = cp,
+  data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = FE(ch), cp = cp, unit = cp,
              class = paste0("C", k), forced = forced, chosen = !forced, new_out = out, new_in = inn,
              coupled = out + inn, opened = op, members_opened = rpois(n, ifelse(forced, 1, 0.5)))
 }))))
@@ -239,7 +243,7 @@ write.csv(h5, file.path(dir, "calls_across.csv"), row.names = FALSE)
 sf <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, function(ch) {
   cs <- data.frame(methods_before = sample(2:80, 60, replace = TRUE))
   cs$surface_before <- round(exp(0.7 * log(cs$methods_before) + rnorm(60, 0, 0.2))) - 1
-  cs <- data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = 60,
+  cs <- data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = FE(ch), cp = 60,
                    class = paste0(arm, ch, "c", 1:60), cross_section = TRUE, forced = NA,
                    methods_before = cs$methods_before, surface_before = pmax(cs$surface_before, 0),
                    methods_after = NA, surface_after = NA)
@@ -248,7 +252,7 @@ sf <- do.call(rbind, lapply(arms, function(arm) do.call(rbind, lapply(1:8, funct
     forced <- rbinom(6, 1, 0.5)
     sb <- pmax(round(exp(1.3 * log(m) + rnorm(6, 0, 0.1) - 1)), 0)
     dm <- sample(1:3, 6, replace = TRUE)
-    data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = "", cp = 1:6 * 10,
+    data.frame(chain_id = paste0(arm, "/r/chain", ch), arm = arm, frontend = FE(ch), cp = 1:6 * 10,
                class = paste0(arm, ch, "k", k), cross_section = FALSE, forced = forced == 1,
                methods_before = m, surface_before = sb, methods_after = m + dm,
                surface_after = sb + 2 * dm + 3 * forced + rpois(6, 1))
@@ -299,7 +303,7 @@ writeLines(jsonlite::toJSON(list(
                     c_wmc = list(level = "class", kind = "level", source = "CK"),
                     c_mi = list(level = "class", kind = "plain", source = "MI", reversed = TRUE),
                     c_god_class = list(level = "class", kind = "flag", source = "Lanza and Marinescu")),
-  acts = FALSE, frontends = list(), reader_models = TRUE), auto_unbox = TRUE), file.path(dir, "spec.json"))
+  acts = FALSE, frontends = list("angular", "tanstack"), reader_models = TRUE), auto_unbox = TRUE), file.path(dir, "spec.json"))
 
 out <- file.path(dir, "estimates.json")
 script <- file.path(dirname(normalizePath(sub("--file=", "", grep("--file=", commandArgs(FALSE),
@@ -358,8 +362,21 @@ for (k in names(e$H6$measures)) {
   m <- e$H6$measures[[k]]
   check(m$irr_lower > 0.5 && m$irr_upper < 2, paste("H6 estimates", k, "near no effect"))
 }
-check(all(sapply(e$H6$measures, function(m) m$p_upper <= m$p_tost && !isTRUE(m$above))),
-      "H6's one-sided p is no larger than the two-sided one, and no measure lies above the margin")
+check(all(sapply(e$H6$measures, function(m) m$wald$p_upper <= m$p_tost && !isTRUE(m$above))),
+      "H6's one-sided Wald p is no larger than the two-sided one, and no measure lies above the margin")
+# H6 and H7 are decided on the Wald interval and the cluster bootstrap, both needed (row 116)
+both <- function(m) identical(m$interval, "wald and cluster bootstrap, the wider") && m$boot$refits >= 30 &&
+  m$irr_upper >= max(m$wald$irr_upper, m$boot$irr_upper) - 1e-12 &&
+  m$irr_lower <= min(m$wald$irr_lower, m$boot$irr_lower) + 1e-12 &&
+  m$p_upper >= max(m$wald$p_upper, m$boot$p_upper) - 1e-12
+check(all(sapply(e$H6$measures, both)),
+      "each of H6's measures carries the wider of its Wald and bootstrap intervals and the larger p")
+check(both(e$H7$forced), "H7's forced ratio carries the wider of its Wald and bootstrap intervals and the larger p")
+check(is.null(e$reported$literature_shape$m_fanout$boot) && !is.null(e$reported$literature_shape$m_fanout$irr),
+      "a literature measure that is not H6's is reported on its Wald interval")
+check(length(e$bootstrap$strata) == 4 && all(unlist(e$bootstrap$strata) == 4),
+      "the bootstrap resamples chains within arm and front end: four strata of four chains")
+check(!is.null(e$H3$cp$estimate) && e$H3$cp$lower > 0, "H3's slope is recovered with the front end in its model")
 check(!is.null(e$reported$H6_class_level$s4_cognitive$irr), "the first block on class-level intrusion is reported")
 for (k in c("m_cyclomatic", "c_wmc", "c_god_class")) {
   m <- e$reported$literature_shape[[k]]

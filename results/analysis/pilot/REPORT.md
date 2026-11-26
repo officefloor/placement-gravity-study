@@ -7,7 +7,7 @@ Role: **development**. Chains: officefloor 1, spring 1. **Descriptive only.**
 | H1 | confirmatory | descriptive only | 1.000 |
 | H2 | confirmatory | descriptive only | 0.00039 |
 | H3 | secondary | descriptive only | 0.000999 |
-| H4 | confirmatory | descriptive only | 0.003 |
+| H4 | confirmatory | descriptive only | – |
 | H5 | confirmatory | descriptive only | 1.000 |
 | H6 | secondary | descriptive only | 3.06e-06 |
 | H7 | secondary | descriptive only | 0.349 |

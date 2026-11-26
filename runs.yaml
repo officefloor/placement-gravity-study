@@ -192,6 +192,10 @@ analyses:
     corpus: ui
     role: primary
     stream: ui
+    # every chain of the four stacks, each complete, or nothing of the analysis is read; a head
+    # once recorded in results/heads.tsv is not replaced (PLAN.md 3.1a, 9 row 114)
+    chains: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    complete_at: 250
     sources:
       - {arm: spring, frontend: angular, repo: officehq-angular-spring, run: 202610271-as, strategy: just-solve}
       - {arm: officefloor, frontend: tanstack, repo: officehq-tanstack-officefloor, run: 202610271-to, strategy: just-solve}
@@ -199,6 +203,29 @@ analyses:
       - {arm: officefloor, frontend: angular, repo: officehq-angular-officefloor, run: 202611221-ao, strategy: just-solve}
       - {arm: spring, frontend: tanstack, repo: officehq-tanstack-spring, run: 202611221-ts, strategy: just-solve}
       # Run C (the no-injection control, a third arm): its stack not built on 16 November 2026.
+
+  # The two pairs that share a front end (PLAN.md 3.1a, 9 row 121), each a replication with its own
+  # verdicts, never the study's test: read for whether the two agree in direction. In each the arm
+  # is also the run (Run A against Run B). Their chains are the primary's, measured once (step 3
+  # copies a chain already measured for another analysis of the same stream at the same head).
+  - name: ui-angular
+    corpus: ui
+    role: secondary
+    stream: ui
+    chains: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    complete_at: 250
+    sources:
+      - {arm: spring, frontend: angular, repo: officehq-angular-spring, run: 202610271-as, strategy: just-solve}
+      - {arm: officefloor, frontend: angular, repo: officehq-angular-officefloor, run: 202611221-ao, strategy: just-solve}
+  - name: ui-tanstack
+    corpus: ui
+    role: secondary
+    stream: ui
+    chains: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    complete_at: 250
+    sources:
+      - {arm: spring, frontend: tanstack, repo: officehq-tanstack-spring, run: 202611221-ts, strategy: just-solve}
+      - {arm: officefloor, frontend: tanstack, repo: officehq-tanstack-officefloor, run: 202610271-to, strategy: just-solve}
 
   # Run D (PLAN.md 3.1a, H8; registered 22 November 2026): the angular-spring stack with the agent
   # told to leave everything public, against Run A's angular-spring. Run after the others, not beside

@@ -8,7 +8,9 @@
 > drafter's remaining choices, and after a consistency review make H1 the arm contrast alone,
 > delete H9 and count constants in H5). Run B's ids were added on 26 November 2026 (§9 row 113), so
 > nothing that needs deciding is left before the tag is set again; until it is, only the development
-> chain can be read.** As first registered, on 16 November 2026: the tag was first pushed on commit
+> chain can be read.** Rows 114 to 122, of the same day, follow a second review of the plan before
+> the tag (§8): they tighten rules, make the plan and the code say the same, and change no
+> hypothesis or direction. As first registered, on 16 November 2026: the tag was first pushed on commit
 > `4bb8973` and moved the same day, before any run named for analysis was read, to this revision,
 > which adds bindings to injected dependencies reported apart (§4.3, §5). The instrument is piloted on
 > one pair of chains
@@ -18,6 +20,32 @@
 > declarations (`results/stacks.json`). The literature behind this plan is in
 > [`LITERATURE.md`](LITERATURE.md). Since 16 November 2026 this plan absorbs three drafts that read
 > the same runs (§1.1).
+
+## What is registered, in one table
+
+A summary of the rules as they stand, in today's numbers (added 26 November 2026, §9 row 122). It
+adds no rule: §2 states each hypothesis and §5 its test, and **§5 governs** wherever the two differ.
+
+| | Claim | Read on | Passes when | Conditions | Tier |
+|---|---|---|---|---|---|
+| **H1** | The function arm is forced less, and the gap widens | placements forced at the class, per checkpoint and chain | the arm's ratio half-way through and its trend over the stream both below 1 | none | confirmatory |
+| **H2** | A core draws code in | later intrusions' uses per value, of the core and of the periphery | in the methods arm core against periphery above 1 at the class and at the method; **and** a core value come back to less in the function arm (below 1) at each level where each arm has 10 core records | at least one level has the arm contrast, or H2 is not testable | confirmatory |
+| **H4** | Function injection forms no core | bystanders; later intrusion; how well-trodden the files gone back into | five parts, all on the form's side: bystanders fewer half-way through and rising less; later intrusion below 1 at the class and at the method; well-trodden files below 1 | the amount added: the whole 95% interval of the ratio inside 0.8 to 1.25; neither wiring condition against (§4.5) | confirmatory |
+| **H5** | Less surface for the same volume, and the gap widens | weight of links added per checkpoint, for the same logic | the arm's ratio half-way through and its trend both below 1 | none | confirmatory |
+| **H3** | The encapsulation fills | bystanders per run, methods arm | slope on the checkpoint index above 0 over all runs, within a class and within a method | none | secondary |
+| **H6** | Shape does not draw code in | later intrusion on each of six shape measures, each alone | every measure's upper limit below 1.25, on the 90% Wald interval **and** on the cluster bootstrap | a measure that does not vary leaves; class measures only where 10 classes receive arrivals and none more than half | secondary |
+| **H7** | Co-change spread does not see the force | classes a change goes into, forced against not, methods arm | the forced ratio's upper limit below 1.25, on both intervals as H6 | the change's size held fixed | secondary |
+| **H8** | Without encapsulation code disperses (Run D against Run A's same stack) | later intrusion at the class; calls across class boundaries | intrusion below 1 and calls above 1 | 90% of introduced members not private; the amount in its band | its own run |
+
+- **The study's test** is `ui-primary`: the four stacks of Runs A and B, **ten chains each, every
+  chain at checkpoint 250, or nothing is read**; a head once read is not replaced (§3.1a). The two
+  pairs that share a front end and the petclinic runs are replications, each with its own verdicts.
+- **Confirmatory:** each p is the largest of its parts, from a cluster bootstrap (1,000 refits, seed
+  20261116, chains resampled within arm and front end), Holm-corrected at α = 0.05 **over four on
+  the paired chains, whatever could be fitted**. Secondary and H8: α = 0.05 on its own p.
+- **Verdicts:** supported; not supported; reversed; unresolved (H6, H7); not testable; not
+  estimable (a model could not be fitted or a condition not read; it still counts in the four);
+  descriptive only (fewer than 6 chains in an arm, or a development analysis).
 
 ## 1. Why this study, and what it replaces
 
@@ -411,7 +439,7 @@ alternatives at the class are the other classes that already hold the same depen
     and in §7; the plain count stays reported so that a reader can weigh both. It is the count H4 first had as a condition (reopening, §4.4), without the
   binding rule and with the wiring in it; on the development chain that count went against H4
   before the binding rule and was unresolved with it (§6). The total amount
-  (positions, tokens) of the function arm lies within 0.8 to 1.25 times the methods arm's, the
+  (positions; since 26 November 2026, §9 row 120, the whole 95% interval of the ratio, §4.6; until then "positions, tokens", of which only positions were ever read) of the function arm lies within 0.8 to 1.25 times the methods arm's, the
   band the flow-injection draft took from the conservation study's spread. The coupling that
   leaves the scopes appears as wiring (§4.5) and is reported, not hidden: injection is known to
   raise counted coupling (Sun et al. 2022, read in full: coupling rises as injection increases),
@@ -746,7 +774,16 @@ end's production Java of the four stacks of its Runs A and B, a front end × bac
   gives one Spring and one OfficeFloor stack, so differences between the runs (date, machine)
   cancel out of this contrast.
 - **Secondary:** the two pairs that share a front end (Angular, TanStack), each read as a
-  replication.
+  replication. **Built on 26 November 2026** (§9 row 121; until then promised here and not
+  built): `ui-angular` (Run A's Spring against Run B's OfficeFloor) and `ui-tanstack` (Run B's
+  Spring against Run A's OfficeFloor), each an analysis of its own in `runs.yaml` with every
+  hypothesis and its verdicts, ten chains an arm, never the study's test. They are read for whether
+  the two **agree in direction**: with half the chains each has wider intervals, so a pair that is
+  *not supported* where the primary is *supported* is not a disagreement; opposite directions are.
+  **In each pair the arm is also the run**: whatever changed between Run A and Run B (the date, the
+  model served as `claude-opus-5-5`) helps one arm in one pair and the other arm in the other. In
+  the primary contrast that cancels; the pairs are how its size is seen. Their chains are the
+  primary's, measured once and copied (`measure.copy_measured`).
 - **Not separable:** an influence of the front end on the back end, and a difference between
   Run A and Run B, are confounded in this square. The study does not depend on either being
   absent; it reports the per-front-end pairs so that a disagreement between them shows.
@@ -840,7 +877,17 @@ stacks; no chain had been pushed, and nothing of Run B was fetched or read. With
 the table above is whole.
 
 **Open after registration:** the commit of each chain's branch that is read (each chain's head once
-its run has finished and been pushed). Run B's ids were added before the tag was set again (§9 row
+its run has finished and been pushed). **All or nothing** (26 November 2026, §9 row 114; the
+author: "All 10 chains are to be run with all 250 checkpoints complete"): `ui-primary` and the two
+pairs name chains 1 to 10 of each run and the checkpoint each must have reached, 250 (`runs.yaml`,
+`chains`, `complete_at`). Step 2 refuses the analysis while any named chain is not on the remote or
+stops short, so a run still being pushed cannot be read in part; and a head once recorded in
+`results/heads.tsv` is not replaced by another commit (`runs.fetch`, `runs.write_heads`). No rule is
+written for a chain that never completes, since none is expected; if one does not, nothing is read
+and a dated amendment says what is done, before any chain is read. Until then step 2 read whatever
+chains were on the remote that day, and "fewer than 6 chains in an arm" was the only bar. The
+petclinic analyses read every chain of their runs as pushed, as before (their runs ended months
+ago), under the same rule that a recorded head is not replaced. Run B's ids were added before the tag was set again (§9 row
 113), so they are part of the registered plan, not an amendment to it.
 
 **Backend paths.** The petclinic layout is production Java under `src/main/java/` and wiring under
@@ -1792,6 +1839,16 @@ Total positions and tokens per arm at each checkpoint, so that H4 is read agains
 conservation result: the same amount, placed differently. H4's band is read at the final
 checkpoint, averaged within a chain and then over chains, with a percentile bootstrap over chains.
 
+**The whole interval has to lie in the band** (decided by the author on 26 November 2026, §9 row
+120: "Interval A, tokens A"). Until then the plan did not say whether the ratio or its interval
+decides, and the code took the ratio. "The same amount" is a claim of no difference, as H6's and
+H7's are, and for those the plan asks that the interval, not the point, lie inside the margin. So
+the amount is in its band when the 95% percentile interval of the ratio (10,000 resamples, seed
+20261116, chains resampled within arm and front end as the models' bootstrap, row 119) lies within
+0.8 to 1.25. The ratio alone against the band is reported beside it (`ratio_in_band`). The band is
+read on **positions**, the unit of every other measure; §2 said "positions, tokens", but tokens
+were never carried to the table the band is read from, and they are no part of the condition. With one chain an arm the interval is the ratio.
+
 **Revised before the start** (16 November 2026, §9): **the band is read on the amount added**, the
 positions at the final checkpoint less those of the chain's base (`base_ref`), not on the total.
 The petclinic arms start from two conversions of one application that differ in size (942 and 745
@@ -2041,7 +2098,9 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   checkpoint intercept is refitted without it, and the report says so.
 - **H3** (restated 17 November 2026, §9): a mixed model of log(1 + bystanders) per run of added
   logic that needs a pre-existing value (§4.3a), on the checkpoint index, in the methods arm, with random intercepts for the chain and the
-  checkpoint. The slope is reported with a 95% bootstrap interval over chains. Host size is not in
+  checkpoint, and the front end where the methods arm has more than one (added 26 November 2026, §9
+  row 118: on the ui runs the methods arm is Spring under two front ends, in two runs, and every
+  other model there carries the term; the same in the models within a place). The slope is reported with a 95% bootstrap interval over chains. Host size is not in
   the model: a larger method has more values by construction, so a slope on it would not be
   evidence.
   - **Within a place** (17 November 2026, §9): the same model twice more. On the class's
@@ -2078,6 +2137,12 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
     nought): the arms' chains are then compared by a one-sided rank-sum test on each chain's uses
     per core value and later checkpoint, and that is recorded. H2's p is the largest of its
     parts: the two ratios of core to periphery and the arm contrasts that are needed.
+    **Where no level has the arm contrast, H2 is not testable** on the paired chains (decided by
+    the author on 26 November 2026, §9 row 117): the ratio of core to periphery can hardly fail by
+    itself (§2), so H2 is not called supported on it alone. It keeps its place in the four of the
+    Holm correction. One level is enough: the function arm forming few cores at the class is what
+    H4 predicts, and H2 is not to be held back by H4 being right. On a history the ratio alone is
+    read, direction and interval only, as before.
   - **Reported beside it:** the same ratio in the function arm, where each function is handed its
     own data and little core is expected to form; and per arm, pooled over places, the share of
     bound uses that go to each chain's three most used values, the share that go to values no
@@ -2116,6 +2181,20 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   taken from a non-significant test: an interval that reaches above 1.25 is unresolved, and one
   wholly above it counts against. Reported beside it: the two-sided reading, each interval inside
   0.8 to 1.25. The same block on class-level intrusion is reported.
+  - **On the Wald interval and the cluster bootstrap, both** (decided by the author on 26 November
+    2026, §9 row 116: "A"). A Wald interval takes the rows of a chain as separate once the chain's
+    level is out, and comes out too narrow; that is why the confirmatory tests left it (row 74).
+    For a test against a margin a narrow interval is what passes, and H6 and H7 are the two
+    hypotheses the author most expects to hold. So on the paired chains each of H6's measures, and
+    H7's forced ratio, is also refitted on the cluster bootstrap (as below; the 5th to the 95th
+    percentile of the refits, and the share of refits at or above the margin as its one-sided p),
+    and the reading that decides is the **wider** of the two intervals and the **larger** of the
+    two p-values: *not above* needs both upper limits below 1.25, *against* needs both intervals
+    wholly above it, anything else is *unresolved*. This can only make the two tests stricter
+    than they were. Both readings are kept beside (`wald`, `boot`). With one chain in an arm, or
+    fewer than half the refits fitted, the Wald reading is what there is, recorded. The literature's
+    other measures, the sensitivity reading's coupling measures and a history keep the Wald
+    interval; they decide nothing. As built: `analyse.R` (`boot_tost`).
   - **How the shape block enters** (decided 16 November 2026). S4 enters as a level, log(1 + cognitive complexity),
     because cognitive complexity is zero-heavy and the outlier flag then marks any control flow
     (the pilot: 45% of Spring's existing hosts); the flag is reported beside it. A shape measure
@@ -2164,8 +2243,9 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
     more. It is repeated with the injection-aware junction. It is not among the confirmatory tests
     and does not change any verdict.
 - **H4** (restated 17 November 2026, §9): the arm term and its interaction with the checkpoint
-  index in the H3 model, on the paired chains, with the amount band (§4.6) and the two wiring
-  conditions (§4.5). The checkpoint index is centred at the middle of the stream, so the arm term
+  index in the H3 model, on the paired chains, with the amount band (§4.6: the whole interval, row 120) and the two wiring
+  conditions (§4.5; one that could not be read, as with too few chains to give the slope an interval,
+  leaves H4 *not estimable* and not passed, row 120). The checkpoint index is centred at the middle of the stream, so the arm term
   is the difference between the arms half-way through. Both have to be below 0: the function arm
   has fewer bystanders, and they grow more slowly.
   - **Come back to less** (17 November 2026, §4.4): the arm term of the base model of H2 and H6,
@@ -2286,7 +2366,7 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
 - **H1** (restated 25 November 2026, §9 row 107): per checkpoint and chain of corpus A that did
   something, the placements forced at the class, as a negative binomial (nbinom2) mixed model on
   the arm, the checkpoint index centred at the middle of the stream and scaled to its length, and
-  their interaction, with the chain's and the checkpoint's intercepts (Poisson where the negative
+  their interaction, and the front end where the analysis has more than one (written here on 26 November 2026, §9 row 118; the code has carried it since the model was built), with the chain's and the checkpoint's intercepts (Poisson where the negative
   binomial cannot be fitted, recorded). The arm term (the function arm's rate half-way through)
   and the interaction both one-sided below 1, from one cluster bootstrap; p the larger; reversed
   if the arm term's interval lies wholly above 1. Not testable on a history. Reported beside it:
@@ -2302,9 +2382,9 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   is read with the repository's intercept, as below.
 - **H7** (20 November 2026): per unit that placed or edited code in an existing class, its spread
   (§4.2b) as a negative binomial (nbinom2) mixed model on whether the unit was forced and the index
-  scaled from 0 to 1, with the chain's intercept, in the methods arm (*forced*: the ratio of the
+  scaled from 0 to 1 (and the front end where the arm has more than one, row 118), with the chain's intercept, in the methods arm (*forced*: the ratio of the
   spread of a forced unit to one that was not, at the same point in the stream). One-sided
-  against the upper margin 1.25, 90% Wald interval, as H6 (21 November 2026, later, §9 row 67):
+  against the upper margin 1.25, on the 90% Wald interval and, since 26 November 2026 (row 116), the cluster bootstrap's too, both needed, as H6 (21 November 2026, later, §9 row 67):
   *not above* when the interval lies below 1.25, *unresolved* when it reaches above it without
   lying above it, *not supported* when it lies wholly above it; the two-sided reading (0.8 to
   1.25) is reported. (Until then: one-sided above 1, 95% interval.) Reported: the spread on the
@@ -2322,7 +2402,7 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
 - **H5** (restated 24 November 2026, §9 row 89; weighed since row 95): per checkpoint and chain of
   corpus A, the weight of the links added (§4.2c) as a negative binomial (nbinom2) mixed model on the arm, the checkpoint index
   centred at the middle of the stream and scaled to its length, their interaction, and log(1 +
-  logic added) (§4.9), with the chain's and the checkpoint's intercepts (the chain's alone where
+  logic added) (§4.9), and the front end where the analysis has more than one (row 118, as H1), with the chain's and the checkpoint's intercepts (the chain's alone where
   that does not converge, recorded). The arm term is the function arm's rate ratio half-way through
   the stream for the same logic; the interaction, how that ratio changes from the stream's start to
   its end. Both one-sided below 1, from one 95% cluster bootstrap (below); p is the larger of the
@@ -2362,7 +2442,7 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   chain's intercept. That interval treats the rows of a chain as separate once the chain's level
   is taken out, and they are not: the problems placed in one class share its later changes, the
   two records of one row of H2 share its arrivals (§7), and one class is changed by many units.
-  Now, for each of them: chains are resampled with replacement within arm, the same model is
+  Now, for each of them: chains are resampled with replacement within arm **and front end** (26 November 2026, §9 row 119: a stack is what is run with its ten chains, so a resample keeps ten of each; drawn within arm alone, the mix of front ends would move from resample to resample as it cannot between runs of the experiment, and a resample short of one front end makes its term hard to fit. An analysis with no front end is resampled within arm, as before), the same model is
   refitted on each resample (`spec$boot` refits, 1,000, seed 20261116; the resamples are drawn
   first from the one seeded stream and the refits then run on several cores, so the result does
   not depend on how many), the 95% interval is the 2.5th to the 97.5th percentile of the refits,
@@ -2380,11 +2460,16 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   each, and where the two differ, that is how much the assumption was worth. The Wald interval is reported beside each. With one chain
   in an arm (the development chain) a resample is the data again, so the Wald reading is what
   there is; so too if fewer than half the refits can be fitted; either is recorded. H6 and H7,
-  whose tests are against a margin on a 90% Wald interval, and every reported reading keep their
-  Wald intervals; H3, secondary, has been on the bootstrap since it was registered. *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `timing`; §9 row 112.)*
+  whose tests are against a margin, were on a 90% Wald interval alone until 26 November 2026 and
+  are since decided on it and on the cluster bootstrap together (row 116, above); every reported
+  reading keeps its Wald interval; H3, secondary, has been on the bootstrap since it was registered. *(Figures here first read by a one-off query; step 5 now makes them, as the tables stand, in `DIAGNOSTICS.md`: `timing`; §9 row 112.)*
 - **Multiplicity** (21 November 2026, §9 rows 66 and 67): the confirmatory family H1, H2, H4 and
   H5, Holm-corrected at α = 0.05 over those of the four that have a p (H1 has none where it is
-  not testable, on a history). H8 (Run D, §3.1a) is decided at α = 0.05 on its own p, on its own run. H3, H6 and H7 are secondary (and H9 was, on 25 November 2026, until it was deleted, row 108), each decided at α = 0.05 on its
+  not testable, on a history). **On the paired chains the correction is always for four** (decided by
+  the author on 26 November 2026, §9 row 115): a hypothesis whose model could not be fitted is *not
+  estimable*, has no p, and still counts, so that a model that fails does not make the other three
+  easier to pass. (Until then the code corrected over those that happened to have a p, on corpus A
+  as on a history.) H8 (Run D, §3.1a) is decided at α = 0.05 on its own p, on its own run. H3, H6 and H7 are secondary (and H9 was, on 25 November 2026, until it was deleted, row 108), each decided at α = 0.05 on its
   own p outside the correction and reported as secondary. (Until 20 November 2026, every
   hypothesis was in one Holm family: four, then five, six and seven; on 21 November 2026 the
   confirmatory family was H2, H4, H1, H7 and H5 until H7 was restated the same day.) All else is
@@ -2395,7 +2480,7 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
 binomial mixed model). These details are fixed with the code before any run is read:
 
 - **Each analysis is read on its own** (`runs.yaml`): the ui primary, which is the study's test,
-  and each petclinic analysis, a replication. An analysis with fewer than 6 chains in an arm is descriptive only.
+  the two pairs that share a front end (§3.1a, row 121) and each petclinic analysis, replications. An analysis with fewer than 6 chains in an arm is descriptive only.
 - **H3 and H4 as first registered, on the bindings** (reported since 17 November 2026; H3 and H4
   themselves are on the bystanders, above) are fitted on runs of added logic into **existing** methods: a new method has no
   prior size, so including new methods would make "more bindings in bigger hosts" true by
@@ -2421,7 +2506,7 @@ binomial mixed model). These details are fixed with the code before any run is r
   supported when its p (Holm-adjusted over the confirmatory four; its own for a secondary one) is at most 0.05 **and** its conditions hold (H4: the amount in its band and neither wiring
   condition against). The verdicts are supported, not supported, reversed (an interval wholly on
   the wrong side), unresolved (H6 and H7: an interval reaching above the upper margin), not testable (H6: no
-  shape measure varies; H1 and H5: a history) or descriptive only.
+  shape measure varies; H1 and H5: a history; H2 on the paired chains: no level has the arm contrast, row 117), not estimable (a model could not be fitted, or a condition of H4 not read; rows 115, 120) or descriptive only.
 - **The revisions of 16 November 2026** (§9) are built: the checkpoint intercept, the centred host
   size, the new-host term and the lagged formation term in `analysis/analyse.R` (its self-test
   simulates a level per checkpoint and recovers each effect); intrusion on a problem's own lines in
@@ -3085,6 +3170,24 @@ binomial mixed model). These details are fixed with the code before any run is r
   1,000,000, against the 2 seconds, 22 to 50 seconds, 5.6 and 37 minutes §5 quotes from the
   one-off fits of 22 November. Somewhat faster, the same order: at 1,000 refits a model of
   corpus B's size would still take days to weeks, so the 200 refits of row 84 stand.
+- **The development analyses under rows 114 to 122** (26 November 2026; steps 4 and 5 only, the
+  measured tables unchanged at `MEASURE_VERSION` 42 and `HISTORY_VERSION` 15; descriptive only).
+  **No estimate moved**, on the pilot or on the histories: every figure of `estimates.json` came
+  back the same, with only new fields beside them (the strata the bootstrap drew within, and how
+  H6's and H7's intervals were made). With one chain an arm the pilot has no bootstrap, so its H6
+  and H7 are on the Wald interval as before, recorded as that (`wald: one chain in an arm`); the
+  histories keep it by rule. **One verdict detail changed:** the pilot's H4 no longer carries a p
+  (0.003 after Holm until now), because with one chain the wiring's growth has no interval, and a
+  wiring condition that could not be read now leaves H4 not estimable (row 120); its verdict was
+  and is *descriptive only*. The amount band reads the same there (1.08, one chain an arm, so the
+  interval is the ratio). The rules of rows 114 to 122 that need several chains or two front ends
+  (both intervals for H6 and H7, the draw within a stack, H3 with the front end, the family of
+  four) are therefore shown on the R self-test's simulated data, which now has two front ends an
+  arm, and on fixtures, not on the development data: 124 checks and 180 tests pass. The self-test
+  takes about twenty minutes with the added refits. *A fault made and corrected while building
+  row 119:* the strata were first sorted by name, which put the arms in another order than before
+  and so drew other resamples on the histories (one bootstrap p of H4 there moved from 0.786 to
+  0.776); they are now in the arms' order, and the histories' figures are the committed ones again.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
@@ -3148,9 +3251,11 @@ binomial mixed model). These details are fixed with the code before any run is r
   of the distribution, not of poor design). This is the rival reading of the calls across the
   encapsulation (H8's dispersion) and of the concentrate signal: a forced class that gains coupling may be in that tail whatever forced it.
   The forced/unforced contrast at the same size and the arm contrast are what separate the two.
-- **H5's links are counted, not weighed, and the agent may not use the form** (24 November
-  2026). A link that carries ten values and one that carries none count alike, by the author's
-  choice. On the development chain the function arm wrote fewer wired functions and more called
+- **H5 weighs every parameter alike, and the agent may not use the form** (24 November
+  2026; reworded 26 November 2026, §9 row 122: written the morning the links were still counted
+  once each, and left saying so after they were weighed that evening, row 95). A parameter weighs 1
+  whatever it holds, so a link that hands on a whole object and one that hands on a flag weigh the
+  same; the plain count, each link once however heavy, is reported beside. On the development chain the function arm wrote fewer wired functions and more called
   methods as the stream went on (§4.9), which brings the method calling structure back inside it:
   a gap that does not widen may be the agent's habit, not the form. The
   logic in the model holds the change's size; the amount of logic itself is shown the same in both
@@ -3232,7 +3337,17 @@ binomial mixed model). These details are fixed with the code before any run is r
 - **The bootstrap is over few chains.** A run has ten chains a stack. A percentile interval over
   ten or twenty clusters is itself rough, and tends to be somewhat narrow; it is still the
   honest unit, since a chain is what was run independently. The number of chains and of refits
-  that could be fitted is reported with every bootstrap interval.
+  that could be fitted is reported with every bootstrap interval. Refits that cannot be
+  fitted are left out of the interval and of p, and counted (`failed`); a refit is not checked for
+  convergence beyond giving its coefficients. Since 26 November 2026 the chains are drawn within
+  arm and front end (row 119), which keeps every resample at the design's ten chains a stack.
+- **In each front-end pair the arm is the run** (§3.1a, row 121). Run A and Run B were made about
+  four weeks apart, and the model served as `claude-opus-5-5` may not have been the same. In the
+  primary contrast a difference between the runs cancels only if it bears on both arms alike; one
+  that helps the agent with OfficeFloor more than with Spring, or the reverse, does not, and shows
+  as the two pairs disagreeing. The pairs are read for that; the model each run was made with (the
+  harness's `config.yaml` and what the run's capture records of it) is to be given with them in
+  the write-up, by hand: no step reads it.
 - **Run D is run after Run A, not beside it** (§3.1a). H8's contrast therefore holds whatever
   changed between the two runs: most of all the agent, if the model served under the same id has
   changed. Accepted by the author on 22 November 2026, as the run cannot be made concurrently.
@@ -3688,6 +3803,29 @@ author's to set, on the plan and code as they then stand, and starts the experim
   comments in `verdict.py` and `prepare.h5_rows` were out of date. Each corrected, no rule changed.
 - *Done for rows 107 to 110:* the pilot measured again at `MEASURE_VERSION` 41 and both analysed
   again (§6); only H5 moved. The results index lost a column left for H9 (`report.main`).
+- *Decided by the author on 26 November 2026, on a second review of the plan before the tag* (the
+  whole plan read, and the decision code and the registry audited against §5; nine findings, each
+  put to the author one at a time; rows 114 to 122; no ui run's backend Java had been read, and no
+  chain but the development one). **(1) The chains read are frozen** (row 114): asked what is done
+  with a chain that never completes, the author: "This will not be a problem. All 10 chains are to
+  be run with all 250 checkpoints complete"; so all or nothing, and no rule for a short chain.
+  **(2) Holm is always over four on the paired chains** (row 115): "yes". **(3) H6 and H7 on the
+  Wald interval and the cluster bootstrap, both needed** (row 116): of both, the bootstrap alone, or
+  leaving it and saying so, "A". **(4) H2 is not testable where no level has its arm contrast**
+  (row 117): "yes". **(5) The front end is written into H1, H5 and H7 and added to H3** (row 118):
+  "yes". **(6) The bootstrap draws chains within arm and front end** (row 119): "yes". **(7) The
+  amount band is read on the whole interval, on positions; a wiring condition not read is not
+  passed** (row 120): "Interval A, tokens A". **(8) The two front-end pairs are built, with full
+  verdicts** (row 121): "A". **(9) The stale threat reworded and the table of what is registered
+  added** (row 122): "A". The review's points that change no rule, for the write-up: H1's level,
+  H2's arm contrast and H4's later intrusion lean on two rules of the plan (an injected parameter is
+  not a binding; a function is a class holding nothing privately), so the evidence that does not
+  lean on them is the bystanders, the well-trodden files and H5's links; on the development chain H5
+  went against and H1's trend could not be read, so with both parts needed *not supported* is a
+  likely verdict for either; and no power was worked out for the confirmatory four. *Left open by
+  the review, the author's to answer:* whether the ui harness shows any figure of the backend Java
+  while it runs (§3.1a asks that such a reading be listed in the report); and a reported reading
+  with injected parameters counted as bindings in both arms, offered and not asked for.
 - *Done for rows 99 to 106:* the pilot at `MEASURE_VERSION` 40 and the histories at
   `HISTORY_VERSION` 15 (§6); no figure moved under row 102. (H9's population, left there to the
   author, fell with H9, row 108.)
@@ -3960,6 +4098,15 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 111 | The steps fetch every input themselves and each prints the next command: the problem streams are cloned from their remotes at their pinned refs where missing (`runs.ensure_at`; `remote:` in `runs.yaml`); corpus B's first set, drawn by `long-method-slim-study`, is copied by step 2b from that repository at its pinned commit `1dc68ac` into `samples/open-source-human/`, not read from wherever a copy lies (`history.fetch_csv`); every step script ends with `placement_gravity.nextstep`. No value read changes: the file at that commit is the file that was read | `runs.yaml`, `runs.py`, `history.py`, `nextstep.py`, the step scripts, `README.md`, `tests/` | The author, 25 November 2026: "Is everything scripted in the stepX_... scripts? All values should be generated by the scripts. Also, each script should output the command to run the next script" |
 | 112 | **Every figure the plan quotes is made by a step.** An audit of the session transcripts (25 November 2026) found about sixty figures in §2, §4.4, §5 and §6 first read by one-off queries, not printed by any report: they are now made by step 5's diagnostics (`placement_gravity/diagnostics.py`; `DIAGNOSTICS.md` and `diagnostics.json` beside each report), each passage marked with the section that makes it. For them step 3 writes two tables more (`files.csv`, every file a checkpoint created, changed or deleted, with the earlier checkpoints that had changed it; `files_end.csv`, the Java files at the head and their sizes); step 4 records its time (`timing.json`) and fits size or data within each arm alone (`size_or_data_*.by_arm`); the timings of one fit by data size are made by a new optional step, `step1b_timing.sh` (`analysis/timing.R`, `results/timing.json`). No test, rule or verdict changes. The diagnostics read the tables as they now stand, so where §6 recorded a figure on an earlier `MEASURE_VERSION` the two may differ; §6 keeps what was seen | §2, §4.4, §5, §6, `diagnostics.py`, `tables.file_rows`, `measure.py`, `analyse.py`, `analyse.R`, `analysis/timing.R`, `step1b_timing.sh`, `step5_report.sh`, `nextstep.py`, `README.md`, `tests/`; `MEASURE_VERSION` 42 | The author, 25 November 2026: "All values should be generated by the scripts"; asked how far to go, "script all 17" |
 | 113 | **Run B's ids recorded**: `202611221-ao` (`angular-officefloor`, repository `officehq-angular-officefloor`) and `202611221-ts` (`tanstack-spring`, `officehq-tanstack-spring`), strategy `just-solve`, added to `ui-primary` beside Run A; the two stack repositories added, their backend paths read from each one's `stack.yaml` at `base-empty` (`results/stacks.json`), the same as Run A's | §3.1a, the status, §8, `runs.yaml`, `results/stacks.json` | The author, 26 November 2026, from the study machine. Seen: that each repository exists and holds only `base-empty`; no chain of Run B pushed or read |
+| 114 | **The chains read are frozen.** `ui-primary` names chains 1 to 10 of each of its four runs and the checkpoint each must have reached, 250 (`chains`, `complete_at`); step 2 reads all of them or refuses the analysis, and never replaces a head recorded in `results/heads.tsv` with another commit (the development chain apart). Until then step 2 read whatever chains were on the remote that day, checked no chain's length, and overwrote the recorded heads on a second run | §3.1a, `runs.yaml`, `runs.fetch`, `runs.write_heads`, `runs.validate`, `tests/` | A second review of the plan before the tag, 26 November 2026: a run still being pushed could have been read in part and called confirmatory (ten chains of Run A and six of Run B pass "at least 6 an arm"). The author: "This will not be a problem. All 10 chains are to be run with all 250 checkpoints complete". No ui chain read |
+| 115 | **Holm is over the registered four on the paired chains, whatever could be fitted.** A confirmatory hypothesis with no p (*not estimable*, or H2 *not testable*, row 117) still counts in the correction. On a history, where H1 and H5 cannot be tested, the family is those with a p, as before. *Not estimable* joins the plan's list of verdicts (the code already gave it) | §5 (*Multiplicity*, the verdicts), `verdict.holm`, `verdict.decide`, `prepare.py` (`conditions.history`), `tests/` | The same review: `holm()` counted only the hypotheses with a p, so a model that failed to fit on the ui runs would have had the other three corrected for three. The author: "yes" |
+| 116 | **H6 and H7 are decided on the 90% Wald interval and the cluster bootstrap, both needed**: the wider interval and the larger one-sided p; *against* only where both lie wholly above the margin. On the paired chains; a history, the literature's other measures and the sensitivity reading keep the Wald interval. It can only make the two tests stricter | §5 (H6, H7, the bootstrap), `analyse.R` (`boot_tost`, H6's measures, `fit6`), `verdict.py` (docstring), `selftest.R` | The same review: row 74 moved the confirmatory tests off the Wald interval because it is too narrow, and left on it the two tests that pass when an interval is narrow, which are the two the author expects to hold. Put as A (both), B (bootstrap alone) or C (leave it and say so); the author: "A" |
+| 117 | **H2 is *not testable* on the paired chains where no level has its arm contrast** (fewer than 10 core records in an arm at the class and at the method). Until then it was decided on core against periphery alone. One level is enough; on a history unchanged | §2 (by the table), §5 (H2), `verdict.h2`, `tests/` | The same review: the plan's own words are that the ratio "can hardly fail by itself" (row 77); on the development chain the class level already lacks the contrast (3 core rows in OfficeFloor) and the method level has it on 22. The author: "yes" |
+| 118 | **The front end in the models, as written and as built.** §5 now says of H1, H5 and H7 what the code has done throughout: the front end is a term where the analysis has more than one. H3's models (over all runs and within a place) gain the term, which they lacked in the plan and in the code | §5 (H1, H3, H5, H7), `analyse.R` (H3, `within`), `selftest.R` (two front ends an arm) | The same review: two confirmatory models differed from their written form, and H3 alone took a difference between the two Spring stacks (which is also Run A against Run B) as chain-to-chain noise. The author: "yes" |
+| 119 | **The bootstrap resamples chains within arm and front end** (a stack), in the models and in the amount band's interval; within arm where an analysis has no front end, so the petclinic analyses and the development figures are unchanged. The strata drawn within are written to `estimates.json` (`bootstrap`) | §5 (the bootstrap), §4.6, §7, `analyse.R` (`cluster_boot`), `prepare.amount`, `selftest.R`, `tests/` | The same review: each arm of the primary is two stacks of ten, and a draw of twenty from the pooled twenty lets the mix of front ends move as it cannot between runs. Not a bias towards either arm; it matches the design and keeps the refits fitting. The author: "yes" |
+| 120 | **H4's amount band is read on the whole 95% interval of the ratio, on positions**; the ratio alone is reported beside (`ratio_in_band`). §2's "positions, tokens" becomes positions: tokens were never in the table the band is read from. **A wiring condition that could not be read leaves H4 *not estimable***; until then it counted as not against | §2 (H4), §4.6, §5 (H4), `prepare.amount`, `verdict.h4`, `tests/` | The same review: the plan did not say whether the ratio or its interval decides, and the code took the ratio; "the same amount" is a claim of no difference, for which the plan elsewhere asks the interval. Put as interval or point, and positions or both; the author: "Interval A, tokens A". On the development chain the ratio is 1.08, with one chain an arm and so no width |
+| 121 | **The two pairs that share a front end are built**: `ui-angular` and `ui-tanstack`, each a secondary analysis with every hypothesis and its verdicts, read for whether the two agree in direction; in each the arm is also the run. A chain already measured for another analysis of the same stream, at the same head and version, is copied and not measured again | §3.1a, §5 (*As built*), §7, `runs.yaml`, `measure.copy_measured`, `tests/` | The same review: §3.1a promised the pairs "so that a disagreement between them shows" and nothing built them; they are the plan's answer to Run A and Run B being four weeks apart. Put as full verdicts or estimates only; the author: "A" |
+| 122 | Wording, no rule changed: §7's threat on H5 said its links are "counted, not weighed", as they were the morning it was written (row 95 weighed them that evening); a table of what is registered, in today's numbers, stands before §1, with §5 governing | the head of the plan, §7 | The same review: a reader who met the threat first would take H5 for a plain count, and the frozen rules could not be found without reading §2, §4 and §5 together. Put as both or the sentence only; the author: "A". §6, §8 and §9 keep the numbers of their day (row 93) |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

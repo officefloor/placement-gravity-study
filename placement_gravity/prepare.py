@@ -1109,30 +1109,38 @@ def amount(additions: list[dict], seed: int = SEED, resamples: int = 10_000,
            methods_arm: str = METHODS_ARM, function_arm: str = FUNCTION_ARM) -> dict:
     """H4's amount band, read on the **amount added**: each chain's positions at its final
     checkpoint less those of its base (PLAN.md §4.6); the ratio of the function arm's mean to the
-    methods arm's, with a bootstrap interval (chains resampled within arm). The ratio of the totals
-    is reported beside it (``ratio_total``)."""
-    final: dict[str, tuple[int, str, float, float]] = {}
+    methods arm's, with a bootstrap interval (chains resampled within arm and front end, as the
+    models' bootstrap; §9 rows 119, 120). The amount is in the band when the **whole interval** is
+    (26 November 2026; until then the ratio alone, kept as ``ratio_in_band``). The ratio of the
+    totals is reported beside it (``ratio_total``)."""
+    final: dict[str, tuple[int, str, float, float, str]] = {}
     for a in additions:
         cp = int(a["cp"])
         if a["chain_id"] not in final or cp > final[a["chain_id"]][0]:
             total = float(a["amount_positions"])
             added = float(a["amount_added"]) if a.get("amount_added") not in (None, "") else total
-            final[a["chain_id"]] = (cp, a["arm"], added, total)
+            final[a["chain_id"]] = (cp, a["arm"], added, total, a.get("frontend") or "")
     by_arm: dict[str, list[float]] = {}
     totals: dict[str, list[float]] = {}
-    for _, arm, v, t in final.values():
+    stacks: dict[str, dict[str, list[float]]] = {}     # arm -> front end -> its chains' amounts
+    for _, arm, v, t, fe in final.values():
         by_arm.setdefault(arm, []).append(v)
         totals.setdefault(arm, []).append(t)
+        stacks.setdefault(arm, {}).setdefault(fe, []).append(v)
     m, f = by_arm.get(methods_arm, []), by_arm.get(function_arm, [])
     if not m or not f or statistics.fmean(m) == 0:
         return {"ratio": None, "interval": None, "in_band": None, "per_arm": by_arm}
     ratio = statistics.fmean(f) / statistics.fmean(m)
     rng = random.Random(seed)
-    draws = sorted(statistics.fmean(rng.choices(f, k=len(f))) / statistics.fmean(rng.choices(m, k=len(m)))
-                   for _ in range(resamples))
+
+    def draw(arm: str) -> float:      # the arm's mean with each of its stacks' chains drawn afresh
+        return statistics.fmean(v for fe in sorted(stacks[arm])
+                                for v in rng.choices(stacks[arm][fe], k=len(stacks[arm][fe])))
+    draws = sorted(draw(function_arm) / draw(methods_arm) for _ in range(resamples))
     interval = [draws[int(0.025 * (resamples - 1))], draws[int(0.975 * (resamples - 1))]]
     return {"ratio": ratio, "interval": interval,
-            "in_band": AMOUNT_BAND[0] <= ratio <= AMOUNT_BAND[1], "band": AMOUNT_BAND,
+            "in_band": AMOUNT_BAND[0] <= interval[0] and interval[1] <= AMOUNT_BAND[1],
+            "ratio_in_band": AMOUNT_BAND[0] <= ratio <= AMOUNT_BAND[1], "band": AMOUNT_BAND,
             "per_arm": {k: statistics.fmean(v) for k, v in by_arm.items()},
             "ratio_total": statistics.fmean(totals[function_arm]) / statistics.fmean(totals[methods_arm]),
             "per_arm_total": {k: statistics.fmean(v) for k, v in totals.items()}}
@@ -1238,7 +1246,7 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
             "h6_all": H6_MEASURES, "reach": REACH, "checkpoints": len(streamed),
             "acts": any(r["act"] is not None for r in h3 + h2),
             "frontends": sorted({r["frontend"] for r in h3 if r["frontend"]})}
-    conditions = {"chains": {k: len(v) for k, v in chains.items()},
+    conditions = {"chains": {k: len(v) for k, v in chains.items()}, "history": past,
                   "descriptive_only": analysis["role"] == "development"
                   or any(len(v) < MIN_CHAINS for v in chains.values()) or len(chains) < 2,
                   "amount": amount(additions), "wiring": wiring_checks(additions)}

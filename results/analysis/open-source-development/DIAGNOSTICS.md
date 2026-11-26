@@ -92,7 +92,7 @@ Every figure PLAN.md quotes that REPORT.md does not print, made by step 5 from t
 §5 and §6: how long step 4 took on this analysis, and one model fit by the size of the data on this machine (step 1b, ``results/timing.json``).
 
 - step4:
-  - seconds: 206
+  - seconds: 169
   - refits: 200
 - fits:
   - date: 2026-11-25T17:21:23Z

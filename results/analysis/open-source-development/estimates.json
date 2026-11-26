@@ -2127,5 +2127,13 @@
   },
   "H5": {
     "not_applicable": true
+  },
+  "bootstrap": {
+    "refits": 200,
+    "within": "arm and front end",
+    "strata": {
+      "human|": 2,
+      "agent|": 1
+    }
   }
 }

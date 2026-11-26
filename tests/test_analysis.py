@@ -55,6 +55,84 @@ def test_no_run_is_read_before_the_registration_tag(tmp_path):
                                                "uncommitted": []}
 
 
+def test_the_primary_names_its_chains_and_the_front_end_pairs_read_the_same_runs():
+    reg = runs.load()
+    by = {a["name"]: a for a in reg["analyses"]}
+    ui = by["ui-primary"]
+    assert ui["chains"] == list(range(1, 11)) and ui["complete_at"] == 250
+    runs_of = lambda a: {(s["arm"], s["frontend"], s["run"]) for s in a["sources"]}
+    assert runs_of(by["ui-angular"]) | runs_of(by["ui-tanstack"]) == runs_of(ui)
+    for pair, fe in (("ui-angular", "angular"), ("ui-tanstack", "tanstack")):
+        a = by[pair]
+        assert a["role"] == "secondary" and a["chains"] == ui["chains"] and a["complete_at"] == 250
+        assert {s["frontend"] for s in a["sources"]} == {fe} and {s["arm"] for s in a["sources"]} == \
+            {"spring", "officefloor"}
+
+
+def test_every_named_chain_is_read_complete_or_nothing_is(tmp_path, monkeypatch):
+    reg = {"repos": {"r": {"path": tmp_path, "remote": "x", "base_ref": "base", "branch": "evolve/{run}/chain{chain}"}}}
+    analysis = {"name": "ui", "role": "primary", "corpus": "ui", "chains": [1, 2], "complete_at": 3,
+                "sources": [{"arm": "spring", "repo": "r", "run": "A", "strategy": "s"}]}
+    monkeypatch.setattr(runs, "guard", lambda *a, **k: None)
+    monkeypatch.setattr(runs.chain, "git", lambda *a, **k: "")
+    done = {"sha1": 3, "sha2": 3}
+    monkeypatch.setattr(runs.chain, "checkpoints",
+                        lambda repo, ref, base: [runs.chain.Checkpoint(k, "r", "c", "p") for k in range(1, done[ref] + 1)])
+    monkeypatch.setattr(runs, "remote_chains", lambda repo, s: {1: ("evolve/A/chain1", "sha1")})
+    with pytest.raises(SystemExit, match=r"no chain \[2\]"):
+        runs.fetch(reg, analysis)
+    monkeypatch.setattr(runs, "remote_chains",
+                        lambda repo, s: {1: ("evolve/A/chain1", "sha1"), 2: ("evolve/A/chain2", "sha2"),
+                                         3: ("evolve/A/chain3", "sha3")})
+    assert [r["chain"] for r in runs.fetch(reg, analysis)] == [1, 2]       # only the chains named
+    done["sha2"] = 2
+    with pytest.raises(SystemExit, match="stops at checkpoint 2, before 3"):
+        runs.fetch(reg, analysis)
+    # the development chain is read as it stands
+    runs.fetch(reg, {**analysis, "role": "development", "chains": [1, 2, 9], "complete_at": None})
+
+
+def test_a_recorded_head_is_not_replaced_by_another_commit(tmp_path):
+    heads = tmp_path / "heads.tsv"
+    row = {"analysis": "ui", "role": "primary", "corpus": "ui", "arm": "spring", "frontend": "angular",
+           "run": "A", "strategy": "s", "chain": 1, "repo": "r", "branch": "origin/b", "sha": "a" * 40,
+           "excluded": False}
+    runs.write_heads([row], heads)
+    runs.write_heads([row], heads)                                   # the same head again: nothing to refuse
+    with pytest.raises(SystemExit, match="not replaced"):
+        runs.write_heads([{**row, "sha": "b" * 40}], heads)
+    assert runs.read_heads(heads)[0]["sha"] == "a" * 40
+    dev = {**row, "analysis": "pilot", "role": "development"}
+    runs.write_heads([dev], heads)
+    runs.write_heads([{**dev, "sha": "c" * 40}], heads)              # the development chain may move
+
+
+def test_a_chain_measured_for_another_analysis_of_the_stream_is_copied_not_measured_again(tmp_path, monkeypatch):
+    from placement_gravity import measure
+    monkeypatch.setattr(measure, "OUT", tmp_path)
+    reg = {"analyses": [{"name": "ui-primary", "stream": "ui"}, {"name": "ui-angular", "stream": "ui"},
+                        {"name": "other", "stream": "petclinic"}]}
+    head = {"analysis": "ui-angular", "arm": "spring", "run": "A", "chain": 1, "sha": "s", "branch": "b"}
+    meta = {"sha": "s", "branch": "b", "measure_version": measure.MEASURE_VERSION}
+    out = measure.chain_dir(head)
+    assert not measure.copy_measured(reg, reg["analyses"][1], head, meta, out)       # nothing measured yet
+    src = tmp_path / "ui-primary" / out.name
+    write(src / "hosts.csv", [{"analysis": "ui-primary", "chain_id": "spring/A/chain1", "cp": 3, "note": "a, b"}])
+    (src / "empty.csv").write_text("")
+    (src / "codetracker.json").write_text("{}\n")
+    (src / "meta.json").write_text(json.dumps({**meta, "sha": "older"}))
+    assert not measure.copy_measured(reg, reg["analyses"][1], head, meta, out)       # another head
+    (src / "meta.json").write_text(json.dumps(meta))
+    assert measure.copy_measured(reg, reg["analyses"][1], head, meta, out)
+    with (out / "hosts.csv").open() as f:
+        assert list(csv.DictReader(f)) == [{"analysis": "ui-angular", "chain_id": "spring/A/chain1",
+                                            "cp": "3", "note": "a, b"}]
+    assert json.loads((out / "meta.json").read_text()) == meta and (out / "codetracker.json").exists()
+    # not from an analysis of another stream, whose declared crossings differ
+    assert not measure.copy_measured(reg, reg["analyses"][2], {**head, "analysis": "other"}, meta,
+                                     tmp_path / "other" / out.name)
+
+
 def test_a_stack_declares_its_backend_and_wiring_roots():
     doc = {"layers": {"frontend": {"root": "web", "ext": ["ts"]},
                       "backend": {"root": "server/src/main/java/", "ext": ["java"],
@@ -194,7 +272,10 @@ def estimates(**over):
                 "within_class": boot(0.02, 0.005, 0.03, 0.003, 0.99),
                 "within_method": boot(0.01, 0.001, 0.02, 0.004, 0.99)},
          "H2": {"n": 100, "class": {"irr": 1.3, "irr_lower": 1.1, "irr_upper": 1.5, "p_greater": 0.001},
-                "method": {"irr": 1.2, "irr_lower": 1.05, "irr_upper": 1.4, "p_greater": 0.004}},
+                "method": {"irr": 1.2, "irr_lower": 1.05, "irr_upper": 1.4, "p_greater": 0.004},
+                # the arm contrast, without which H2 is not testable on the paired chains
+                "reuse_method": {"required": True, "irr": 0.3, "irr_lower": 0.2, "irr_upper": 0.6,
+                                 "p_less": 0.001}},
          "H6": {"testable": True, "margin": [0.8, 1.25], "kept": ["s1_long", "s4_cognitive"],
                 "measures": {"s1_long": measure(1.0, 0.9, 1.1, 0.002),
                              "s4_cognitive": measure(1.05, 0.95, 1.15, 0.01)}},
@@ -374,7 +455,7 @@ def test_h1_does_not_need_choice_to_narrow():
 
 
 def test_h1_is_not_testable_on_a_history_and_does_not_enter_holm():
-    v = verdict.decide(estimates(H1={"class": FALL}), COND)["hypotheses"]
+    v = verdict.decide(estimates(H1={"class": FALL}), {**COND, "history": True})["hypotheses"]
     assert (v["H1"]["verdict"], v["H1"]["state"], v["H1"]["p"]) == ("not testable", "a history", None)
     assert v["H2"]["p_holm"] == pytest.approx(0.006)   # over H2 and H4 only
     v = verdict.decide(estimates(H1={"contrast": {"error": "no checkpoints in both arms"}}), COND)["hypotheses"]
@@ -391,7 +472,7 @@ def test_holm_runs_over_the_four_confirmatory_and_the_secondary_keep_their_own_p
 
 
 def test_h2_needs_the_core_come_back_to_less_in_the_function_arm_where_the_arms_can_be_compared():
-    less = {"required": True, "irr": 0.2, "irr_lower": 0.1, "irr_upper": 0.5, "p_less": 0.03}
+    less = {"required": True, "irr": 0.2, "irr_lower": 0.1, "irr_upper": 0.5, "p_less": 0.004}
     same = {"required": True, "irr": 0.9, "irr_lower": 0.6, "irr_upper": 1.3, "p_less": 0.3}
     few = {"required": False, "note": "too few core records in an arm to compare", "function_records": 1}
 
@@ -400,7 +481,7 @@ def test_h2_needs_the_core_come_back_to_less_in_the_function_arm_where_the_arms_
         e["H2"].update(reuse)
         return verdict.decide(e, COND)["hypotheses"]["H2"]
     v = h2(reuse_class=few, reuse_method=less)
-    assert (v["verdict"], v["arm_contrast"], v["p"]) == ("supported", ["method"], 0.03)
+    assert (v["verdict"], v["arm_contrast"], v["p"]) == ("supported", ["method"], 0.004)
     # the core used more than the periphery in the methods arm is not enough: a value used once is
     # likely to be used again whatever the place
     assert h2(reuse_class=few, reuse_method=same)["verdict"] == "not supported"
@@ -412,7 +493,45 @@ def test_h2_needs_the_core_come_back_to_less_in_the_function_arm_where_the_arms_
     assert h2(reuse_class=never, reuse_method=less)["arm_contrast"] == ["class", "method"]
     # a history: its arms do not solve the same problems, so H2 is the core against the periphery
     hist = {"required": False, "note": "a history"}
-    assert h2(reuse_class=hist, reuse_method=hist)["arm_contrast"] == []
+    e = estimates()
+    e["H2"].update(reuse_class=hist, reuse_method=hist)
+    v = verdict.decide(e, {**COND, "history": True})["hypotheses"]["H2"]
+    assert (v["verdict"], v["arm_contrast"]) == ("supported", [])
+
+
+def test_h2_without_the_arm_contrast_at_any_level_is_not_testable_on_the_paired_chains():
+    """The core against the periphery can hardly fail by itself (a value used once is likely to be
+    used again), so where the function arm forms too few cores at both levels H2 is not decided."""
+    few = {"required": False, "note": "too few core records in an arm to compare", "function_records": 1}
+    e = estimates()
+    e["H2"].update(reuse_class=few, reuse_method=few)
+    v = verdict.decide(e, COND)["hypotheses"]
+    assert (v["H2"]["verdict"], v["H2"]["p"], v["H2"]["state"]) == \
+        ("not testable", None, "no level has the arm contrast")
+    assert v["H4"]["p_holm"] == pytest.approx(0.012)     # and it still counts as one of the four
+
+
+def test_holm_is_over_the_registered_four_on_the_paired_chains_whatever_could_be_fitted():
+    """A model that fails to fit does not make the other hypotheses easier: with H5 not estimable,
+    H1 at p = 0.03 is still multiplied as one of four."""
+    assert verdict.holm({"a": 0.01, "b": None}, 4)["a"] == pytest.approx(0.04)
+    assert verdict.holm({"a": 0.01, "b": None})["a"] == pytest.approx(0.01)
+    e = estimates(**h1_contrast({**LESS, "p_less": 0.03}, LESS))
+    e["H2"]["reuse_method"]["p_less"] = 0.001
+    e["H5"] = {"error": "no fit"}
+    v = verdict.decide(e, COND)["hypotheses"]
+    assert v["H5"]["verdict"] == "not estimable" and v["H5"]["p_holm"] is None
+    # H4 0.003 x 4, H2 0.004 x 3, H1 0.03 x 2 = 0.06: not supported; over three it would have passed
+    assert v["H1"]["p_holm"] == pytest.approx(0.06) and v["H1"]["verdict"] == "not supported"
+    assert verdict.decide(e, {**COND, "history": True})["hypotheses"]["H1"]["p_holm"] == pytest.approx(0.03)
+
+
+def test_h4_with_a_wiring_condition_that_could_not_be_read_is_not_estimable():
+    c = json.loads(json.dumps(COND))
+    c["wiring"]["verdict"]["growth_against"] = None        # too few chains to give the slope an interval
+    v = verdict.decide(estimates(), c)["hypotheses"]["H4"]
+    assert (v["verdict"], v["p"]) == ("not estimable", None)
+    assert verdict.decide(estimates(), {**c, "history": True})["hypotheses"]["H4"]["verdict"] == "supported"
 
 
 def test_h4_needs_less_trodden_files_gone_back_into_java_and_wiring_alike():

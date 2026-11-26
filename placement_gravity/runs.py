@@ -3,7 +3,9 @@
     python -m placement_gravity.runs stacks            # each ui stack's declared roots (no run read)
     python -m placement_gravity.runs fetch [--analysis NAME ...]
 
-``fetch`` reads only the chains runs.yaml names. It refuses every analysis but the development
+``fetch`` reads only the chains runs.yaml names. Where an analysis lists its ``chains`` it reads
+all of them or none, each having reached ``complete_at`` where that is given, and it never
+replaces a head it has recorded with another commit. It refuses every analysis but the development
 one until the registration tag (plan-v1) is an ancestor of HEAD, so no run's backend Java is read
 before registration. It records each chain's head in results/heads.tsv; step 3 measures exactly
 those commits.
@@ -59,6 +61,8 @@ def validate(reg: dict) -> None:
             continue
         if a["stream"] not in reg["streams"]:
             raise ValueError(f"{a['name']}: unknown stream {a['stream']!r}")
+        if a.get("complete_at") and not a.get("chains"):
+            raise ValueError(f"{a['name']}: complete_at needs the chains to be named")
         arms = {s["arm"] for s in a["sources"]}
         if len(arms) < 2:
             raise ValueError(f"{a['name']}: an analysis compares at least two arms")
@@ -223,12 +227,25 @@ def fetch(reg: dict, analysis: dict) -> list[dict]:
             ensure_clone(repo)
         found = remote_chains(repo, s)
         wanted = analysis.get("chains")
+        if wanted is not None and analysis["role"] != "development":
+            # the chains an analysis names are all read or none is (PLAN.md §9 row 114)
+            missing = sorted(set(wanted) - set(found))
+            if missing:
+                raise SystemExit(f"{analysis['name']}: {s['run']} has no chain {missing} on the remote yet. "
+                                 "Nothing of the analysis is read until every chain it names is pushed.")
         for n in sorted(found):
             if wanted is not None and n not in wanted:
                 continue
             branch, sha = found[n]
             chain.git(repo["path"], "fetch", "--quiet", "origin",
                       f"+refs/heads/{branch}:refs/remotes/origin/{branch}")
+            last = analysis.get("complete_at")
+            if last:
+                done = [c.cp for c in chain.checkpoints(repo["path"], sha, repo["base_ref"])]
+                if not done or max(done) < last:
+                    raise SystemExit(f"{analysis['name']}: {branch} stops at checkpoint "
+                                     f"{max(done) if done else 0}, before {last}. Nothing of the analysis "
+                                     "is read until every chain is complete.")
             rows.append({"analysis": analysis["name"], "role": analysis["role"],
                          "corpus": analysis["corpus"], "arm": s["arm"],
                          "frontend": s.get("frontend", ""), "run": s["run"],
@@ -250,8 +267,17 @@ def read_heads(path: Path = HEADS) -> list[dict]:
 
 
 def write_heads(rows: list[dict], path: Path = HEADS) -> None:
-    """Replace the rows of the analyses given, keep the others."""
+    """Replace the rows of the analyses given, keep the others. A head once recorded is not
+    replaced by another commit, except the development chain's: a run is read once, at the head it
+    had (PLAN.md §8, §9 row 114)."""
     names = {r["analysis"] for r in rows}
+    was = {(r["analysis"], r["arm"], r["run"], r["chain"]): r["sha"] for r in read_heads(path)}
+    for r in rows:
+        old = was.get((r["analysis"], r["arm"], r["run"], r["chain"]))
+        if old and old != r["sha"] and r["role"] != "development":
+            raise SystemExit(f"{r['analysis']}: {r['branch']} was recorded at {old[:9]} and is now at "
+                             f"{r['sha'][:9]}. A head once read is not replaced; a dated amendment "
+                             "(PLAN.md §9) says why, and removes the row, if it must be.")
     keep = [r for r in read_heads(path) if r["analysis"] not in names]
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="") as f:
