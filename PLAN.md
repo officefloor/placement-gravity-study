@@ -15,7 +15,8 @@
 > row 126 reads H3 on its Wald interval where there is one chain, row 127 writes out Run C's
 > analysis and registers its test as H9 (§3.1a), row 128 makes H1, H2's arm contrast and H4's
 > later intrusion pass only if they also pass at the two binding levels that count both arms alike
-> (§4.3c), and row 129 adds a simulation of the confirmatory four's power at the ui design (§7):
+> (§4.3c), row 129 adds a simulation of the confirmatory four's power at the ui design (§7), and
+> row 130 records its results:
 > they tighten rules, make the plan and the code say the same, and change no
 > hypothesis or direction. As first registered, on 16 November 2026: the tag was first pushed on commit
 > `4bb8973` and moved the same day, before any run named for analysis was read, to this revision,
@@ -3751,6 +3752,33 @@ binomial mixed model). These details are fixed with the code before any run is r
   hypothesis are drawn apart; it reads no run named for analysis. Its results, `results/power/
   POWER.md`, are recorded by the amendment that follows them, and change no rule: they say how
   likely each verdict is, not what it should be.
+  *Results* (27 November 2026, §9 row 130; 100 draws a scenario, all eight scenarios, about five
+  hours on four cores). The share of draws in which a hypothesis passes, at a part's alpha of 0.05
+  and of 0.0125 (Holm's first step):
+
+  | effect | spread | H1 | H2 | H4 | H5 |
+  |---|---|---|---|---|---|
+  | development | 0.2 | 0.00 / 0.00 | 1.00 / 1.00 | 1.00 / 1.00 | 0.00 / 0.00 |
+  | 0.8 | 0.2 | 0.60 / 0.30 | 0.86 / 0.65 | 0.84 / 0.45 | 0.97 / 0.92 |
+  | 0.67 | 0.2 | 0.95 / 0.88 | 1.00 / 1.00 | 1.00 / 0.98 | 1.00 / 1.00 |
+  | 0.5 | 0.2 | 1.00 / 1.00 | 1.00 / 1.00 | 1.00 / 1.00 | 1.00 / 1.00 |
+  | development | 0.5 | 0.00 / 0.00 | 1.00 / 1.00 | 0.93 / 0.86 | 0.00 / 0.00 |
+  | 0.8 | 0.5 | 0.29 / 0.11 | 0.07 / 0.04 | 0.00 / 0.00 | 0.46 / 0.24 |
+  | 0.67 | 0.5 | 0.83 / 0.61 | 0.67 / 0.32 | 0.30 / 0.06 | 0.84 / 0.64 |
+  | 0.5 | 0.5 | 1.00 / 0.98 | 1.00 / 0.96 | 1.00 / 0.92 | 1.00 / 1.00 |
+
+  How it reads. At the development chain's own effects H2 and H4 pass in nearly every draw and H1
+  and H5 in none, as expected: both point the wrong way there (§6). If the chains vary little
+  (0.2), the design finds an effect of a third (0.67) or more in every hypothesis, and an effect of
+  a fifth (0.8) is often missed by H1 (0.30 at Holm's first step) and H4 (0.45). If the chains vary
+  much (0.5), it needs an effect of about a half: at 0.8 H2 and H4 almost never pass, and at 0.67
+  H4 passes in 6 draws of 100 at Holm's first step. Under the wide spread H4 is held back by
+  needing all six of its parts (each passes in 32 to 51 draws of 100 at 0.8), and H2 by its arm
+  contrast in reuse at the method (0.31 at 0.8 and 0.32 with injection ignored), not by its core
+  (1.00). So a verdict of *not supported* for H1, H2 or H4 does not rule out an effect near a
+  fifth, and the write-up says so beside it. The chains' real spread is first seen in the ui runs.
+  These are on Wald intervals; the registered tests are on the cluster bootstrap, which the
+  simulation does not run, so they are a guide and not a promise. No rule changes.
 - **Power for H6 and H7.** A test against a margin needs more data than a difference test. If an
   interval is too wide to fall below the upper margin, H6 or H7 is reported as unresolved, not as
   supported. *A rough check* (21 November 2026, the drafter's; normal approximation from the
@@ -4479,6 +4507,7 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 127 | **Run C's analysis written out, and its test registered: H9, without injection code is bound most.** Run C is read in two analyses of its own, the control against the Spring stack and against the OfficeFloor stack of its front end, never pooled and not as a third arm inside the primary's models (as the decision of 16 November 2026 had it), the control the methods arm of both. H9: per run of logic added to an existing method, the other arm's bindings below the control's (H4's model as first registered; the arm's term below 0; one-sided, 95% cluster bootstrap), **against both stacks**, p the larger; α = 0.05 on its own p, outside Holm; H1 to H7 descriptive in those analyses. Condition: 90% of the control's placements free of injection. The amount reported, not a condition. The number H9 is that of the hypothesis deleted on 25 November (rows 105, 108), never read on a run | the table of what is registered, §2, §3.1a, §4.2h, §5, §7, §8, `runs.yaml` (drafted entries, `contrast: no-injection`), `runs.validate`, `prepare.py` (`injection_free`, `spec.contrast`), `analyse.R` (H9, fitted last; `boot_slope` shared), `verdict.py` (`h9`, `own_run`), `report.py` (`h9_section`, `h9_overall`, the summary), `selftest.R`, `tests/` | The author, 27 November 2026: "write out Run C's analysis before the tag"; "One registered test but make it H9 so consistent numbering of the actual experiment being run"; its front end "Not decided yet". The prediction is the one fixed on 16 November 2026 (the most bindings of the three arms); only its test is new. No chain of Run C exists; nothing of it was read |
 | 128 | **H1, H2's arm contrast and H4's later intrusion pass only if they also pass at the two binding levels that count both arms alike**: with injection ignored (*all*) and with injection excluded (*none*), beside the registered rule. Those parts are on the cluster bootstrap and enter each hypothesis's p; H2's and H4's are needed where each arm has 10 records to compare; where no ratio can be fitted, a one-sided rank-sum over chains reads the part. Until then the levels were reported on Wald intervals and decided nothing (row 123) | the table of what is registered, §4.3c, §5, §7, `analyse.R`, `verdict.py`, `report.levels_section`, `analysis/selftest.R`, `tests/test_analysis.py`, README | Decided by the author on 27 November 2026 after a review of the plan: "pass only if also holds at a level that counts both frameworks the same way (each of ignore injected, injected as choice, injected as choice in fields not exercised)". The registered rule counts the arms differently before any code is read; a result that holds only under it rests on an argument. The bar of 10 bound rows for H4's parts and the rank-sum where no ratio fits are the drafter's, taken from H2's arm contrast as registered. §4.3c expected, before any level was computed, that under *all* the function arm's count at the method may rise and the gap there shrink or turn round: H4 is the harder for this. No run named for analysis has been read |
 | 129 | **A simulation of the confirmatory four's power at the ui design**: `analysis/power.R`, from the development chain's fitted models, at the development chain's effects and at ratios of 0.8, 0.67 and 0.5, the chains' spread 0.2 and 0.5; on Wald intervals. Reported in `results/power/POWER.md`; changes no rule | §7 | The review of 27 November 2026: no power had been worked out for the confirmatory four (row 122's notes), and on the development chain H5 went against and H1's trend could not be read. Asked by the author the same day, to run overnight |
+| 130 | **The power simulation's results recorded** (row 129): all eight scenarios, 100 draws each. With little spread between chains (0.2) every hypothesis passes in 88 draws of 100 or more at Holm's first step for an effect of 0.67; with wide spread (0.5) an effect near 0.5 is needed, and at 0.8 H2 and H4 almost never pass. A *not supported* for H1, H2 or H4 does not rule out an effect near 0.8 | §7, `results/power/POWER.md`, `results/power/power.json`, `results/power/run.log` | The amendment §7 asks for after the simulation. A first run, started on 27 November 2026, was cut off by a restart of the machine after two scenarios; the whole run was made again from the start, so every scenario has the seed its position gives, and the two finished before matched it exactly. Changes no rule. Before the tag, so a revision |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

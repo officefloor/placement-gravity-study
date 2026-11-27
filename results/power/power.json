@@ -1,0 +1,730 @@
+{
+  "meta": {
+    "date": "2026-11-27T22:02:41+0800",
+    "seed": 20261127,
+    "reps": 100,
+    "cores": 4,
+    "design": {
+      "chains_per_stack": 10,
+      "frontends": ["angular", "tanstack"],
+      "checkpoints": 250
+    },
+    "glmmTMB": "1.1.14",
+    "dev_estimates": {
+      "H1_arm_trend": {
+        "armofficefloor": 0.2465,
+        "cp_c:armofficefloor": 7.4827
+      },
+      "H4_bystanders": {
+        "armofficefloor": 0.2048,
+        "cp_c:armofficefloor": 0.3597
+      },
+      "H4_intrusion_class": {
+        "armofficefloor": 0.1621
+      },
+      "H4_intrusion_method": {
+        "armofficefloor": 0.1104
+      },
+      "H4_trodden": {
+        "armofficefloor": 0.6029
+      },
+      "H5_arm_trend": {
+        "armofficefloor": 1.0466,
+        "cp_c:armofficefloor": 1.6977
+      },
+      "H2_core_class": {
+        "core": 18.1557
+      },
+      "H2_core_method": {
+        "core": 20.2687
+      },
+      "H2_reuse_method": {
+        "armofficefloor": 0.106
+      },
+      "H4_intrusion_method_all": {
+        "armofficefloor": 0.1981
+      },
+      "H4_intrusion_method_none": {
+        "armofficefloor": 0.1104
+      },
+      "H2_reuse_method_all": {
+        "armofficefloor": 0.1704
+      }
+    },
+    "minutes": 304.8
+  },
+  "scenarios": {
+    "dev/sd0.2": {
+      "parts": {
+        "H1_arm_trend": {
+          "alpha_0.05": 0,
+          "alpha_0.0125": 0
+        },
+        "H4_bystanders": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H4_intrusion_class": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H4_intrusion_method": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H4_trodden": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H5_arm_trend": {
+          "alpha_0.05": 0,
+          "alpha_0.0125": 0
+        },
+        "H2_core_class": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2_core_method": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2_reuse_method": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H4_intrusion_method_all": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H4_intrusion_method_none": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2_reuse_method_all": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        }
+      },
+      "hypotheses": {
+        "H1": {
+          "alpha_0.05": 0,
+          "alpha_0.0125": 0
+        },
+        "H2": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H4": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H5": {
+          "alpha_0.05": 0,
+          "alpha_0.0125": 0
+        }
+      },
+      "failed_fits": {
+        "H1_arm_trend": 0,
+        "H4_bystanders": 0,
+        "H4_intrusion_class": 0,
+        "H4_intrusion_method": 0,
+        "H4_trodden": 0,
+        "H5_arm_trend": 0,
+        "H2_core_class": 0,
+        "H2_core_method": 0,
+        "H2_reuse_method": 0,
+        "H4_intrusion_method_all": 0,
+        "H4_intrusion_method_none": 5,
+        "H2_reuse_method_all": 0
+      }
+    },
+    "0.8/sd0.2": {
+      "parts": {
+        "H1_arm_trend": {
+          "alpha_0.05": 0.6,
+          "alpha_0.0125": 0.3
+        },
+        "H4_bystanders": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 0.95
+        },
+        "H4_intrusion_class": {
+          "alpha_0.05": 0.97,
+          "alpha_0.0125": 0.87
+        },
+        "H4_intrusion_method": {
+          "alpha_0.05": 0.95,
+          "alpha_0.0125": 0.8
+        },
+        "H4_trodden": {
+          "alpha_0.05": 0.99,
+          "alpha_0.0125": 0.92
+        },
+        "H5_arm_trend": {
+          "alpha_0.05": 0.97,
+          "alpha_0.0125": 0.92
+        },
+        "H2_core_class": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2_core_method": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2_reuse_method": {
+          "alpha_0.05": 0.9,
+          "alpha_0.0125": 0.74
+        },
+        "H4_intrusion_method_all": {
+          "alpha_0.05": 0.93,
+          "alpha_0.0125": 0.85
+        },
+        "H4_intrusion_method_none": {
+          "alpha_0.05": 0.9588,
+          "alpha_0.0125": 0.8866
+        },
+        "H2_reuse_method_all": {
+          "alpha_0.05": 0.96,
+          "alpha_0.0125": 0.87
+        }
+      },
+      "hypotheses": {
+        "H1": {
+          "alpha_0.05": 0.6,
+          "alpha_0.0125": 0.3
+        },
+        "H2": {
+          "alpha_0.05": 0.86,
+          "alpha_0.0125": 0.65
+        },
+        "H4": {
+          "alpha_0.05": 0.8351,
+          "alpha_0.0125": 0.4536
+        },
+        "H5": {
+          "alpha_0.05": 0.97,
+          "alpha_0.0125": 0.92
+        }
+      },
+      "failed_fits": {
+        "H1_arm_trend": 0,
+        "H4_bystanders": 0,
+        "H4_intrusion_class": 0,
+        "H4_intrusion_method": 0,
+        "H4_trodden": 0,
+        "H5_arm_trend": 0,
+        "H2_core_class": 0,
+        "H2_core_method": 0,
+        "H2_reuse_method": 0,
+        "H4_intrusion_method_all": 0,
+        "H4_intrusion_method_none": 3,
+        "H2_reuse_method_all": 0
+      }
+    },
+    "0.67/sd0.2": {
+      "parts": {
+        "H1_arm_trend": {
+          "alpha_0.05": 0.95,
+          "alpha_0.0125": 0.88
+        },
+        "H4_bystanders": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 0.99
+        },
+        "H4_intrusion_class": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H4_intrusion_method": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H4_trodden": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H5_arm_trend": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2_core_class": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2_core_method": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2_reuse_method": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H4_intrusion_method_all": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 0.99
+        },
+        "H4_intrusion_method_none": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2_reuse_method_all": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        }
+      },
+      "hypotheses": {
+        "H1": {
+          "alpha_0.05": 0.95,
+          "alpha_0.0125": 0.88
+        },
+        "H2": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H4": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 0.9794
+        },
+        "H5": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        }
+      },
+      "failed_fits": {
+        "H1_arm_trend": 0,
+        "H4_bystanders": 0,
+        "H4_intrusion_class": 0,
+        "H4_intrusion_method": 0,
+        "H4_trodden": 0,
+        "H5_arm_trend": 0,
+        "H2_core_class": 0,
+        "H2_core_method": 0,
+        "H2_reuse_method": 0,
+        "H4_intrusion_method_all": 0,
+        "H4_intrusion_method_none": 3,
+        "H2_reuse_method_all": 0
+      }
+    },
+    "0.5/sd0.2": {
+      "parts": {
+        "H1_arm_trend": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H4_bystanders": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H4_intrusion_class": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H4_intrusion_method": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H4_trodden": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H5_arm_trend": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2_core_class": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2_core_method": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2_reuse_method": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H4_intrusion_method_all": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H4_intrusion_method_none": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2_reuse_method_all": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        }
+      },
+      "hypotheses": {
+        "H1": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H4": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H5": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        }
+      },
+      "failed_fits": {
+        "H1_arm_trend": 0,
+        "H4_bystanders": 0,
+        "H4_intrusion_class": 0,
+        "H4_intrusion_method": 0,
+        "H4_trodden": 0,
+        "H5_arm_trend": 0,
+        "H2_core_class": 0,
+        "H2_core_method": 0,
+        "H2_reuse_method": 0,
+        "H4_intrusion_method_all": 0,
+        "H4_intrusion_method_none": 5,
+        "H2_reuse_method_all": 0
+      }
+    },
+    "dev/sd0.5": {
+      "parts": {
+        "H1_arm_trend": {
+          "alpha_0.05": 0,
+          "alpha_0.0125": 0
+        },
+        "H4_bystanders": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H4_intrusion_class": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H4_intrusion_method": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H4_trodden": {
+          "alpha_0.05": 0.93,
+          "alpha_0.0125": 0.85
+        },
+        "H5_arm_trend": {
+          "alpha_0.05": 0,
+          "alpha_0.0125": 0
+        },
+        "H2_core_class": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2_core_method": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2_reuse_method": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H4_intrusion_method_all": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H4_intrusion_method_none": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2_reuse_method_all": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        }
+      },
+      "hypotheses": {
+        "H1": {
+          "alpha_0.05": 0,
+          "alpha_0.0125": 0
+        },
+        "H2": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H4": {
+          "alpha_0.05": 0.9278,
+          "alpha_0.0125": 0.8557
+        },
+        "H5": {
+          "alpha_0.05": 0,
+          "alpha_0.0125": 0
+        }
+      },
+      "failed_fits": {
+        "H1_arm_trend": 0,
+        "H4_bystanders": 0,
+        "H4_intrusion_class": 0,
+        "H4_intrusion_method": 0,
+        "H4_trodden": 0,
+        "H5_arm_trend": 0,
+        "H2_core_class": 0,
+        "H2_core_method": 0,
+        "H2_reuse_method": 0,
+        "H4_intrusion_method_all": 0,
+        "H4_intrusion_method_none": 3,
+        "H2_reuse_method_all": 0
+      }
+    },
+    "0.8/sd0.5": {
+      "parts": {
+        "H1_arm_trend": {
+          "alpha_0.05": 0.29,
+          "alpha_0.0125": 0.11
+        },
+        "H4_bystanders": {
+          "alpha_0.05": 0.4,
+          "alpha_0.0125": 0.19
+        },
+        "H4_intrusion_class": {
+          "alpha_0.05": 0.51,
+          "alpha_0.0125": 0.22
+        },
+        "H4_intrusion_method": {
+          "alpha_0.05": 0.43,
+          "alpha_0.0125": 0.26
+        },
+        "H4_trodden": {
+          "alpha_0.05": 0.32,
+          "alpha_0.0125": 0.18
+        },
+        "H5_arm_trend": {
+          "alpha_0.05": 0.46,
+          "alpha_0.0125": 0.24
+        },
+        "H2_core_class": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2_core_method": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2_reuse_method": {
+          "alpha_0.05": 0.31,
+          "alpha_0.0125": 0.16
+        },
+        "H4_intrusion_method_all": {
+          "alpha_0.05": 0.46,
+          "alpha_0.0125": 0.22
+        },
+        "H4_intrusion_method_none": {
+          "alpha_0.05": 0.41,
+          "alpha_0.0125": 0.17
+        },
+        "H2_reuse_method_all": {
+          "alpha_0.05": 0.32,
+          "alpha_0.0125": 0.2
+        }
+      },
+      "hypotheses": {
+        "H1": {
+          "alpha_0.05": 0.29,
+          "alpha_0.0125": 0.11
+        },
+        "H2": {
+          "alpha_0.05": 0.07,
+          "alpha_0.0125": 0.04
+        },
+        "H4": {
+          "alpha_0.05": 0,
+          "alpha_0.0125": 0
+        },
+        "H5": {
+          "alpha_0.05": 0.46,
+          "alpha_0.0125": 0.24
+        }
+      },
+      "failed_fits": {
+        "H1_arm_trend": 0,
+        "H4_bystanders": 0,
+        "H4_intrusion_class": 0,
+        "H4_intrusion_method": 0,
+        "H4_trodden": 0,
+        "H5_arm_trend": 0,
+        "H2_core_class": 0,
+        "H2_core_method": 0,
+        "H2_reuse_method": 0,
+        "H4_intrusion_method_all": 0,
+        "H4_intrusion_method_none": 0,
+        "H2_reuse_method_all": 0
+      }
+    },
+    "0.67/sd0.5": {
+      "parts": {
+        "H1_arm_trend": {
+          "alpha_0.05": 0.83,
+          "alpha_0.0125": 0.61
+        },
+        "H4_bystanders": {
+          "alpha_0.05": 0.87,
+          "alpha_0.0125": 0.7
+        },
+        "H4_intrusion_class": {
+          "alpha_0.05": 0.81,
+          "alpha_0.0125": 0.63
+        },
+        "H4_intrusion_method": {
+          "alpha_0.05": 0.79,
+          "alpha_0.0125": 0.61
+        },
+        "H4_trodden": {
+          "alpha_0.05": 0.85,
+          "alpha_0.0125": 0.68
+        },
+        "H5_arm_trend": {
+          "alpha_0.05": 0.84,
+          "alpha_0.0125": 0.64
+        },
+        "H2_core_class": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2_core_method": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2_reuse_method": {
+          "alpha_0.05": 0.84,
+          "alpha_0.0125": 0.54
+        },
+        "H4_intrusion_method_all": {
+          "alpha_0.05": 0.83,
+          "alpha_0.0125": 0.6
+        },
+        "H4_intrusion_method_none": {
+          "alpha_0.05": 0.866,
+          "alpha_0.0125": 0.6701
+        },
+        "H2_reuse_method_all": {
+          "alpha_0.05": 0.8,
+          "alpha_0.0125": 0.62
+        }
+      },
+      "hypotheses": {
+        "H1": {
+          "alpha_0.05": 0.83,
+          "alpha_0.0125": 0.61
+        },
+        "H2": {
+          "alpha_0.05": 0.67,
+          "alpha_0.0125": 0.32
+        },
+        "H4": {
+          "alpha_0.05": 0.299,
+          "alpha_0.0125": 0.0619
+        },
+        "H5": {
+          "alpha_0.05": 0.84,
+          "alpha_0.0125": 0.64
+        }
+      },
+      "failed_fits": {
+        "H1_arm_trend": 0,
+        "H4_bystanders": 0,
+        "H4_intrusion_class": 0,
+        "H4_intrusion_method": 0,
+        "H4_trodden": 0,
+        "H5_arm_trend": 0,
+        "H2_core_class": 0,
+        "H2_core_method": 0,
+        "H2_reuse_method": 0,
+        "H4_intrusion_method_all": 0,
+        "H4_intrusion_method_none": 3,
+        "H2_reuse_method_all": 0
+      }
+    },
+    "0.5/sd0.5": {
+      "parts": {
+        "H1_arm_trend": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 0.98
+        },
+        "H4_bystanders": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H4_intrusion_class": {
+          "alpha_0.05": 0.99,
+          "alpha_0.0125": 0.98
+        },
+        "H4_intrusion_method": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 0.97
+        },
+        "H4_trodden": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 0.98
+        },
+        "H5_arm_trend": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2_core_class": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2_core_method": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2_reuse_method": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 0.97
+        },
+        "H4_intrusion_method_all": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 0.97
+        },
+        "H4_intrusion_method_none": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        },
+        "H2_reuse_method_all": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 0.99
+        }
+      },
+      "hypotheses": {
+        "H1": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 0.98
+        },
+        "H2": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 0.96
+        },
+        "H4": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 0.9158
+        },
+        "H5": {
+          "alpha_0.05": 1,
+          "alpha_0.0125": 1
+        }
+      },
+      "failed_fits": {
+        "H1_arm_trend": 0,
+        "H4_bystanders": 0,
+        "H4_intrusion_class": 0,
+        "H4_intrusion_method": 0,
+        "H4_trodden": 0,
+        "H5_arm_trend": 0,
+        "H2_core_class": 0,
+        "H2_core_method": 0,
+        "H2_reuse_method": 0,
+        "H4_intrusion_method_all": 0,
+        "H4_intrusion_method_none": 5,
+        "H2_reuse_method_all": 0
+      }
+    }
+  }
+}
