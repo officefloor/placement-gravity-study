@@ -972,3 +972,78 @@ def test_h1_at_each_binding_level_counts_the_placements_with_no_other_place():
     assert rows[("o1", 2)]["forced_method_all"] == 0
     # tables measured before the levels were read give no rows, not noughts
     assert prepare.h1_level_rows([{"chain_id": "s1"}], additions) == []
+
+
+# ---- H9, Run C: without injection code is bound most (PLAN.md 3.1a)
+
+def h9_estimates(lower, upper, p_less):
+    return {**estimates(), "H9": {"bindings": {"estimate": (lower + upper) / 2, "lower": lower, "upper": upper,
+                                               "p_less": p_less, "p_greater": 1 - p_less,
+                                               "interval": "cluster bootstrap"},
+                                  "n_runs": 4000, "mean_bindings": {"control": 2.4, "spring": 1.6}}}
+
+
+def test_h9_run_c_needs_the_other_arm_bound_less_and_a_control_free_of_injection():
+    cond = {**COND, "contrast": "no-injection", "compliance": {"share": 0.97, "placements": 900}}
+    v = verdict.decide(h9_estimates(-0.5, -0.1, 0.004), cond)["hypotheses"]
+    assert v["H9"]["verdict"] == "supported" and v["H9"]["p"] == pytest.approx(0.004)
+    assert v["H9"]["p_holm"] == v["H9"]["p"]                 # its own run: outside the correction
+    # H1 to H7 are the arms' tests, descriptive in Run C's analysis
+    assert all(v[f"H{i}"]["verdict"] == "descriptive only" for i in range(1, 8))
+    # an interval that reaches 0 is not support; one wholly above 0 is the reverse
+    assert verdict.decide(h9_estimates(-0.4, 0.1, 0.09), cond)["hypotheses"]["H9"]["verdict"] == "not supported"
+    assert verdict.decide(h9_estimates(0.1, 0.5, 0.99), cond)["hypotheses"]["H9"]["verdict"] == "reversed"
+    # the control has to be free of injection as the instrument reads it, or nothing is decided
+    low = {**cond, "compliance": {"share": 0.6, "placements": 900}}
+    assert verdict.decide(h9_estimates(-0.5, -0.1, 0.004), low)["hypotheses"]["H9"]["verdict"] == "descriptive only"
+    unread = {**cond, "compliance": {"share": None}}
+    assert verdict.decide(h9_estimates(-0.5, -0.1, 0.004), unread)["hypotheses"]["H9"]["verdict"] == "descriptive only"
+    # a model that could not be fitted
+    bad = {**estimates(), "H9": {"bindings": {"error": "no run into an existing method in one arm"}}}
+    assert verdict.decide(bad, cond)["hypotheses"]["H9"]["verdict"] == "not estimable"
+    # no other analysis carries it
+    assert "H9" not in verdict.decide(estimates(), COND)["hypotheses"]
+
+
+def test_run_cs_condition_counts_the_controls_placements_free_of_injection():
+    host = {"arm": "control", "net_added": "3", "replacement": "False", "class_injected": "", "framework_params": ""}
+    hosts = [host] * 8 + [{**host, "class_injected": "repo"}, {**host, "framework_params": "request"},
+                          {**host, "arm": "spring", "class_injected": "repo"},       # the other arm is not counted
+                          {**host, "net_added": "0", "class_injected": "repo"}]      # nor a host nothing was added to
+    assert prepare.injection_free(hosts, "control") == {"arm": "control", "placements": 10, "injected": 2, "share": 0.8}
+    # tables measured before the levels were read cannot say
+    assert prepare.injection_free([{"arm": "control", "net_added": "3"}], "control")["share"] is None
+
+
+def test_h9_as_a_whole_needs_both_comparisons():
+    ok, no = {"verdict": "supported", "p": 0.01}, {"verdict": "not supported", "p": 0.2}
+    both = report.h9_overall({"ui-no-injection-spring": ok, "ui-no-injection-officefloor": {**ok, "p": 0.03}})
+    assert "**supported** (p 0.030, the larger)" in both
+    assert "**not supported**: it needs both" in report.h9_overall({"a": ok, "b": no})
+    assert "**reversed**" in report.h9_overall({"a": ok, "b": {"verdict": "reversed", "p": 0.9}})
+    assert "not decided" in report.h9_overall({"a": ok, "b": {"verdict": "descriptive only", "p": None}})
+    assert "one of its two comparisons read so far" in report.h9_overall({"a": ok})
+    assert report.h9_overall({}) is None
+
+
+def test_the_report_gives_h9_its_section_in_run_cs_analysis_only():
+    cond = {**COND, "contrast": "no-injection", "compliance": {"share": 0.97, "placements": 900},
+            "amount": {"ratio": 1.3, "in_band": False}}
+    est = h9_estimates(-0.5, -0.1, 0.004)
+    hyp = verdict.decide(est, cond)["hypotheses"]
+    text = "\n".join(report.h9_section(est, hyp, cond, {"methods_arm": "control", "function_arm": "spring"}))
+    assert "H9, without injection code is bound most (Run C against spring)" in text
+    assert "**supported** (p 0.004)" in text and "spring − control" in text and "-0.300 [-0.500, -0.100]" in text
+    assert "0.970 of 900" in text and "Reported, not a condition: amount added, spring / control: 1.300" in text
+    assert report.h9_section(estimates(), verdict.decide(estimates(), COND)["hypotheses"], COND, {}) == []
+
+
+def test_a_contrast_names_its_arms_and_is_one_the_steps_know():
+    reg = runs.load()
+    base = next(a for a in reg["analyses"] if a["name"] == "ui-angular")
+    ok = {**base, "name": "x", "contrast": "no-injection", "methods_arm": "spring", "function_arm": "officefloor"}
+    runs.validate({**reg, "analyses": [ok]})
+    with pytest.raises(ValueError, match="unknown contrast"):
+        runs.validate({**reg, "analyses": [{**ok, "contrast": "no-such"}]})
+    with pytest.raises(ValueError, match="names its methods_arm and function_arm"):
+        runs.validate({**reg, "analyses": [{**ok, "methods_arm": "control"}]})

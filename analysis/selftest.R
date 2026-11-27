@@ -300,6 +300,9 @@ write.csv(rcl, file.path(dir, "reader_classes.csv"), row.names = FALSE)
 writeLines(jsonlite::toJSON(list(
   analysis = "selftest", role = "development", seed = 20261116, boot = 60, margin = c(0.8, 1.25),
   methods_arm = "spring", function_arm = "officefloor", checkpoints = 60,
+  # H9's model is fitted where the analysis is Run C's (PLAN.md 3.1a); it is fitted last, so the
+  # other models' resamples are those of an analysis without it
+  contrast = "no-injection",
   shape_kept = c("s1_long", "s4_cognitive", "s5_class_gini"), sinew_kept = c("s2_stuck", "s3_junction"),
   h6_measures = c("s1_long", "s4_cognitive", "m_cyclomatic", "c_gini", "c_wmc", "c_lcom_star"),
   reach = c("m_fanout"),
@@ -366,6 +369,14 @@ for (lev in c("class", "method")) {
         !is.null(x$correlation$spring), paste("size or data is reported at the", lev))
 }
 check(e$H2$n < e$reported$intrusion_rows$bound, "H2 is read on the methods arm's bound rows")
+# H9 (Run C): the simulated function arm has fewer bindings a run than the methods arm
+check(!is.null(e$H9$bindings$estimate) && e$H9$bindings$upper < 0 && e$H9$bindings$p_less < 0.05 &&
+      identical(e$H9$bindings$interval, "cluster bootstrap"),
+      "H9 recovers an arm bound less than the control, on the cluster bootstrap")
+check(e$H9$mean_bindings$officefloor < e$H9$mean_bindings$spring && e$H9$n_runs == 2400,
+      "H9 is read on every run into an existing method of both arms")
+check(identical(e$H3$cp$interval, "cluster bootstrap"),
+      "H3 with several chains is on the cluster bootstrap, recorded as that")
 # the binding levels (PLAN.md 4.3c)
 bl <- e$reported$binding_levels
 check(abs(log(bl$spring$H1_class$arm$irr) - log(0.19)) < 0.35 && bl$spring$H1_class$arm$irr_upper < 1 &&

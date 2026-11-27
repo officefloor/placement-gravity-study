@@ -34,7 +34,7 @@ SinewSlim analysis plan, and sinew identification (`PLAN.md` §1.1).
 
 | Read | For |
 |---|---|
-| [`PLAN.md`](PLAN.md) | The study: questions, hypotheses H1–H8 in the order of the story (confirmatory H1, H2, H4, H5; secondary H3, H6, H7; H8 for Run D; H9 deleted, §9 row 108), measures, analysis; a map of how they fit together in §2 ([`figures/placement-forces.svg`](figures/placement-forces.svg)). **Not yet registered:** the tag `plan-v1` was withdrawn on 17 November 2026 while the hypotheses are worked out on the development chain, and will be set before any run named for analysis is read; changes after the start are dated amendments (§9). |
+| [`PLAN.md`](PLAN.md) | The study: questions, hypotheses H1–H9 in the order of the story (confirmatory H1, H2, H4, H5; secondary H3, H6, H7; H8 for Run D; H9 for Run C, §9 row 127, the number of a hypothesis deleted on 25 November, row 108), measures, analysis; a map of how they fit together in §2 ([`figures/placement-forces.svg`](figures/placement-forces.svg)). **Not yet registered:** the tag `plan-v1` was withdrawn on 17 November 2026 while the hypotheses are worked out on the development chain, and will be set before any run named for analysis is read; changes after the start are dated amendments (§9). |
 | [`LITERATURE.md`](LITERATURE.md) | The literature: notes by theme, the systematic novelty check (§10), and the full references. |
 | [`results/pilot/PILOT.md`](results/pilot/PILOT.md) | The pilot: the instrument on one pair of chains, what it showed, the decisions it raised. |
 

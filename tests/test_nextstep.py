@@ -120,4 +120,4 @@ def test_the_summary_gives_each_hypothesis_its_main_figure():
     assert cell("H4 come back to") == "–"                        # could not be fitted
     assert cell("H6 shape") == "1.300 [1.100, 1.500] (b)"        # the measure nearest the margin
     assert cell("H2 core") == "–" and cell("H8 open") == "–"     # the analysis does not give it
-    assert [m[1] for m in report.MAIN] == ["H1", "H2", "H2", "H3", "H4", "H4", "H5", "H6", "H7", "H8"]
+    assert [m[1] for m in report.MAIN] == ["H1", "H2", "H2", "H3", "H4", "H4", "H5", "H6", "H7", "H8", "H9"]

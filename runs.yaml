@@ -205,8 +205,7 @@ analyses:
       # Run B (added 26 November 2026, PLAN.md 9 row 113, before any of its backend Java was read)
       - {arm: officefloor, frontend: angular, repo: officehq-angular-officefloor, run: 202611221-ao, strategy: just-solve}
       - {arm: spring, frontend: tanstack, repo: officehq-tanstack-spring, run: 202611221-ts, strategy: just-solve}
-      # Run C (the no-injection control, a third arm): its stack not built on 16 November 2026. Its
-      # analyses are added by dated amendment with `stage: run-c` (read by step10_run_c.sh).
+      # Run C is not read here: it has its own two analyses, drafted below (PLAN.md 3.1a, H9).
 
   # The two pairs that share a front end (PLAN.md 3.1a, 9 row 121), each a replication with its own
   # verdicts, never the study's test: read for whether the two agree in direction. In each the arm
@@ -233,6 +232,31 @@ analyses:
       - {arm: spring, frontend: tanstack, repo: officehq-tanstack-spring, run: 202611221-ts, strategy: just-solve}
       - {arm: officefloor, frontend: tanstack, repo: officehq-tanstack-officefloor, run: 202610271-to, strategy: just-solve}
 
+  # Run C (PLAN.md 3.1a, H9; registered 27 November 2026, 9 row 127): a Java server with neither
+  # dependency injection nor function injection, on the same stream, agent and harness, read against
+  # the Spring stack and against the OfficeFloor stack of the front end it is built on, each its own
+  # analysis, never pooled with the primary. The control is the methods arm of both, so each ratio or
+  # difference is the other arm against it. Added here by dated amendment with its repository, its run
+  # id and its front end, before any of its backend Java is read, as (for a control on Angular; on
+  # TanStack the comparators are officehq-tanstack-spring, 202611221-ts, and
+  # officehq-tanstack-officefloor, 202610271-to):
+  #   - name: ui-no-injection-spring
+  #     corpus: ui
+  #     role: secondary
+  #     stream: ui
+  #     stage: run-c                   # read by step10_run_c.sh
+  #     contrast: no-injection         # its one test is H9; H1 to H7 are descriptive in it
+  #     methods_arm: control
+  #     function_arm: spring
+  #     chains: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  #     complete_at: 250
+  #     sources:
+  #       - {arm: control, frontend: angular, repo: <Run C's repository>, run: <Run C's id>, strategy: just-solve}
+  #       - {arm: spring, frontend: angular, repo: officehq-angular-spring, run: 202610271-as, strategy: just-solve}
+  #   - name: ui-no-injection-officefloor
+  #     (the same, with function_arm: officefloor and the second source
+  #       - {arm: officefloor, frontend: angular, repo: officehq-angular-officefloor, run: 202611221-ao, strategy: just-solve})
+  #
   # Run D (PLAN.md 3.1a, H8; registered 22 November 2026): the angular-spring stack with the agent
   # told to leave everything public, against Run A's angular-spring. Run after the others, not beside
   # Run A. Added here by dated amendment with its run id, before any of its backend Java is read, as:

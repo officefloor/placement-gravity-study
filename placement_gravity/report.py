@@ -452,6 +452,56 @@ def h8_section(est: dict, hyp: dict, cond: dict) -> list[str]:
             f"- Amount added, open / encapsulated: {f(amt.get('ratio'))} (in band: {f(amt.get('in_band'))})"]
 
 
+def h9_section(est: dict, hyp: dict, cond: dict, spec: dict) -> list[str]:
+    """H9, without injection code is bound most: Run C against a stack of its front end (PLAN.md §3.1a)."""
+    h = hyp.get("H9")
+    if not h:
+        return []
+    d = h.get("detail") or {}
+    comp = cond.get("compliance") or {}
+    amt = cond.get("amount") or {}
+    control, other = spec.get("methods_arm"), spec.get("function_arm")
+    means = ", ".join(f"{k} {f(v)}" for k, v in (d.get("mean_bindings") or {}).items())
+    return ["", f"## H9, without injection code is bound most (Run C against {other})", "",
+            "The same stream and agent on a Java server with neither dependency injection nor function "
+            "injection. Per run of logic added to an existing method, the pre-existing values it is bound to "
+            "(log(1 + bindings), at a typical host, the problem held fixed): the other arm's below the "
+            "control's, the difference below 0; a 95% cluster-bootstrap interval. H9 needs this against the "
+            "Spring stack and against the OfficeFloor stack of the control's front end, each its own "
+            "analysis. Run C was run after Runs A and B, not beside them, so anything that changed between "
+            "the runs is in the contrast (PLAN.md §7). H1 to H7 are descriptive here.", "",
+            f"- **{h.get('verdict', '–')}** (p {f(h.get('p'))})" + (f": {h['state']}" if h.get("state") else ""),
+            f"- Free of injection, the control's placements in a class holding no injected dependency and a "
+            f"method no framework fills: {f(comp.get('share'))} of {f(comp.get('placements'))} "
+            f"(at least {f(h.get('compliance_bar'))} needed)",
+            f"- **Bindings a run, {other} − {control}, in log(1 + bindings): {interval(d.get('bindings'))}** "
+            f"({(d.get('bindings') or {}).get('interval', '–')}; {f(d.get('n_runs'))} runs; mean bindings a run: {means})",
+            f"- Reported, not a condition: amount added, {other} / {control}: {f(amt.get('ratio'))}"]
+
+
+def h9_overall(verdicts: dict[str, dict]) -> str | None:
+    """H9 over Run C's analyses (PLAN.md §3.1a): it needs the control bound more than the Spring
+    stack and more than the OfficeFloor stack of its front end, so it is supported only where every
+    one of them is, on the largest of their p. None where no such analysis has been read."""
+    mine = {n: h for n, h in verdicts.items() if h}
+    if not mine:
+        return None
+    vs = [h.get("verdict") for h in mine.values()]
+    ps = [h.get("p") for h in mine.values()]
+    if len(mine) < 2:
+        whole = "one of its two comparisons read so far"
+    elif all(v == "supported" for v in vs):
+        whole = f"**supported** (p {f(max(ps))}, the larger)"
+    elif any(v == "reversed" for v in vs):
+        whole = "**reversed** in one comparison at least"
+    elif any(v in ("descriptive only", "not estimable") for v in vs):
+        whole = "**not decided**: a comparison is " + next(v for v in vs if v in ("descriptive only", "not estimable"))
+    else:
+        whole = "**not supported**: it needs both"
+    return ("- **H9 as a whole** (Run C bound more than each other arm; both comparisons needed): " + whole + ". "
+            + "; ".join(f"{n}: {h.get('verdict')}" for n, h in mine.items()))
+
+
 def redesign_section(rd: dict) -> list[str]:
     """The redesign reading (PLAN.md §4.2d): where the code stands between the two forces."""
     L = ["", "## Reported: split or concentrate (redesign reading)", "",
@@ -1015,6 +1065,7 @@ def render(name: str, role: str, est: dict, ver: dict, cond: dict, spec: dict,
          + h7_section(est, hyp, rep, readings or {}))
     L += [
           *h8_section(est, hyp, cond),
+          *h9_section(est, hyp, cond, spec),
           *coupling_source_section(readings or {}),
           *redesign_section(readings or {}),
           *surface_section(rep, readings or {}),
@@ -1073,6 +1124,9 @@ MAIN = [
      "classes a change goes into beyond the first, forced change / unforced (to be shown below 1.25)"),
     ("H8 open", "H8", ("intrusion_class",),
      "Run D only: later intrusion at the class, nothing private / encapsulated (below 1)"),
+    ("H9 bound", "H9", ("bindings",),
+     "Run C only: bindings a run, the other arm less the no-injection control, in log(1 + bindings) "
+     "(below 0; a difference, not a ratio)"),
 ]
 
 
@@ -1120,10 +1174,12 @@ def main() -> None:
              "Every analysis read so far, in the order of `runs.yaml`, with each hypothesis's verdict and "
              "the p it was decided on (after Holm for H1, H2, H4 and H5). Each analysis is read on its own "
              "and none is pooled; the study's test is the primary one. A development analysis is "
-             "descriptive only.", "",
-             "| Analysis | Role | Read by | H1 | H2 | H3 | H4 | H5 | H6 | H7 | H8 |",
-             "|---|---|---|---|---|---|---|---|---|---|---|"]
+             "descriptive only. H8 is Run D's test and H9 Run C's, each read in its own analysis, where "
+             "H1 to H7 are descriptive.", "",
+             "| Analysis | Role | Read by | H1 | H2 | H3 | H4 | H5 | H6 | H7 | H8 | H9 |",
+             "|---|---|---|---|---|---|---|---|---|---|---|---|"]
     done = set()
+    control: dict[str, dict] = {}
     figures = ["", "## The main figure of each hypothesis", "",
                "One figure a hypothesis, with its interval (95%; H6 and H7 90%, against the margin 1.25): the "
                "cluster bootstrap's where the test is decided on it, Wald where there is one chain an arm or on a "
@@ -1148,8 +1204,12 @@ def main() -> None:
         (d / "REPORT.md").write_text(render(name, analysis["role"], est, ver, cond, spec, mine, drift, rd))
         hy = ver["hypotheses"]
         index.append(f"| [{name}]({name}/REPORT.md) | {analysis['role']} | {runs.STAGES[runs.stage(analysis)]} | "
-                     + " | ".join(summary_cell(hy.get(f"H{i}")) for i in range(1, 9)) + " |")
+                     + " | ".join(summary_cell(hy.get(f"H{i}")) for i in range(1, 10)) + " |")
+        if analysis.get("contrast") == "no-injection":
+            control[name] = hy.get("H9")
         figures.append(f"| [{name}]({name}/REPORT.md) | " + " | ".join(main_cell(hy, h, path) for _, h, path, _ in MAIN) + " |")
+    if h9_overall(control):
+        index += ["", h9_overall(control)]
     index += figures + [""] + [f"- **{m[0]}:** {m[3]}" for m in MAIN]
     waiting = waiting_lines(reg, done)
     if waiting:

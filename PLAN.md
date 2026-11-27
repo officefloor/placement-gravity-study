@@ -12,14 +12,15 @@
 > the tag (§8), row 123 adds a reported reading the review offered (§4.3c, the binding levels),
 > row 124, of 27 November, makes the code build H2's core at the method as §4.4 defines it, and
 > row 125 puts the steps in one order with the runs still being made last (§3.1a, *Order*), and
-> row 126 reads H3 on its Wald interval where there is one chain:
+> row 126 reads H3 on its Wald interval where there is one chain, and row 127 writes out Run C's
+> analysis and registers its test as H9 (§3.1a):
 > they tighten rules, make the plan and the code say the same, and change no
 > hypothesis or direction. As first registered, on 16 November 2026: the tag was first pushed on commit
 > `4bb8973` and moved the same day, before any run named for analysis was read, to this revision,
 > which adds bindings to injected dependencies reported apart (§4.3, §5). The instrument is piloted on
 > one pair of chains
 > (`results/pilot/PILOT.md`); no run named for analysis has been read. What remains open is only
-> what needs the data to exist (§3.1a): Run C's ids when its stack is built, Run D's when it is run,
+> what needs the data to exist (§3.1a): Run C's repository, front end and ids when its stack is built, Run D's ids when it is run,
 > and each chain's head when its run is pushed. The ui stacks' backend paths were read from their stack
 > declarations (`results/stacks.json`). The literature behind this plan is in
 > [`LITERATURE.md`](LITERATURE.md). Since 16 November 2026 this plan absorbs three drafts that read
@@ -40,13 +41,14 @@ adds no rule: §2 states each hypothesis and §5 its test, and **§5 governs** w
 | **H6** | Shape does not draw code in | later intrusion on each of six shape measures, each alone | every measure's upper limit below 1.25, on the 90% Wald interval **and** on the cluster bootstrap | a measure that does not vary leaves; class measures only where 10 classes receive arrivals and none more than half | secondary |
 | **H7** | Co-change spread does not see the force | classes a change goes into, forced against not, methods arm | the forced ratio's upper limit below 1.25, on both intervals as H6 | the change's size held fixed | secondary |
 | **H8** | Without encapsulation code disperses (Run D against Run A's same stack) | later intrusion at the class; calls across class boundaries | intrusion below 1 and calls above 1 | 90% of introduced members not private; the amount in its band | its own run |
+| **H9** | Without injection code is bound most (Run C against the Spring and the OfficeFloor stack of its front end) | bindings per run of logic added to an existing method | each other arm's bindings below the control's (the difference below 0), against both stacks | 90% of the control's placements free of injection | its own run |
 
 - **The study's test** is `ui-primary`: the four stacks of Runs A and B, **ten chains each, every
   chain at checkpoint 250, or nothing is read**; a head once read is not replaced (§3.1a). The two
   pairs that share a front end and the petclinic runs are replications, each with its own verdicts.
 - **Confirmatory:** each p is the largest of its parts, from a cluster bootstrap (1,000 refits, seed
   20261116, chains resampled within arm and front end), Holm-corrected at α = 0.05 **over four on
-  the paired chains, whatever could be fitted**. Secondary and H8: α = 0.05 on its own p.
+  the paired chains, whatever could be fitted**. Secondary, H8 and H9: α = 0.05 on its own p.
 - **Verdicts:** supported; not supported; reversed; unresolved (H6, H7); not testable; not
   estimable (a model could not be fitted or a condition not read; it still counts in the four);
   descriptive only (fewer than 6 chains in an arm, or a development analysis).
@@ -263,9 +265,9 @@ injection forms no core) and **H5** (the surface: for the same logic, fewer link
 of logic under function injection, and the gap widening; restated 24 November 2026, §9 row 89).
 Holm over these four. **H3** (the encapsulation fills, the cost of concentration), **H6** (shape
 does not draw code in) and **H7** (spread does not see it) are **secondary**: each keeps its
-direction and rule and is decided on its own p, outside the correction. (H9, the cost to fix a
+direction and rule and is decided on its own p, outside the correction. (A hypothesis numbered H9, the cost to fix a
 concentration, was secondary from 25 November 2026 until it was deleted later the same day,
-§9 rows 105 and 108.) H6 and H7 are the existing literature's two ways of looking for the cause, by shape
+§9 rows 105 and 108; it was never read on a run. The number is now Run C's test, below.) H6 and H7 are the existing literature's two ways of looking for the cause, by shape
 and by co-change, each predicted not to find it. (Until 21 November 2026, later, H7 was
 confirmatory, as *forced changes spread*, and Holm was over five; §9 row 67.) The readings
 (§4.2b–4.2g, and the sinew shape, §5) are reported. **H8** (Run D, §3.1a; registered on 22 November 2026, §9 row 76) is
@@ -613,7 +615,8 @@ alternatives at the class are the other classes that already hold the same depen
     together). Together these say how much of the growth in size, and of the growth in coupling,
     arrived by forcing: by absorbing into a class, or by spreading to the classes holding the
     other data.
-- *H9, the cost to fix a concentration* (stated 25 November 2026, §9 rows 104 and 105; **deleted**
+- *The H9 of 25 November 2026, the cost to fix a concentration* (not the H9 of Run C, §3.1a, which
+  took the number on 27 November 2026, row 127; stated 25 November 2026, §9 rows 104 and 105; **deleted**
   later the same day at the author's word, row 108): the fewest internal links a cut must cross to
   divide a class into two parts, the function arm's below the methods arm's at the same size. The
   author, on reading it again: "I'm now questioning H9 and its value ... it is only looking at
@@ -697,6 +700,9 @@ alternatives at the class are the other classes that already hold the same depen
 - H8 (Run D, §3.1a): with nothing private, bound code come back to as much at the class, or no
   more calls and field reads added across class boundaries. Encapsulation would then not be what
   concentrates code, or removing it would not disperse it.
+- H9 (Run C, §3.1a): with no injection at all, code no more bound to what was already there than
+  under dependency injection, or than under function injection. Injection would then not be what
+  lifts data off the control flow, and the grading of pull (§4.3) would be wrong at its far end.
 
 Every one of these outcomes is reported whichever way it points.
 
@@ -792,12 +798,52 @@ end's production Java of the four stacks of its Runs A and B, a front end × bac
   Run A and Run B, are confounded in this square. The study does not depend on either being
   absent; it reports the per-front-end pairs so that a disagreement between them shows.
 - **Run C** (the no-injection control: a Java server with neither dependency injection nor
-  function injection, so every datum is passed or becomes a shared static) is read as a **third
-  arm** once it exists (decided 16 November 2026). Its stack had not been built on 16 November 2026. It is added by a
-  dated amendment, naming its run ids, before any of its backend Java is read. Its predicted
-  direction is fixed now: the most bindings of the three arms, as nothing is lifted off the flow
-  (dependency injection weakens bindings, function injection removes them). Spring against
-  OfficeFloor stays the primary contrast; the control is read against each.
+  function injection, so every datum is passed or becomes a shared static), decided on 16 November
+  2026 as a third arm; its stack had not been built on 27 November 2026 and its front end was not
+  chosen. It is made after Run B, with Run D. It is added by a dated amendment, naming its
+  repository, its run ids and its front end, before any of its backend Java is read. Its predicted
+  direction was fixed on 16 November 2026: the most bindings of the three arms, as nothing is
+  lifted off the flow (dependency injection weakens bindings, function injection removes them).
+  Spring against OfficeFloor stays the primary contrast.
+  - **How it is read** (written out on 27 November 2026, before the tag, §9 row 127). Not as a
+    third arm inside the primary's models, where a third level of the arm would change the
+    primary's own estimates: in **two analyses of its own**, never pooled, the control against the
+    **Spring stack** and against the **OfficeFloor stack of the front end it is built on** (so the
+    front end is the same in each, and each comparator's chains are those the primary reads,
+    measured once). The control is the methods arm of both analyses, so every ratio or difference
+    in them is the other arm against the control. Ten chains, each at checkpoint 250, or nothing of
+    the analysis is read, as for the primary (row 114). Read by step 10.
+  - **Its test is registered: H9, without injection code is bound most** (decided by the author on
+    27 November 2026: "One registered test but make it H9 so consistent numbering of the actual
+    experiment being run"; the number is that of the hypothesis deleted on 25 November, row 108,
+    which was never read on a run). The measure is the plan's first (§4.3): per run of logic added
+    to an existing method, its **bindings**, the pre-existing values of its method and its class
+    that it uses, under the registered rule on injection (§4.3c: an injected field binds, an
+    injected parameter does not; the control has neither, so all three levels read it alike).
+    The model is H4's as first registered (§5): log(1 + bindings) on the arm, the host's size
+    centred, their interaction and the checkpoint index, with the chain's and the checkpoint's
+    intercepts. **In each analysis the other arm's term is below 0**: at a typical host, for the
+    same problems, its added code is bound to less than the control's. One-sided, on a 95%
+    cluster-bootstrap interval (§5). **H9 needs both**, Spring below the control and OfficeFloor
+    below the control; its p is the larger of the two. It is decided at α = 0.05 on its own p: it
+    is read on its own run, after the others, and is not in the Holm family of the primary
+    analysis. In Run C's analyses H1 to H7 are descriptive: they are the arms' tests, not this
+    run's, and no direction is registered for the control on any of them.
+  - *Its condition, free of injection:* in at least 90% of the control's placements (the hosts a
+    checkpoint added code to), the class holds no field with an injected dependency and the
+    method's parameters are not filled by a framework, as the instrument reads both (§4.3, §4.3c).
+    Below that the stack is not the control it was meant to be, and H9 is descriptive only. The bar
+    is Run D's (90%).
+  - *The amount is reported, not a condition.* A server that passes every datum by hand may need
+    more code for the same problems, and that is part of what the control shows; the amount added
+    against each comparator is reported beside H9 with §4.6's band.
+  - *Reported beside it:* the mean bindings a run in each arm; the binding levels (§4.3c); the
+    control's own H2 and H3, read in it as the methods arm; and everything else the report prints
+    for an analysis, each descriptive.
+  - **Run C cannot be run beside Runs A and B**, as Run D cannot (below): the contrast holds
+    anything that changed between the runs, the model behind the agent's id above all. The harness
+    commit and the model id it ran with are recorded with its run ids; a different model id is
+    reported as a second difference, and H9 is then read as that.
 - **Run D** (the no-encapsulation run; decided by the author on 22 November 2026, drafted the
   same day, §9 row 70): the `angular-spring` stack on the same stream, agent and harness, with
   one instruction added to the agent's prompt: **do not encapsulate; leave every field and method
@@ -893,9 +939,9 @@ supported* means another part or a condition failed. What follows from the order
   one added instruction (above) is the only difference registered for a later run. A change made
   all the same is a dated amendment that says what had been seen.
 - **Runs C and D come by amendment, as before:** their run ids and their analyses are added to
-  `runs.yaml`, and committed, before any of their backend Java is read. Run C's analysis (the
-  control read against each arm, above) is written out in that amendment; Run D's is drafted in
-  `runs.yaml`.
+  `runs.yaml`, and committed, before any of their backend Java is read. Both analyses are written
+  out above and drafted in `runs.yaml`; the amendment adds the ids, and for Run C its repository
+  and its front end.
 
 **Condition.** `just-solve` only.
 
@@ -1451,8 +1497,9 @@ by its wiring file since `MEASURE_VERSION` 39 (§9 row 103). Corpus A only.
 
 ### 4.2h The cost to fix a concentration (deleted)
 
-H9's measure, the cheapest split of a container (stated and built 25 November 2026, §9 rows 104 and
-105), was deleted with H9 later the same day (row 108; §2). Its code is removed.
+The measure of the H9 of 25 November 2026, the cheapest split of a container (stated and built 25 November 2026, §9 rows 104 and
+105), was deleted with that hypothesis later the same day (row 108; §2). Its code is removed. H9
+is since 27 November 2026 Run C's test (§3.1a, row 127), which has nothing to do with it.
 
 ### 4.3 Bindings (Q2), the measure of gravitation
 
@@ -2606,7 +2653,7 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   the author on 26 November 2026, §9 row 115): a hypothesis whose model could not be fitted is *not
   estimable*, has no p, and still counts, so that a model that fails does not make the other three
   easier to pass. (Until then the code corrected over those that happened to have a p, on corpus A
-  as on a history.) H8 (Run D, §3.1a) is decided at α = 0.05 on its own p, on its own run. H3, H6 and H7 are secondary (and H9 was, on 25 November 2026, until it was deleted, row 108), each decided at α = 0.05 on its
+  as on a history.) H8 (Run D, §3.1a) is decided at α = 0.05 on its own p, on its own run, and so is H9 (Run C, §3.1a; since 27 November 2026, row 127), in each of its two analyses, the hypothesis needing both. H3, H6 and H7 are secondary (and H9 was, on 25 November 2026, until it was deleted, row 108), each decided at α = 0.05 on its
   own p outside the correction and reported as secondary. (Until 20 November 2026, every
   hypothesis was in one Holm family: four, then five, six and seven; on 21 November 2026 the
   confirmatory family was H2, H4, H1, H7 and H5 until H7 was restated the same day.) All else is
@@ -3385,6 +3432,23 @@ binomial mixed model). These details are fixed with the code before any run is r
   arm on the bindings 0.786 to 0.806), which is the noise of 200 refits. This cannot happen in an
   analysis that decides anything: each has at least six chains an arm, so nothing in it falls back
   and its draws are those of before. 190 tests and 129 self-test checks pass.
+- **H9's machinery, checked on the development chain with its arms renamed** (27 November 2026, §9
+  row 127; a check of the code, not a reading of Run C, of which no chain exists). The development
+  chain's datasets were copied with the Spring arm named *control*, once against OfficeFloor and
+  once with OfficeFloor named *spring*, the analysis marked `contrast: no-injection`, and the
+  models fitted on each copy (the copies are not kept). Both ran through; H9's model gave a
+  figure with its Wald interval, marked `wald: one chain`; H2, H4 and H5 came back exactly as on
+  the development chain under its own names, and H1's contrast to the fifth decimal (one model
+  there fits with or without the checkpoint's intercept by a hair, and which depends on the order
+  of the chains). So nothing in the analysis keys on the arms being named spring and officefloor,
+  the check `runs.yaml` asked for before Run C or Run D is read. **The condition was seen to
+  work:** with Spring standing in as the control, 78 of its 174 placements were free of injection
+  (0.45), far under the bar of 0.90, so H9 there would be *descriptive only*; a stack that injects
+  is not passed as a control. The figure H9's model gave on that stand-in (OfficeFloor's bindings
+  a run below Spring's, 0.82 against 1.58 a run) is the development chain's own H4 as first
+  registered, known since the pilot, and says nothing of Run C. No estimate of the development
+  analyses changed: H9's model is fitted only in Run C's analyses, and last. 195 tests and 132
+  self-test checks pass.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.
@@ -3564,6 +3628,18 @@ binomial mixed model). These details are fixed with the code before any run is r
   The instruction is also more than the removal of `private`: an agent told not to encapsulate
   may place code differently for that reason alone. Compliance (§3.1a) checks that the
   instruction took, not that it did nothing else.
+- **Run C is run after Runs A and B, and its control is one stack** (§3.1a, row 127). As for Run D,
+  H9's contrasts hold whatever changed between the runs, the agent's model above all. The control
+  is one way of writing a server without injection, by one agent, on one front end: H9 says what
+  that stack shows, not what every such server would. And **the measure counts what the code's
+  own method and class already held**: a value read from another class's static (`Registry.owners`)
+  is not a binding of the host, as a call on any other class is not. The plan predicted on 16
+  November 2026 that the control has the most bindings because nothing is lifted off the flow; if
+  the agent instead puts its data in shared statics of other classes, the control's code reaches
+  out for it and its bindings may be no higher, or lower. That would be H9 not supported, or
+  reversed, for a reason the write-up then gives: the data left the flow by another door. The
+  share of the control's runs that read another class's static is not measured by this plan; if H9
+  fails, it is the first thing to look at, as a reading made after the fact and named as that.
 - **H2 as it stood (reported) is opportunity by construction.** Where nothing stood by, nothing
   can be drawn by what stood by, so part of that rate ratio is given. It tests that accumulated
   data is taken up in proportion to its amount; it does not show that the later code could not have gone elsewhere
@@ -4063,7 +4139,17 @@ author's to set, on the plan and code as they then stand, and starts the experim
   they should also indicate Lab Note X can now be produced and what data is available for the Lab
   Note". The review's note on it, written into §3.1a: the first two summaries hold replications
   and outside evidence, not the study's test; nothing they show changes a run still being made;
-  and which figure stands for each hypothesis is fixed there before any run is read.
+  and which figure stands for each hypothesis is fixed there before any run is read. *Asked for by
+  the author the same day* (row 127): "write out Run C's analysis before the tag". The review put
+  two questions. How Run C is judged, as one registered test on the plan's existing prediction, as
+  reported only, or with a prediction a hypothesis; the author: "One registered test but make it H9
+  so consistent numbering of the actual experiment being run". Which front end it is built on; the
+  author: "Not decided yet", so the analysis is written for either and the amendment that adds the
+  run names it. Chosen by the review and open to the author's change before the tag: the two
+  analyses of its own in place of a third arm in the primary's models; the control as the methods
+  arm of both; the condition (90% of placements free of injection, Run D's bar); the amount
+  reported and not a condition; and the threat that a static of another class is not a binding
+  (§7).
 - *Done for rows 99 to 106:* the pilot at `MEASURE_VERSION` 40 and the histories at
   `HISTORY_VERSION` 15 (§6); no figure moved under row 102. (H9's population, left there to the
   author, fell with H9, row 108.)
@@ -4151,6 +4237,7 @@ the numbers that stood when each entry was written. Up to row 92:
 | H3, shape does not draw code in | **H6** | the literature: shape |
 | H6, spread does not see it | **H7** | the literature: co-change |
 | H8, without encapsulation code disperses | **H8** | Run D |
+| (27 November 2026, row 127) without injection code is bound most | **H9** | Run C; not the H9 of rows 105 and 108 |
 
 **Before the start.** The experiment starts when the first run named for analysis is read
 (`results/heads.tsv` holds a row that is not the development chain). Until then a change is a
@@ -4349,6 +4436,7 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 124 | **H2's core at the method is what the code was bound to, as §4.4 says**: the injected parameters of a wired function that its code used are no longer core (they are not bindings, §4.3) and join the periphery. Until then the code counted every pre-existing value the code used. The function arm alone changes, at the method alone: its core records and their uses in H2's arm contrast, and its reported core against periphery. The methods arm, the class level and the histories are untouched. The reading with them in the core is the level *injection ignored* (§4.3c). The reported spread of uses over values (`readings.core_summary`, `readings.core_reuse`) goes on counting every value used | §4.4, §6, §8, `tables.host_rows` (`unbound_method_values`), `tables.outcome_rows`, `tables.at_level`, `measure.py` (`MEASURE_VERSION` 44), `tests/` | Found on 26 November 2026 while building row 123: the plan and the code disagreed on an input of a confirmatory test. On the development chain 13 of the function arm's 57 core values at the method were injected parameters. The author, 27 November 2026: "make the code follow the plan". Seen before it was decided: the development chain's figures under the code as it was (§6); no ui chain read |
 | 125 | **The steps in one order, in blocks that each end in a results step and a lab note; the runs still being made last.** 03 to 05: the petclinic chains pinned, measured, and their results (lab note 1). 06 to 08: the histories sampled, measured, and their results (note 2). 09: Run B's analyses, `ui-primary`, `ui-angular`, `ui-tanstack` (note 3); 10: Run C (note 4); 11: Run D (note 5); each from pinning its chains to its results and only when its run is complete. 12: the last summary. Each analysis carries a `stage` in `runs.yaml` and a step reads only its own; a run not yet in the registry is refused with the reason. A results step analyses, reports, and prints which lab note can be written, the analyses it added and what is not in yet. The summary (`results/analysis/REPORT.md`) gives each verdict with its p, the main figure of each hypothesis with its interval (which figure is fixed in §3.1a), and what is still to come. No rule of analysis changes; the development figures came back the same. **Renumbered:** the steps were 1, 1b, 2, 2b, 3, 3b, 4, 5; they are now 01 (setup), 02 (timing), 03 (pin chains), 04 (measure chains), 06 (samples), 07 (measure histories), with the analysis (4) and the report (5) done together by each results step, 05 and 08 and each run's; this plan's text of before 27 November 2026 uses the old numbers | §3.1a (*Order*), §8, `runs.yaml` (`stage`), `runs.py` (`STAGES`), `nextstep.py` (`NOTES`, `note`), `report.py` (`MAIN`, `main`, `waiting_lines`), the step scripts, `run_stage.sh`, `README.md`, `tests/` | The author, 27 November 2026: one order with Runs B, C and D last, a summary before them to see whether they are worth waiting for, and lab notes along the way with "clear progress points with numbers to report"; asked whether the main ratio should be on the summary page, "yes"; and that the scripts "indicate Lab Note X can now be produced and what data is available". Until then a step given no analysis stopped at `ui-primary` while Run B was incomplete, without reaching the analyses after it or printing the next command, and the first report came only after the histories. Written into §3.1a with it: the first two summaries are replications and outside evidence, not the study's test; no ui run is read early; nothing seen changes a run still being made |
 | 126 | **H3 with one chain is read on its Wald interval, recorded as that**, as every other test already was. With one chain in the methods arm every bootstrap resample is that chain again, so H3's interval was a single point and its p the smallest the bootstrap can give (0.001). No analysis that decides anything has one chain an arm (fewer than 6 is descriptive only, §5); it shows on the development chain alone. The histories and every analysis of several chains are untouched; each H3 figure now says how its interval was made (`interval`) | §6, `analyse.R` (`boot_slope`) | Found on 27 November 2026 while putting the main figures on the summary (row 125): the development chain's H3 read 0.015 [0.015, 0.015], p 0.001. Corrected by the review without a choice to put to the author: there is nothing to resample. Seen with it (§6): on the development histories, whose agent group is one repository, that group's reported H3 is now not estimated, and two bootstrap p-values after it moved by the noise of the draws, no estimate changing |
+| 127 | **Run C's analysis written out, and its test registered: H9, without injection code is bound most.** Run C is read in two analyses of its own, the control against the Spring stack and against the OfficeFloor stack of its front end, never pooled and not as a third arm inside the primary's models (as the decision of 16 November 2026 had it), the control the methods arm of both. H9: per run of logic added to an existing method, the other arm's bindings below the control's (H4's model as first registered; the arm's term below 0; one-sided, 95% cluster bootstrap), **against both stacks**, p the larger; α = 0.05 on its own p, outside Holm; H1 to H7 descriptive in those analyses. Condition: 90% of the control's placements free of injection. The amount reported, not a condition. The number H9 is that of the hypothesis deleted on 25 November (rows 105, 108), never read on a run | the table of what is registered, §2, §3.1a, §4.2h, §5, §7, §8, `runs.yaml` (drafted entries, `contrast: no-injection`), `runs.validate`, `prepare.py` (`injection_free`, `spec.contrast`), `analyse.R` (H9, fitted last; `boot_slope` shared), `verdict.py` (`h9`, `own_run`), `report.py` (`h9_section`, `h9_overall`, the summary), `selftest.R`, `tests/` | The author, 27 November 2026: "write out Run C's analysis before the tag"; "One registered test but make it H9 so consistent numbering of the actual experiment being run"; its front end "Not decided yet". The prediction is the one fixed on 16 November 2026 (the most bindings of the three arms); only its test is new. No chain of Run C exists; nothing of it was read |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

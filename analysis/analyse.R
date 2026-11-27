@@ -183,6 +183,17 @@ boot_summary <- function(fit, draws, term) {
        refits = n, failed = nrow(draws) - n)
 }
 
+# A slope or a difference (a Gaussian model's term) decided on the cluster bootstrap, from a
+# `fit_cp` result. With one chain in an arm there is nothing to resample: every draw is the same
+# chain, the interval a point and p the smallest it can be. The Wald reading is then what there is,
+# recorded, as for every other test (27 November 2026, PLAN.md 9 row 126).
+boot_slope <- function(m, term) {
+  chains <- tapply(m$data$chain_id, as.character(m$data$arm), function(v) length(unique(v)))
+  if (min(chains) < 2) return(c(wald(m$fit, term), list(interval = "wald: one chain")))
+  c(boot_summary(m$fit, cluster_boot(m$data, m$formula, gaussian(), term, spec$boot), term),
+    list(interval = "cluster bootstrap"))
+}
+
 # A rate ratio decided on the cluster bootstrap (22 November 2026): the term's estimate from the
 # fit, its 95% percentile interval and one-sided p-values from the refits, as exp(); the Wald reading
 # beside it. With one chain an arm a resample is the data again, so the Wald reading is what there
@@ -339,14 +350,7 @@ if (!is.null(by)) {
   # every other model of the paired chains carries it
   mb1 <- fit_cp(paste0("y ~ cp", if (multi(dm$frontend)) " + frontend" else ""), dm, gaussian())
   note("H3", mb1)
-  # With one chain there is nothing to resample: every draw is the same chain, the interval a point
-  # and p the smallest it can be. The Wald reading is then what there is, recorded, as for every
-  # other test (27 November 2026, PLAN.md 9 row 126; until then H3 alone lacked this).
-  boot_slope <- function(m, term) {
-    if (length(unique(m$data$chain_id)) < 2) return(c(wald(m$fit, term), list(interval = "wald: one chain")))
-    c(boot_summary(m$fit, cluster_boot(m$data, m$formula, gaussian(), term, spec$boot), term),
-      list(interval = "cluster bootstrap"))
-  }
+  # with one chain the Wald reading (`boot_slope`; until 27 November 2026 H3 alone lacked this)
   res$H3 <- list(n_runs = nrow(dm), n_chains = length(unique(dm$chain_id)),
                  cp = if (inherits(mb1$fit, "fit_error")) list(error = mb1$fit$msg) else boot_slope(mb1, "cp"))
   # H3 within a place: among the runs in one class, the class's bystanders, and among the runs in
@@ -1296,6 +1300,29 @@ if (isTRUE(spec$reader_models) && !is.null(ru) && nrow(ru) > 0 && multi(ru$arm))
   }
   rr$centre_tokens <- exp(centre)
   res$reported$reader <- rr
+}
+
+# ---------------------------------------------------------------- H9: without injection, bound most
+# Run C, the no-injection control, against the Spring or the OfficeFloor stack of its front end
+# (PLAN.md 3.1a; an analysis with `contrast: no-injection`, the control its methods arm). Per run of
+# added logic into an existing method, log(1 + its bindings) on the arm, the host's size centred,
+# their interaction and the checkpoint index, with the chain's and the checkpoint's intercepts: the
+# model of H4 as first registered. H9 is the arm's term, the other arm against the control at a
+# typical host, below 0: one-sided, on the cluster bootstrap. It is fitted last, so that no other
+# model's resamples depend on it.
+if (identical(spec$contrast, "no-injection") && !is.null(h3) && nrow(h3) > 0) {
+  d9 <- h3[as.character(h3$arm) %in% c(spec$methods_arm, spec$function_arm), ]
+  d9$arm <- droplevels(as_arm(as.character(d9$arm)))
+  if (multi(as.character(d9$arm))) {
+    d9$log_host_c <- d9$log_host - mean(d9$log_host)
+    m9 <- fit_cp(paste0("y ~ log_host_c * arm + cp", if (multi(d9$frontend)) " + frontend" else ""), d9, gaussian())
+    res$H9 <- list(bindings = if (inherits(m9$fit, "fit_error")) list(error = m9$fit$msg) else boot_slope(m9, FARM),
+                   n_runs = nrow(d9), checkpoint_intercept = m9$cp,
+                   mean_bindings = as.list(tapply(d9$binding, as.character(d9$arm), mean)),
+                   runs = as.list(table(as.character(d9$arm))))
+  } else {
+    res$H9 <- list(bindings = list(error = "no run into an existing method in one arm"))
+  }
 }
 
 dir.create(dirname(out), recursive = TRUE, showWarnings = FALSE)

@@ -62,6 +62,12 @@
 - **H6 with the coupling measures put back** (a sensitivity reading, 22 November 2026;
   ``sensitivity.H6_with_coupling``): H6's rule over its measures and the literature's coupling
   measures the plan reads apart as reach (fan-out, CBO, RFC). It changes no verdict.
+- **H9, without injection code is bound most** (Run C against the Spring and the OfficeFloor stack
+  of its front end, PLAN.md §3.1a; an analysis with ``contrast: no-injection``, the control its
+  methods arm; registered 27 November 2026, row 127; the number is that of the hypothesis deleted on
+  25 November, row 108, which was never read on a run). The other arm's bindings a run below the
+  control's, on the cluster bootstrap; decided on its own p at α = 0.05; the condition is that the
+  control is free of injection in at least 90% of its placements. Needed against both stacks.
 - **H8, without encapsulation code disperses** (Run D against Run A's same stack, PLAN.md §3.1a;
   an analysis with ``contrast: no-encapsulation``; decided on its own p at α = 0.05, on its own
   run): the open arm's bound code is come back to less at the class (rate ratio below 1) and its
@@ -274,6 +280,38 @@ def h8(est: dict, cond: dict) -> dict:
             "reversed": ic["irr_lower"] > 1 or co["irr_upper"] < 1, "conditions_met": met}
 
 
+def h9(est: dict, cond: dict) -> dict:
+    """Run C, the no-injection control, against the Spring or the OfficeFloor stack of its front
+    end (PLAN.md §3.1a): without injection code is bound most. The control is the analysis's
+    methods arm; the other arm's bindings a run, at a typical host, are below the control's (the
+    arm's term below 0, on the cluster bootstrap). Its condition: the control is free of injection
+    as the instrument reads it. The amount is reported, not a condition. H9 as a whole needs this
+    against both stacks (``report.h9_overall``)."""
+    b = (est.get("H9") or {}).get("bindings")
+    comp = (cond.get("compliance") or {}).get("share")
+    out = {"tier": "registered, its own run", "compliance": comp, "compliance_bar": COMPLIANCE,
+           "detail": {"bindings": b, **{k: v for k, v in (est.get("H9") or {}).items() if k != "bindings"}}}
+    if comp is None or comp < COMPLIANCE:
+        return {**out, "p": None, "verdict": "descriptive only", "state": "the control is not free of injection"}
+    if not _ok(b):
+        return {**out, "p": None, "verdict": "not estimable"}
+    return {**out, "p": b["p_less"], "reversed": b["lower"] > 0, "conditions_met": b["upper"] < 0}
+
+
+def own_run(parts: dict, v: dict, cond: dict) -> dict:
+    """The verdict of a run's own test (H8, H9): on its own p at α, outside the correction; H1 to
+    H7 are the arms' tests (the ui primary's) and are descriptive in such an analysis."""
+    for x in parts.values():
+        x["verdict"] = "descriptive only"
+    v["p_holm"] = v["p"]
+    if cond.get("descriptive_only"):
+        v["verdict"] = "descriptive only"
+    elif "verdict" not in v:
+        v["verdict"] = ("supported" if v["p"] <= ALPHA and v["conditions_met"] else
+                        "reversed" if v["reversed"] else "not supported")
+    return v
+
+
 def decide(est: dict, cond: dict) -> dict:
     history = bool(cond.get("history"))
     parts = {"H1": h1(est), "H2": h2(est, history), "H3": h3(est), "H4": h4(est, cond), "H5": h5(est),
@@ -301,17 +339,12 @@ def decide(est: dict, cond: dict) -> dict:
     if cond.get("contrast") == "no-encapsulation":
         # Run D against Run A's same stack: its one test is H8, on its own p; H1 to H7 are the
         # arms' test (the ui primary) and are descriptive here
-        for v in parts.values():
-            v["verdict"] = "descriptive only"
-        v = h8(est, cond)
-        v["p_holm"] = v["p"]
-        if cond.get("descriptive_only"):
-            v["verdict"] = "descriptive only"
-        elif "verdict" not in v:
-            v["verdict"] = ("supported" if v["p"] <= ALPHA and v["conditions_met"] else
-                            "reversed" if v["reversed"] else "not supported")
-        parts["H8"] = v
+        parts["H8"] = own_run(parts, h8(est, cond), cond)
         out["contrast"] = "no-encapsulation"
+    if cond.get("contrast") == "no-injection":
+        # Run C against a stack of its front end: its one test is H9, likewise
+        parts["H9"] = own_run(parts, h9(est, cond), cond)
+        out["contrast"] = "no-injection"
     return out
 
 

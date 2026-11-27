@@ -74,6 +74,10 @@ def validate(reg: dict) -> None:
             continue
         if a["stream"] not in reg["streams"]:
             raise ValueError(f"{a['name']}: unknown stream {a['stream']!r}")
+        if a.get("contrast") not in (None, "no-encapsulation", "no-injection"):
+            raise ValueError(f"{a['name']}: unknown contrast {a['contrast']!r}")
+        if a.get("contrast") and not {a.get("methods_arm"), a.get("function_arm")} <= {s["arm"] for s in a["sources"]}:
+            raise ValueError(f"{a['name']}: a contrast names its methods_arm and function_arm among its arms")
         if a.get("complete_at") and not a.get("chains"):
             raise ValueError(f"{a['name']}: complete_at needs the chains to be named")
         arms = {s["arm"] for s in a["sources"]}

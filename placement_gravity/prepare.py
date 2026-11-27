@@ -363,6 +363,18 @@ def compliance(members: list[dict], arm: str) -> dict:
     return {"arm": arm, "introduced": n, "private": private, "share": (n - private) / n if n else None}
 
 
+def injection_free(hosts: list[dict], arm: str) -> dict:
+    """Run C's condition (PLAN.md §3.1a): of the control arm's placements (the hosts a checkpoint
+    added code to), the share in a class that holds no injected dependency and a method whose
+    parameters no framework fills, as the instrument reads them (§4.3, §4.3c). None where the
+    levels were not measured."""
+    mine = [h for h in hosts if h["arm"] == arm and added(h) > 0 and not truth(h.get("replacement"))]
+    if not mine or "class_injected" not in mine[0]:
+        return {"arm": arm, "placements": len(mine), "injected": None, "share": None}
+    bad = sum(1 for h in mine if (h.get("class_injected") or "").strip() or (h.get("framework_params") or "").strip())
+    return {"arm": arm, "placements": len(mine), "injected": bad, "share": (len(mine) - bad) / len(mine)}
+
+
 def coupling_accounting(pairs: list[dict], coupling: list[dict], h7: list[dict]) -> dict:
     """What coupling between classes each unit added (H7's accounting, PLAN.md 4.2b): per arm, the
     calls between classes the units added in all (the tree after less the tree before, over every
@@ -1282,7 +1294,9 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
                                and (lit[k]["level"] == "method" or at_class["testable"])],
             "h6_all": H6_MEASURES, "reach": REACH, "checkpoints": len(streamed),
             "acts": any(r["act"] is not None for r in h3 + h2),
-            "frontends": sorted({r["frontend"] for r in h3 if r["frontend"]})}
+            "frontends": sorted({r["frontend"] for r in h3 if r["frontend"]}),
+            # an analysis of one run against another's stack (Run C, Run D): its own test is fitted
+            "contrast": analysis.get("contrast")}
     conditions = {"chains": {k: len(v) for k, v in chains.items()}, "history": past,
                   "descriptive_only": analysis["role"] == "development"
                   or any(len(v) < MIN_CHAINS for v in chains.values()) or len(chains) < 2,
@@ -1290,6 +1304,11 @@ def prepare(analysis: dict, streamed: dict, measured_root: Path | None = None,
     if analysis.get("contrast") == "no-encapsulation":      # Run D against Run A (PLAN.md 3.1a)
         conditions["contrast"] = "no-encapsulation"
         conditions["compliance"] = compliance(members, spec["function_arm"])
+        conditions["amount"] = amount(additions, methods_arm=spec["methods_arm"],
+                                      function_arm=spec["function_arm"])
+    if analysis.get("contrast") == "no-injection":          # Run C against a stack of its front end
+        conditions["contrast"] = "no-injection"
+        conditions["compliance"] = injection_free(hosts, spec["methods_arm"])
         conditions["amount"] = amount(additions, methods_arm=spec["methods_arm"],
                                       function_arm=spec["function_arm"])
     # the readings reported beside the hypotheses (PLAN.md 5): choice at a checkpoint, formation
