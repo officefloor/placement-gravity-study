@@ -5,7 +5,7 @@ Role: **development**. Chains: officefloor 1, spring 1. **Descriptive only.**
 | Hypothesis | Tier | Verdict | p (Holm over the confirmatory; own p for secondary) |
 |---|---|---|---|
 | H1 | confirmatory | descriptive only | 1.000 |
-| H2 | confirmatory | descriptive only | 0.003 |
+| H2 | confirmatory | descriptive only | 0.004 |
 | H3 | secondary | descriptive only | 0.001 |
 | H4 | confirmatory | descriptive only | – |
 | H5 | confirmatory | descriptive only | 1.000 |
@@ -269,27 +269,27 @@ Whether encapsulation answers a reader's limit: per author group (on a history, 
 
 ## Reported: the binding levels
 
-Three results rest on how injection is counted. Each is read here three ways, function arm against methods arm, rate ratio with its 95% Wald interval (the tests above are on the registered rule and the cluster bootstrap; these decide nothing). A result that points the same way at all three does not depend on the rule; one that holds only as registered rests on the reasoning for it (PLAN.md §2, *An injected private field forces too*).
+Three results rest on how injection is counted. Each is read here three ways, function arm against methods arm, as a rate ratio. Since 27 November 2026 (PLAN.md §9 row 128) H1, H2's arm contrast and H4's later intrusion pass only if they also pass with injection ignored and with injection excluded, the two levels that count both arms alike: those are on the cluster bootstrap and enter each hypothesis's p. The registered rule's tests are above; here it keeps its 95% Wald reading. H1 at the method is reported at every level (Wald).
 
-- **injection ignored (an injected field and an injected parameter both bind)**; bound rows followed: officefloor 47, spring 83
+- **injection ignored (an injected field and an injected parameter both bind) — **decides** (cluster bootstrap)**; bound rows followed: officefloor 47, spring 83
   - H1, placements with no other place, at the class: half-way 0.247 [0.093, 0.654], rise 7.483 [0.358, 156.260] (a checkpoint: officefloor 0.150, spring 0.441)
   - the same at the method (reported under every rule): half-way 0.594 [0.268, 1.314], rise 17.234 [1.263, 235.090] (a checkpoint: officefloor 0.333, spring 0.322)
   - H4, later intrusion at the class: 0.113 [0.072, 0.178]
   - H4, later intrusion at the method: 0.198 [0.080, 0.493]
   - H2, uses of a core value at the class: not estimated (too few core records in an arm to compare; core records: function 3, methods 41)
   - H2, uses of a core value at the method: 0.170 [0.068, 0.427] (core records: function 43, methods 51)
-- **the registered rule (an injected field binds, an injected parameter does not)**; bound rows followed: officefloor 26, spring 83
+- **the registered rule (an injected field binds, an injected parameter does not) — reported (Wald)**; bound rows followed: officefloor 26, spring 83
   - H1, placements with no other place, at the class: half-way 0.247 [0.093, 0.654], rise 7.483 [0.358, 156.260] (a checkpoint: officefloor 0.150, spring 0.441)
   - the same at the method (reported under every rule): half-way 0.210 [0.061, 0.722], rise 33.195 [0.819, 1345.607] (a checkpoint: officefloor 0.100, spring 0.322)
   - H4, later intrusion at the class: 0.162 [0.098, 0.268]
   - H4, later intrusion at the method: 0.110 [0.029, 0.426]
   - H2, uses of a core value at the class: not estimated (too few core records in an arm to compare; core records: function 3, methods 41)
   - H2, uses of a core value at the method: 0.106 [0.026, 0.425] (core records: function 22, methods 51)
-- **injection excluded (neither binds)**; bound rows followed: officefloor 25, spring 59
+- **injection excluded (neither binds) — **decides** (cluster bootstrap)**; bound rows followed: officefloor 25, spring 59
   - H1, placements with no other place, at the class: half-way 0.247 [0.093, 0.654], rise 7.483 [0.358, 156.260] (a checkpoint: officefloor 0.150, spring 0.441)
   - the same at the method (reported under every rule): half-way 0.499 [0.132, 1.893], rise 3.946 [0.082, 189.344] (a checkpoint: officefloor 0.100, spring 0.153)
   - H4, later intrusion at the class: 0.162 [0.095, 0.276]
-  - H4, later intrusion at the method: not estimated (standard error not computed: armofficefloor)
+  - H4, later intrusion at the method: not estimated (standard error not computed: armofficefloor; one chain in an arm)
   - H2, uses of a core value at the class: not estimated (too few core records in an arm to compare; core records: function 3, methods 20)
   - H2, uses of a core value at the method: 0.102 [0.025, 0.428] (core records: function 22, methods 43)
 

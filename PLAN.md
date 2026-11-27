@@ -3480,6 +3480,18 @@ binomial mixed model). These details are fixed with the code before any run is r
   registered, known since the pilot, and says nothing of Run C. No estimate of the development
   analyses changed: H9's model is fitted only in Run C's analyses, and last. 195 tests and 132
   self-test checks pass.
+- **The binding levels deciding, on the development data** (27 November 2026, §9 row 128; the
+  results steps run again on the final code before the tag: the tests (198) and the R self-test
+  pass, then steps 05, 08 and 12; the instrument had not changed, so steps 04 and 07 were not run
+  again). **No verdict moved**; every development analysis stays *descriptive only*. *The
+  development chain:* H2's p is now set by its arm contrast with injection excluded (0.102, upper
+  bound 0.428, p 0.0009, which was 0.0008 on the registered rule alone), so after Holm it went from
+  0.003 to 0.004; with injection ignored the same contrast is 0.170 (p 0.0001). H1 at the class is
+  the same at every level (0.247 half-way, its rise 7.48), as it should be: a placement forced at
+  the class does not depend on how injection is counted; its p stays 1.000. H4 has no p as before (a
+  wiring condition could not be read), and with injection excluded its later intrusion at the
+  method is not estimated on one chain an arm. *The development histories:* no estimate changed;
+  they hold no wired functions, so the levels do not differ there.
 - **Not seen.** Pull, placement, containment or intrusion on any other chain, run or repository.
   The petclinic runs have been read for other measures (the conservation paper), never for these.
   None of the ui runs' backend Java has been read for any measure.

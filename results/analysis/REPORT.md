@@ -4,7 +4,7 @@ Every analysis read so far, in the order of `runs.yaml`, with each hypothesis's 
 
 | Analysis | Role | Read by | H1 | H2 | H3 | H4 | H5 | H6 | H7 | H8 | H9 |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| [pilot](pilot/REPORT.md) | development | steps 03 to 08 | descriptive only (p 1.000) | descriptive only (p 0.003) | descriptive only (p 0.001) | descriptive only | descriptive only (p 1.000) | descriptive only (p 3.06e-06) | descriptive only (p 0.349) | – | – |
+| [pilot](pilot/REPORT.md) | development | steps 03 to 08 | descriptive only (p 1.000) | descriptive only (p 0.004) | descriptive only (p 0.001) | descriptive only | descriptive only (p 1.000) | descriptive only (p 3.06e-06) | descriptive only (p 0.349) | – | – |
 | [open-source-development](open-source-development/REPORT.md) | development | steps 03 to 08 | descriptive only | descriptive only (p 0.010) | descriptive only (p 0.005) | descriptive only (p 1.000) | descriptive only | descriptive only (p 0.033) | descriptive only (p 0.002) | – | – |
 
 ## The main figure of each hypothesis
