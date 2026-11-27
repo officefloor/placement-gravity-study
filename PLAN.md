@@ -1,14 +1,14 @@
 # Plan: where a new problem's code lands, and whether it had a choice
 
-> **Status: NOT YET REGISTERED. The tag `plan-v1` was withdrawn on 17 November 2026, before any
-> run named for analysis was read, while the hypotheses are worked out on the development chain
-> (§9, five revisions so far, the last still growing: rows 72 to 88 follow a review of the plan on
+> **Status: REGISTERED on 28 November 2026: the tag `plan-v1` is set on the plan and code as they
+> stand after §9 row 131, before any run named for analysis was read.** It had been withdrawn on
+> 17 November 2026, before any run named for analysis was read, while the hypotheses were worked
+> out on the development chain (§9, five revisions, the last running to row 131: rows 72 to 88 follow a review of the plan on
 > 22 November 2026; rows 89 to 110, of 24 and 25 November, restate H5 as surface against volume,
 > make H1 an arm contrast, number the hypotheses in the order of the study's story, settle the
 > drafter's remaining choices, and after a consistency review make H1 the arm contrast alone,
 > delete H9 and count constants in H5). Run B's ids were added on 26 November 2026 (§9 row 113), so
-> nothing that needs deciding is left before the tag is set again; until it is, only the development
-> chain can be read.** Rows 114 to 122, of the same day, follow a second review of the plan before
+> nothing that needs deciding was left before the tag was set again. Rows 114 to 122, of the same day, follow a second review of the plan before
 > the tag (§8), row 123 adds a reported reading the review offered (§4.3c, the binding levels),
 > row 124, of 27 November, makes the code build H2's core at the method as §4.4 defines it, and
 > row 125 puts the steps in one order with the runs still being made last (§3.1a, *Order*), and
@@ -3848,8 +3848,8 @@ binomial mixed model). These details are fixed with the code before any run is r
    Committed, and the tag set on them (`f780a5a`). The bystanders (§4.3a) and H1 and H4 as restated
    on 17 November 2026 were then built and run on the development chain, committed, and the tag
    `plan-v1` set on them (`69af01c`). **The tag was withdrawn on 17 November 2026** with the fourth
-   and fifth revisions (§9), which are committed without it. To do: set `plan-v1` again when the
-   work on the development chain is done, before any run named for analysis is read.
+   and fifth revisions (§9), which are committed without it. Set again on 28 November 2026 (§9 row 131), the work on the development chain done and before
+   any run named for analysis was read.
 6. `./step1_setup.sh`, then for corpus A (petclinic, then the ui runs as they finish):
    `./step2_runs.sh`, `./step3_measure.sh`, `./step4_analyse.sh`, `./step5_report.sh`. Analyse
    once; the heads read are recorded in `results/heads.tsv`. Then corpus B and corpus C (§3.2, §3.3; their
@@ -4520,6 +4520,7 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 128 | **H1, H2's arm contrast and H4's later intrusion pass only if they also pass at the two binding levels that count both arms alike**: with injection ignored (*all*) and with injection excluded (*none*), beside the registered rule. Those parts are on the cluster bootstrap and enter each hypothesis's p; H2's and H4's are needed where each arm has 10 records to compare; where no ratio can be fitted, a one-sided rank-sum over chains reads the part. Until then the levels were reported on Wald intervals and decided nothing (row 123) | the table of what is registered, §4.3c, §5, §7, `analyse.R`, `verdict.py`, `report.levels_section`, `analysis/selftest.R`, `tests/test_analysis.py`, README | Decided by the author on 27 November 2026 after a review of the plan: "pass only if also holds at a level that counts both frameworks the same way (each of ignore injected, injected as choice, injected as choice in fields not exercised)". The registered rule counts the arms differently before any code is read; a result that holds only under it rests on an argument. The bar of 10 bound rows for H4's parts and the rank-sum where no ratio fits are the drafter's, taken from H2's arm contrast as registered. §4.3c expected, before any level was computed, that under *all* the function arm's count at the method may rise and the gap there shrink or turn round: H4 is the harder for this. No run named for analysis has been read |
 | 129 | **A simulation of the confirmatory four's power at the ui design**: `analysis/power.R`, from the development chain's fitted models, at the development chain's effects and at ratios of 0.8, 0.67 and 0.5, the chains' spread 0.2 and 0.5; on Wald intervals. Reported in `results/power/POWER.md`; changes no rule | §7 | The review of 27 November 2026: no power had been worked out for the confirmatory four (row 122's notes), and on the development chain H5 went against and H1's trend could not be read. Asked by the author the same day, to run overnight |
 | 130 | **The power simulation's results recorded** (row 129): all eight scenarios, 100 draws each. With little spread between chains (0.2) every hypothesis passes in 88 draws of 100 or more at Holm's first step for an effect of 0.67; with wide spread (0.5) an effect near 0.5 is needed, and at 0.8 H2 and H4 almost never pass. A *not supported* for H1, H2 or H4 does not rule out an effect near 0.8 | §7, `results/power/POWER.md`, `results/power/power.json`, `results/power/run.log` | The amendment §7 asks for after the simulation. A first run, started on 27 November 2026, was cut off by a restart of the machine after two scenarios; the whole run was made again from the start, so every scenario has the seed its position gives, and the two finished before matched it exactly. Changes no rule. Before the tag, so a revision |
+| 131 | **The tag `plan-v1` set again**, on this commit; the status at the head of the plan reads *registered* | the status at the head, §8 (item 5), this row | The author, 28 November 2026: "this is just updating documentation status". The tag was first set again the same day on `be8600a` (row 130 and the development rerun), with the head still reading *not yet registered*; it was moved to this commit, which changes only that text. `results/heads.tsv` held only the development chain's rows, so no run named for analysis had been read and the experiment had not started (*Before the start*, above). Changes no rule. A revision |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring
