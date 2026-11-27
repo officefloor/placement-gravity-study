@@ -76,6 +76,17 @@
   introduces not private) and the amount within its band as conditions. Below the compliance bar
   it is descriptive only.
 
+- **The binding levels decide too** (27 November 2026, PLAN.md §9 row 128, the author's): H1, H2's
+  arm contrast and H4's later intrusion rest on the registered rule on injection (an injected field
+  binds, an injected parameter does not), which counts the arms differently. Each of those parts
+  passes only if it also passes at the two levels that count both arms alike (§4.3c): ``all``
+  (injection ignored) and ``none`` (injection excluded). Those parts are on the cluster bootstrap
+  (``analyse.R``, ``res$levels``), enter p (the largest of the parts) and must lie below 1; H2's
+  and H4's at a level are needed where each arm has at least 10 records to compare, as H2's arm
+  contrast as registered. Where no ratio can be fitted, the chains are compared by a rank-sum test
+  and that part is below 1 where its one-sided p is at most 0.05. A level not read on the paired
+  chains is ``not estimable``. Not on a history.
+
 Verdicts: ``supported``; ``not supported``; ``reversed`` (an interval wholly on the wrong side);
 ``unresolved`` (H6, H7: an interval reaching above the upper margin without lying above it);
 ``not testable`` (H6: no shape measure varies; H1 and H5: a history; H2: no level has the arm
@@ -97,6 +108,9 @@ SECONDARY = ("H3", "H6", "H7")
 #: class, concentration, WMC and lack of cohesion. Each is fitted alone. Not slimmable and
 #: junction are sinew measures, and fan-out and CBO measures of reach, reported apart.
 SHAPES = ("s1_long", "s4_cognitive", "m_cyclomatic", "c_gini", "c_wmc", "c_lcom_star")
+#: The binding levels that count both arms alike (PLAN.md §4.3c), which decide since 27 November
+#: 2026 (§9 row 128) beside the registered rule.
+LEVELS = ("all", "none")
 #: Run D's compliance bar (PLAN.md §3.1a): the share of introduced members that are not private.
 COMPLIANCE = 0.9
 
@@ -118,6 +132,62 @@ def holm(ps: dict[str, float | None], family: int | None = None) -> dict[str, fl
 
 def _ok(x: dict | None) -> bool:
     return bool(x) and "error" not in x
+
+
+def _decided(r: dict | None) -> bool:
+    """A part that can decide: a ratio with its interval, or a rank-sum over chains."""
+    return _ok(r) and ("irr_upper" in r or (bool(r.get("separated")) and "p_less" in r))
+
+
+def _below(r: dict) -> bool:
+    """The part lies below 1: its interval's upper limit, or, for a rank-sum, its one-sided p."""
+    if "irr_upper" in r:
+        return r["irr_upper"] < 1
+    return r["p_less"] <= ALPHA
+
+
+def level_parts(est: dict, key: str, needed_only: bool = False) -> list[dict] | None:
+    """The parts of one result at the levels that decide beside the registered rule (row 128):
+    ``key`` names it in each level (``H1_class``, ``H2_reuse_class``, ...). None when a level was
+    not read or a needed part could not be decided (the hypothesis is then not estimable).
+    ``needed_only``: H2's and H4's parts, needed only where both arms have the records."""
+    levels = est.get("levels") or {}
+    out = []
+    for lev in LEVELS:
+        x = levels.get(lev)
+        if not x:
+            return None
+        if key == "H1_class":
+            c = x.get("H1_class") or {}
+            if not _ok(c):
+                return None
+            parts = [c.get("arm"), c.get("trend")]
+        else:
+            if "error" in x:
+                return None
+            r = x.get(key)
+            if needed_only and r is not None and r.get("required") is False:
+                continue
+            parts = [r]
+        if not all(_decided(r) for r in parts):
+            return None
+        out += [{**r, "level": lev, "part": key} for r in parts]
+    return out
+
+
+def with_levels(v: dict, parts: list[dict] | None, history: bool) -> dict:
+    """Adds the level parts to a verdict's p and conditions (row 128)."""
+    if history or v.get("verdict") or v.get("p") is None:
+        return v
+    if parts is None:
+        return {"p": None, "verdict": "not estimable", "state": "a binding level could not be read",
+                "detail": v.get("detail")}
+    if parts:
+        v["p"] = max([v["p"], *(r["p_less"] for r in parts)])
+        v["conditions_met"] = bool(v["conditions_met"]) and all(_below(r) for r in parts)
+    v["levels"] = [{"level": r["level"], "part": r["part"], "irr": r.get("irr"), "irr_upper": r.get("irr_upper"),
+                    "p_less": r["p_less"], "below": _below(r)} for r in parts]
+    return v
 
 
 def h3(est: dict) -> dict:
@@ -316,6 +386,15 @@ def decide(est: dict, cond: dict) -> dict:
     history = bool(cond.get("history"))
     parts = {"H1": h1(est), "H2": h2(est, history), "H3": h3(est), "H4": h4(est, cond), "H5": h5(est),
              "H6": h6(est), "H7": h7(est)}
+    # H1, H2's arm contrast and H4's later intrusion also at the levels that count the arms alike
+    # (PLAN.md §4.3c, §9 row 128)
+    def needed(keys):
+        got = [level_parts(est, k, needed_only=True) for k in keys]
+        return None if any(g is None for g in got) else [r for g in got for r in g]
+    parts["H1"] = with_levels(parts["H1"], level_parts(est, "H1_class"), history)
+    if parts["H2"].get("arm_contrast"):
+        parts["H2"] = with_levels(parts["H2"], needed(["H2_reuse_class", "H2_reuse_method"]), history)
+    parts["H4"] = with_levels(parts["H4"], needed(["H4_intrusion_class", "H4_intrusion_method"]), history)
     # on the paired chains the family is the registered four, whatever could be fitted
     adjusted = holm({k: parts[k]["p"] for k in CONFIRMATORY}, None if history else len(CONFIRMATORY))
     for k, v in parts.items():

@@ -573,8 +573,9 @@ if (!is.null(h2)) {
   # values is ever come back to, no ratio can be fitted (it is nought): the arms' chains are then
   # compared by a rank-sum test on each chain's uses per value and later checkpoint.
   MIN_CORE <- 10
-  reuse <- function(lev) {
-    long <- if (paste0("core_", lev) %in% names(h2)) core_long(h2, lev) else NULL
+  # `data`: H2's rows as registered, or a binding level's (PLAN.md 4.3c), which share its columns
+  reuse <- function(lev, data = h2) {
+    long <- if (paste0("core_", lev) %in% names(data)) core_long(data, lev) else NULL
     long <- if (is.null(long)) NULL else long[long$core == 1 & as.character(long$arm) %in% c(spec$methods_arm, spec$function_arm), ]
     if (is.null(long) || nrow(long) == 0) return(list(required = FALSE, error = "no core to compare"))
     fa <- as.character(long$arm) == spec$function_arm
@@ -865,12 +866,16 @@ if (!is.null(res$H1) && !isFALSE(spec$problem_fixed)) {
 # PLAN.md 4.3c (added 26 November 2026, before the tag). Three results rest on a rule of the plan,
 # that a field holding an injected dependency binds code to its class and a parameter the framework
 # injects does not bind it to its method: H1's count, H2's arm contrast and H4's later intrusion.
-# Each is read here at three levels of that rule, the arms' ratio on its 95% Wald interval:
+# Each is read here at three levels of that rule:
 #   all     injection ignored: an injected parameter binds as an injected field does;
 #   none    injection excluded: neither binds, in either arm (a Spring handler's parameters, which
 #           the framework fills, among them);
 #   spring  the registered rule, between the two: only the field binds.
-# Nothing here decides a hypothesis: the tests above stand on the registered rule alone.
+# Since 27 November 2026 (PLAN.md 9 row 128, the author's) the two levels that count both arms
+# alike also decide: H1, H2's arm contrast and H4's later intrusion pass only if they pass at `all`
+# and at `none` too. Those parts are decided as the registered ones are, on the cluster bootstrap,
+# and are copied to res$levels for verdict.py. The registered level is decided above; here it keeps
+# its Wald reading, reported. H1 at the method stays reported (Wald) at every level.
 if (!is.null(h2) && nrow(h2) > 0 && !isFALSE(spec$problem_fixed) && multi(as.character(h2$arm))) {
   prep_level <- function(d) {
     if (is.null(d) || nrow(d) == 0) return(NULL)
@@ -888,6 +893,32 @@ if (!is.null(h2) && nrow(h2) > 0 && !isFALSE(spec$problem_fixed) && multi(as.cha
     if (!multi(as.character(d$arm))) return(list(error = "no row bound in one arm at this level"))
     irr(wald(fit_cp(base(d, y), d, nb)$fit, FARM))
   }
+  # H4's later intrusion at a level that decides (row 128): as registered, on the cluster bootstrap.
+  # Needed where each arm has at least MIN_CORE bound rows followed, as H2's arm contrast is; below
+  # that the level has nothing to compare and it is reported. Where no ratio can be fitted (an arm's
+  # intrusions all nought, or a standard error not computed) the chains are compared by a rank-sum
+  # test on each chain's intrusions per later checkpoint, as H2's arm contrast is.
+  arm_ratio_decided <- function(d, y) {
+    n <- table(factor(as.character(d$arm), levels = c(spec$methods_arm, spec$function_arm)))
+    out <- list(methods_rows = n[[spec$methods_arm]], function_rows = n[[spec$function_arm]], min_rows = MIN_CORE)
+    if (min(n) < MIN_CORE) return(c(out, list(required = FALSE, note = "too few bound rows in an arm to compare")))
+    d$arm <- droplevels(d$arm)
+    m <- fit_cp(base(d, y), d, nb)
+    r <- boot_irr(m$fit, m$formula, m$data, nb, FARM)
+    if (is.null(r$error) && !is.null(r$irr_upper)) return(c(r, out, list(required = TRUE)))
+    rate <- tapply(d[[y]], d$chain_id, sum) / tapply(d$later_checkpoints, d$chain_id, sum)
+    arm_of <- as.character(d$arm[match(names(rate), d$chain_id)])
+    rf <- rate[arm_of == spec$function_arm]
+    rm_ <- rate[arm_of == spec$methods_arm]
+    why <- if (is.null(r$error)) "no ratio" else r$error
+    if (length(rf) < 2 || length(rm_) < 2)
+      return(c(out, list(required = TRUE, error = paste0(why, "; one chain in an arm"))))
+    p <- suppressWarnings(wilcox.test(rf, rm_, alternative = "less", exact = FALSE)$p.value)
+    # no interval: verdict.py reads a rank-sum part as below 1 where its one-sided p is at most 0.05
+    c(out, list(required = TRUE, separated = TRUE, p_less = p, p_greater = 1 - p, model_error = why,
+                rate_function = mean(rf), rate_methods = mean(rm_),
+                interval = "rank-sum over chains: no ratio could be fitted"))
+  }
   reuse_level <- function(d, lev) {
     long <- core_long(d, lev)
     long <- if (is.null(long)) NULL else long[long$core == 1, ]
@@ -902,7 +933,9 @@ if (!is.null(h2) && nrow(h2) > 0 && !isFALSE(spec$problem_fixed) && multi(as.cha
     c(irr(wald(fit_cp(base(long, "uses"), long, nb)$fit, FARM)), out)
   }
   hl <- read("h1_levels.csv")
-  forced_level <- function(col) {
+  # decided = TRUE (H1 at the class, at `all` and `none`, row 128): both terms from one cluster
+  # bootstrap, as H1's registered contrast
+  forced_level <- function(col, decided = FALSE) {
     if (is.null(hl) || nrow(hl) == 0 || !multi(hl$arm)) return(list(error = "the levels were not measured"))
     d <- hl[as.character(hl$arm) %in% c(spec$methods_arm, spec$function_arm), ]
     d$arm <- droplevels(as_arm(as.character(d$arm)))
@@ -919,25 +952,34 @@ if (!is.null(h2) && nrow(h2) > 0 && !isFALSE(spec$problem_fixed) && multi(as.cha
       m <- fit_cp(fixed, d, poisson())
       fam <- "poisson"
     }
-    list(arm = irr(wald(m$fit, FARM)), trend = irr(wald(m$fit, paste0("cp_c:", FARM))),
+    TT <- paste0("cp_c:", FARM)
+    if (decided) {
+      b <- boot_irrs(m$fit, m$formula, m$data, if (fam == "poisson") poisson() else nbinom2(), c(FARM, TT))
+      return(list(arm = b[[FARM]], trend = b[[TT]], mean = per, n = nrow(d), family = fam))
+    }
+    list(arm = irr(wald(m$fit, FARM)), trend = irr(wald(m$fit, TT)),
          mean = per, n = nrow(d), family = fam)
   }
   res$reported$binding_levels <- list()
   for (L in c("all", "spring", "none")) {
+    decides <- L != "spring"
     d <- if (L == "spring") h2 else prep_level(read(paste0("h2_", L, ".csv")))
-    one <- list(H1_class = forced_level(paste0("forced_class_", L)),
+    one <- list(H1_class = forced_level(paste0("forced_class_", L), decided = decides),
                 H1_method = forced_level(paste0("forced_method_", L)))
     if (is.null(d)) {
       one$error <- "no row bound at this level, or the level was not measured"
     } else {
       one$rows <- as.list(table(as.character(d$arm)))
       for (lev in c("class", "method")) {
-        one[[paste0("H4_intrusion_", lev)]] <- arm_ratio(d, paste0("intrusion_", lev))
-        one[[paste0("H2_reuse_", lev)]] <- reuse_level(d, lev)
+        one[[paste0("H4_intrusion_", lev)]] <- if (decides) arm_ratio_decided(d, paste0("intrusion_", lev)) else
+          arm_ratio(d, paste0("intrusion_", lev))
+        one[[paste0("H2_reuse_", lev)]] <- if (decides) reuse(lev, d) else reuse_level(d, lev)
       }
     }
     res$reported$binding_levels[[L]] <- one
   }
+  # the parts that decide (row 128), for verdict.py
+  res$levels <- res$reported$binding_levels[c("all", "none")]
 }
 
 # ---------------------------------------------------------------- H7: spread does not see it

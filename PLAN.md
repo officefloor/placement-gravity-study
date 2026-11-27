@@ -12,8 +12,10 @@
 > the tag (§8), row 123 adds a reported reading the review offered (§4.3c, the binding levels),
 > row 124, of 27 November, makes the code build H2's core at the method as §4.4 defines it, and
 > row 125 puts the steps in one order with the runs still being made last (§3.1a, *Order*), and
-> row 126 reads H3 on its Wald interval where there is one chain, and row 127 writes out Run C's
-> analysis and registers its test as H9 (§3.1a):
+> row 126 reads H3 on its Wald interval where there is one chain, row 127 writes out Run C's
+> analysis and registers its test as H9 (§3.1a), row 128 makes H1, H2's arm contrast and H4's
+> later intrusion pass only if they also pass at the two binding levels that count both arms alike
+> (§4.3c), and row 129 adds a simulation of the confirmatory four's power at the ui design (§7):
 > they tighten rules, make the plan and the code say the same, and change no
 > hypothesis or direction. As first registered, on 16 November 2026: the tag was first pushed on commit
 > `4bb8973` and moved the same day, before any run named for analysis was read, to this revision,
@@ -33,9 +35,9 @@ adds no rule: §2 states each hypothesis and §5 its test, and **§5 governs** w
 
 | | Claim | Read on | Passes when | Conditions | Tier |
 |---|---|---|---|---|---|
-| **H1** | The function arm is forced less, and the gap widens | placements forced at the class, per checkpoint and chain | the arm's ratio half-way through and its trend over the stream both below 1 | none | confirmatory |
-| **H2** | A core draws code in | later intrusions' uses per value, of the core and of the periphery | in the methods arm core against periphery above 1 at the class and at the method; **and** a core value come back to less in the function arm (below 1) at each level where each arm has 10 core records | at least one level has the arm contrast, or H2 is not testable | confirmatory |
-| **H4** | Function injection forms no core | bystanders; later intrusion; how well-trodden the files gone back into | five parts, all on the form's side: bystanders fewer half-way through and rising less; later intrusion below 1 at the class and at the method; well-trodden files below 1 | the amount added: the whole 95% interval of the ratio inside 0.8 to 1.25; neither wiring condition against (§4.5) | confirmatory |
+| **H1** | The function arm is forced less, and the gap widens | placements forced at the class, per checkpoint and chain | the arm's ratio half-way through and its trend over the stream both below 1, as registered **and** with injection ignored **and** with injection excluded (§4.3c, row 128) | none | confirmatory |
+| **H2** | A core draws code in | later intrusions' uses per value, of the core and of the periphery | in the methods arm core against periphery above 1 at the class and at the method; **and** a core value come back to less in the function arm (below 1) at each level where each arm has 10 core records, as registered **and** with injection ignored **and** with injection excluded (§4.3c, row 128) | at least one level has the arm contrast, or H2 is not testable | confirmatory |
+| **H4** | Function injection forms no core | bystanders; later intrusion; how well-trodden the files gone back into | five parts, all on the form's side: bystanders fewer half-way through and rising less; later intrusion below 1 at the class and at the method, as registered **and** with injection ignored **and** with injection excluded where each arm has 10 bound rows (§4.3c, row 128); well-trodden files below 1 | the amount added: the whole 95% interval of the ratio inside 0.8 to 1.25; neither wiring condition against (§4.5) | confirmatory |
 | **H5** | Less surface for the same volume, and the gap widens | weight of links added per checkpoint, for the same logic | the arm's ratio half-way through and its trend both below 1 | none | confirmatory |
 | **H3** | The encapsulation fills | bystanders per run, methods arm | slope on the checkpoint index above 0 over all runs, within a class and within a method | none | secondary |
 | **H6** | Shape does not draw code in | later intrusion on each of six shape measures, each alone | every measure's upper limit below 1.25, on the 90% Wald interval **and** on the cluster bootstrap | a measure that does not vary leaves; class measures only where 10 classes receive arrivals and none more than half | secondary |
@@ -1714,7 +1716,7 @@ does not count as pre-existing there. A field renamed by the change counts as in
 always has in accretion. A later intrusion is bound to an introduced value when its own bound code
 in that method, or that class, uses it.
 
-### 4.3c The binding levels (reported)
+### 4.3c The binding levels (decide since 27 November 2026)
 
 Added 26 November 2026, before the tag (§9 row 123; decided by the author, §8). The plan counts
 injection unevenly, and says why (§2, *An injected private field forces too*; §4.3): a field
@@ -1763,13 +1765,32 @@ choice of duplicating the injection is often not used, and falls back to pull."
     bound at that level) and which later changes count as drawn in (those bound at that level).
   - *H2's arm contrast*, at the class and at the method: the uses of a core value, the core being
     what the code was bound to at that level.
-- **Nothing here decides a hypothesis.** The verdicts stand on the registered rule alone, and the
-  levels are outside the correction.
+- **The two levels that count both arms alike decide** (27 November 2026, §9 row 128; the author,
+  after the review of that day: "pass only if also holds at a level that counts both frameworks
+  the same way (each of ignore injected, injected as choice, injected as choice in fields not
+  exercised)"). H1's count at the class, H2's arm contrast and H4's later intrusion pass only if
+  they pass as registered (*Spring only*) **and** under *all* **and** under *none*. The parts at
+  *all* and *none* are decided as the registered ones are: on the cluster bootstrap, one-sided,
+  their p among the parts whose largest is the hypothesis's p, inside the Holm correction over
+  four. H2's and H4's parts at a level are needed where each arm has at least 10 records to compare
+  (core records for H2, as registered; bound rows followed for H4, the drafter's, the same bar);
+  below that the level is reported and not needed. Where no ratio can be fitted at a level (an
+  arm's later uses all nought, or no standard error), the chains are compared by a one-sided
+  rank-sum test on each chain's rate a later checkpoint, as H2's arm contrast already was, and the
+  part lies below 1 where that p is at most 0.05. A level that cannot be read on the paired chains
+  leaves the hypothesis *not estimable*. H1 at the method stays reported at every level, on its
+  Wald interval. Until that day nothing here decided a hypothesis: the verdicts stood on the
+  registered rule alone. The author's expectation, written before any level was computed on a run
+  named for analysis, is below; on the development chain H4's later intrusion at the method could
+  not be fitted with injection excluded (three later intrusions in the function arm), which the
+  rank-sum now reads.
 - **How the three are read together** (written before any level was computed on any chain). A
   result that points the same way at all three levels does not depend on the rule. One that holds
   as registered and not at *all* or at *none* rests on the author's reasoning for the rule, and
-  the write-up says so.
-- **What is expected** (written before any level was computed on any chain). Under *all*, nearly
+  the write-up says so. Since row 128 such a result is not supported.
+- **What is expected** (written before any level was computed on any chain; since row 128 it bears
+  on a verdict: H4 needs its intrusion at the method below 1 under *all* too, which this paragraph
+  expects may fail). Under *all*, nearly
   any line added to an existing wired function uses one of its parameters, so the function arm has
   more placements bound at the method and more rows followed: its counts at the method are
   expected to rise, and the arms' gap there to shrink or to turn round. That is the known cost of
@@ -2547,6 +2568,15 @@ As built: `chain.lines_added`, `tables.organisation_split`, `prepare.split_rows`
   §3.3 are the same models with a term for the declared agent commit (within a repository) or for
   the corpus (between them), and the destination of unbound code as a binomial model on the same
   term.
+- **The binding levels decide** (27 November 2026, §9 row 128; §4.3c): H1's arm contrast at the
+  class (both terms), H2's arm contrast at each level of the place where it is needed, and H4's
+  later intrusion at the class and at the method are each fitted again on the rows of *all*
+  (injection ignored) and of *none* (injection excluded), in the same model, on the cluster
+  bootstrap. Each such part enters its hypothesis's p (the largest of the parts) and has to lie
+  below 1; for H2 and H4 a part is needed where each arm has at least 10 records, and where no
+  ratio can be fitted it is read by a one-sided rank-sum over chains (below 1 where p ≤ 0.05).
+  Corpus A only. As built: `analyse.R` (`arm_ratio_decided`, `reuse(lev, data)`,
+  `forced_level(decided = TRUE)`, `res$levels`), `verdict.level_parts`, `verdict.with_levels`.
 - **H1** (restated 25 November 2026, §9 row 107): per checkpoint and chain of corpus A that did
   something, the placements forced at the class, as a negative binomial (nbinom2) mixed model on
   the arm, the checkpoint index centred at the middle of the stream and scaled to its length, and
@@ -3575,9 +3605,9 @@ binomial mixed model). These details are fixed with the code before any run is r
   (§4.3): the plan gives its reason, but the reason is an argument, and under it the arms are
   counted differently before any code is read. H1's count, H2's arm contrast and H4's later
   intrusion are therefore read at three levels of the rule (§4.3c), two of which treat the arms
-  alike. A result that holds only at the registered level rests on the argument, and is written up
-  so. The readings are on Wald intervals and decide nothing; the bystanders, the well-trodden
-  files and H5's links do not rest on the rule at all. Under *injection excluded* a Spring handler
+  alike. Since 27 November 2026 (§9 row 128) a result that holds only at the registered level is
+  not supported: each of the three has to pass at all three levels, on the cluster bootstrap. The
+  bystanders, the well-trodden files and H5's links do not rest on the rule at all. Under *injection excluded* a Spring handler
   is told by its annotations, or by overriding a declared API in a controller class; a handler
   declared another way keeps its parameters as bindings there, which leans towards the methods arm
   looking more bound, the direction that favours H4. No ui run's backend Java was read to choose
@@ -3711,6 +3741,16 @@ binomial mixed model). These details are fixed with the code before any run is r
   checkpoint, one problem; one stream for both arms). It does not measure how hard a problem is,
   beyond the addition's size and its declared crossings. In corpus B a commit is not one problem,
   so H6 is not read there.
+- **Power for the confirmatory four** (added 27 November 2026, §9 row 129, after the review of that
+  day found none had been worked out). `analysis/power.R` draws data at the ui primary's design (two
+  front ends of ten chains a stack, 250 checkpoints) from each part's registered model fitted to
+  the development chain, with the tested effects set to the development chain's estimates and to
+  ratios of 0.8, 0.67 and 0.5 (a trend as the ratio over the stream), and the chains' own spread at
+  0.2 and 0.5 on the log scale (one chain an arm cannot estimate it). Each part is read on its
+  one-sided Wald interval with the chain's intercept, not the bootstrap, and the parts of a
+  hypothesis are drawn apart; it reads no run named for analysis. Its results, `results/power/
+  POWER.md`, are recorded by the amendment that follows them, and change no rule: they say how
+  likely each verdict is, not what it should be.
 - **Power for H6 and H7.** A test against a margin needs more data than a difference test. If an
   interval is too wide to fall below the upper margin, H6 or H7 is reported as unresolved, not as
   supported. *A rough check* (21 November 2026, the drafter's; normal approximation from the
@@ -4437,6 +4477,8 @@ adds to H1, and was made after seeing the measure on the development chain (§7)
 | 125 | **The steps in one order, in blocks that each end in a results step and a lab note; the runs still being made last.** 03 to 05: the petclinic chains pinned, measured, and their results (lab note 1). 06 to 08: the histories sampled, measured, and their results (note 2). 09: Run B's analyses, `ui-primary`, `ui-angular`, `ui-tanstack` (note 3); 10: Run C (note 4); 11: Run D (note 5); each from pinning its chains to its results and only when its run is complete. 12: the last summary. Each analysis carries a `stage` in `runs.yaml` and a step reads only its own; a run not yet in the registry is refused with the reason. A results step analyses, reports, and prints which lab note can be written, the analyses it added and what is not in yet. The summary (`results/analysis/REPORT.md`) gives each verdict with its p, the main figure of each hypothesis with its interval (which figure is fixed in §3.1a), and what is still to come. No rule of analysis changes; the development figures came back the same. **Renumbered:** the steps were 1, 1b, 2, 2b, 3, 3b, 4, 5; they are now 01 (setup), 02 (timing), 03 (pin chains), 04 (measure chains), 06 (samples), 07 (measure histories), with the analysis (4) and the report (5) done together by each results step, 05 and 08 and each run's; this plan's text of before 27 November 2026 uses the old numbers | §3.1a (*Order*), §8, `runs.yaml` (`stage`), `runs.py` (`STAGES`), `nextstep.py` (`NOTES`, `note`), `report.py` (`MAIN`, `main`, `waiting_lines`), the step scripts, `run_stage.sh`, `README.md`, `tests/` | The author, 27 November 2026: one order with Runs B, C and D last, a summary before them to see whether they are worth waiting for, and lab notes along the way with "clear progress points with numbers to report"; asked whether the main ratio should be on the summary page, "yes"; and that the scripts "indicate Lab Note X can now be produced and what data is available". Until then a step given no analysis stopped at `ui-primary` while Run B was incomplete, without reaching the analyses after it or printing the next command, and the first report came only after the histories. Written into §3.1a with it: the first two summaries are replications and outside evidence, not the study's test; no ui run is read early; nothing seen changes a run still being made |
 | 126 | **H3 with one chain is read on its Wald interval, recorded as that**, as every other test already was. With one chain in the methods arm every bootstrap resample is that chain again, so H3's interval was a single point and its p the smallest the bootstrap can give (0.001). No analysis that decides anything has one chain an arm (fewer than 6 is descriptive only, §5); it shows on the development chain alone. The histories and every analysis of several chains are untouched; each H3 figure now says how its interval was made (`interval`) | §6, `analyse.R` (`boot_slope`) | Found on 27 November 2026 while putting the main figures on the summary (row 125): the development chain's H3 read 0.015 [0.015, 0.015], p 0.001. Corrected by the review without a choice to put to the author: there is nothing to resample. Seen with it (§6): on the development histories, whose agent group is one repository, that group's reported H3 is now not estimated, and two bootstrap p-values after it moved by the noise of the draws, no estimate changing |
 | 127 | **Run C's analysis written out, and its test registered: H9, without injection code is bound most.** Run C is read in two analyses of its own, the control against the Spring stack and against the OfficeFloor stack of its front end, never pooled and not as a third arm inside the primary's models (as the decision of 16 November 2026 had it), the control the methods arm of both. H9: per run of logic added to an existing method, the other arm's bindings below the control's (H4's model as first registered; the arm's term below 0; one-sided, 95% cluster bootstrap), **against both stacks**, p the larger; α = 0.05 on its own p, outside Holm; H1 to H7 descriptive in those analyses. Condition: 90% of the control's placements free of injection. The amount reported, not a condition. The number H9 is that of the hypothesis deleted on 25 November (rows 105, 108), never read on a run | the table of what is registered, §2, §3.1a, §4.2h, §5, §7, §8, `runs.yaml` (drafted entries, `contrast: no-injection`), `runs.validate`, `prepare.py` (`injection_free`, `spec.contrast`), `analyse.R` (H9, fitted last; `boot_slope` shared), `verdict.py` (`h9`, `own_run`), `report.py` (`h9_section`, `h9_overall`, the summary), `selftest.R`, `tests/` | The author, 27 November 2026: "write out Run C's analysis before the tag"; "One registered test but make it H9 so consistent numbering of the actual experiment being run"; its front end "Not decided yet". The prediction is the one fixed on 16 November 2026 (the most bindings of the three arms); only its test is new. No chain of Run C exists; nothing of it was read |
+| 128 | **H1, H2's arm contrast and H4's later intrusion pass only if they also pass at the two binding levels that count both arms alike**: with injection ignored (*all*) and with injection excluded (*none*), beside the registered rule. Those parts are on the cluster bootstrap and enter each hypothesis's p; H2's and H4's are needed where each arm has 10 records to compare; where no ratio can be fitted, a one-sided rank-sum over chains reads the part. Until then the levels were reported on Wald intervals and decided nothing (row 123) | the table of what is registered, §4.3c, §5, §7, `analyse.R`, `verdict.py`, `report.levels_section`, `analysis/selftest.R`, `tests/test_analysis.py`, README | Decided by the author on 27 November 2026 after a review of the plan: "pass only if also holds at a level that counts both frameworks the same way (each of ignore injected, injected as choice, injected as choice in fields not exercised)". The registered rule counts the arms differently before any code is read; a result that holds only under it rests on an argument. The bar of 10 bound rows for H4's parts and the rank-sum where no ratio fits are the drafter's, taken from H2's arm contrast as registered. §4.3c expected, before any level was computed, that under *all* the function arm's count at the method may rise and the gap there shrink or turn round: H4 is the harder for this. No run named for analysis has been read |
+| 129 | **A simulation of the confirmatory four's power at the ui design**: `analysis/power.R`, from the development chain's fitted models, at the development chain's effects and at ratios of 0.8, 0.67 and 0.5, the chains' spread 0.2 and 0.5; on Wald intervals. Reported in `results/power/POWER.md`; changes no rule | §7 | The review of 27 November 2026: no power had been worked out for the confirmatory four (row 122's notes), and on the development chain H5 went against and H1's trend could not be read. Asked by the author the same day, to run overnight |
 | 30 | Terms: a *tie* is now a **binding**, and code that was *tied* to a place is **bound** to it; the *equivalence bound* is now the **equivalence margin** | throughout, and every table and column name | The author's choice: "tie" reads as a draw. "Coupling" was not used because the plan already uses it for the wider thing (the problem's own coupling, the wiring). The margin was renamed so that "bound" has one meaning. No measure, model or rule changes. The pilot report (`results/pilot/PILOT.md`) keeps the old word |
 
 The direction of H4, the thresholds, the margin's values, the amount band, the wiring

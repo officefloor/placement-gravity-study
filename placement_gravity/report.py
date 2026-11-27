@@ -777,8 +777,9 @@ def literature_section(est: dict, spec: dict) -> list[str]:
 
 def levels_section(rep: dict) -> list[str]:
     """The binding levels (PLAN.md §4.3c, reported): H1's count, H2's arm contrast and H4's later
-    intrusion at three levels of the rule on injection, the function arm against the methods arm
-    on 95% Wald intervals. Nothing here decides a hypothesis."""
+    intrusion at three levels of the rule on injection, the function arm against the methods arm.
+    Since 27 November 2026 (§9 row 128) the two levels that count the arms alike decide too, on the
+    cluster bootstrap; the registered level's tests are above, and here it keeps its Wald reading."""
     levels = rep.get("binding_levels") or {}
     if not levels:
         return []
@@ -787,10 +788,11 @@ def levels_section(rep: dict) -> list[str]:
              "none": "injection excluded (neither binds)"}
     L = ["", "## Reported: the binding levels", "",
          "Three results rest on how injection is counted. Each is read here three ways, function arm "
-         "against methods arm, rate ratio with its 95% Wald interval (the tests above are on the "
-         "registered rule and the cluster bootstrap; these decide nothing). A result that points the "
-         "same way at all three does not depend on the rule; one that holds only as registered rests "
-         "on the reasoning for it (PLAN.md §2, *An injected private field forces too*).", ""]
+         "against methods arm, as a rate ratio. Since 27 November 2026 (PLAN.md §9 row 128) H1, H2's arm "
+         "contrast and H4's later intrusion pass only if they also pass with injection ignored and with "
+         "injection excluded, the two levels that count both arms alike: those are on the cluster "
+         "bootstrap and enter each hypothesis's p. The registered rule's tests are above; here it keeps "
+         "its 95% Wald reading. H1 at the method is reported at every level (Wald).", ""]
 
     def contrast(e):
         if not e or "error" in e:
@@ -798,6 +800,19 @@ def levels_section(rep: dict) -> list[str]:
             return f"not estimated ({(e or {}).get('error', 'no data')}{'; a checkpoint: ' + means if means else ''})"
         means = ", ".join(f"{k} {f(v)}" for k, v in (e.get("mean") or {}).items())
         return f"half-way {ratio(e.get('arm'))}, rise {ratio(e.get('trend'))} (a checkpoint: {means})"
+
+    def rank_sum(e):
+        return (f"no ratio could be fitted ({e.get('model_error')}); rank-sum over chains, one-sided p "
+                f"{f(e.get('p_less'))} (mean rate a later checkpoint: function {f(e.get('rate_function'))}, "
+                f"methods {f(e.get('rate_methods'))})")
+
+    def intrusion(e):
+        if e and e.get("separated") and "irr" not in e:
+            return rank_sum(e)
+        if e and e.get("required") is False:
+            return (f"not needed ({e.get('note')}; bound rows: function {f(e.get('function_rows'))}, "
+                    f"methods {f(e.get('methods_rows'))})")
+        return ratio(e)
 
     def reuse(e):
         if not e:
@@ -811,15 +826,16 @@ def levels_section(rep: dict) -> list[str]:
         x = levels.get(key)
         if not x:
             continue
+        names_key = names[key] + (" — **decides** (cluster bootstrap)" if key != "spring" else " — reported (Wald)")
         rows = ", ".join(f"{k} {f(v)}" for k, v in (x.get("rows") or {}).items())
-        L.append(f"- **{names[key]}**" + (f"; bound rows followed: {rows}" if rows else ""))
+        L.append(f"- **{names_key}**" + (f"; bound rows followed: {rows}" if rows else ""))
         L.append(f"  - H1, placements with no other place, at the class: {contrast(x.get('H1_class'))}")
         L.append(f"  - the same at the method (reported under every rule): {contrast(x.get('H1_method'))}")
         if "error" in x:
             L.append(f"  - H2 and H4: {x['error']}")
             continue
         for lev in ("class", "method"):
-            L.append(f"  - H4, later intrusion at the {lev}: {ratio(x.get('H4_intrusion_' + lev))}")
+            L.append(f"  - H4, later intrusion at the {lev}: {intrusion(x.get('H4_intrusion_' + lev))}")
         for lev in ("class", "method"):
             L.append(f"  - H2, uses of a core value at the {lev}: {reuse(x.get('H2_reuse_' + lev))}")
     return L

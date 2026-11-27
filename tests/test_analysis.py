@@ -282,9 +282,25 @@ def estimates(**over):
          "H4": {"arm": boot(-0.5, -0.8, -0.2, 0.999, 0.001), "slope": boot(-0.2, -0.3, -0.1, 0.99, 0.002),
                 "intrusion_class": {"irr": 0.4, "irr_lower": 0.3, "irr_upper": 0.6, "p_less": 0.001},
                 "intrusion_method": {"irr": 0.5, "irr_lower": 0.3, "irr_upper": 0.8, "p_less": 0.003},
-                "trodden": {"irr": 0.7, "irr_lower": 0.5, "irr_upper": 0.9, "p_less": 0.002}}}
+                "trodden": {"irr": 0.7, "irr_lower": 0.5, "irr_upper": 0.9, "p_less": 0.002}},
+         # the levels that count both arms alike, which decide beside the registered rule (row 128)
+         "levels": {lev: levels() for lev in ("all", "none")}}
     e.update(over)
     return e
+
+
+def below(p=0.002, upper=0.8):
+    return {"irr": 0.5, "irr_lower": 0.3, "irr_upper": upper, "p_less": p, "required": True}
+
+
+def levels(**over):
+    x = {"H1_class": {"arm": below(), "trend": below()},
+         "H1_method": {"error": "reported only"},
+         "H4_intrusion_class": below(), "H4_intrusion_method": below(),
+         "H2_reuse_class": {"required": False, "note": "too few core records in an arm to compare"},
+         "H2_reuse_method": below()}
+    x.update(over)
+    return x
 
 
 COND = {"descriptive_only": False, "amount": {"in_band": True, "ratio": 0.95},
@@ -1047,3 +1063,52 @@ def test_a_contrast_names_its_arms_and_is_one_the_steps_know():
         runs.validate({**reg, "analyses": [{**ok, "contrast": "no-such"}]})
     with pytest.raises(ValueError, match="names its methods_arm and function_arm"):
         runs.validate({**reg, "analyses": [{**ok, "methods_arm": "control"}]})
+
+
+# ---------------------------------------------------------------- the binding levels decide (row 128)
+
+def test_h1_h2_h4_pass_only_if_they_pass_at_both_levels_that_count_the_arms_alike():
+    v = verdict.decide(estimates(**h1_contrast(LESS, LESS)), COND)["hypotheses"]
+    assert [v[k]["verdict"] for k in ("H1", "H2", "H4")] == ["supported"] * 3
+    flat = {"irr": 1.0, "irr_lower": 0.7, "irr_upper": 1.4, "p_less": 0.4, "required": True}
+    for key, h in (("H4_intrusion_method", "H4"), ("H2_reuse_method", "H2")):
+        for lev in ("all", "none"):
+            e = estimates()
+            e["levels"][lev] = levels(**{key: flat})
+            got = verdict.decide(e, COND)["hypotheses"][h]
+            assert got["verdict"] == "not supported" and got["p"] == 0.4, (key, lev)
+    e = estimates(**h1_contrast(LESS, LESS))
+    e["levels"]["none"] = levels(H1_class={"arm": below(), "trend": flat})
+    assert verdict.decide(e, COND)["hypotheses"]["H1"]["verdict"] == "not supported"
+    # the levels enter p: the largest part, then Holm over four
+    e = estimates()
+    e["levels"]["all"] = levels(H4_intrusion_class=below(p=0.009))
+    got = verdict.decide(e, COND)["hypotheses"]["H4"]
+    assert got["p"] == 0.009 and got["verdict"] == "supported"
+    assert {(r["level"], r["part"]) for r in got["levels"]} >= {("all", "H4_intrusion_class"), ("none", "H4_intrusion_method")}
+
+
+def test_a_level_not_read_on_the_paired_chains_is_not_estimable_and_a_history_needs_none():
+    e = estimates(**h1_contrast(LESS, LESS))
+    del e["levels"]
+    v = verdict.decide(e, COND)["hypotheses"]
+    assert {v[k]["verdict"] for k in ("H1", "H2", "H4")} == {"not estimable"}
+    e["levels"] = {"all": levels(H4_intrusion_class={"required": True, "error": "standard error not computed"}),
+                   "none": levels()}
+    assert verdict.decide(e, COND)["hypotheses"]["H4"]["verdict"] == "not estimable"
+    assert verdict.decide(e, COND)["hypotheses"]["H2"]["verdict"] == "supported"
+    v = verdict.decide(estimates(levels=None), {**COND, "history": True})["hypotheses"]
+    assert v["H4"]["verdict"] == "supported" and v["H2"]["verdict"] == "supported"
+
+
+def test_a_level_part_without_the_records_is_not_needed_and_a_rank_sum_decides_where_no_ratio_fits():
+    e = estimates()
+    for lev in ("all", "none"):
+        e["levels"][lev] = levels(H4_intrusion_method={"required": False, "note": "too few bound rows in an arm to compare"})
+    assert verdict.decide(e, COND)["hypotheses"]["H4"]["verdict"] == "supported"
+    rank = {"required": True, "separated": True, "p_less": 0.01, "interval": "rank-sum over chains"}
+    e["levels"]["none"] = levels(H4_intrusion_method=rank)
+    assert verdict.decide(e, COND)["hypotheses"]["H4"]["verdict"] == "supported"
+    e["levels"]["none"] = levels(H4_intrusion_method={**rank, "p_less": 0.2})
+    got = verdict.decide(e, COND)["hypotheses"]["H4"]
+    assert got["verdict"] == "not supported" and got["p"] == 0.2

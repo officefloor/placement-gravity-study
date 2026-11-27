@@ -388,9 +388,22 @@ check(isTRUE(all.equal(bl$all$H1_class$arm$irr, bl$spring$H1_class$arm$irr)) &&
       "the same data at two levels gives the same ratios")
 check(bl$none$H1_class$arm$irr_lower < 1 && 1 < bl$none$H1_class$arm$irr_upper,
       "with injection excluded and the arms simulated alike, H1's interval holds 1")
-check(!is.null(bl$none$H1_method$error) && !is.null(bl$none$H4_intrusion_method$error) &&
-      !is.null(bl$none$H2_reuse_class$note),
-      "a level with nothing forced, or with rows in one arm only, is reported as not estimated")
+check(!is.null(bl$none$H1_method$error) && isFALSE(bl$none$H4_intrusion_method$required) &&
+      !is.null(bl$none$H4_intrusion_method$note) && !is.null(bl$none$H2_reuse_class$note),
+      "a level with nothing forced, or with rows in one arm only, is reported as not estimated or not needed")
+# the two levels that count the arms alike decide (PLAN.md 9 row 128): on the cluster bootstrap,
+# copied to e$levels for verdict.py; the registered level keeps its Wald reading here
+check(identical(sort(names(e$levels)), c("all", "none")) &&
+      identical(e$levels$all$H1_class$arm$interval, "cluster bootstrap") &&
+      identical(e$levels$all$H1_class$trend$interval, "cluster bootstrap") &&
+      identical(e$levels$none$H1_class$arm$interval, "cluster bootstrap"),
+      "H1's count at the levels that decide is on the cluster bootstrap")
+check(isTRUE(e$levels$all$H4_intrusion_class$required) &&
+      identical(e$levels$all$H4_intrusion_class$interval, "cluster bootstrap") &&
+      isTRUE(e$levels$all$H2_reuse_method$required) &&
+      identical(e$levels$all$H2_reuse_method$interval, "cluster bootstrap") &&
+      is.null(bl$spring$H4_intrusion_class$interval),
+      "H4's intrusion and H2's arm contrast at the levels that decide are on the cluster bootstrap; the registered level's reading stays Wald")
 check(!is.null(bl$spring$H4_intrusion_class$irr) && bl$spring$rows$spring > 0 && bl$spring$rows$officefloor > 0,
       "each level reports its bound rows per arm and H4's later intrusion at the class")
 check(abs(log(e$reported$bindings_lines$irr)) < 0.05,
